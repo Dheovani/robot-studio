@@ -78,6 +78,7 @@ Goal: make robot execution state explicit and teachable.
 - [x] Add tests proving the first state values exist.
 - [x] Add tests for valid state transitions.
 - [x] Add tests for invalid state transitions.
+- [x] Add exception for invalid state transitions.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -87,7 +88,7 @@ Goal: make errors clear enough for students to understand what went wrong.
 
 - [x] Add explicit error for position outside axis limits.
 - [ ] Add explicit error for invalid robot command.
-- [ ] Add explicit error for invalid state transition.
+- [x] Add explicit error for invalid state transition.
 - [ ] Add explicit error for impossible movement.
 - [ ] Ensure each domain error message identifies the invalid value.
 - [ ] Ensure each domain error message identifies the expected valid range or state.

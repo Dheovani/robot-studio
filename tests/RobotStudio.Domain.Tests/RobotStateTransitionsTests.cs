@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Domain.Tests;
 
@@ -41,5 +42,24 @@ public sealed class RobotStateTransitionsTests
         var canTransition = RobotStateTransitions.CanTransitionTo(current, next);
 
         Assert.False(canTransition);
+    }
+
+    [Fact]
+    public void EnsureCanTransitionTo_WhenTransitionIsInvalid_ShouldThrow()
+    {
+        var exception = Assert.Throws<InvalidRobotStateTransitionException>(() =>
+            RobotStateTransitions.EnsureCanTransitionTo(RobotState.Faulted, RobotState.Moving));
+
+        Assert.Equal(RobotState.Faulted, exception.Current);
+        Assert.Equal(RobotState.Moving, exception.Next);
+    }
+
+    [Fact]
+    public void EnsureCanTransitionTo_WhenTransitionIsValid_ShouldNotThrow()
+    {
+        var exception = Record.Exception(() =>
+            RobotStateTransitions.EnsureCanTransitionTo(RobotState.Completed, RobotState.Moving));
+
+        Assert.Null(exception);
     }
 }

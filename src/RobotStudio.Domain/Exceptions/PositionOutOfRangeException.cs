@@ -1,4 +1,4 @@
-namespace RobotStudio.Domain;
+namespace RobotStudio.Domain.Exceptions;
 
 public sealed class PositionOutOfRangeException : InvalidOperationException
 {

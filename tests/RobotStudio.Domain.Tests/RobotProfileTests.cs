@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Domain.Tests;
 

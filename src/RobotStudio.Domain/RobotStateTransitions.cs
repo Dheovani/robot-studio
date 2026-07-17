@@ -1,7 +1,17 @@
+using RobotStudio.Domain.Exceptions;
+
 namespace RobotStudio.Domain;
 
 public static class RobotStateTransitions
 {
+    public static void EnsureCanTransitionTo(RobotState current, RobotState next)
+    {
+        if (!CanTransitionTo(current, next))
+        {
+            throw new InvalidRobotStateTransitionException(current, next);
+        }
+    }
+
     public static bool CanTransitionTo(RobotState current, RobotState next)
     {
         return current switch

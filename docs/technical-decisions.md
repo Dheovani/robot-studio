@@ -24,6 +24,8 @@ The domain may throw explicit domain exceptions when an operation is invalid. Er
 
 CLI and future scripting layers should catch domain errors and present friendly messages.
 
+Domain exceptions live under the `RobotStudio.Domain.Exceptions` namespace.
+
 ### Motion Planning
 
 The first motion planner is intentionally simple. It plans a linear movement, validates positions, estimates duration, and uses the lowest maximum velocity among involved axes.
@@ -49,7 +51,7 @@ The simulator must eventually model both position and robot state. State names a
 - `Completed`
 - `Faulted`
 
-`HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable, initially through either `Idle` or `Homing`, while the exact recovery command remains open.
+`HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable, initially through either `Idle` or `Homing`, while the exact recovery command remains open. Invalid state transitions must be explicit and use `InvalidRobotStateTransitionException`.
 
 ### Scripting
 

@@ -12,6 +12,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] `HOME` can transition from every robot state to `Homing`.
 - [x] Active states can transition to `Completed`.
 - [x] Invalid state transitions return `false`.
+- [x] Invalid enforced state transitions throw `InvalidRobotStateTransitionException`.
 
 ### Required Next Coverage
 
@@ -22,7 +23,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [ ] Invalid maximum acceleration is rejected after acceleration is added.
 - [ ] `WaitCommand` rejects negative duration.
 - [ ] Invalid command sequence is rejected after command sequences are added.
-- [ ] Invalid robot state transition throws a domain error after transition enforcement is added.
+- [x] Invalid robot state transition throws a domain error after transition enforcement is added.
 
 ## `RobotStudio.Motion.Tests`
 

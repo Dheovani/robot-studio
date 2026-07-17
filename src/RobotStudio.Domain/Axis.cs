@@ -1,3 +1,5 @@
+using RobotStudio.Domain.Exceptions;
+
 namespace RobotStudio.Domain;
 
 public sealed record Axis
