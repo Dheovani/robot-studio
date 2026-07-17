@@ -62,19 +62,20 @@ Goal: separate general robotics concepts from the first Cartesian robot implemen
 
 Goal: make robot execution state explicit and teachable.
 
-- [ ] Create `RobotState`.
-- [ ] Add state value `Idle`.
-- [ ] Add state value `Moving`.
-- [ ] Add state value `Homing`.
-- [ ] Add state value `Waiting`.
-- [ ] Add state value `Completed`.
-- [ ] Add state value `Faulted`.
+- [x] Create `RobotState`.
+- [x] Add state value `Idle`.
+- [x] Add state value `Moving`.
+- [x] Add state value `Homing`.
+- [x] Add state value `Waiting`.
+- [x] Add state value `Completed`.
+- [x] Add state value `Faulted`.
 - [ ] Define which state is the initial state of a new simulation.
 - [ ] Define which states can transition to `Moving`.
 - [ ] Define which states can transition to `Waiting`.
 - [ ] Define which states can transition to `Homing`.
 - [ ] Define which states can transition to `Completed`.
 - [ ] Define which failures transition to `Faulted`.
+- [x] Add tests proving the first state values exist.
 - [ ] Add tests for valid state transitions.
 - [ ] Add tests for invalid state transitions.
 - [ ] Run `dotnet build`.

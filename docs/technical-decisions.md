@@ -40,7 +40,7 @@ Out of scope:
 
 ### Simulation
 
-The simulator must eventually model both position and robot state. Planned state names are technical and code-oriented:
+The simulator must eventually model both position and robot state. State names are technical and code-oriented:
 
 - `Idle`
 - `Moving`

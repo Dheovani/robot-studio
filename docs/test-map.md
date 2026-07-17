@@ -8,6 +8,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [x] Valid Cartesian position inside limits does not throw.
 - [x] Cartesian position outside limits throws `PositionOutOfRangeException`.
+- [x] Robot state exposes the first execution state values.
 
 ### Required Next Coverage
 
