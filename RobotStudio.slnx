@@ -1,0 +1,14 @@
+<Solution>
+  <Folder Name="/src/">
+    <Project Path="src/RobotStudio.Cli/RobotStudio.Cli.csproj" />
+    <Project Path="src/RobotStudio.Domain/RobotStudio.Domain.csproj" />
+    <Project Path="src/RobotStudio.Hardware/RobotStudio.Hardware.csproj" />
+    <Project Path="src/RobotStudio.Motion/RobotStudio.Motion.csproj" />
+    <Project Path="src/RobotStudio.Scripting/RobotStudio.Scripting.csproj" />
+    <Project Path="src/RobotStudio.Simulation/RobotStudio.Simulation.csproj" />
+  </Folder>
+  <Folder Name="/tests/">
+    <Project Path="tests/RobotStudio.Domain.Tests/RobotStudio.Domain.Tests.csproj" />
+    <Project Path="tests/RobotStudio.Motion.Tests/RobotStudio.Motion.Tests.csproj" />
+  </Folder>
+</Solution>
