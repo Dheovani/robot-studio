@@ -32,6 +32,7 @@ The current goal is to build a clean, testable foundation before adding hardware
 - [Use Cases](docs/use-cases.md)
 - [Test Map](docs/test-map.md)
 - [User Guide](docs/user-guide.md)
+- [Continuous Integration](docs/ci.md)
 
 ## Build
 

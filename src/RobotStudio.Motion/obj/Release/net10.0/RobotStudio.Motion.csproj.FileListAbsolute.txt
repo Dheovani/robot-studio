@@ -1,0 +1,16 @@
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\bin\Release\net10.0\RobotStudio.Motion.deps.json
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\bin\Release\net10.0\RobotStudio.Motion.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\bin\Release\net10.0\RobotStudio.Motion.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\bin\Release\net10.0\RobotStudio.Domain.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\bin\Release\net10.0\RobotStudio.Domain.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.csproj.AssemblyReference.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.AssemblyInfoInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.AssemblyInfo.cs
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.csproj.CoreCompileInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.sourcelink.json
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStu.7C212F2E.Up2Date
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\refint\RobotStudio.Motion.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\RobotStudio.Motion.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Motion\obj\Release\net10.0\ref\RobotStudio.Motion.dll

@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("RobotStudio.Scripting")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+7a333ef08fba713ddb77cb75f0348406987e0394")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+435417889e121d436b868fca4dabbdc49a4fa26a")]
 [assembly: System.Reflection.AssemblyProductAttribute("RobotStudio.Scripting")]
 [assembly: System.Reflection.AssemblyTitleAttribute("RobotStudio.Scripting")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

@@ -10,7 +10,7 @@
         "projectUniqueName": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Cli\\RobotStudio.Cli.csproj",
         "projectName": "RobotStudio.Cli",
         "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Cli\\RobotStudio.Cli.csproj",
-        "packagesPath": "C:\\Users\\dheov\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Cli\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
@@ -356,7 +356,7 @@
         "projectUniqueName": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj",
         "projectName": "RobotStudio.Domain",
         "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj",
-        "packagesPath": "C:\\Users\\dheov\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
@@ -695,7 +695,7 @@
         "projectUniqueName": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Motion\\RobotStudio.Motion.csproj",
         "projectName": "RobotStudio.Motion",
         "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Motion\\RobotStudio.Motion.csproj",
-        "packagesPath": "C:\\Users\\dheov\\.nuget\\packages\\",
+        "packagesPath": "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\",
         "outputPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Motion\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [

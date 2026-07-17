@@ -272,3 +272,20 @@ Goal: add G-code after students understand the simple DSL.
 - [ ] Map `G1` to movement behavior.
 - [ ] Map `G4` to wait/dwell behavior.
 - [ ] Allow DSL and G-code to produce the same domain command types.
+
+## 15. Continuous Integration
+
+Goal: make every pushed change validate the project automatically.
+
+- [x] Create GitHub Actions workflow directory.
+- [x] Add CI workflow for pushes and pull requests.
+- [x] Add manual workflow dispatch support.
+- [x] Restore the solution in CI.
+- [x] Build the solution in Release mode in CI.
+- [x] Run xUnit tests in Release mode in CI.
+- [x] Upload test result artifacts.
+- [x] Run `dotnet format` in verification mode.
+- [x] Document CI behavior in `docs/ci.md`.
+- [ ] Add code coverage reporting when coverage goals are defined.
+- [ ] Add stricter analyzers when the coding standard becomes more mature.
+- [ ] Add package vulnerability scanning when external dependencies become more relevant.

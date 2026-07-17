@@ -1,0 +1,52 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TestRun id="514fe6ef-b328-46da-b9dd-2cdf4563cff9" name="dheov@DHEOVANI 2026-07-17 11:48:14" runUser="Dheovani\CodexSandboxOffline" xmlns="http://microsoft.com/schemas/VisualStudio/TeamTest/2010">
+  <Times creation="2026-07-17T11:48:14.3070951-03:00" queuing="2026-07-17T11:48:14.3070952-03:00" start="2026-07-17T11:48:13.7467069-03:00" finish="2026-07-17T11:48:14.3115027-03:00" />
+  <TestSettings name="default" id="b0da96a6-b010-40cc-b0f8-831f91ff16eb">
+    <Deployment runDeploymentRoot="dheov_DHEOVANI_2026-07-17_11_48_14" />
+  </TestSettings>
+  <Results>
+    <UnitTestResult executionId="decd6a90-78d4-43d4-88b5-337f999ad6e0" testId="332e5db5-bb9a-164e-3d1f-59b963cbf9e7" testName="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsPlan_WhenMovementIsValid" computerName="DHEOVANI" duration="00:00:00.0023561" startTime="2026-07-17T11:48:14.2277265-03:00" endTime="2026-07-17T11:48:14.2277526-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="decd6a90-78d4-43d4-88b5-337f999ad6e0" />
+    <UnitTestResult executionId="4c61ff3f-a385-4ca5-9726-90674d656367" testId="a3e333f7-064e-9ad7-d528-a3c64139f759" testName="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_Throws_WhenEndPositionIsOutsideLimits" computerName="DHEOVANI" duration="00:00:00.0016146" startTime="2026-07-17T11:48:14.2276134-03:00" endTime="2026-07-17T11:48:14.2276539-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4c61ff3f-a385-4ca5-9726-90674d656367" />
+    <UnitTestResult executionId="4f774392-b0d7-4491-b99b-6ba31dfcee51" testId="a7469611-693e-86b3-1cd2-985ddfebae75" testName="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsPositiveDuration_WhenMovementHasDisplacement" computerName="DHEOVANI" duration="00:00:00.0015037" startTime="2026-07-17T11:48:14.2271473-03:00" endTime="2026-07-17T11:48:14.2271999-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="4f774392-b0d7-4491-b99b-6ba31dfcee51" />
+    <UnitTestResult executionId="c5048a8d-138c-455b-994f-08f5f2bd72fb" testId="be367df0-4f3f-27da-f6f7-2e1e32844daa" testName="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsStationaryPlan_WhenStartEqualsEnd" computerName="DHEOVANI" duration="00:00:00.0081627" startTime="2026-07-17T11:48:14.2045704-03:00" endTime="2026-07-17T11:48:14.2182235-03:00" testType="13cdc9d9-ddb5-4fa4-a97d-d965ccfc6d4b" outcome="Passed" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" relativeResultsDirectory="c5048a8d-138c-455b-994f-08f5f2bd72fb" />
+  </Results>
+  <TestDefinitions>
+    <UnitTest name="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsPositiveDuration_WhenMovementHasDisplacement" storage="c:\users\dheov\documents\codes\robot-studio\tests\robotstudio.motion.tests\bin\release\net10.0\robotstudio.motion.tests.dll" id="a7469611-693e-86b3-1cd2-985ddfebae75">
+      <Execution id="4f774392-b0d7-4491-b99b-6ba31dfcee51" />
+      <TestMethod codeBase="C:\Users\dheov\Documents\Codes\robot-studio\tests\RobotStudio.Motion.Tests\bin\Release\net10.0\RobotStudio.Motion.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="RobotStudio.Motion.Tests.MotionPlannerTests" name="PlanLinearMove_ReturnsPositiveDuration_WhenMovementHasDisplacement" />
+    </UnitTest>
+    <UnitTest name="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_Throws_WhenEndPositionIsOutsideLimits" storage="c:\users\dheov\documents\codes\robot-studio\tests\robotstudio.motion.tests\bin\release\net10.0\robotstudio.motion.tests.dll" id="a3e333f7-064e-9ad7-d528-a3c64139f759">
+      <Execution id="4c61ff3f-a385-4ca5-9726-90674d656367" />
+      <TestMethod codeBase="C:\Users\dheov\Documents\Codes\robot-studio\tests\RobotStudio.Motion.Tests\bin\Release\net10.0\RobotStudio.Motion.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="RobotStudio.Motion.Tests.MotionPlannerTests" name="PlanLinearMove_Throws_WhenEndPositionIsOutsideLimits" />
+    </UnitTest>
+    <UnitTest name="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsPlan_WhenMovementIsValid" storage="c:\users\dheov\documents\codes\robot-studio\tests\robotstudio.motion.tests\bin\release\net10.0\robotstudio.motion.tests.dll" id="332e5db5-bb9a-164e-3d1f-59b963cbf9e7">
+      <Execution id="decd6a90-78d4-43d4-88b5-337f999ad6e0" />
+      <TestMethod codeBase="C:\Users\dheov\Documents\Codes\robot-studio\tests\RobotStudio.Motion.Tests\bin\Release\net10.0\RobotStudio.Motion.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="RobotStudio.Motion.Tests.MotionPlannerTests" name="PlanLinearMove_ReturnsPlan_WhenMovementIsValid" />
+    </UnitTest>
+    <UnitTest name="RobotStudio.Motion.Tests.MotionPlannerTests.PlanLinearMove_ReturnsStationaryPlan_WhenStartEqualsEnd" storage="c:\users\dheov\documents\codes\robot-studio\tests\robotstudio.motion.tests\bin\release\net10.0\robotstudio.motion.tests.dll" id="be367df0-4f3f-27da-f6f7-2e1e32844daa">
+      <Execution id="c5048a8d-138c-455b-994f-08f5f2bd72fb" />
+      <TestMethod codeBase="C:\Users\dheov\Documents\Codes\robot-studio\tests\RobotStudio.Motion.Tests\bin\Release\net10.0\RobotStudio.Motion.Tests.dll" adapterTypeName="executor://xunit/VsTestRunner3/netcore/" className="RobotStudio.Motion.Tests.MotionPlannerTests" name="PlanLinearMove_ReturnsStationaryPlan_WhenStartEqualsEnd" />
+    </UnitTest>
+  </TestDefinitions>
+  <TestEntries>
+    <TestEntry testId="332e5db5-bb9a-164e-3d1f-59b963cbf9e7" executionId="decd6a90-78d4-43d4-88b5-337f999ad6e0" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a3e333f7-064e-9ad7-d528-a3c64139f759" executionId="4c61ff3f-a385-4ca5-9726-90674d656367" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="a7469611-693e-86b3-1cd2-985ddfebae75" executionId="4f774392-b0d7-4491-b99b-6ba31dfcee51" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestEntry testId="be367df0-4f3f-27da-f6f7-2e1e32844daa" executionId="c5048a8d-138c-455b-994f-08f5f2bd72fb" testListId="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+  </TestEntries>
+  <TestLists>
+    <TestList name="Resultados que não estão em uma lista" id="8c84fa94-04c1-424b-9868-57a2d4851a1d" />
+    <TestList name="Todos os resultados carregados" id="19431567-8539-422a-85d7-44ee4e166bda" />
+  </TestLists>
+  <ResultSummary outcome="Completed">
+    <Counters total="4" executed="4" passed="4" failed="0" error="0" timeout="0" aborted="0" inconclusive="0" passedButRunAborted="0" notRunnable="0" notExecuted="0" disconnected="0" warning="0" completed="0" inProgress="0" pending="0" />
+    <Output>
+      <StdOut>[xUnit.net 00:00:00.00] xUnit.net VSTest Adapter v3.1.4+50e68bbb8b (64-bit .NET 10.0.10)&#xD;
+[xUnit.net 00:00:00.06]   Discovering: RobotStudio.Motion.Tests&#xD;
+[xUnit.net 00:00:00.10]   Discovered:  RobotStudio.Motion.Tests&#xD;
+[xUnit.net 00:00:00.11]   Starting:    RobotStudio.Motion.Tests&#xD;
+[xUnit.net 00:00:00.16]   Finished:    RobotStudio.Motion.Tests&#xD;
+</StdOut>
+    </Output>
+  </ResultSummary>
+</TestRun>

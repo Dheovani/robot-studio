@@ -8,6 +8,7 @@ This folder keeps the project decisions and learning-oriented documentation clos
 - [Use Cases](use-cases.md): user-facing workflows the application must eventually support.
 - [Test Map](test-map.md): expected automated test coverage by project area.
 - [User Guide](user-guide.md): current and planned ways to use the CLI and future scripting flow.
+- [Continuous Integration](ci.md): GitHub Actions validation for build, tests, and formatting.
 
 ## Maintenance Rules
 
