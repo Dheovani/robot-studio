@@ -1,0 +1,11 @@
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.AssemblyInfoInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.AssemblyInfo.cs
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.csproj.CoreCompileInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\bin\Debug\net10.0\RobotStudio.Domain.deps.json
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\bin\Debug\net10.0\RobotStudio.Domain.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\bin\Debug\net10.0\RobotStudio.Domain.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\refint\RobotStudio.Domain.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\RobotStudio.Domain.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Domain\obj\Debug\net10.0\ref\RobotStudio.Domain.dll

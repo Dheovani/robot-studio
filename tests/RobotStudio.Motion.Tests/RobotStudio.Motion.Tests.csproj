@@ -19,6 +19,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\..\src\RobotStudio.Domain\RobotStudio.Domain.csproj" />
     <ProjectReference Include="..\..\src\RobotStudio.Motion\RobotStudio.Motion.csproj" />
   </ItemGroup>
 

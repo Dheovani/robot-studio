@@ -1,0 +1,34 @@
+using RobotStudio.Domain;
+
+namespace RobotStudio.Domain.Tests;
+
+public sealed class RobotProfileTests
+{
+    [Fact]
+    public void ValidatePosition_DoesNotThrow_WhenPositionIsInsideAxisLimits()
+    {
+        var profile = CreateProfile();
+        var position = new CartesianPosition(X: 100, Y: 50, Z: 25);
+
+        var exception = Record.Exception(() => profile.ValidatePosition(position));
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void ValidatePosition_Throws_WhenPositionIsOutsideAxisLimits()
+    {
+        var profile = CreateProfile();
+        var position = new CartesianPosition(X: 301, Y: 50, Z: 25);
+
+        var exception = Assert.Throws<PositionOutOfRangeException>(() => profile.ValidatePosition(position));
+
+        Assert.Equal(AxisId.X, exception.Axis);
+    }
+
+    private static RobotProfile CreateProfile() =>
+        RobotProfile.CreateCartesian(
+            new Axis(AxisId.X, 0, 300, 120),
+            new Axis(AxisId.Y, 0, 200, 100),
+            new Axis(AxisId.Z, 0, 150, 80));
+}

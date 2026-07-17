@@ -1,0 +1,15 @@
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\bin\Debug\net10.0\RobotStudio.Hardware.deps.json
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\bin\Debug\net10.0\RobotStudio.Hardware.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\bin\Debug\net10.0\RobotStudio.Hardware.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\bin\Debug\net10.0\RobotStudio.Domain.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\bin\Debug\net10.0\RobotStudio.Domain.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.csproj.AssemblyReference.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.GeneratedMSBuildEditorConfig.editorconfig
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.AssemblyInfoInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.AssemblyInfo.cs
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.csproj.CoreCompileInputs.cache
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStu.705E88E0.Up2Date
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\refint\RobotStudio.Hardware.dll
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\RobotStudio.Hardware.pdb
+C:\Users\dheov\Documents\Codes\robot-studio\src\RobotStudio.Hardware\obj\Debug\net10.0\ref\RobotStudio.Hardware.dll

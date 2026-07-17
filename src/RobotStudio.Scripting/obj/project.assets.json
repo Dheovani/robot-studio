@@ -1,14 +1,52 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
-    "net10.0": {}
+    "net10.0": {
+      "RobotStudio.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/RobotStudio.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RobotStudio.Domain.dll": {}
+        }
+      },
+      "RobotStudio.Motion/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "dependencies": {
+          "RobotStudio.Domain": "1.0.0"
+        },
+        "compile": {
+          "bin/placeholder/RobotStudio.Motion.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RobotStudio.Motion.dll": {}
+        }
+      }
+    }
   },
-  "libraries": {},
+  "libraries": {
+    "RobotStudio.Domain/1.0.0": {
+      "type": "project",
+      "path": "../RobotStudio.Domain/RobotStudio.Domain.csproj",
+      "msbuildProject": "../RobotStudio.Domain/RobotStudio.Domain.csproj"
+    },
+    "RobotStudio.Motion/1.0.0": {
+      "type": "project",
+      "path": "../RobotStudio.Motion/RobotStudio.Motion.csproj",
+      "msbuildProject": "../RobotStudio.Motion/RobotStudio.Motion.csproj"
+    }
+  },
   "projectFileDependencyGroups": {
-    "net10.0": []
+    "net10.0": [
+      "RobotStudio.Domain >= 1.0.0",
+      "RobotStudio.Motion >= 1.0.0"
+    ]
   },
   "packageFolders": {
-    "C:\\Users\\dheov\\.nuget\\packages\\": {},
+    "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -17,7 +55,7 @@
       "projectUniqueName": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Scripting\\RobotStudio.Scripting.csproj",
       "projectName": "RobotStudio.Scripting",
       "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Scripting\\RobotStudio.Scripting.csproj",
-      "packagesPath": "C:\\Users\\dheov\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Scripting\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
@@ -37,9 +75,15 @@
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj": {
+              "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj"
+            },
+            "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Motion\\RobotStudio.Motion.csproj": {
+              "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Motion\\RobotStudio.Motion.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -52,11 +96,10 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net10.0": {
-        "framework": "net10.0",
         "targetAlias": "net10.0",
         "imports": [
           "net461",
@@ -74,7 +117,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",

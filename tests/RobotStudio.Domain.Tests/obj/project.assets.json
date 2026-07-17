@@ -1,5 +1,5 @@
 {
-  "version": 4,
+  "version": 3,
   "targets": {
     "net10.0": {
       "coverlet.collector/6.0.4": {
@@ -392,6 +392,16 @@
         },
         "build": {
           "build/net8.0/xunit.runner.visualstudio.props": {}
+        }
+      },
+      "RobotStudio.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v10.0",
+        "compile": {
+          "bin/placeholder/RobotStudio.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/RobotStudio.Domain.dll": {}
         }
       }
     }
@@ -903,18 +913,24 @@
         "xunit.runner.visualstudio.3.1.4.nupkg.sha512",
         "xunit.runner.visualstudio.nuspec"
       ]
+    },
+    "RobotStudio.Domain/1.0.0": {
+      "type": "project",
+      "path": "../../src/RobotStudio.Domain/RobotStudio.Domain.csproj",
+      "msbuildProject": "../../src/RobotStudio.Domain/RobotStudio.Domain.csproj"
     }
   },
   "projectFileDependencyGroups": {
     "net10.0": [
       "Microsoft.NET.Test.Sdk >= 17.14.1",
+      "RobotStudio.Domain >= 1.0.0",
       "coverlet.collector >= 6.0.4",
       "xunit >= 2.9.3",
       "xunit.runner.visualstudio >= 3.1.4"
     ]
   },
   "packageFolders": {
-    "C:\\Users\\dheov\\.nuget\\packages\\": {},
+    "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\": {},
     "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
   },
   "project": {
@@ -923,7 +939,7 @@
       "projectUniqueName": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\tests\\RobotStudio.Domain.Tests\\RobotStudio.Domain.Tests.csproj",
       "projectName": "RobotStudio.Domain.Tests",
       "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\tests\\RobotStudio.Domain.Tests\\RobotStudio.Domain.Tests.csproj",
-      "packagesPath": "C:\\Users\\dheov\\.nuget\\packages\\",
+      "packagesPath": "C:\\Users\\CodexSandboxOffline\\.nuget\\packages\\",
       "outputPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\tests\\RobotStudio.Domain.Tests\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
@@ -943,9 +959,12 @@
       },
       "frameworks": {
         "net10.0": {
-          "framework": "net10.0",
           "targetAlias": "net10.0",
-          "projectReferences": {}
+          "projectReferences": {
+            "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj": {
+              "projectPath": "C:\\Users\\dheov\\Documents\\Codes\\robot-studio\\src\\RobotStudio.Domain\\RobotStudio.Domain.csproj"
+            }
+          }
         }
       },
       "warningProperties": {
@@ -958,11 +977,10 @@
         "auditLevel": "low",
         "auditMode": "all"
       },
-      "SdkAnalysisLevel": "10.0.300"
+      "SdkAnalysisLevel": "10.0.100"
     },
     "frameworks": {
       "net10.0": {
-        "framework": "net10.0",
         "targetAlias": "net10.0",
         "dependencies": {
           "Microsoft.NET.Test.Sdk": {
@@ -998,7 +1016,7 @@
             "privateAssets": "all"
           }
         },
-        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.302/PortableRuntimeIdentifierGraph.json",
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.102/PortableRuntimeIdentifierGraph.json",
         "packagesToPrune": {
           "Microsoft.CSharp": "(,4.7.32767]",
           "Microsoft.VisualBasic": "(,10.4.32767]",
