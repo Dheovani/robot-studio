@@ -1,0 +1,45 @@
+using RobotStudio.Domain;
+
+namespace RobotStudio.Domain.Tests;
+
+public sealed class RobotStateTransitionsTests
+{
+    [Theory]
+    [InlineData(RobotState.Idle)]
+    [InlineData(RobotState.Moving)]
+    [InlineData(RobotState.Homing)]
+    [InlineData(RobotState.Waiting)]
+    [InlineData(RobotState.Completed)]
+    [InlineData(RobotState.Faulted)]
+    public void CanTransitionTo_WhenNextStateIsHoming_ShouldReturnTrue(RobotState current)
+    {
+        var canTransition = RobotStateTransitions.CanTransitionTo(current, RobotState.Homing);
+
+        Assert.True(canTransition);
+    }
+
+    [Theory]
+    [InlineData(RobotState.Moving)]
+    [InlineData(RobotState.Homing)]
+    [InlineData(RobotState.Waiting)]
+    public void CanTransitionTo_WhenActiveStateCompletes_ShouldReturnTrue(RobotState current)
+    {
+        var canTransition = RobotStateTransitions.CanTransitionTo(current, RobotState.Completed);
+
+        Assert.True(canTransition);
+    }
+
+    [Theory]
+    [InlineData(RobotState.Idle, RobotState.Completed)]
+    [InlineData(RobotState.Faulted, RobotState.Moving)]
+    [InlineData(RobotState.Faulted, RobotState.Waiting)]
+    [InlineData(RobotState.Moving, RobotState.Waiting)]
+    public void CanTransitionTo_WhenTransitionIsInvalid_ShouldReturnFalse(
+        RobotState current,
+        RobotState next)
+    {
+        var canTransition = RobotStateTransitions.CanTransitionTo(current, next);
+
+        Assert.False(canTransition);
+    }
+}

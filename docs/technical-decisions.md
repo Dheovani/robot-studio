@@ -49,6 +49,8 @@ The simulator must eventually model both position and robot state. State names a
 - `Completed`
 - `Faulted`
 
+`HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable, initially through either `Idle` or `Homing`, while the exact recovery command remains open.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.
@@ -80,5 +82,6 @@ Likely future targets include Arduino or ESP32 with educational actuators such a
 - Exact namespace split between general robotics concepts and Cartesian-specific concepts.
 - Whether DSL `MOVE` requires `SPEED` or uses a default speed.
 - Whether commands should carry optional source information, such as script line numbers, for teaching and debugging.
+- Exact user-facing recovery command for `Faulted`.
 - First real hardware target: Arduino or ESP32.
 - First actuator model: stepper motor or servo.

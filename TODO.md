@@ -72,14 +72,14 @@ Goal: make robot execution state explicit and teachable.
 - [ ] Define which state is the initial state of a new simulation.
 - [ ] Define which states can transition to `Moving`.
 - [ ] Define which states can transition to `Waiting`.
-- [ ] Define which states can transition to `Homing`.
+- [x] Define which states can transition to `Homing`.
 - [ ] Define which states can transition to `Completed`.
 - [ ] Define which failures transition to `Faulted`.
 - [x] Add tests proving the first state values exist.
-- [ ] Add tests for valid state transitions.
-- [ ] Add tests for invalid state transitions.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Add tests for valid state transitions.
+- [x] Add tests for invalid state transitions.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 4. Domain Error Model
 
