@@ -1,0 +1,84 @@
+# Technical Decisions
+
+## Accepted Decisions
+
+### RobotStudio Is A Didactic Robotics Platform
+
+RobotStudio must not be treated as only a Cartesian robot simulator. The first supported robot is a generic three-axis Cartesian robot, but the architecture should allow future robot families such as articulated robots and drones.
+
+### First Robot Model
+
+The first robot model is a generic introductory Cartesian robot with X, Y, and Z axes. It is not modeled as a CNC machine, 3D printer, plotter, or pick-and-place machine yet.
+
+### Units
+
+The initial system uses millimeters as the standard internal distance unit. The initial motion vocabulary uses millimeters per second for velocity. Unit conversion is intentionally out of scope for the first version.
+
+### Home Position
+
+For the first Cartesian robot, `HOME` means position `(0, 0, 0)`.
+
+### Error Style
+
+The domain may throw explicit domain exceptions when an operation is invalid. Error messages should help students understand the invalid value and the expected valid range or state.
+
+CLI and future scripting layers should catch domain errors and present friendly messages.
+
+### Motion Planning
+
+The first motion planner is intentionally simple. It plans a linear movement, validates positions, estimates duration, and uses the lowest maximum velocity among involved axes.
+
+Advanced robotics physics is out of scope for now.
+
+Out of scope:
+
+- S-curve planning.
+- Jerk-limited motion.
+- PID control.
+- Inverse kinematics.
+- Collision detection.
+
+### Simulation
+
+The simulator must eventually model both position and robot state. Planned state names are technical and code-oriented:
+
+- `Idle`
+- `Moving`
+- `Homing`
+- `Waiting`
+- `Completed`
+- `Faulted`
+
+### Scripting
+
+The first scripting format is a simple educational DSL, not G-code.
+
+Initial target syntax:
+
+```txt
+MOVE X=10 Y=20 Z=5 SPEED=100
+WAIT 500
+HOME
+```
+
+G-code support is planned for a future course module and should eventually produce the same domain command types as the simple DSL.
+
+### UI And Visualization
+
+No UI should be added yet. Future 3D visualization should observe simulation output instead of defining business rules.
+
+Visual coordinate and camera decisions should remain outside the current domain model until the visual layer exists.
+
+### Hardware
+
+Hardware communication is not part of the first implementation. Future hardware work should live in `RobotStudio.Hardware` and must not leak into `RobotStudio.Domain`.
+
+Likely future targets include Arduino or ESP32 with educational actuators such as stepper motors or servos.
+
+## Open Decisions
+
+- Exact namespace split between general robotics concepts and Cartesian-specific concepts.
+- Whether DSL `MOVE` requires `SPEED` or uses a default speed.
+- Whether commands should carry optional source information, such as script line numbers, for teaching and debugging.
+- First real hardware target: Arduino or ESP32.
+- First actuator model: stepper motor or servo.
