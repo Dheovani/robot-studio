@@ -143,12 +143,12 @@ Goal: represent command sequences before building the simulator.
 - [x] Represent `HOME` as `HomeCommand`.
 - [x] Represent `WAIT` as `WaitCommand`.
 - [ ] Decide whether commands should carry an optional name or source line for teaching/debugging.
-- [ ] Add a command sequence type.
-- [ ] Validate that a command sequence cannot contain null commands.
+- [x] Add a command sequence type.
+- [x] Validate that a command sequence cannot contain null commands.
 - [ ] Validate that `WAIT` cannot have negative duration.
 - [ ] Validate that `MOVE` target position is checked against the robot profile before execution.
-- [ ] Add tests for valid command sequences.
-- [ ] Add tests for invalid command sequences.
+- [x] Add tests for valid command sequences.
+- [x] Add tests for invalid command sequences.
 - [ ] Run `dotnet build`.
 - [ ] Run `dotnet test`.
 

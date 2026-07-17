@@ -22,7 +22,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [ ] Invalid maximum velocity is rejected.
 - [ ] Invalid maximum acceleration is rejected after acceleration is added.
 - [ ] `WaitCommand` rejects negative duration.
-- [ ] Invalid command sequence is rejected after command sequences are added.
+- [x] Null command sequence input is rejected.
+- [x] Empty command sequence is rejected.
+- [x] Command sequence containing null command is rejected.
+- [x] Valid command sequence preserves command order.
 - [x] Invalid robot state transition throws a domain error after transition enforcement is added.
 
 ## `RobotStudio.Motion.Tests`
