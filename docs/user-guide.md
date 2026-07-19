@@ -58,9 +58,9 @@ Current simulation output includes:
 - success/failure flag;
 - failure exception when execution cannot continue.
 
-## Planned DSL
+## Current DSL
 
-The simple DSL is not implemented yet. The planned introductory syntax is:
+The simple DSL parser can convert text scripts into command sequences. Script file execution from the CLI is not implemented yet.
 
 ```txt
 HOME
@@ -68,12 +68,14 @@ MOVE X=10 Y=20 Z=5 SPEED=100
 WAIT 500
 ```
 
-Planned behavior:
+Current parser behavior:
 
 - `HOME` moves the first Cartesian robot to `(0, 0, 0)`;
 - `MOVE` moves to a Cartesian position;
 - `WAIT` advances simulated time without moving the robot;
-- parser and validation errors should be written for beginners.
+- `SPEED` requests a movement speed in millimeters per second;
+- physical axis limits still cap the effective movement speed;
+- parser errors include the script line number.
 
 ## Planned CLI Learning Flow
 

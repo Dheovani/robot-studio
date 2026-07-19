@@ -9,9 +9,17 @@ public sealed class MotionPlanner
     public MotionPlan PlanLinearMove(
         CartesianPosition start,
         CartesianPosition end,
-        RobotProfile robotProfile)
+        RobotProfile robotProfile,
+        double? requestedVelocityMillimetersPerSecond = null)
     {
         ArgumentNullException.ThrowIfNull(robotProfile);
+
+        if (requestedVelocityMillimetersPerSecond <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedVelocityMillimetersPerSecond),
+                "Requested movement velocity must be greater than zero.");
+        }
 
         robotProfile.ValidatePosition(start);
         robotProfile.ValidatePosition(end);
@@ -22,7 +30,11 @@ public sealed class MotionPlanner
             return new MotionPlan(start, end, Array.Empty<MotionSegment>());
         }
 
-        var velocityMillimetersPerSecond = GetLimitingVelocity(start, end, robotProfile);
+        var velocityMillimetersPerSecond = GetEffectiveVelocity(
+            start,
+            end,
+            robotProfile,
+            requestedVelocityMillimetersPerSecond);
         var duration = TimeSpan.FromSeconds(distanceMillimeters / velocityMillimetersPerSecond);
         var segment = new MotionSegment(
             start,
@@ -33,10 +45,11 @@ public sealed class MotionPlanner
         return new MotionPlan(start, end, new[] { segment });
     }
 
-    private static double GetLimitingVelocity(
+    private static double GetEffectiveVelocity(
         CartesianPosition start,
         CartesianPosition end,
-        RobotProfile robotProfile)
+        RobotProfile robotProfile,
+        double? requestedVelocityMillimetersPerSecond)
     {
         var involvedAxes = robotProfile.Axes
             .Where(axis => Math.Abs(end.GetCoordinate(axis.Id) - start.GetCoordinate(axis.Id)) > MovementToleranceMillimeters)
@@ -47,6 +60,10 @@ public sealed class MotionPlanner
             return 0;
         }
 
-        return involvedAxes.Min(axis => axis.MaximumVelocityMillimetersPerSecond);
+        var axisLimitedVelocity = involvedAxes.Min(axis => axis.MaximumVelocityMillimetersPerSecond);
+
+        return requestedVelocityMillimetersPerSecond.HasValue
+            ? Math.Min(axisLimitedVelocity, requestedVelocityMillimetersPerSecond.Value)
+            : axisLimitedVelocity;
     }
 }

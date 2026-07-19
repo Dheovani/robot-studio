@@ -42,6 +42,22 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenMoveHasRequestedVelocity_ShouldUseRequestedVelocityInDuration()
+    {
+        var simulator = new RobotSimulator();
+        var context = SimulationContext.Create(
+            CreateProfile(),
+            new CartesianPosition(X: 0, Y: 0, Z: 0));
+        var target = new CartesianPosition(X: 100, Y: 0, Z: 0);
+        var sequence = new RobotCommandSequence([new MoveToCommand(target, requestedVelocityMillimetersPerSecond: 50)]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(TimeSpan.FromSeconds(2), result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsWait_ShouldAdvanceTimeWithoutMoving()
     {
         var simulator = new RobotSimulator();

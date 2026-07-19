@@ -111,7 +111,8 @@ public sealed class RobotSimulator
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
             command.TargetPosition,
-            context.RobotProfile);
+            context.RobotProfile,
+            command.RequestedVelocityMillimetersPerSecond);
 
         var completedContext = movingContext with
         {

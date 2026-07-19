@@ -49,6 +49,36 @@ public sealed class MotionPlannerTests
     }
 
     [Fact]
+    public void PlanLinearMove_WhenRequestedVelocityIsLowerThanAxisLimit_ShouldUseRequestedVelocity()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanLinearMove(
+            new CartesianPosition(X: 0, Y: 0, Z: 0),
+            new CartesianPosition(X: 50, Y: 0, Z: 0),
+            profile,
+            requestedVelocityMillimetersPerSecond: 25);
+
+        Assert.Equal(25, plan.Segments[0].VelocityMillimetersPerSecond);
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenRequestedVelocityIsHigherThanAxisLimit_ShouldUseAxisLimit()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanLinearMove(
+            new CartesianPosition(X: 0, Y: 0, Z: 0),
+            new CartesianPosition(X: 50, Y: 0, Z: 0),
+            profile,
+            requestedVelocityMillimetersPerSecond: 999);
+
+        Assert.Equal(120, plan.Segments[0].VelocityMillimetersPerSecond);
+    }
+
+    [Fact]
     public void PlanLinearMove_ReturnsStationaryPlan_WhenStartEqualsEnd()
     {
         var planner = new MotionPlanner();

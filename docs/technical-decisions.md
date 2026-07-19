@@ -30,6 +30,8 @@ Domain exceptions live under the `RobotStudio.Domain.Exceptions` namespace.
 
 The first motion planner is intentionally simple. It plans a linear movement, validates positions, estimates duration, and uses the lowest maximum velocity among involved axes.
 
+When a movement command provides a requested speed, the planner uses the lower value between the requested speed and the involved axis limits. This keeps scripts expressive without allowing them to bypass physical constraints.
+
 Advanced robotics physics is out of scope for now.
 
 Out of scope:

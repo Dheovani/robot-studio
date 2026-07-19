@@ -38,6 +38,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Planner rejects target position outside limits.
 - [x] Non-zero displacement has positive duration.
 - [x] Start position equal to end position returns a stationary plan.
+- [x] Requested velocity below the axis limit is used.
+- [x] Requested velocity above the axis limit is capped by the axis limit.
 
 ### Required Next Coverage
 
@@ -54,6 +56,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] New simulation context starts in `Idle`.
 - [x] `HOME` moves the robot to origin and ends in `Completed`.
 - [x] `MOVE` updates final position and ends in `Completed`.
+- [x] `MOVE` with requested velocity uses that velocity for duration.
 - [x] `WAIT` advances simulated time without moving.
 - [x] A sequence containing `HOME`, `MOVE`, and `WAIT` executes in order.
 - [x] Failing command sequence ends in `Faulted`.
@@ -65,17 +68,25 @@ This document maps expected automated tests to project behavior. It should be up
 - [ ] Faulted simulations preserve the last valid position.
 - [ ] Zero-distance `MOVE` is simulated predictably.
 
-## Future `RobotStudio.Scripting.Tests`
+## `RobotStudio.Scripting.Tests`
 
-- [ ] Parse `HOME`.
-- [ ] Parse `WAIT 500`.
-- [ ] Parse `MOVE X=10 Y=20 Z=5`.
-- [ ] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
-- [ ] Unknown command reports a clear parser error.
-- [ ] Missing coordinate reports a clear parser error.
-- [ ] Invalid number reports a clear parser error.
-- [ ] Invalid wait duration reports a clear parser error.
-- [ ] Parser errors preserve script line number.
+### Current Coverage
+
+- [x] Parse `HOME`.
+- [x] Parse `WAIT 500`.
+- [x] Parse `MOVE X=10 Y=20 Z=5`.
+- [x] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
+- [x] Unknown command reports a clear parser error.
+- [x] Missing coordinate reports a clear parser error.
+- [x] Invalid number reports a clear parser error.
+- [x] Invalid wait duration reports a clear parser error.
+- [x] Parser errors preserve script line number.
+
+### Required Next Coverage
+
+- [ ] Duplicate MOVE argument reports a clear parser error.
+- [ ] Unknown MOVE argument reports a clear parser error.
+- [ ] HOME with arguments reports a clear parser error.
 
 ## CLI Verification
 

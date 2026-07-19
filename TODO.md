@@ -126,6 +126,8 @@ Goal: keep movement planning simple, deterministic, and easy to explain.
 - [x] Return zero duration for zero-distance movement.
 - [x] Return no segments for zero-distance movement.
 - [x] Return positive duration for non-zero movement.
+- [x] Respect requested command speed when it is below axis limits.
+- [x] Cap requested command speed when it is above axis limits.
 - [ ] Expose total movement distance in `MotionPlan`.
 - [ ] Expose involved axes in `MotionSegment` or equivalent type.
 - [ ] Add tests for single-axis movement.
@@ -190,24 +192,25 @@ HOME
 ```
 
 - [ ] Add project reference from `RobotStudio.Scripting` to `RobotStudio.Domain`.
-- [ ] Decide whether `SPEED` is required or optional in `MOVE`.
-- [ ] Decide default speed if `SPEED` is optional.
-- [ ] Parse `HOME`.
-- [ ] Parse `WAIT 500`.
-- [ ] Parse `MOVE X=10 Y=20 Z=5`.
-- [ ] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
-- [ ] Convert parsed `HOME` into `HomeCommand`.
-- [ ] Convert parsed `WAIT` into `WaitCommand`.
-- [ ] Convert parsed `MOVE` into `MoveToCommand`.
-- [ ] Report unknown command errors clearly.
-- [ ] Report missing coordinate errors clearly.
-- [ ] Report invalid number errors clearly.
-- [ ] Report invalid wait duration errors clearly.
-- [ ] Preserve script line number in parser errors.
-- [ ] Add parser tests for valid scripts.
-- [ ] Add parser tests for invalid scripts.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Add project reference from `RobotStudio.Scripting` to `RobotStudio.Domain`.
+- [x] Decide whether `SPEED` is required or optional in `MOVE`.
+- [x] Decide default speed if `SPEED` is optional.
+- [x] Parse `HOME`.
+- [x] Parse `WAIT 500`.
+- [x] Parse `MOVE X=10 Y=20 Z=5`.
+- [x] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
+- [x] Convert parsed `HOME` into `HomeCommand`.
+- [x] Convert parsed `WAIT` into `WaitCommand`.
+- [x] Convert parsed `MOVE` into `MoveToCommand`.
+- [x] Report unknown command errors clearly.
+- [x] Report missing coordinate errors clearly.
+- [x] Report invalid number errors clearly.
+- [x] Report invalid wait duration errors clearly.
+- [x] Preserve script line number in parser errors.
+- [x] Add parser tests for valid scripts.
+- [x] Add parser tests for invalid scripts.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 10. CLI Learning Flow V1
 
