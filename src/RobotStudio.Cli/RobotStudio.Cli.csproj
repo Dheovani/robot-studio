@@ -2,7 +2,7 @@
 
   <ItemGroup>
     <ProjectReference Include="..\RobotStudio.Domain\RobotStudio.Domain.csproj" />
-    <ProjectReference Include="..\RobotStudio.Motion\RobotStudio.Motion.csproj" />
+    <ProjectReference Include="..\RobotStudio.Simulation\RobotStudio.Simulation.csproj" />
   </ItemGroup>
 
   <PropertyGroup>

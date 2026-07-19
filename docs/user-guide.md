@@ -29,15 +29,16 @@ Run from the repository root:
 dotnet run --project src/RobotStudio.Cli
 ```
 
-The current CLI creates a generic Cartesian robot profile, creates a start position, creates a target position, generates a linear motion plan, and prints the result.
+The current CLI creates a generic Cartesian robot profile, creates a command sequence, executes it through the simulator, and prints the result.
 
 Current output includes:
 
-- start position;
-- end position;
-- number of motion segments;
-- total estimated duration;
-- segment velocity and duration.
+- robot profile limits;
+- command sequence summary;
+- simulation timeline;
+- final robot state;
+- final robot position;
+- total simulated duration.
 
 ## Current Simulation Capabilities
 
@@ -78,13 +79,9 @@ Planned behavior:
 
 The CLI should later support:
 
-- running a built-in Cartesian example;
 - printing the built-in example script;
 - validating a script file;
-- simulating a script file;
-- printing final robot state;
-- printing final robot position;
-- printing total simulated duration.
+- simulating a script file.
 
 ## Not Available Yet
 

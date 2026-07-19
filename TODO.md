@@ -214,21 +214,21 @@ HOME
 Goal: provide repeatable examples students can run before writing scripts manually.
 
 - [x] Print one hard-coded motion plan example.
-- [ ] Add CLI option to run the built-in Cartesian movement example.
+- [x] Add CLI option to run the built-in Cartesian movement example.
 - [ ] Add CLI option to print the built-in example script.
 - [ ] Add CLI option to validate a script file.
 - [ ] Add CLI option to simulate a script file.
-- [ ] Print robot profile limits in example output.
-- [ ] Print command sequence summary before simulation.
-- [ ] Print final robot state after simulation.
-- [ ] Print final robot position after simulation.
-- [ ] Print total simulated duration.
+- [x] Print robot profile limits in example output.
+- [x] Print command sequence summary before simulation.
+- [x] Print final robot state after simulation.
+- [x] Print final robot position after simulation.
+- [x] Print total simulated duration.
 - [ ] Convert domain exceptions into friendly CLI messages.
-- [ ] Keep CLI free from business logic.
-- [ ] Add CLI README examples.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
-- [ ] Run `dotnet run --project src/RobotStudio.Cli`.
+- [x] Keep CLI free from business logic.
+- [x] Add CLI README examples.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
+- [x] Run `dotnet run --project src/RobotStudio.Cli`.
 
 ## 11. Hardware Boundary
 

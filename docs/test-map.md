@@ -89,8 +89,10 @@ dotnet run --project src/RobotStudio.Cli
 
 Expected current behavior:
 
-- prints the RobotStudio motion plan title;
-- prints start and end Cartesian positions;
-- prints segment count;
-- prints total duration;
-- prints linear segment velocity and duration.
+- prints the RobotStudio CLI title;
+- prints robot profile limits;
+- prints command sequence summary;
+- prints simulation timeline;
+- prints final state;
+- prints final position;
+- prints total simulated duration.

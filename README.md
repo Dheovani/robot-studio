@@ -10,7 +10,7 @@ The current goal is to build a clean, testable foundation before adding hardware
 - Axis limits and Cartesian positions are validated in the domain layer.
 - The first linear motion planner can estimate a simple movement plan.
 - The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
-- The CLI runs a hard-coded example and prints a readable motion summary.
+- The CLI runs a hard-coded command sequence and prints a readable simulation timeline.
 - xUnit tests cover the first domain and motion planner behaviors.
 - Scripting, hardware communication, and UI are planned but not implemented yet.
 
@@ -21,7 +21,7 @@ The current goal is to build a clean, testable foundation before adding hardware
 - `src/RobotStudio.Simulation`: deterministic command execution and robot state simulation.
 - `src/RobotStudio.Hardware`: future serial communication and hardware adapters.
 - `src/RobotStudio.Scripting`: future simple DSL parser; G-code support is planned for later.
-- `src/RobotStudio.Cli`: terminal entry point for examples and early learning workflows.
+- `src/RobotStudio.Cli`: terminal entry point for command sequence examples and early learning workflows.
 - `tests/RobotStudio.Domain.Tests`: xUnit tests for domain behavior.
 - `tests/RobotStudio.Motion.Tests`: xUnit tests for motion planning behavior.
 - `docs`: product, architecture, use case, testing, and user documentation.
