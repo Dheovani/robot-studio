@@ -38,11 +38,13 @@ Actor: student.
 
 Goal: execute commands such as `HOME`, `MOVE`, `WAIT`, and another `MOVE` in order.
 
+Current status: implemented for a simple deterministic simulation flow.
+
 Expected result:
 
 - commands execute deterministically;
 - the simulator records position and state changes;
-- invalid commands fail with educational messages.
+- invalid commands produce a `Faulted` simulation result.
 
 ### Simulate A Simple DSL Script
 

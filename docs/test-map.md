@@ -13,6 +13,13 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Active states can transition to `Completed`.
 - [x] Invalid state transitions return `false`.
 - [x] Invalid enforced state transitions throw `InvalidRobotStateTransitionException`.
+- [x] Command validator accepts `HOME`.
+- [x] Command validator accepts `WAIT`.
+- [x] Command validator validates `MOVE` target position.
+- [x] Null command sequence input is rejected.
+- [x] Empty command sequence is rejected.
+- [x] Command sequence containing null command is rejected.
+- [x] Valid command sequence preserves command order.
 
 ### Required Next Coverage
 
@@ -22,11 +29,6 @@ This document maps expected automated tests to project behavior. It should be up
 - [ ] Invalid maximum velocity is rejected.
 - [ ] Invalid maximum acceleration is rejected after acceleration is added.
 - [ ] `WaitCommand` rejects negative duration.
-- [x] Null command sequence input is rejected.
-- [x] Empty command sequence is rejected.
-- [x] Command sequence containing null command is rejected.
-- [x] Valid command sequence preserves command order.
-- [x] Invalid robot state transition throws a domain error after transition enforcement is added.
 
 ## `RobotStudio.Motion.Tests`
 
@@ -45,17 +47,23 @@ This document maps expected automated tests to project behavior. It should be up
 - [ ] Motion plan exposes total distance after distance is added.
 - [ ] Motion segment exposes involved axes after involved axes are added.
 
-## Future `RobotStudio.Simulation.Tests`
+## `RobotStudio.Simulation.Tests`
 
-- [ ] New simulation starts in `Idle`.
-- [ ] `HOME` transitions through `Homing`.
-- [ ] `MOVE` transitions through `Moving`.
-- [ ] `WAIT` transitions through `Waiting`.
-- [ ] Successful sequence ends in `Completed`.
-- [ ] Failing sequence ends in `Faulted`.
-- [ ] Command sequence updates final position.
-- [ ] Command sequence updates simulated time.
-- [ ] Timeline records state changes in order.
+### Current Coverage
+
+- [x] New simulation context starts in `Idle`.
+- [x] `HOME` moves the robot to origin and ends in `Completed`.
+- [x] `MOVE` updates final position and ends in `Completed`.
+- [x] `WAIT` advances simulated time without moving.
+- [x] A sequence containing `HOME`, `MOVE`, and `WAIT` executes in order.
+- [x] Failing command sequence ends in `Faulted`.
+
+### Required Next Coverage
+
+- [ ] Timeline records exact state transitions in order.
+- [ ] Invalid initial simulation context is rejected.
+- [ ] Faulted simulations preserve the last valid position.
+- [ ] Zero-distance `MOVE` is simulated predictably.
 
 ## Future `RobotStudio.Scripting.Tests`
 

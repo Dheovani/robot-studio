@@ -9,15 +9,16 @@ The current goal is to build a clean, testable foundation before adding hardware
 - The first domain model exists for a generic Cartesian robot.
 - Axis limits and Cartesian positions are validated in the domain layer.
 - The first linear motion planner can estimate a simple movement plan.
+- The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
 - The CLI runs a hard-coded example and prints a readable motion summary.
 - xUnit tests cover the first domain and motion planner behaviors.
-- Simulation, scripting, hardware communication, and UI are planned but not implemented yet.
+- Scripting, hardware communication, and UI are planned but not implemented yet.
 
 ## Project Structure
 
 - `src/RobotStudio.Domain`: pure domain model for robot concepts, Cartesian axes, positions, robot profiles, commands, and domain errors.
 - `src/RobotStudio.Motion`: simple motion planning based on domain types.
-- `src/RobotStudio.Simulation`: future deterministic command execution and robot state simulation.
+- `src/RobotStudio.Simulation`: deterministic command execution and robot state simulation.
 - `src/RobotStudio.Hardware`: future serial communication and hardware adapters.
 - `src/RobotStudio.Scripting`: future simple DSL parser; G-code support is planned for later.
 - `src/RobotStudio.Cli`: terminal entry point for examples and early learning workflows.
@@ -58,6 +59,5 @@ dotnet run --project src/RobotStudio.Cli
 - 3D visualization.
 - Serial communication.
 - Arduino or ESP32 integration.
-- Full simulation engine.
 - DSL parser.
 - G-code parser.

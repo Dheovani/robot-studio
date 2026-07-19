@@ -39,6 +39,24 @@ Current output includes:
 - total estimated duration;
 - segment velocity and duration.
 
+## Current Simulation Capabilities
+
+The simulation library can already execute command sequences created in code.
+
+Supported commands:
+
+- `HomeCommand`
+- `MoveToCommand`
+- `WaitCommand`
+
+Current simulation output includes:
+
+- initial context;
+- final context;
+- timeline steps;
+- success/failure flag;
+- failure exception when execution cannot continue.
+
 ## Planned DSL
 
 The simple DSL is not implemented yet. The planned introductory syntax is:

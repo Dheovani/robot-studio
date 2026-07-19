@@ -145,8 +145,8 @@ Goal: represent command sequences before building the simulator.
 - [ ] Decide whether commands should carry an optional name or source line for teaching/debugging.
 - [x] Add a command sequence type.
 - [x] Validate that a command sequence cannot contain null commands.
-- [ ] Validate that `WAIT` cannot have negative duration.
-- [ ] Validate that `MOVE` target position is checked against the robot profile before execution.
+- [x] Validate that `WAIT` cannot have negative duration.
+- [x] Validate that `MOVE` target position is checked against the robot profile before execution.
 - [x] Add tests for valid command sequences.
 - [x] Add tests for invalid command sequences.
 - [ ] Run `dotnet build`.
@@ -156,26 +156,26 @@ Goal: represent command sequences before building the simulator.
 
 Goal: execute commands deterministically without hardware or UI.
 
-- [ ] Add project reference from `RobotStudio.Simulation` to `RobotStudio.Domain`.
-- [ ] Add project reference from `RobotStudio.Simulation` to `RobotStudio.Motion`.
-- [ ] Create a simulation context containing robot profile, current position, current state, and current time.
-- [ ] Create a simulator service that receives a command sequence.
-- [ ] Execute `HOME` by moving to `(0, 0, 0)`.
-- [ ] Execute `MOVE` by using `MotionPlanner`.
-- [ ] Execute `WAIT` by advancing simulated time.
-- [ ] Update state to `Homing` while homing.
-- [ ] Update state to `Moving` while moving.
-- [ ] Update state to `Waiting` while waiting.
-- [ ] Update state to `Completed` after all commands finish.
-- [ ] Update state to `Faulted` when a command fails.
-- [ ] Record a timeline of simulation steps.
-- [ ] Add tests for `HOME`.
-- [ ] Add tests for `MOVE`.
-- [ ] Add tests for `WAIT`.
-- [ ] Add tests for a sequence containing `HOME`, `MOVE`, `WAIT`, and `MOVE`.
-- [ ] Add tests for a failing sequence.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Add project reference from `RobotStudio.Simulation` to `RobotStudio.Domain`.
+- [x] Add project reference from `RobotStudio.Simulation` to `RobotStudio.Motion`.
+- [x] Create a simulation context containing robot profile, current position, current state, and current time.
+- [x] Create a simulator service that receives a command sequence.
+- [x] Execute `HOME` by moving to `(0, 0, 0)`.
+- [x] Execute `MOVE` by using `MotionPlanner`.
+- [x] Execute `WAIT` by advancing simulated time.
+- [x] Update state to `Homing` while homing.
+- [x] Update state to `Moving` while moving.
+- [x] Update state to `Waiting` while waiting.
+- [x] Update state to `Completed` after each successful command.
+- [x] Update state to `Faulted` when a command fails.
+- [x] Record a timeline of simulation steps.
+- [x] Add tests for `HOME`.
+- [x] Add tests for `MOVE`.
+- [x] Add tests for `WAIT`.
+- [x] Add tests for a sequence containing `HOME`, `MOVE`, and `WAIT`.
+- [x] Add tests for a failing sequence.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 9. Simple DSL V1
 
