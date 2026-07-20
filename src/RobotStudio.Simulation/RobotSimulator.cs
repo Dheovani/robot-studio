@@ -44,7 +44,7 @@ public sealed class RobotSimulator
             catch (InvalidOperationException exception)
             {
                 currentContext = currentContext with { State = RobotState.Faulted };
-                timeline.Add(CreateStep(currentContext, exception.Message, commandIndex, GetCommandName(command)));
+                timeline.Add(CreateStep(currentContext, exception.Message, commandIndex, GetCommandName(command), command.Source));
 
                 return new SimulationResult(
                     initialContext,
@@ -71,7 +71,7 @@ public sealed class RobotSimulator
 
         return command switch
         {
-            HomeCommand => ExecuteHome(context, commandIndex, timeline),
+            HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
             MoveToCommand moveToCommand => ExecuteMove(context, moveToCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
@@ -80,12 +80,13 @@ public sealed class RobotSimulator
 
     private SimulationContext ExecuteHome(
         SimulationContext context,
+        HomeCommand command,
         int commandIndex,
         List<SimulationStep> timeline)
     {
         var targetPosition = new CartesianPosition(X: 0, Y: 0, Z: 0);
         var movingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(movingContext, "Home command started.", commandIndex, nameof(HomeCommand)));
+        timeline.Add(CreateStep(movingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
 
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -99,7 +100,7 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand)));
+        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
 
         return completedContext;
     }
@@ -111,7 +112,7 @@ public sealed class RobotSimulator
         List<SimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Move command started.", commandIndex, nameof(MoveToCommand)));
+        timeline.Add(CreateStep(movingContext, "Move command started.", commandIndex, nameof(MoveToCommand), command.Source));
 
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -126,7 +127,7 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Move command completed.", commandIndex, nameof(MoveToCommand)));
+        timeline.Add(CreateStep(completedContext, "Move command completed.", commandIndex, nameof(MoveToCommand), command.Source));
 
         return completedContext;
     }
@@ -138,7 +139,7 @@ public sealed class RobotSimulator
         List<SimulationStep> timeline)
     {
         var waitingContext = TransitionTo(context, RobotState.Waiting);
-        timeline.Add(CreateStep(waitingContext, "Wait command started.", commandIndex, nameof(WaitCommand)));
+        timeline.Add(CreateStep(waitingContext, "Wait command started.", commandIndex, nameof(WaitCommand), command.Source));
 
         var completedContext = waitingContext with
         {
@@ -146,7 +147,7 @@ public sealed class RobotSimulator
             ElapsedTime = waitingContext.ElapsedTime + command.Duration
         };
 
-        timeline.Add(CreateStep(completedContext, "Wait command completed.", commandIndex, nameof(WaitCommand)));
+        timeline.Add(CreateStep(completedContext, "Wait command completed.", commandIndex, nameof(WaitCommand), command.Source));
 
         return completedContext;
     }
@@ -164,14 +165,16 @@ public sealed class RobotSimulator
         SimulationContext context,
         string description,
         int? commandIndex = null,
-        string? commandName = null) =>
+        string? commandName = null,
+        RobotCommandSource? commandSource = null) =>
         new(
             context.ElapsedTime,
             context.State,
             context.CurrentPosition,
             description,
             commandIndex,
-            commandName);
+            commandName,
+            commandSource);
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

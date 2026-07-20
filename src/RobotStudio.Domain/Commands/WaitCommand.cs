@@ -4,7 +4,10 @@ namespace RobotStudio.Domain.Commands;
 
 public sealed record WaitCommand : RobotCommand
 {
-    public WaitCommand(TimeSpan duration)
+    public WaitCommand(
+        TimeSpan duration,
+        RobotCommandSource? source = null)
+        : base(source)
     {
         if (duration < TimeSpan.Zero)
         {

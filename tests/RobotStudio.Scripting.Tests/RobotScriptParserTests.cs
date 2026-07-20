@@ -17,15 +17,21 @@ public sealed class RobotScriptParserTests
             """);
 
         Assert.IsType<HomeCommand>(sequence.Commands[0]);
+        Assert.Equal(1, sequence.Commands[0].Source?.LineNumber);
+        Assert.Equal("HOME", sequence.Commands[0].Source?.Text);
 
         var move = Assert.IsType<MoveToCommand>(sequence.Commands[1]);
         Assert.Equal(10, move.TargetPosition.X);
         Assert.Equal(20, move.TargetPosition.Y);
         Assert.Equal(5, move.TargetPosition.Z);
         Assert.Equal(100, move.RequestedVelocityMillimetersPerSecond);
+        Assert.Equal(2, move.Source?.LineNumber);
+        Assert.Equal("MOVE X=10 Y=20 Z=5 SPEED=100", move.Source?.Text);
 
         var wait = Assert.IsType<WaitCommand>(sequence.Commands[2]);
         Assert.Equal(TimeSpan.FromMilliseconds(500), wait.Duration);
+        Assert.Equal(3, wait.Source?.LineNumber);
+        Assert.Equal("WAIT 500", wait.Source?.Text);
     }
 
     [Fact]
@@ -89,5 +95,40 @@ public sealed class RobotScriptParserTests
         var parser = new RobotScriptParser();
 
         Assert.Throws<RobotStudio.Domain.Exceptions.InvalidRobotCommandException>(() => parser.Parse(""));
+    }
+
+    [Fact]
+    public void Parse_WhenMoveHasDuplicateArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("MOVE X=10 X=20 Y=20 Z=5"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Duplicate MOVE argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenMoveHasUnknownArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("MOVE X=10 Y=20 Z=5 COLOR=red"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Unknown MOVE argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenHomeHasArguments_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() => parser.Parse("HOME X=0"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("HOME does not accept arguments", exception.Message);
     }
 }

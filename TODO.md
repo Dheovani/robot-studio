@@ -150,7 +150,8 @@ Goal: represent command sequences before building the simulator.
 - [x] Represent `MOVE` as `MoveToCommand`.
 - [x] Represent `HOME` as `HomeCommand`.
 - [x] Represent `WAIT` as `WaitCommand`.
-- [ ] Decide whether commands should carry an optional name or source line for teaching/debugging.
+- [x] Decide whether commands should carry an optional name or source line for teaching/debugging.
+- [x] Add optional source metadata to robot commands.
 - [x] Add a command sequence type.
 - [x] Validate that a command sequence cannot contain null commands.
 - [x] Validate that `WAIT` cannot have negative duration.
@@ -198,6 +199,8 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests proving invalid initial simulation context is rejected.
 - [x] Add tests proving faulted simulations preserve the last valid position.
 - [x] Add tests proving zero-distance `MOVE` is simulated predictably.
+- [x] Preserve command source metadata in timeline steps.
+- [x] Preserve command source metadata in timeline samples.
 - [x] Add timeline interpolation for Cartesian motion.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
@@ -233,6 +236,11 @@ HOME
 - [x] Report invalid number errors clearly.
 - [x] Report invalid wait duration errors clearly.
 - [x] Preserve script line number in parser errors.
+- [x] Preserve script line number in parsed command metadata.
+- [x] Preserve script text in parsed command metadata.
+- [x] Report duplicate `MOVE` argument errors clearly.
+- [x] Report unknown `MOVE` argument errors clearly.
+- [x] Report `HOME` argument errors clearly.
 - [x] Add parser tests for valid scripts.
 - [x] Add parser tests for invalid scripts.
 - [x] Run `dotnet build`.
@@ -304,11 +312,11 @@ Goal: finish the deterministic simulation contract before starting visual simula
 - [x] Add tests proving invalid initial simulation context is rejected.
 - [x] Add tests proving faulted simulations preserve the last valid position.
 - [x] Add tests proving zero-distance `MOVE` is simulated predictably.
-- [ ] Decide whether commands should carry optional source metadata for teaching and debugging.
-- [ ] Preserve command source metadata from DSL parsing into command execution.
-- [ ] Strengthen DSL validation for duplicate `MOVE` arguments.
-- [ ] Strengthen DSL validation for unknown `MOVE` arguments.
-- [ ] Strengthen DSL validation for `HOME` arguments.
+- [x] Decide whether commands should carry optional source metadata for teaching and debugging.
+- [x] Preserve command source metadata from DSL parsing into command execution.
+- [x] Strengthen DSL validation for duplicate `MOVE` arguments.
+- [x] Strengthen DSL validation for unknown `MOVE` arguments.
+- [x] Strengthen DSL validation for `HOME` arguments.
 - [ ] Define a visual-state contract consumed by future UI layers.
 - [ ] Define how Cartesian simulation state maps to visual pose data.
 - [ ] Keep visual pose mapping outside `RobotStudio.Domain`.

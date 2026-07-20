@@ -144,6 +144,27 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenCommandHasSource_ShouldRecordCommandSourceInTimeline()
+    {
+        var simulator = new RobotSimulator();
+        var context = SimulationContext.Create(
+            CreateProfile(),
+            new CartesianPosition(X: 0, Y: 0, Z: 0));
+        var source = new RobotCommandSource(3, "MOVE X=100 Y=0 Z=0");
+        var sequence = new RobotCommandSequence(
+        [
+            new MoveToCommand(
+                new CartesianPosition(X: 100, Y: 0, Z: 0),
+                source: source)
+        ]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.Equal(source, result.Timeline[1].CommandSource);
+        Assert.Equal(source, result.Timeline[2].CommandSource);
+    }
+
+    [Fact]
     public void Execute_WhenCommandFails_ShouldReturnFaultedResult()
     {
         var simulator = new RobotSimulator();

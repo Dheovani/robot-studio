@@ -38,6 +38,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Empty command sequence is rejected.
 - [x] Command sequence containing null command is rejected.
 - [x] Valid command sequence preserves command order.
+- [x] Command source metadata validates positive line numbers.
+- [x] Command source metadata rejects blank source text.
 
 ### Required Next Coverage
 
@@ -83,6 +85,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline command steps preserve command name.
 - [x] Timeline simulator steps have no command source.
 - [x] Failing command timeline step preserves command source.
+- [x] Timeline command steps preserve command source metadata.
+- [x] Timeline sampling preserves command source metadata.
 - [x] Timeline sampling before the first step returns the initial position.
 - [x] Timeline sampling during movement returns an interpolated position.
 - [x] Timeline sampling during wait keeps the same position.
@@ -105,12 +109,13 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Invalid number reports a clear parser error.
 - [x] Invalid wait duration reports a clear parser error.
 - [x] Parser errors preserve script line number.
+- [x] Parsed commands preserve script line number metadata.
+- [x] Parsed commands preserve script text metadata.
+- [x] Duplicate MOVE argument reports a clear parser error.
+- [x] Unknown MOVE argument reports a clear parser error.
+- [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage
-
-- [ ] Duplicate MOVE argument reports a clear parser error.
-- [ ] Unknown MOVE argument reports a clear parser error.
-- [ ] HOME with arguments reports a clear parser error.
 
 ## CLI Verification
 

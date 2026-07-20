@@ -43,7 +43,8 @@ public sealed class SimulationTimelineSampler
             previousStep.State,
             position,
             previousStep.CommandIndex,
-            previousStep.CommandName);
+            previousStep.CommandName,
+            previousStep.CommandSource);
     }
 
     private static int? FindFirstStepAfter(
@@ -104,5 +105,6 @@ public sealed class SimulationTimelineSampler
             step.State,
             step.Position,
             step.CommandIndex,
-            step.CommandName);
+            step.CommandName,
+            step.CommandSource);
 }

@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Commands;
 
 namespace RobotStudio.Simulation;
 
@@ -8,4 +9,5 @@ public sealed record SimulationStep(
     CartesianPosition Position,
     string Description,
     int? CommandIndex,
-    string? CommandName);
+    string? CommandName,
+    RobotCommandSource? CommandSource);

@@ -88,6 +88,8 @@ Simulation sampling is handled by `SimulationTimelineSampler`. Sampling clamps t
 
 Zero-distance `MOVE` commands still produce normal command timeline steps and complete without advancing simulated time. If a command fails, the simulator keeps the last valid position and records the failure at that position.
 
+Robot commands may carry optional source metadata through `RobotCommandSource`. The simple DSL uses this metadata to preserve the source line number and original command text. Simulation timeline steps and timeline samples propagate this metadata so CLI output and future visual tools can explain where a command came from.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

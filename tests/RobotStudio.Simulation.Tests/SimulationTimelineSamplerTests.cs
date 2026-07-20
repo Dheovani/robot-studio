@@ -35,6 +35,18 @@ public sealed class SimulationTimelineSamplerTests
     }
 
     [Fact]
+    public void SampleAt_WhenInterpolatingCommandWithSource_ShouldPreserveCommandSource()
+    {
+        var source = new RobotCommandSource(2, "MOVE X=100 Y=0 Z=0 SPEED=50");
+        var result = CreateMoveSimulation(source);
+        var sampler = new SimulationTimelineSampler();
+
+        var sample = sampler.SampleAt(result, TimeSpan.FromSeconds(1));
+
+        Assert.Equal(source, sample.CommandSource);
+    }
+
+    [Fact]
     public void SampleAt_WhenTimeIsDuringWait_ShouldKeepPosition()
     {
         var result = CreateMoveAndWaitSimulation();
@@ -75,7 +87,7 @@ public sealed class SimulationTimelineSamplerTests
         Assert.Equal(nameof(MoveToCommand), sample.CommandName);
     }
 
-    private static SimulationResult CreateMoveSimulation()
+    private static SimulationResult CreateMoveSimulation(RobotCommandSource? source = null)
     {
         var simulator = new RobotSimulator();
         var context = SimulationContext.Create(
@@ -85,7 +97,8 @@ public sealed class SimulationTimelineSamplerTests
         [
             new MoveToCommand(
                 new CartesianPosition(X: 100, Y: 0, Z: 0),
-                requestedVelocityMillimetersPerSecond: 50)
+                requestedVelocityMillimetersPerSecond: 50,
+                source: source)
         ]);
 
         return simulator.Execute(context, sequence);

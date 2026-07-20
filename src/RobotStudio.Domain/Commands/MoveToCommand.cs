@@ -6,7 +6,9 @@ public sealed record MoveToCommand : RobotCommand
 {
     public MoveToCommand(
         CartesianPosition targetPosition,
-        double? requestedVelocityMillimetersPerSecond = null)
+        double? requestedVelocityMillimetersPerSecond = null,
+        RobotCommandSource? source = null)
+        : base(source)
     {
         if (requestedVelocityMillimetersPerSecond <= 0)
         {

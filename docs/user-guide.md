@@ -54,7 +54,7 @@ Current output includes:
 - robot profile limits;
 - axis velocity and acceleration limits;
 - command sequence summary;
-- simulation timeline;
+- simulation timeline with command source line numbers;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -74,6 +74,7 @@ Current simulation output includes:
 - initial context;
 - final context;
 - timeline steps;
+- command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.
 

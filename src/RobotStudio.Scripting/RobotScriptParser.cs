@@ -58,7 +58,7 @@ public sealed class RobotScriptParser
             throw new ScriptParseException(lineNumber, line, "HOME does not accept arguments.");
         }
 
-        return new HomeCommand();
+        return new HomeCommand(CreateSource(lineNumber, line));
     }
 
     private static WaitCommand ParseWait(
@@ -77,7 +77,9 @@ public sealed class RobotScriptParser
             throw new ScriptParseException(lineNumber, line, "WAIT duration cannot be negative.");
         }
 
-        return new WaitCommand(TimeSpan.FromMilliseconds(durationMilliseconds));
+        return new WaitCommand(
+            TimeSpan.FromMilliseconds(durationMilliseconds),
+            CreateSource(lineNumber, line));
     }
 
     private static MoveToCommand ParseMove(
@@ -97,8 +99,14 @@ public sealed class RobotScriptParser
 
         return new MoveToCommand(
             new CartesianPosition(x, y, z),
-            requestedVelocity);
+            requestedVelocity,
+            CreateSource(lineNumber, line));
     }
+
+    private static RobotCommandSource CreateSource(
+        int lineNumber,
+        string line) =>
+        new(lineNumber, line);
 
     private static Dictionary<string, string> ParseKeyValueArguments(
         int lineNumber,

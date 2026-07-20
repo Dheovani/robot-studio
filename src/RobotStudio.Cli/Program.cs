@@ -184,7 +184,11 @@ static string FormatCommandSource(SimulationStep step)
         return "simulation";
     }
 
-    return $"command {step.CommandIndex.Value + 1}: {step.CommandName}";
+    var source = step.CommandSource is null
+        ? string.Empty
+        : $" line {step.CommandSource.LineNumber}";
+
+    return $"command {step.CommandIndex.Value + 1}: {step.CommandName}{source}";
 }
 
 static void PrintFinalResult(SimulationResult result)
