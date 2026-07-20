@@ -1,3 +1,4 @@
+using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Domain.Commands;

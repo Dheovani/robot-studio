@@ -8,6 +8,10 @@ RobotStudio must not be treated as only a Cartesian robot simulator. The first s
 
 The domain exposes small general contracts for robot positions and profiles. Concrete robot families should implement these contracts instead of forcing every robot into Cartesian assumptions.
 
+General robotics concepts stay in `RobotStudio.Domain`. This includes robot state, state transitions, command abstractions, command sequences, source metadata, general position/profile contracts, and domain exceptions.
+
+Cartesian-specific concepts stay in `RobotStudio.Domain.Cartesian`. This includes `Axis`, `AxisId`, `CartesianPosition`, and the current `RobotProfile`. The `RobotProfile` name remains temporarily compatible with the first implementation, but its namespace now makes clear that it represents the introductory Cartesian model.
+
 ### First Robot Model
 
 The first robot model is a generic introductory Cartesian robot with X, Y, and Z axes. It is not modeled as a CNC machine, 3D printer, plotter, or pick-and-place machine yet.
@@ -122,7 +126,6 @@ Likely future targets include Arduino or ESP32 with educational actuators such a
 
 ## Open Decisions
 
-- Exact namespace split between general robotics concepts and Cartesian-specific concepts.
 - Whether DSL `MOVE` requires `SPEED` or uses a default speed.
 - Exact user-facing recovery command for `Faulted`.
 - First real hardware target: Arduino or ESP32.

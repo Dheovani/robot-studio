@@ -1,4 +1,4 @@
-namespace RobotStudio.Domain;
+namespace RobotStudio.Domain.Cartesian;
 
 public sealed record RobotProfile(Axis XAxis, Axis YAxis, Axis ZAxis) : IRobotProfile<CartesianPosition>
 {

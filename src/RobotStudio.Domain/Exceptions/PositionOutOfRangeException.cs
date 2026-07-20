@@ -1,3 +1,5 @@
+using RobotStudio.Domain.Cartesian;
+
 namespace RobotStudio.Domain.Exceptions;
 
 public sealed class PositionOutOfRangeException : InvalidOperationException

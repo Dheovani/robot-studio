@@ -1,4 +1,4 @@
-using RobotStudio.Domain;
+using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Motion;

@@ -49,9 +49,9 @@ Goal: keep the existing first vertical slice compiling and tested before expandi
 
 Goal: separate general robotics concepts from the first Cartesian robot implementation.
 
-- [ ] Review current domain type names and classify each type as general robotics or Cartesian-specific.
+- [x] Review current domain type names and classify each type as general robotics or Cartesian-specific.
 - [x] Decide which namespace will hold general robot concepts.
-- [ ] Decide which namespace will hold Cartesian robot concepts.
+- [x] Decide which namespace will hold Cartesian robot concepts.
 - [x] Introduce a general robot position concept without breaking the current Cartesian example.
 - [x] Introduce a general robot profile concept without making the current code abstract too early.
 - [x] Keep `CartesianPosition` as the first concrete position type.

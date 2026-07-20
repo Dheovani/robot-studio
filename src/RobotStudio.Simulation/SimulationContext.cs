@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Cartesian;
 
 namespace RobotStudio.Simulation;
 

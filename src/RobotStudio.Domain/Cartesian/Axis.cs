@@ -1,6 +1,6 @@
 using RobotStudio.Domain.Exceptions;
 
-namespace RobotStudio.Domain;
+namespace RobotStudio.Domain.Cartesian;
 
 public sealed record Axis
 {

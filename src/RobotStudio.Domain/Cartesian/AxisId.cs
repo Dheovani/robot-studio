@@ -1,4 +1,4 @@
-namespace RobotStudio.Domain;
+namespace RobotStudio.Domain.Cartesian;
 
 public enum AxisId
 {
