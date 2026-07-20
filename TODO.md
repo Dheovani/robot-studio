@@ -185,7 +185,28 @@ Goal: execute commands deterministically without hardware or UI.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
-## 9. Simple DSL V1
+## 9. Simulation V2
+
+Goal: prepare simulation output for timeline inspection, interpolation, and future visualization.
+
+- [x] Add command index to each command-generated timeline step.
+- [x] Add command name to each command-generated timeline step.
+- [x] Keep simulation-generated timeline steps without command source.
+- [x] Record command source when a command fails.
+- [x] Add tests proving timeline steps preserve command source.
+- [ ] Add tests proving timeline records exact state transitions in order.
+- [ ] Add tests proving invalid initial simulation context is rejected.
+- [ ] Add tests proving faulted simulations preserve the last valid position.
+- [ ] Add tests proving zero-distance `MOVE` is simulated predictably.
+- [ ] Add timeline interpolation for Cartesian motion.
+- [ ] Add tests for position sampling before the first command.
+- [ ] Add tests for position sampling during movement.
+- [ ] Add tests for position sampling during wait.
+- [ ] Add tests for position sampling after the final command.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
+
+## 10. Simple DSL V1
 
 Goal: let students read and later write beginner-friendly robot scripts.
 
@@ -217,7 +238,7 @@ HOME
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
-## 10. CLI Learning Flow V1
+## 11. CLI Learning Flow V1
 
 Goal: provide repeatable examples students can run before writing scripts manually.
 
@@ -238,7 +259,7 @@ Goal: provide repeatable examples students can run before writing scripts manual
 - [x] Run `dotnet test`.
 - [x] Run `dotnet run --project src/RobotStudio.Cli`.
 
-## 11. Hardware Boundary
+## 12. Hardware Boundary
 
 Goal: prepare for real devices without implementing hardware communication too early.
 
@@ -251,7 +272,7 @@ Goal: prepare for real devices without implementing hardware communication too e
 - [ ] Do not reference hardware types from `RobotStudio.Motion`.
 - [ ] Do not reference hardware types from `RobotStudio.Simulation`.
 
-## 12. Future 3D Visualization
+## 13. Future 3D Visualization
 
 Goal: prepare a future visual inspection tool without influencing the current core.
 
@@ -262,7 +283,7 @@ Goal: prepare a future visual inspection tool without influencing the current co
 - [ ] Later, show technical tooltips for complex concepts.
 - [ ] Later, ensure UI consumes simulation output instead of duplicating simulation logic.
 
-## 13. Future Robot Families
+## 14. Future Robot Families
 
 Goal: expand RobotStudio beyond the introductory Cartesian robot when the foundation is stable.
 
@@ -272,7 +293,7 @@ Goal: expand RobotStudio beyond the introductory Cartesian robot when the founda
 - [ ] Identify which concepts must be robot-family-specific.
 - [ ] Add tests before each new robot family is considered complete.
 
-## 14. Future G-Code Support
+## 15. Future G-Code Support
 
 Goal: add G-code after students understand the simple DSL.
 
@@ -283,7 +304,7 @@ Goal: add G-code after students understand the simple DSL.
 - [ ] Map `G4` to wait/dwell behavior.
 - [ ] Allow DSL and G-code to produce the same domain command types.
 
-## 15. Continuous Integration
+## 16. Continuous Integration
 
 Goal: make every pushed change validate the project automatically.
 

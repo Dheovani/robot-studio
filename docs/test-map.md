@@ -76,10 +76,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] `WAIT` advances simulated time without moving.
 - [x] A sequence containing `HOME`, `MOVE`, and `WAIT` executes in order.
 - [x] Failing command sequence ends in `Faulted`.
+- [x] Timeline command steps preserve zero-based command index.
+- [x] Timeline command steps preserve command name.
+- [x] Timeline simulator steps have no command source.
+- [x] Failing command timeline step preserves command source.
 
 ### Required Next Coverage
 
-- [ ] Timeline records exact state transitions in order.
+- [x] Timeline records exact state transitions in order.
 - [ ] Invalid initial simulation context is rejected.
 - [ ] Faulted simulations preserve the last valid position.
 - [ ] Zero-distance `MOVE` is simulated predictably.

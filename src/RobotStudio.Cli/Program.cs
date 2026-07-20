@@ -172,8 +172,19 @@ static void PrintTimeline(SimulationResult result)
             $"X={step.Position.X,7:0.###} mm " +
             $"Y={step.Position.Y,7:0.###} mm " +
             $"Z={step.Position.Z,7:0.###} mm | " +
+            $"{FormatCommandSource(step)} | " +
             step.Description);
     }
+}
+
+static string FormatCommandSource(SimulationStep step)
+{
+    if (step.CommandIndex is null || step.CommandName is null)
+    {
+        return "simulation";
+    }
+
+    return $"command {step.CommandIndex.Value + 1}: {step.CommandName}";
 }
 
 static void PrintFinalResult(SimulationResult result)

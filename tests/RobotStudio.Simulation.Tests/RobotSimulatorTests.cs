@@ -100,6 +100,32 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenSequenceHasMultipleCommands_ShouldRecordCommandSourceInTimeline()
+    {
+        var simulator = new RobotSimulator();
+        var context = SimulationContext.Create(
+            CreateProfile(),
+            new CartesianPosition(X: 0, Y: 0, Z: 0));
+        var sequence = new RobotCommandSequence(
+        [
+            new HomeCommand(),
+            new MoveToCommand(new CartesianPosition(X: 20, Y: 10, Z: 5)),
+            new WaitCommand(TimeSpan.FromSeconds(1))
+        ]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.Null(result.Timeline[0].CommandIndex);
+        Assert.Null(result.Timeline[0].CommandName);
+        AssertTimelineStep(result.Timeline[1], 0, nameof(HomeCommand), RobotState.Homing);
+        AssertTimelineStep(result.Timeline[2], 0, nameof(HomeCommand), RobotState.Completed);
+        AssertTimelineStep(result.Timeline[3], 1, nameof(MoveToCommand), RobotState.Moving);
+        AssertTimelineStep(result.Timeline[4], 1, nameof(MoveToCommand), RobotState.Completed);
+        AssertTimelineStep(result.Timeline[5], 2, nameof(WaitCommand), RobotState.Waiting);
+        AssertTimelineStep(result.Timeline[6], 2, nameof(WaitCommand), RobotState.Completed);
+    }
+
+    [Fact]
     public void Execute_WhenCommandFails_ShouldReturnFaultedResult()
     {
         var simulator = new RobotSimulator();
@@ -116,6 +142,19 @@ public sealed class RobotSimulatorTests
         Assert.False(result.Succeeded);
         Assert.Equal(RobotState.Faulted, result.FinalContext.State);
         Assert.IsType<PositionOutOfRangeException>(result.Failure);
+        Assert.Equal(0, result.Timeline[^1].CommandIndex);
+        Assert.Equal(nameof(MoveToCommand), result.Timeline[^1].CommandName);
+    }
+
+    private static void AssertTimelineStep(
+        SimulationStep step,
+        int commandIndex,
+        string commandName,
+        RobotState state)
+    {
+        Assert.Equal(commandIndex, step.CommandIndex);
+        Assert.Equal(commandName, step.CommandName);
+        Assert.Equal(state, step.State);
     }
 
     private static RobotProfile CreateProfile() =>

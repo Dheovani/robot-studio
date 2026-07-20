@@ -33,16 +33,18 @@ public sealed class RobotSimulator
             CreateStep(currentContext, "Simulation started.")
         };
 
-        foreach (var command in commandSequence.Commands)
+        for (var commandIndex = 0; commandIndex < commandSequence.Commands.Count; commandIndex++)
         {
+            var command = commandSequence.Commands[commandIndex];
+
             try
             {
-                currentContext = ExecuteCommand(currentContext, command, timeline);
+                currentContext = ExecuteCommand(currentContext, command, commandIndex, timeline);
             }
             catch (InvalidOperationException exception)
             {
                 currentContext = currentContext with { State = RobotState.Faulted };
-                timeline.Add(CreateStep(currentContext, exception.Message));
+                timeline.Add(CreateStep(currentContext, exception.Message, commandIndex, GetCommandName(command)));
 
                 return new SimulationResult(
                     initialContext,
@@ -62,26 +64,28 @@ public sealed class RobotSimulator
     private SimulationContext ExecuteCommand(
         SimulationContext context,
         RobotCommand command,
+        int commandIndex,
         List<SimulationStep> timeline)
     {
         RobotCommandValidator.Validate(command, context.RobotProfile);
 
         return command switch
         {
-            HomeCommand => ExecuteHome(context, timeline),
-            MoveToCommand moveToCommand => ExecuteMove(context, moveToCommand, timeline),
-            WaitCommand waitCommand => ExecuteWait(context, waitCommand, timeline),
+            HomeCommand => ExecuteHome(context, commandIndex, timeline),
+            MoveToCommand moveToCommand => ExecuteMove(context, moveToCommand, commandIndex, timeline),
+            WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
     }
 
     private SimulationContext ExecuteHome(
         SimulationContext context,
+        int commandIndex,
         List<SimulationStep> timeline)
     {
         var targetPosition = new CartesianPosition(X: 0, Y: 0, Z: 0);
         var movingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(movingContext, "Home command started."));
+        timeline.Add(CreateStep(movingContext, "Home command started.", commandIndex, nameof(HomeCommand)));
 
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -95,7 +99,7 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed."));
+        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand)));
 
         return completedContext;
     }
@@ -103,10 +107,11 @@ public sealed class RobotSimulator
     private SimulationContext ExecuteMove(
         SimulationContext context,
         MoveToCommand command,
+        int commandIndex,
         List<SimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Move command started."));
+        timeline.Add(CreateStep(movingContext, "Move command started.", commandIndex, nameof(MoveToCommand)));
 
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -121,7 +126,7 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Move command completed."));
+        timeline.Add(CreateStep(completedContext, "Move command completed.", commandIndex, nameof(MoveToCommand)));
 
         return completedContext;
     }
@@ -129,10 +134,11 @@ public sealed class RobotSimulator
     private static SimulationContext ExecuteWait(
         SimulationContext context,
         WaitCommand command,
+        int commandIndex,
         List<SimulationStep> timeline)
     {
         var waitingContext = TransitionTo(context, RobotState.Waiting);
-        timeline.Add(CreateStep(waitingContext, "Wait command started."));
+        timeline.Add(CreateStep(waitingContext, "Wait command started.", commandIndex, nameof(WaitCommand)));
 
         var completedContext = waitingContext with
         {
@@ -140,7 +146,7 @@ public sealed class RobotSimulator
             ElapsedTime = waitingContext.ElapsedTime + command.Duration
         };
 
-        timeline.Add(CreateStep(completedContext, "Wait command completed."));
+        timeline.Add(CreateStep(completedContext, "Wait command completed.", commandIndex, nameof(WaitCommand)));
 
         return completedContext;
     }
@@ -156,10 +162,22 @@ public sealed class RobotSimulator
 
     private static SimulationStep CreateStep(
         SimulationContext context,
-        string description) =>
+        string description,
+        int? commandIndex = null,
+        string? commandName = null) =>
         new(
             context.ElapsedTime,
             context.State,
             context.CurrentPosition,
-            description);
+            description,
+            commandIndex,
+            commandName);
+
+    private static string GetCommandName(RobotCommand command) => command switch
+    {
+        HomeCommand => nameof(HomeCommand),
+        MoveToCommand => nameof(MoveToCommand),
+        WaitCommand => nameof(WaitCommand),
+        _ => command.GetType().Name
+    };
 }
