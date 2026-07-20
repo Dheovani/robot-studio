@@ -90,6 +90,8 @@ Zero-distance `MOVE` commands still produce normal command timeline steps and co
 
 Robot commands may carry optional source metadata through `RobotCommandSource`. The simple DSL uses this metadata to preserve the source line number and original command text. Simulation timeline steps and timeline samples propagate this metadata so CLI output and future visual tools can explain where a command came from.
 
+Future visual layers should consume `RobotVisualState` instead of reading low-level simulation internals directly. The first mapper, `CartesianVisualStateMapper`, converts Cartesian simulation samples into a visual position expressed in millimeters. Visual pose mapping stays in `RobotStudio.Simulation`; it must not be added to `RobotStudio.Domain` or `RobotStudio.Motion`.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.
@@ -120,7 +122,6 @@ Likely future targets include Arduino or ESP32 with educational actuators such a
 
 - Exact namespace split between general robotics concepts and Cartesian-specific concepts.
 - Whether DSL `MOVE` requires `SPEED` or uses a default speed.
-- Whether commands should carry optional source information, such as script line numbers, for teaching and debugging.
 - Exact user-facing recovery command for `Faulted`.
 - First real hardware target: Arduino or ESP32.
 - First actuator model: stepper motor or servo.

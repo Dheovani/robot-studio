@@ -202,10 +202,13 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Preserve command source metadata in timeline steps.
 - [x] Preserve command source metadata in timeline samples.
 - [x] Add timeline interpolation for Cartesian motion.
+- [x] Add visual-state contract for future UI layers.
+- [x] Add Cartesian simulation sample to visual-state mapper.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
 - [x] Add tests for position sampling after the final command.
+- [x] Add tests for Cartesian visual-state mapping.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -317,10 +320,10 @@ Goal: finish the deterministic simulation contract before starting visual simula
 - [x] Strengthen DSL validation for duplicate `MOVE` arguments.
 - [x] Strengthen DSL validation for unknown `MOVE` arguments.
 - [x] Strengthen DSL validation for `HOME` arguments.
-- [ ] Define a visual-state contract consumed by future UI layers.
-- [ ] Define how Cartesian simulation state maps to visual pose data.
-- [ ] Keep visual pose mapping outside `RobotStudio.Domain`.
-- [ ] Keep visual pose mapping outside `RobotStudio.Motion`.
+- [x] Define a visual-state contract consumed by future UI layers.
+- [x] Define how Cartesian simulation state maps to visual pose data.
+- [x] Keep visual pose mapping outside `RobotStudio.Domain`.
+- [x] Keep visual pose mapping outside `RobotStudio.Motion`.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

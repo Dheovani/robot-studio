@@ -91,6 +91,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline sampling during movement returns an interpolated position.
 - [x] Timeline sampling during wait keeps the same position.
 - [x] Timeline sampling after the final step returns the final position.
+- [x] Cartesian visual-state mapping preserves position in millimeters.
+- [x] Cartesian visual-state mapping preserves state and command metadata.
+- [x] Cartesian visual-state mapping rejects null samples.
 
 ### Required Next Coverage
 
