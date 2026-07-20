@@ -17,6 +17,28 @@ public sealed class RobotProfileTests
     }
 
     [Fact]
+    public void ValidatePosition_DoesNotThrow_WhenPositionIsAtMinimumAxisLimits()
+    {
+        var profile = CreateProfile();
+        var position = new CartesianPosition(X: 0, Y: 0, Z: 0);
+
+        var exception = Record.Exception(() => profile.ValidatePosition(position));
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void ValidatePosition_DoesNotThrow_WhenPositionIsAtMaximumAxisLimits()
+    {
+        var profile = CreateProfile();
+        var position = new CartesianPosition(X: 300, Y: 200, Z: 150);
+
+        var exception = Record.Exception(() => profile.ValidatePosition(position));
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
     public void ValidatePosition_Throws_WhenPositionIsOutsideAxisLimits()
     {
         var profile = CreateProfile();

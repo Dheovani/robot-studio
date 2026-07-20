@@ -115,6 +115,8 @@ Goal: make the first robot model complete enough for introductory lessons.
 - [x] Validate maximum acceleration per axis.
 - [x] Add tests for positions exactly at minimum axis limits.
 - [x] Add tests for positions exactly at maximum axis limits.
+- [x] Add full robot profile tests for positions exactly at minimum X/Y/Z limits.
+- [x] Add full robot profile tests for positions exactly at maximum X/Y/Z limits.
 - [x] Add tests for invalid axis configuration.
 - [x] Add tests for invalid velocity configuration.
 - [x] Add tests for invalid acceleration configuration.

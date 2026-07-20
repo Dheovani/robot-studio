@@ -8,6 +8,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [x] Valid Cartesian position inside limits does not throw.
 - [x] Cartesian position outside limits throws `PositionOutOfRangeException`.
+- [x] Full robot profile validates positions exactly at minimum X/Y/Z limits.
+- [x] Full robot profile validates positions exactly at maximum X/Y/Z limits.
 - [x] Cartesian position implements the general robot position contract.
 - [x] Cartesian robot profile implements the general robot profile contract.
 - [x] Axis configuration rejects invalid limits.
@@ -42,9 +44,6 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Command source metadata rejects blank source text.
 
 ### Required Next Coverage
-
-- [ ] Full robot profile validates positions exactly at minimum X/Y/Z limits.
-- [ ] Full robot profile validates positions exactly at maximum X/Y/Z limits.
 
 ## `RobotStudio.Motion.Tests`
 
