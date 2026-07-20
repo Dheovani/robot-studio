@@ -53,6 +53,14 @@ dotnet test
 dotnet run --project src/RobotStudio.Cli
 ```
 
+Other CLI modes:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- example
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
+```
+
 ## Not In Scope Yet
 
 - Desktop UI.

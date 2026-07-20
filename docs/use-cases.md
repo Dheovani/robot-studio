@@ -61,6 +61,8 @@ WAIT 500
 MOVE X=0 Y=0 Z=0 SPEED=80
 ```
 
+Current status: implemented through the CLI `simulate` command.
+
 Expected result:
 
 - the script is parsed into domain commands;
@@ -72,6 +74,8 @@ Expected result:
 Actor: student.
 
 Goal: check whether a script is valid without executing it.
+
+Current status: implemented through the CLI `validate` command.
 
 Expected result:
 

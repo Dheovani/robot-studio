@@ -1,7 +1,15 @@
 using System.Globalization;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Scripting;
 using RobotStudio.Simulation;
+
+const string ExampleScript =
+    """
+    HOME
+    MOVE X=120 Y=80 Z=40 SPEED=90
+    WAIT 500
+    """;
 
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
@@ -12,27 +20,122 @@ var profile = RobotProfile.CreateCartesian(
     new Axis(AxisId.Z, 0, 150, 80));
 
 var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-var targetPosition = new CartesianPosition(X: 120, Y: 80, Z: 40);
-var context = SimulationContext.Create(profile, initialPosition);
-var commands = new RobotCommandSequence(
-[
-    new HomeCommand(),
-    new MoveToCommand(targetPosition),
-    new WaitCommand(TimeSpan.FromMilliseconds(500))
-]);
+var parser = new RobotScriptParser();
 
-var simulator = new RobotSimulator();
-var result = simulator.Execute(context, commands);
+try
+{
+    return args switch
+    {
+        [] => SimulateScript(ExampleScript, profile, initialPosition, parser),
+        ["example"] => PrintExampleScript(),
+        ["validate", var path] => ValidateScriptFile(path, profile, parser),
+        ["simulate", var path] => SimulateScriptFile(path, profile, initialPosition, parser),
+        _ => PrintUsage()
+    };
+}
+catch (IOException exception)
+{
+    Console.Error.WriteLine($"File error: {exception.Message}");
+    return 1;
+}
+catch (UnauthorizedAccessException exception)
+{
+    Console.Error.WriteLine($"File access error: {exception.Message}");
+    return 1;
+}
+catch (ScriptParseException exception)
+{
+    Console.Error.WriteLine($"Script error: {exception.Message}");
+    Console.Error.WriteLine($"Source: {exception.LineText}");
+    return 1;
+}
+catch (InvalidOperationException exception)
+{
+    Console.Error.WriteLine($"Validation error: {exception.Message}");
+    return 1;
+}
 
-Console.WriteLine("RobotStudio CLI");
-Console.WriteLine();
-PrintProfile(profile);
-Console.WriteLine();
-PrintCommandSequence(commands);
-Console.WriteLine();
-PrintTimeline(result);
-Console.WriteLine();
-PrintFinalResult(result);
+static int PrintExampleScript()
+{
+    Console.WriteLine(ExampleScript);
+    return 0;
+}
+
+static int ValidateScriptFile(
+    string path,
+    RobotProfile profile,
+    RobotScriptParser parser)
+{
+    var script = File.ReadAllText(path);
+    var commands = parser.Parse(script);
+    ValidateCommandSequence(commands, profile);
+
+    Console.WriteLine("Script is valid.");
+    Console.WriteLine();
+    PrintCommandSequence(commands);
+
+    return 0;
+}
+
+static int SimulateScriptFile(
+    string path,
+    RobotProfile profile,
+    CartesianPosition initialPosition,
+    RobotScriptParser parser)
+{
+    var script = File.ReadAllText(path);
+
+    return SimulateScript(script, profile, initialPosition, parser);
+}
+
+static int SimulateScript(
+    string script,
+    RobotProfile profile,
+    CartesianPosition initialPosition,
+    RobotScriptParser parser)
+{
+    var context = SimulationContext.Create(profile, initialPosition);
+    var commands = parser.Parse(script);
+    ValidateCommandSequence(commands, profile);
+
+    var simulator = new RobotSimulator();
+    var result = simulator.Execute(context, commands);
+
+    Console.WriteLine("RobotStudio CLI");
+    Console.WriteLine();
+    PrintProfile(profile);
+    Console.WriteLine();
+    PrintCommandSequence(commands);
+    Console.WriteLine();
+    PrintTimeline(result);
+    Console.WriteLine();
+    PrintFinalResult(result);
+
+    return result.Succeeded ? 0 : 1;
+}
+
+static int PrintUsage()
+{
+    Console.WriteLine("RobotStudio CLI");
+    Console.WriteLine();
+    Console.WriteLine("Usage:");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- example");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate <script-file>");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file>");
+
+    return 1;
+}
+
+static void ValidateCommandSequence(
+    RobotCommandSequence commandSequence,
+    RobotProfile profile)
+{
+    foreach (var command in commandSequence.Commands)
+    {
+        RobotCommandValidator.Validate(command, profile);
+    }
+}
 
 static void PrintProfile(RobotProfile profile)
 {
@@ -91,10 +194,19 @@ static void PrintFinalResult(SimulationResult result)
 static string DescribeCommand(RobotCommand command) => command switch
 {
     HomeCommand => "HOME",
-    MoveToCommand moveToCommand =>
-        $"MOVE X={moveToCommand.TargetPosition.X:0.###} " +
-        $"Y={moveToCommand.TargetPosition.Y:0.###} " +
-        $"Z={moveToCommand.TargetPosition.Z:0.###}",
+    MoveToCommand moveToCommand => DescribeMoveCommand(moveToCommand),
     WaitCommand waitCommand => $"WAIT {waitCommand.Duration.TotalMilliseconds:0.###} ms",
     _ => command.GetType().Name
 };
+
+static string DescribeMoveCommand(MoveToCommand command)
+{
+    var description =
+        $"MOVE X={command.TargetPosition.X:0.###} " +
+        $"Y={command.TargetPosition.Y:0.###} " +
+        $"Z={command.TargetPosition.Z:0.###}";
+
+    return command.RequestedVelocityMillimetersPerSecond.HasValue
+        ? $"{description} SPEED={command.RequestedVelocityMillimetersPerSecond.Value:0.###}"
+        : description;
+}

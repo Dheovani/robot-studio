@@ -107,3 +107,9 @@ Expected current behavior:
 - prints final state;
 - prints final position;
 - prints total simulated duration.
+
+Additional manual CLI checks:
+
+- `dotnet run --project src/RobotStudio.Cli -- example` prints the built-in script.
+- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot` validates the example script.
+- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.

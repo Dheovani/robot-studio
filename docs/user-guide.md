@@ -29,7 +29,25 @@ Run from the repository root:
 dotnet run --project src/RobotStudio.Cli
 ```
 
-The current CLI creates a generic Cartesian robot profile, creates a command sequence, executes it through the simulator, and prints the result.
+The default CLI run uses the built-in example script, executes it through the simulator, and prints the result.
+
+Print the built-in example script:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- example
+```
+
+Validate a script file:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
+```
+
+Simulate a script file:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
+```
 
 Current output includes:
 
@@ -60,7 +78,7 @@ Current simulation output includes:
 
 ## Current DSL
 
-The simple DSL parser can convert text scripts into command sequences. Script file execution from the CLI is not implemented yet.
+The simple DSL parser can convert text scripts into command sequences. The CLI can validate and simulate script files.
 
 ```txt
 HOME
@@ -81,15 +99,14 @@ Current parser behavior:
 
 The CLI should later support:
 
-- printing the built-in example script;
-- validating a script file;
-- simulating a script file.
+- richer help output;
+- more examples;
+- friendlier formatting for script validation errors.
 
 ## Not Available Yet
 
 - Desktop UI.
 - 3D robot visualization.
-- Script file execution.
 - G-code parsing.
 - Hardware communication.
 - Arduino or ESP32 integration.

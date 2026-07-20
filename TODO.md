@@ -218,15 +218,15 @@ Goal: provide repeatable examples students can run before writing scripts manual
 
 - [x] Print one hard-coded motion plan example.
 - [x] Add CLI option to run the built-in Cartesian movement example.
-- [ ] Add CLI option to print the built-in example script.
-- [ ] Add CLI option to validate a script file.
-- [ ] Add CLI option to simulate a script file.
+- [x] Add CLI option to print the built-in example script.
+- [x] Add CLI option to validate a script file.
+- [x] Add CLI option to simulate a script file.
 - [x] Print robot profile limits in example output.
 - [x] Print command sequence summary before simulation.
 - [x] Print final robot state after simulation.
 - [x] Print final robot position after simulation.
 - [x] Print total simulated duration.
-- [ ] Convert domain exceptions into friendly CLI messages.
+- [x] Convert domain exceptions into friendly CLI messages.
 - [x] Keep CLI free from business logic.
 - [x] Add CLI README examples.
 - [x] Run `dotnet build`.
