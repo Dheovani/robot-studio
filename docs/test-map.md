@@ -80,6 +80,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline command steps preserve command name.
 - [x] Timeline simulator steps have no command source.
 - [x] Failing command timeline step preserves command source.
+- [x] Timeline sampling before the first step returns the initial position.
+- [x] Timeline sampling during movement returns an interpolated position.
+- [x] Timeline sampling during wait keeps the same position.
+- [x] Timeline sampling after the final step returns the final position.
 
 ### Required Next Coverage
 

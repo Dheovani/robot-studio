@@ -198,11 +198,11 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [ ] Add tests proving invalid initial simulation context is rejected.
 - [ ] Add tests proving faulted simulations preserve the last valid position.
 - [ ] Add tests proving zero-distance `MOVE` is simulated predictably.
-- [ ] Add timeline interpolation for Cartesian motion.
-- [ ] Add tests for position sampling before the first command.
-- [ ] Add tests for position sampling during movement.
-- [ ] Add tests for position sampling during wait.
-- [ ] Add tests for position sampling after the final command.
+- [x] Add timeline interpolation for Cartesian motion.
+- [x] Add tests for position sampling before the first command.
+- [x] Add tests for position sampling during movement.
+- [x] Add tests for position sampling during wait.
+- [x] Add tests for position sampling after the final command.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

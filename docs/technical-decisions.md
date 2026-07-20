@@ -84,6 +84,8 @@ Simulation timeline steps may include the zero-based command index and command n
 
 The CLI may display command indices as one-based values because that is friendlier for students reading output.
 
+Simulation sampling is handled by `SimulationTimelineSampler`. Sampling clamps times before the first step to the first known state and times after the final step to the final known state. During active command intervals, Cartesian positions are linearly interpolated between timeline steps.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.
