@@ -101,6 +101,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian playback sampling avoids duplicate final frames.
 - [x] Cartesian playback sampling handles zero-duration simulations.
 - [x] Cartesian playback sampling rejects non-positive intervals.
+- [x] Cartesian workspace bounds use robot axis limits.
+- [x] Cartesian workspace bounds expose workspace size and center.
+- [x] Cartesian workspace bounds identify positions inside, on, and outside the workspace.
 
 ### Required Next Coverage
 

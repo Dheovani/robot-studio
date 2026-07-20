@@ -210,6 +210,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add Cartesian simulation sample to visual-state mapper.
 - [x] Add Cartesian visual-state sampler for future UI layers.
 - [x] Add Cartesian playback sampler that generates visual states at fixed time intervals.
+- [x] Add Cartesian workspace bounds for future 3D viewport framing.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
@@ -217,6 +218,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests for Cartesian visual-state mapping.
 - [x] Add tests for Cartesian visual-state sampling.
 - [x] Add tests for Cartesian playback sampling.
+- [x] Add tests for Cartesian workspace bounds.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -331,6 +333,7 @@ Goal: finish the deterministic simulation contract before starting visual simula
 - [x] Strengthen DSL validation for `HOME` arguments.
 - [x] Define a visual-state contract consumed by future UI layers.
 - [x] Define how Cartesian simulation state maps to visual pose data.
+- [x] Define Cartesian workspace bounds for future 3D viewport framing.
 - [x] Keep visual pose mapping outside `RobotStudio.Domain`.
 - [x] Keep visual pose mapping outside `RobotStudio.Motion`.
 - [x] Run `dotnet build`.

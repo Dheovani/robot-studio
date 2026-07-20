@@ -150,11 +150,14 @@ static int PrintPlaybackFile(
     var simulator = new RobotSimulator();
     var result = simulator.Execute(context, commands);
     var playbackSampler = new CartesianPlaybackSampler();
+    var workspaceBounds = CartesianWorkspaceBounds.FromProfile(profile);
     var frames = playbackSampler.Sample(result, interval);
 
     Console.WriteLine("RobotStudio CLI");
     Console.WriteLine();
     Console.WriteLine($"Playback interval: {interval.TotalMilliseconds:0.###} ms");
+    Console.WriteLine();
+    PrintWorkspaceBounds(workspaceBounds);
     Console.WriteLine();
     PrintPlayback(frames);
     Console.WriteLine();
@@ -227,6 +230,27 @@ static void PrintPlayback(IReadOnlyList<RobotVisualState> frames)
             $"Z={frame.Position.ZMillimeters,7:0.###} mm | " +
             FormatVisualCommandSource(frame));
     }
+}
+
+static void PrintWorkspaceBounds(CartesianWorkspaceBounds bounds)
+{
+    Console.WriteLine("Workspace bounds:");
+    Console.WriteLine(
+        $"- Minimum: X={bounds.Minimum.XMillimeters:0.###} mm, " +
+        $"Y={bounds.Minimum.YMillimeters:0.###} mm, " +
+        $"Z={bounds.Minimum.ZMillimeters:0.###} mm");
+    Console.WriteLine(
+        $"- Maximum: X={bounds.Maximum.XMillimeters:0.###} mm, " +
+        $"Y={bounds.Maximum.YMillimeters:0.###} mm, " +
+        $"Z={bounds.Maximum.ZMillimeters:0.###} mm");
+    Console.WriteLine(
+        $"- Size: X={bounds.Size.XMillimeters:0.###} mm, " +
+        $"Y={bounds.Size.YMillimeters:0.###} mm, " +
+        $"Z={bounds.Size.ZMillimeters:0.###} mm");
+    Console.WriteLine(
+        $"- Center: X={bounds.Center.XMillimeters:0.###} mm, " +
+        $"Y={bounds.Center.YMillimeters:0.###} mm, " +
+        $"Z={bounds.Center.ZMillimeters:0.###} mm");
 }
 
 static string FormatCommandSource(SimulationStep step)

@@ -100,6 +100,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianPlaybackSampler` generates fixed-interval visual states from a completed simulation result. It always includes the final simulation frame, even when the interval does not land exactly on the final timestamp. This gives the CLI and future UI layers a stable playback contract.
 
+`CartesianWorkspaceBounds` derives the visual workspace limits from the Cartesian robot profile. Future 3D viewports should use these bounds to frame the robot workspace instead of hard-coding scene dimensions in the UI.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

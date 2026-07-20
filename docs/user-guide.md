@@ -62,6 +62,7 @@ Current output includes:
 - command sequence summary;
 - simulation timeline with command source line numbers;
 - fixed-interval playback frames when using the `playback` command;
+- Cartesian workspace bounds when using the `playback` command;
 - final robot state;
 - final robot position;
 - total simulated duration.
