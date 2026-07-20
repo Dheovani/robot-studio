@@ -73,9 +73,12 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] `HOME` moves the robot to origin and ends in `Completed`.
 - [x] `MOVE` updates final position and ends in `Completed`.
 - [x] `MOVE` with requested velocity uses that velocity for duration.
+- [x] Zero-distance `MOVE` completes without advancing simulated time.
 - [x] `WAIT` advances simulated time without moving.
 - [x] A sequence containing `HOME`, `MOVE`, and `WAIT` executes in order.
 - [x] Failing command sequence ends in `Faulted`.
+- [x] Failing command sequence preserves the last valid position.
+- [x] Invalid initial simulation context is rejected.
 - [x] Timeline command steps preserve zero-based command index.
 - [x] Timeline command steps preserve command name.
 - [x] Timeline simulator steps have no command source.
@@ -88,9 +91,6 @@ This document maps expected automated tests to project behavior. It should be up
 ### Required Next Coverage
 
 - [x] Timeline records exact state transitions in order.
-- [ ] Invalid initial simulation context is rejected.
-- [ ] Faulted simulations preserve the last valid position.
-- [ ] Zero-distance `MOVE` is simulated predictably.
 
 ## `RobotStudio.Scripting.Tests`
 

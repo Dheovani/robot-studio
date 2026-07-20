@@ -58,6 +58,24 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenMoveHasZeroDistance_ShouldCompleteWithoutAdvancingTime()
+    {
+        var simulator = new RobotSimulator();
+        var position = new CartesianPosition(X: 10, Y: 20, Z: 30);
+        var context = SimulationContext.Create(CreateProfile(), position);
+        var sequence = new RobotCommandSequence([new MoveToCommand(position)]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(position, result.FinalContext.CurrentPosition);
+        Assert.Equal(RobotState.Completed, result.FinalContext.State);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        AssertTimelineStep(result.Timeline[1], 0, nameof(MoveToCommand), RobotState.Moving);
+        AssertTimelineStep(result.Timeline[2], 0, nameof(MoveToCommand), RobotState.Completed);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsWait_ShouldAdvanceTimeWithoutMoving()
     {
         var simulator = new RobotSimulator();
@@ -144,6 +162,41 @@ public sealed class RobotSimulatorTests
         Assert.IsType<PositionOutOfRangeException>(result.Failure);
         Assert.Equal(0, result.Timeline[^1].CommandIndex);
         Assert.Equal(nameof(MoveToCommand), result.Timeline[^1].CommandName);
+    }
+
+    [Fact]
+    public void Execute_WhenCommandFails_ShouldPreserveLastValidPosition()
+    {
+        var simulator = new RobotSimulator();
+        var context = SimulationContext.Create(
+            CreateProfile(),
+            new CartesianPosition(X: 0, Y: 0, Z: 0));
+        var lastValidPosition = new CartesianPosition(X: 100, Y: 0, Z: 0);
+        var sequence = new RobotCommandSequence(
+        [
+            new MoveToCommand(lastValidPosition),
+            new MoveToCommand(new CartesianPosition(X: 301, Y: 0, Z: 0))
+        ]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RobotState.Faulted, result.FinalContext.State);
+        Assert.Equal(lastValidPosition, result.FinalContext.CurrentPosition);
+        Assert.Equal(lastValidPosition, result.Timeline[^1].Position);
+        Assert.Equal(1, result.Timeline[^1].CommandIndex);
+        Assert.Equal(nameof(MoveToCommand), result.Timeline[^1].CommandName);
+    }
+
+    [Fact]
+    public void Create_WhenInitialPositionIsOutsideRobotProfile_ShouldThrow()
+    {
+        var profile = CreateProfile();
+
+        Assert.Throws<PositionOutOfRangeException>(() =>
+            SimulationContext.Create(
+                profile,
+                new CartesianPosition(X: 301, Y: 0, Z: 0)));
     }
 
     private static void AssertTimelineStep(

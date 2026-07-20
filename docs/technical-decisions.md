@@ -86,6 +86,8 @@ The CLI may display command indices as one-based values because that is friendli
 
 Simulation sampling is handled by `SimulationTimelineSampler`. Sampling clamps times before the first step to the first known state and times after the final step to the final known state. During active command intervals, Cartesian positions are linearly interpolated between timeline steps.
 
+Zero-distance `MOVE` commands still produce normal command timeline steps and complete without advancing simulated time. If a command fails, the simulator keeps the last valid position and records the failure at that position.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

@@ -195,9 +195,9 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Record command source when a command fails.
 - [x] Add tests proving timeline steps preserve command source.
 - [ ] Add tests proving timeline records exact state transitions in order.
-- [ ] Add tests proving invalid initial simulation context is rejected.
-- [ ] Add tests proving faulted simulations preserve the last valid position.
-- [ ] Add tests proving zero-distance `MOVE` is simulated predictably.
+- [x] Add tests proving invalid initial simulation context is rejected.
+- [x] Add tests proving faulted simulations preserve the last valid position.
+- [x] Add tests proving zero-distance `MOVE` is simulated predictably.
 - [x] Add timeline interpolation for Cartesian motion.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
@@ -276,6 +276,7 @@ Goal: prepare for real devices without implementing hardware communication too e
 
 Goal: prepare a future visual inspection tool without influencing the current core.
 
+- [ ] Complete the pre-visual simulation readiness checklist before adding any visual framework.
 - [ ] Do not add Avalonia, WPF, MAUI, game engines, or 3D libraries yet.
 - [ ] Keep visual coordinate decisions outside the current domain model.
 - [ ] Later, define a fixed virtual environment for robot visualization.
@@ -283,7 +284,39 @@ Goal: prepare a future visual inspection tool without influencing the current co
 - [ ] Later, show technical tooltips for complex concepts.
 - [ ] Later, ensure UI consumes simulation output instead of duplicating simulation logic.
 
-## 14. Future Robot Families
+## 14. Pre-Visual Simulation Readiness
+
+Goal: finish the deterministic simulation contract before starting visual simulation.
+
+- [x] Define the robot execution state model.
+- [x] Define the initial simulation state.
+- [x] Define valid state transitions.
+- [x] Define recoverable fault behavior at the state-model level.
+- [x] Record a deterministic simulation timeline.
+- [x] Record command index for command-generated timeline steps.
+- [x] Record command name for command-generated timeline steps.
+- [x] Keep simulator-generated timeline steps separate from command-generated steps.
+- [x] Add Cartesian timeline sampling.
+- [x] Add tests for sampling before the first command.
+- [x] Add tests for sampling during movement.
+- [x] Add tests for sampling during wait.
+- [x] Add tests for sampling after the final command.
+- [x] Add tests proving invalid initial simulation context is rejected.
+- [x] Add tests proving faulted simulations preserve the last valid position.
+- [x] Add tests proving zero-distance `MOVE` is simulated predictably.
+- [ ] Decide whether commands should carry optional source metadata for teaching and debugging.
+- [ ] Preserve command source metadata from DSL parsing into command execution.
+- [ ] Strengthen DSL validation for duplicate `MOVE` arguments.
+- [ ] Strengthen DSL validation for unknown `MOVE` arguments.
+- [ ] Strengthen DSL validation for `HOME` arguments.
+- [ ] Define a visual-state contract consumed by future UI layers.
+- [ ] Define how Cartesian simulation state maps to visual pose data.
+- [ ] Keep visual pose mapping outside `RobotStudio.Domain`.
+- [ ] Keep visual pose mapping outside `RobotStudio.Motion`.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
+
+## 15. Future Robot Families
 
 Goal: expand RobotStudio beyond the introductory Cartesian robot when the foundation is stable.
 
@@ -293,7 +326,7 @@ Goal: expand RobotStudio beyond the introductory Cartesian robot when the founda
 - [ ] Identify which concepts must be robot-family-specific.
 - [ ] Add tests before each new robot family is considered complete.
 
-## 15. Future G-Code Support
+## 16. Future G-Code Support
 
 Goal: add G-code after students understand the simple DSL.
 
@@ -304,7 +337,7 @@ Goal: add G-code after students understand the simple DSL.
 - [ ] Map `G4` to wait/dwell behavior.
 - [ ] Allow DSL and G-code to produce the same domain command types.
 
-## 16. Continuous Integration
+## 17. Continuous Integration
 
 Goal: make every pushed change validate the project automatically.
 
