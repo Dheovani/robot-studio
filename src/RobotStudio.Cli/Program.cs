@@ -30,6 +30,12 @@ try
         ["example"] => PrintExampleScript(),
         ["validate", var path] => ValidateScriptFile(path, profile, parser),
         ["simulate", var path] => SimulateScriptFile(path, profile, initialPosition, parser),
+        ["playback", var path, var intervalMilliseconds] => PrintPlaybackFile(
+            path,
+            intervalMilliseconds,
+            profile,
+            initialPosition,
+            parser),
         _ => PrintUsage()
     };
 }
@@ -123,8 +129,38 @@ static int PrintUsage()
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- example");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate <script-file>");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file>");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- playback <script-file> <interval-ms>");
 
     return 1;
+}
+
+static int PrintPlaybackFile(
+    string path,
+    string intervalMillisecondsText,
+    CartesianRobotProfile profile,
+    CartesianPosition initialPosition,
+    RobotScriptParser parser)
+{
+    var interval = ParsePositiveMilliseconds(intervalMillisecondsText);
+    var script = File.ReadAllText(path);
+    var context = SimulationContext.Create(profile, initialPosition);
+    var commands = parser.Parse(script);
+    ValidateCommandSequence(commands, profile);
+
+    var simulator = new RobotSimulator();
+    var result = simulator.Execute(context, commands);
+    var playbackSampler = new CartesianPlaybackSampler();
+    var frames = playbackSampler.Sample(result, interval);
+
+    Console.WriteLine("RobotStudio CLI");
+    Console.WriteLine();
+    Console.WriteLine($"Playback interval: {interval.TotalMilliseconds:0.###} ms");
+    Console.WriteLine();
+    PrintPlayback(frames);
+    Console.WriteLine();
+    PrintFinalResult(result);
+
+    return result.Succeeded ? 0 : 1;
 }
 
 static void ValidateCommandSequence(
@@ -177,6 +213,22 @@ static void PrintTimeline(SimulationResult result)
     }
 }
 
+static void PrintPlayback(IReadOnlyList<RobotVisualState> frames)
+{
+    Console.WriteLine("Playback frames:");
+
+    foreach (var frame in frames)
+    {
+        Console.WriteLine(
+            $"- t={frame.Time.TotalSeconds,6:0.###}s | " +
+            $"{frame.State,-9} | " +
+            $"X={frame.Position.XMillimeters,7:0.###} mm " +
+            $"Y={frame.Position.YMillimeters,7:0.###} mm " +
+            $"Z={frame.Position.ZMillimeters,7:0.###} mm | " +
+            FormatVisualCommandSource(frame));
+    }
+}
+
 static string FormatCommandSource(SimulationStep step)
 {
     if (step.CommandIndex is null || step.CommandName is null)
@@ -189,6 +241,20 @@ static string FormatCommandSource(SimulationStep step)
         : $" line {step.CommandSource.LineNumber}";
 
     return $"command {step.CommandIndex.Value + 1}: {step.CommandName}{source}";
+}
+
+static string FormatVisualCommandSource(RobotVisualState frame)
+{
+    if (frame.CommandIndex is null || frame.CommandName is null)
+    {
+        return "simulation";
+    }
+
+    var source = frame.CommandSource is null
+        ? string.Empty
+        : $" line {frame.CommandSource.LineNumber}";
+
+    return $"command {frame.CommandIndex.Value + 1}: {frame.CommandName}{source}";
 }
 
 static void PrintFinalResult(SimulationResult result)
@@ -225,4 +291,15 @@ static string DescribeMoveCommand(MoveToCommand command)
     return command.RequestedVelocityMillimetersPerSecond.HasValue
         ? $"{description} SPEED={command.RequestedVelocityMillimetersPerSecond.Value:0.###}"
         : description;
+}
+
+static TimeSpan ParsePositiveMilliseconds(string text)
+{
+    if (!double.TryParse(text, NumberStyles.Float, CultureInfo.InvariantCulture, out var milliseconds) ||
+        milliseconds <= 0)
+    {
+        throw new InvalidOperationException("Playback interval must be a positive number of milliseconds.");
+    }
+
+    return TimeSpan.FromMilliseconds(milliseconds);
 }

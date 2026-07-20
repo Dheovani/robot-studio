@@ -98,6 +98,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianVisualStateSampler` is the preferred entry point for future Cartesian visual playback. It combines timeline sampling and visual-state mapping so UI layers can request a `RobotVisualState` for a given simulation time without coordinating lower-level simulation services directly.
 
+`CartesianPlaybackSampler` generates fixed-interval visual states from a completed simulation result. It always includes the final simulation frame, even when the interval does not land exactly on the final timestamp. This gives the CLI and future UI layers a stable playback contract.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

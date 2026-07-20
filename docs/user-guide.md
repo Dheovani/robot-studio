@@ -49,12 +49,19 @@ Simulate a script file:
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 ```
 
+Print fixed-interval playback frames for a script file:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
+```
+
 Current output includes:
 
 - robot profile limits;
 - axis velocity and acceleration limits;
 - command sequence summary;
 - simulation timeline with command source line numbers;
+- fixed-interval playback frames when using the `playback` command;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -74,6 +81,7 @@ Current simulation output includes:
 - initial context;
 - final context;
 - timeline steps;
+- fixed-interval visual playback frames;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

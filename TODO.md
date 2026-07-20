@@ -209,12 +209,14 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add visual-state contract for future UI layers.
 - [x] Add Cartesian simulation sample to visual-state mapper.
 - [x] Add Cartesian visual-state sampler for future UI layers.
+- [x] Add Cartesian playback sampler that generates visual states at fixed time intervals.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
 - [x] Add tests for position sampling after the final command.
 - [x] Add tests for Cartesian visual-state mapping.
 - [x] Add tests for Cartesian visual-state sampling.
+- [x] Add tests for Cartesian playback sampling.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -264,6 +266,7 @@ Goal: provide repeatable examples students can run before writing scripts manual
 - [x] Add CLI option to print the built-in example script.
 - [x] Add CLI option to validate a script file.
 - [x] Add CLI option to simulate a script file.
+- [x] Add CLI option to print fixed-interval playback frames.
 - [x] Print robot profile limits in example output.
 - [x] Print command sequence summary before simulation.
 - [x] Print final robot state after simulation.

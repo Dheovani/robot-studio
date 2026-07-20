@@ -96,6 +96,11 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian visual-state sampling returns visual state for sampled simulation time.
 - [x] Cartesian visual-state sampling preserves command source metadata.
 - [x] Cartesian visual-state sampler rejects null dependencies.
+- [x] Cartesian playback sampling returns frames at fixed intervals.
+- [x] Cartesian playback sampling always includes the final frame.
+- [x] Cartesian playback sampling avoids duplicate final frames.
+- [x] Cartesian playback sampling handles zero-duration simulations.
+- [x] Cartesian playback sampling rejects non-positive intervals.
 
 ### Required Next Coverage
 
@@ -147,3 +152,4 @@ Additional manual CLI checks:
 - `dotnet run --project src/RobotStudio.Cli -- example` prints the built-in script.
 - `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot` validates the example script.
 - `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.
+- `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
