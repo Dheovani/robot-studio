@@ -52,6 +52,7 @@ dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 Current output includes:
 
 - robot profile limits;
+- axis velocity and acceleration limits;
 - command sequence summary;
 - simulation timeline;
 - final robot state;

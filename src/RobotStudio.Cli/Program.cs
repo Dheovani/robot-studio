@@ -15,9 +15,9 @@ CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
 var profile = RobotProfile.CreateCartesian(
-    new Axis(AxisId.X, 0, 300, 120),
-    new Axis(AxisId.Y, 0, 200, 100),
-    new Axis(AxisId.Z, 0, 150, 80));
+    new Axis(AxisId.X, 0, 300, 120, 240),
+    new Axis(AxisId.Y, 0, 200, 100, 200),
+    new Axis(AxisId.Z, 0, 150, 80, 160));
 
 var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
 var parser = new RobotScriptParser();
@@ -145,7 +145,8 @@ static void PrintProfile(RobotProfile profile)
     {
         Console.WriteLine(
             $"- {axis.Id}: {axis.MinimumMillimeters:0.###} mm to {axis.MaximumMillimeters:0.###} mm, " +
-            $"max {axis.MaximumVelocityMillimetersPerSecond:0.###} mm/s");
+            $"max {axis.MaximumVelocityMillimetersPerSecond:0.###} mm/s, " +
+            $"max {axis.MaximumAccelerationMillimetersPerSecondSquared:0.###} mm/s^2");
     }
 }
 

@@ -8,7 +8,8 @@ public sealed record Axis
         AxisId id,
         double minimumMillimeters,
         double maximumMillimeters,
-        double maximumVelocityMillimetersPerSecond)
+        double maximumVelocityMillimetersPerSecond,
+        double maximumAccelerationMillimetersPerSecondSquared)
     {
         if (maximumMillimeters <= minimumMillimeters)
         {
@@ -20,10 +21,16 @@ public sealed record Axis
             throw new ArgumentException("Axis maximum velocity must be greater than zero.");
         }
 
+        if (maximumAccelerationMillimetersPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Axis maximum acceleration must be greater than zero.");
+        }
+
         Id = id;
         MinimumMillimeters = minimumMillimeters;
         MaximumMillimeters = maximumMillimeters;
         MaximumVelocityMillimetersPerSecond = maximumVelocityMillimetersPerSecond;
+        MaximumAccelerationMillimetersPerSecondSquared = maximumAccelerationMillimetersPerSecondSquared;
     }
 
     public AxisId Id { get; }
@@ -33,6 +40,8 @@ public sealed record Axis
     public double MaximumMillimeters { get; }
 
     public double MaximumVelocityMillimetersPerSecond { get; }
+
+    public double MaximumAccelerationMillimetersPerSecondSquared { get; }
 
     public void ValidateCoordinate(double coordinateMillimeters)
     {

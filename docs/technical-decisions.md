@@ -16,6 +16,8 @@ The first robot model is a generic introductory Cartesian robot with X, Y, and Z
 
 The initial system uses millimeters as the standard internal distance unit. The initial motion vocabulary uses millimeters per second for velocity. Unit conversion is intentionally out of scope for the first version.
 
+Cartesian axis acceleration is represented in millimeters per second squared.
+
 ### Home Position
 
 For the first Cartesian robot, `HOME` means position `(0, 0, 0)`.
@@ -35,6 +37,8 @@ The first motion planner is intentionally simple. It plans a linear movement, va
 When a movement command provides a requested speed, the planner uses the lower value between the requested speed and the involved axis limits. This keeps scripts expressive without allowing them to bypass physical constraints.
 
 Motion plans expose total movement distance, and motion segments expose the involved axes. These values are useful for CLI output, tests, future visualization, and classroom explanations.
+
+Axis acceleration limits are part of the robot profile but are not used by the first linear planner yet. They are present so the physical profile is complete before acceleration-aware planning is introduced.
 
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.
 

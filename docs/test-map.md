@@ -10,6 +10,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian position outside limits throws `PositionOutOfRangeException`.
 - [x] Cartesian position implements the general robot position contract.
 - [x] Cartesian robot profile implements the general robot profile contract.
+- [x] Axis configuration rejects invalid limits.
+- [x] Axis configuration rejects non-positive maximum velocity.
+- [x] Axis configuration rejects non-positive maximum acceleration.
+- [x] Axis accepts coordinates exactly at minimum and maximum limits.
 - [x] Robot state exposes the first execution state values.
 - [x] `HOME` can transition from every robot state to `Homing`.
 - [x] Active states can transition to `Completed`.
@@ -25,11 +29,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Position exactly at minimum X/Y/Z limits is valid.
-- [ ] Position exactly at maximum X/Y/Z limits is valid.
-- [ ] Invalid axis configuration is rejected.
-- [ ] Invalid maximum velocity is rejected.
-- [ ] Invalid maximum acceleration is rejected after acceleration is added.
+- [ ] Full robot profile validates positions exactly at minimum X/Y/Z limits.
+- [ ] Full robot profile validates positions exactly at maximum X/Y/Z limits.
 - [ ] `WaitCommand` rejects negative duration.
 
 ## `RobotStudio.Motion.Tests`

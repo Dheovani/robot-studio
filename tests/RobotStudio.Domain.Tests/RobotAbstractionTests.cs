@@ -16,9 +16,9 @@ public sealed class RobotAbstractionTests
     public void RobotProfile_ShouldImplementRobotProfileForCartesianPosition()
     {
         var profile = RobotProfile.CreateCartesian(
-            new Axis(AxisId.X, 0, 300, 120),
-            new Axis(AxisId.Y, 0, 200, 100),
-            new Axis(AxisId.Z, 0, 150, 80));
+            new Axis(AxisId.X, 0, 300, 120, 240),
+            new Axis(AxisId.Y, 0, 200, 100, 200),
+            new Axis(AxisId.Z, 0, 150, 80, 160));
 
         Assert.IsAssignableFrom<IRobotProfile<CartesianPosition>>(profile);
     }

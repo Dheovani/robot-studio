@@ -105,15 +105,15 @@ Goal: make the first robot model complete enough for introductory lessons.
 - [x] Support Z axis.
 - [x] Validate minimum and maximum position per axis.
 - [x] Validate maximum velocity per axis.
-- [ ] Add maximum acceleration per axis.
-- [ ] Validate maximum acceleration per axis.
-- [ ] Add tests for positions exactly at minimum axis limits.
-- [ ] Add tests for positions exactly at maximum axis limits.
-- [ ] Add tests for invalid axis configuration.
-- [ ] Add tests for invalid velocity configuration.
-- [ ] Add tests for invalid acceleration configuration.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Add maximum acceleration per axis.
+- [x] Validate maximum acceleration per axis.
+- [x] Add tests for positions exactly at minimum axis limits.
+- [x] Add tests for positions exactly at maximum axis limits.
+- [x] Add tests for invalid axis configuration.
+- [x] Add tests for invalid velocity configuration.
+- [x] Add tests for invalid acceleration configuration.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 6. Motion Planner V1
 

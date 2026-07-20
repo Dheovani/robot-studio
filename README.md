@@ -7,12 +7,12 @@ The current goal is to build a clean, testable foundation before adding hardware
 ## Current Status
 
 - The first domain model exists for a generic Cartesian robot.
-- Axis limits and Cartesian positions are validated in the domain layer.
+- Axis position, velocity, and acceleration limits are validated in the domain layer.
 - The first linear motion planner can estimate a simple movement plan.
 - The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
 - The CLI runs a hard-coded command sequence and prints a readable simulation timeline.
 - xUnit tests cover the first domain and motion planner behaviors.
-- Scripting, hardware communication, and UI are planned but not implemented yet.
+- Hardware communication and UI are planned but not implemented yet.
 
 ## Project Structure
 
@@ -67,5 +67,4 @@ dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 - 3D visualization.
 - Serial communication.
 - Arduino or ESP32 integration.
-- DSL parser.
 - G-code parser.
