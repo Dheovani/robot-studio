@@ -204,11 +204,13 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add timeline interpolation for Cartesian motion.
 - [x] Add visual-state contract for future UI layers.
 - [x] Add Cartesian simulation sample to visual-state mapper.
+- [x] Add Cartesian visual-state sampler for future UI layers.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
 - [x] Add tests for position sampling after the final command.
 - [x] Add tests for Cartesian visual-state mapping.
+- [x] Add tests for Cartesian visual-state sampling.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

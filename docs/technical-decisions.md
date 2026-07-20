@@ -92,6 +92,8 @@ Robot commands may carry optional source metadata through `RobotCommandSource`. 
 
 Future visual layers should consume `RobotVisualState` instead of reading low-level simulation internals directly. The first mapper, `CartesianVisualStateMapper`, converts Cartesian simulation samples into a visual position expressed in millimeters. Visual pose mapping stays in `RobotStudio.Simulation`; it must not be added to `RobotStudio.Domain` or `RobotStudio.Motion`.
 
+`CartesianVisualStateSampler` is the preferred entry point for future Cartesian visual playback. It combines timeline sampling and visual-state mapping so UI layers can request a `RobotVisualState` for a given simulation time without coordinating lower-level simulation services directly.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

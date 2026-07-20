@@ -94,6 +94,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian visual-state mapping preserves position in millimeters.
 - [x] Cartesian visual-state mapping preserves state and command metadata.
 - [x] Cartesian visual-state mapping rejects null samples.
+- [x] Cartesian visual-state sampling returns visual state for sampled simulation time.
+- [x] Cartesian visual-state sampling preserves command source metadata.
+- [x] Cartesian visual-state sampler rejects null dependencies.
 
 ### Required Next Coverage
 
