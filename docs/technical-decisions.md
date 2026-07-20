@@ -102,6 +102,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianWorkspaceBounds` derives the visual workspace limits from the Cartesian robot profile. Future 3D viewports should use these bounds to frame the robot workspace instead of hard-coding scene dimensions in the UI.
 
+`CartesianPlaybackSnapshot` packages workspace bounds, fixed-interval visual frames, total duration, success status, and an optional failure message. The CLI can export this snapshot as JSON so future visual tools can consume the same simulation result without duplicating simulation rules.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

@@ -211,6 +211,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add Cartesian visual-state sampler for future UI layers.
 - [x] Add Cartesian playback sampler that generates visual states at fixed time intervals.
 - [x] Add Cartesian workspace bounds for future 3D viewport framing.
+- [x] Add Cartesian playback snapshot that packages workspace bounds, frames, duration, and failure state.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
@@ -219,6 +220,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests for Cartesian visual-state sampling.
 - [x] Add tests for Cartesian playback sampling.
 - [x] Add tests for Cartesian workspace bounds.
+- [x] Add tests for Cartesian playback snapshot creation.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -269,6 +271,7 @@ Goal: provide repeatable examples students can run before writing scripts manual
 - [x] Add CLI option to validate a script file.
 - [x] Add CLI option to simulate a script file.
 - [x] Add CLI option to print fixed-interval playback frames.
+- [x] Add CLI option to export fixed-interval playback snapshots as JSON.
 - [x] Print robot profile limits in example output.
 - [x] Print command sequence summary before simulation.
 - [x] Print final robot state after simulation.

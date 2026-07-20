@@ -1,4 +1,6 @@
 using System.Globalization;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Scripting;
@@ -33,6 +35,13 @@ try
         ["playback", var path, var intervalMilliseconds] => PrintPlaybackFile(
             path,
             intervalMilliseconds,
+            profile,
+            initialPosition,
+            parser),
+        ["export-playback", var path, var intervalMilliseconds, var outputPath] => ExportPlaybackFile(
+            path,
+            intervalMilliseconds,
+            outputPath,
             profile,
             initialPosition,
             parser),
@@ -115,7 +124,7 @@ static int SimulateScript(
     Console.WriteLine();
     PrintTimeline(result);
     Console.WriteLine();
-    PrintFinalResult(result);
+    PrintSimulationResult(result);
 
     return result.Succeeded ? 0 : 1;
 }
@@ -130,6 +139,7 @@ static int PrintUsage()
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate <script-file>");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file>");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- playback <script-file> <interval-ms>");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- export-playback <script-file> <interval-ms> <output-json>");
 
     return 1;
 }
@@ -143,27 +153,42 @@ static int PrintPlaybackFile(
 {
     var interval = ParsePositiveMilliseconds(intervalMillisecondsText);
     var script = File.ReadAllText(path);
-    var context = SimulationContext.Create(profile, initialPosition);
-    var commands = parser.Parse(script);
-    ValidateCommandSequence(commands, profile);
-
-    var simulator = new RobotSimulator();
-    var result = simulator.Execute(context, commands);
-    var playbackSampler = new CartesianPlaybackSampler();
-    var workspaceBounds = CartesianWorkspaceBounds.FromProfile(profile);
-    var frames = playbackSampler.Sample(result, interval);
+    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, parser, interval);
 
     Console.WriteLine("RobotStudio CLI");
     Console.WriteLine();
     Console.WriteLine($"Playback interval: {interval.TotalMilliseconds:0.###} ms");
     Console.WriteLine();
-    PrintWorkspaceBounds(workspaceBounds);
+    PrintWorkspaceBounds(snapshot.WorkspaceBounds);
     Console.WriteLine();
-    PrintPlayback(frames);
+    PrintPlayback(snapshot.Frames);
     Console.WriteLine();
-    PrintFinalResult(result);
+    PrintSnapshotResult(snapshot);
 
-    return result.Succeeded ? 0 : 1;
+    return snapshot.Succeeded ? 0 : 1;
+}
+
+static int ExportPlaybackFile(
+    string path,
+    string intervalMillisecondsText,
+    string outputPath,
+    CartesianRobotProfile profile,
+    CartesianPosition initialPosition,
+    RobotScriptParser parser)
+{
+    var interval = ParsePositiveMilliseconds(intervalMillisecondsText);
+    var script = File.ReadAllText(path);
+    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, parser, interval);
+    var json = JsonSerializer.Serialize(snapshot, CreateJsonOptions());
+
+    File.WriteAllText(outputPath, json);
+
+    Console.WriteLine("Playback snapshot exported.");
+    Console.WriteLine($"Output: {outputPath}");
+    Console.WriteLine($"Frames: {snapshot.FrameCount}");
+    Console.WriteLine($"Total duration: {snapshot.TotalDuration.TotalSeconds:0.###} s");
+
+    return snapshot.Succeeded ? 0 : 1;
 }
 
 static void ValidateCommandSequence(
@@ -281,7 +306,7 @@ static string FormatVisualCommandSource(RobotVisualState frame)
     return $"command {frame.CommandIndex.Value + 1}: {frame.CommandName}{source}";
 }
 
-static void PrintFinalResult(SimulationResult result)
+static void PrintSimulationResult(SimulationResult result)
 {
     Console.WriteLine(result.Succeeded ? "Simulation completed." : "Simulation failed.");
     Console.WriteLine($"Final state: {result.FinalContext.State}");
@@ -296,6 +321,43 @@ static void PrintFinalResult(SimulationResult result)
         Console.WriteLine($"Failure: {result.Failure.Message}");
     }
 }
+
+static void PrintSnapshotResult(CartesianPlaybackSnapshot snapshot)
+{
+    Console.WriteLine(snapshot.Succeeded ? "Simulation completed." : "Simulation failed.");
+    Console.WriteLine($"Total frames: {snapshot.FrameCount}");
+    Console.WriteLine($"Total simulated time: {snapshot.TotalDuration.TotalSeconds:0.###} s");
+
+    if (snapshot.FailureMessage is not null)
+    {
+        Console.WriteLine($"Failure: {snapshot.FailureMessage}");
+    }
+}
+
+static CartesianPlaybackSnapshot BuildPlaybackSnapshot(
+    string script,
+    CartesianRobotProfile profile,
+    CartesianPosition initialPosition,
+    RobotScriptParser parser,
+    TimeSpan interval)
+{
+    var context = SimulationContext.Create(profile, initialPosition);
+    var commands = parser.Parse(script);
+    ValidateCommandSequence(commands, profile);
+
+    var simulator = new RobotSimulator();
+    var result = simulator.Execute(context, commands);
+    var snapshotBuilder = new CartesianPlaybackSnapshotBuilder();
+
+    return snapshotBuilder.Build(profile, result, interval);
+}
+
+static JsonSerializerOptions CreateJsonOptions() =>
+    new()
+    {
+        WriteIndented = true,
+        Converters = { new JsonStringEnumConverter() }
+    };
 
 static string DescribeCommand(RobotCommand command) => command switch
 {

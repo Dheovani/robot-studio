@@ -11,7 +11,7 @@ The current goal is to build a clean, testable foundation before adding hardware
 - The first linear motion planner can estimate a simple movement plan.
 - The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
 - The simple DSL parser can read `HOME`, `MOVE`, and `WAIT` scripts.
-- The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, and can print fixed-interval playback frames with workspace bounds.
+- The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, prints fixed-interval playback frames with workspace bounds, and exports playback snapshots as JSON.
 - xUnit tests cover the first domain and motion planner behaviors.
 - Hardware communication and UI are planned but not implemented yet.
 
@@ -64,6 +64,7 @@ dotnet run --project src/RobotStudio.Cli -- example
 dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
+dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
 ```
 
 ## License

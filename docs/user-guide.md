@@ -55,6 +55,12 @@ Print fixed-interval playback frames for a script file:
 dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
 ```
 
+Export fixed-interval playback data as JSON:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
+```
+
 Current output includes:
 
 - robot profile limits;
@@ -63,6 +69,7 @@ Current output includes:
 - simulation timeline with command source line numbers;
 - fixed-interval playback frames when using the `playback` command;
 - Cartesian workspace bounds when using the `playback` command;
+- JSON playback snapshots when using the `export-playback` command;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -83,6 +90,7 @@ Current simulation output includes:
 - final context;
 - timeline steps;
 - fixed-interval visual playback frames;
+- exportable playback snapshots for future visual tools;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

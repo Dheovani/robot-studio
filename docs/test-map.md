@@ -104,6 +104,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian workspace bounds use robot axis limits.
 - [x] Cartesian workspace bounds expose workspace size and center.
 - [x] Cartesian workspace bounds identify positions inside, on, and outside the workspace.
+- [x] Cartesian playback snapshot includes workspace bounds, frames, duration, and success state.
+- [x] Cartesian playback snapshot preserves failure messages.
 
 ### Required Next Coverage
 
@@ -156,3 +158,4 @@ Additional manual CLI checks:
 - `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot` validates the example script.
 - `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.
 - `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
+- `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json` exports fixed-interval playback data.
