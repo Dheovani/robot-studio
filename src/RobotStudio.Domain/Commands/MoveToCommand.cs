@@ -10,7 +10,10 @@ public sealed record MoveToCommand : RobotCommand
     {
         if (requestedVelocityMillimetersPerSecond <= 0)
         {
-            throw new InvalidRobotCommandException("Requested movement velocity must be greater than zero.");
+            throw new InvalidRobotCommandException(
+                "MOVE requested velocity must be greater than zero. " +
+                $"Invalid value: {requestedVelocityMillimetersPerSecond:0.###} mm/s. " +
+                "Expected value: greater than zero.");
         }
 
         TargetPosition = targetPosition;

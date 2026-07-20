@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Motion;
 
@@ -34,6 +35,12 @@ public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, RobotProfi
                 end,
                 DistanceMillimeters: 0,
                 Segments: Array.Empty<MotionSegment<CartesianPosition>>());
+        }
+
+        if (involvedAxes.Length == 0)
+        {
+            throw new ImpossibleMovementException(
+                "The movement distance is greater than zero, but no axis has a measurable displacement.");
         }
 
         var velocityMillimetersPerSecond = GetEffectiveVelocity(

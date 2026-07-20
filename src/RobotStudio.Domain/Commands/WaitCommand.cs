@@ -1,3 +1,5 @@
+using RobotStudio.Domain.Exceptions;
+
 namespace RobotStudio.Domain.Commands;
 
 public sealed record WaitCommand : RobotCommand
@@ -6,7 +8,9 @@ public sealed record WaitCommand : RobotCommand
     {
         if (duration < TimeSpan.Zero)
         {
-            throw new ArgumentOutOfRangeException(nameof(duration), "Wait duration cannot be negative.");
+            throw new InvalidRobotCommandException(
+                $"WAIT duration cannot be negative. Invalid value: {duration.TotalMilliseconds:0.###} ms. " +
+                "Expected value: zero or greater.");
         }
 
         Duration = duration;

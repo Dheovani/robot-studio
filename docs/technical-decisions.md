@@ -30,6 +30,10 @@ CLI and future scripting layers should catch domain errors and present friendly 
 
 Domain exceptions live under the `RobotStudio.Domain.Exceptions` namespace.
 
+Command validation errors should use `InvalidRobotCommandException` when the command itself is malformed, such as a negative `WAIT` duration or a non-positive requested movement speed.
+
+Motion planning may use `ImpossibleMovementException` when positions and profile data are valid, but the planner still cannot produce a meaningful executable movement.
+
 ### Motion Planning
 
 The first motion planner is intentionally simple. It plans a linear movement, validates positions, estimates duration, and uses the lowest maximum velocity among involved axes.

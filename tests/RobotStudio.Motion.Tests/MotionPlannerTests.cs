@@ -146,6 +146,19 @@ public sealed class MotionPlannerTests
     }
 
     [Fact]
+    public void PlanLinearMove_WhenDistanceExistsButNoAxisDisplacementIsMeasurable_ShouldThrow()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        Assert.Throws<ImpossibleMovementException>(() =>
+            planner.PlanLinearMove(
+                new CartesianPosition(X: 0, Y: 0, Z: 0),
+                new CartesianPosition(X: 0.000_000_7, Y: 0.000_000_7, Z: 0.000_000_7),
+                profile));
+    }
+
+    [Fact]
     public void PlanLinearMove_ReturnsStationaryPlan_WhenStartEqualsEnd()
     {
         var planner = new MotionPlanner();

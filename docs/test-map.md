@@ -22,6 +22,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Command validator accepts `HOME`.
 - [x] Command validator accepts `WAIT`.
 - [x] Command validator validates `MOVE` target position.
+- [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
+- [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
+- [x] Domain error messages identify invalid values and expected ranges or states.
+- [x] `ImpossibleMovementException` exposes the reason a movement cannot be planned.
 - [x] Null command sequence input is rejected.
 - [x] Empty command sequence is rejected.
 - [x] Command sequence containing null command is rejected.
@@ -31,7 +35,6 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [ ] Full robot profile validates positions exactly at minimum X/Y/Z limits.
 - [ ] Full robot profile validates positions exactly at maximum X/Y/Z limits.
-- [ ] `WaitCommand` rejects negative duration.
 
 ## `RobotStudio.Motion.Tests`
 
@@ -46,6 +49,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Requested velocity above the axis limit is capped by the axis limit.
 - [x] Motion plan exposes total distance.
 - [x] Motion segment exposes involved axes.
+- [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 
 ### Required Next Coverage
 

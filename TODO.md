@@ -87,14 +87,14 @@ Goal: make robot execution state explicit and teachable.
 Goal: make errors clear enough for students to understand what went wrong.
 
 - [x] Add explicit error for position outside axis limits.
-- [ ] Add explicit error for invalid robot command.
+- [x] Add explicit error for invalid robot command.
 - [x] Add explicit error for invalid state transition.
-- [ ] Add explicit error for impossible movement.
-- [ ] Ensure each domain error message identifies the invalid value.
-- [ ] Ensure each domain error message identifies the expected valid range or state.
-- [ ] Add tests for each domain error type.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Add explicit error for impossible movement.
+- [x] Ensure each domain error message identifies the invalid value.
+- [x] Ensure each domain error message identifies the expected valid range or state.
+- [x] Add tests for each domain error type.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 5. Cartesian Robot Model
 
@@ -153,8 +153,8 @@ Goal: represent command sequences before building the simulator.
 - [x] Validate that `MOVE` target position is checked against the robot profile before execution.
 - [x] Add tests for valid command sequences.
 - [x] Add tests for invalid command sequences.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 8. Simulation V1
 
@@ -193,7 +193,6 @@ WAIT 500
 HOME
 ```
 
-- [ ] Add project reference from `RobotStudio.Scripting` to `RobotStudio.Domain`.
 - [x] Add project reference from `RobotStudio.Scripting` to `RobotStudio.Domain`.
 - [x] Decide whether `SPEED` is required or optional in `MOVE`.
 - [x] Decide default speed if `SPEED` is optional.
