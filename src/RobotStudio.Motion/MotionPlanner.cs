@@ -3,14 +3,14 @@ using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Motion;
 
-public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, RobotProfile>
+public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, CartesianRobotProfile>
 {
     private const double MovementToleranceMillimeters = 0.000_001;
 
     public MotionPlan<CartesianPosition> PlanMove(
         CartesianPosition start,
         CartesianPosition end,
-        RobotProfile robotProfile,
+        CartesianRobotProfile robotProfile,
         double? requestedVelocityMillimetersPerSecond = null)
     {
         ArgumentNullException.ThrowIfNull(robotProfile);
@@ -60,7 +60,7 @@ public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, RobotProfi
     public MotionPlan<CartesianPosition> PlanLinearMove(
         CartesianPosition start,
         CartesianPosition end,
-        RobotProfile robotProfile,
+        CartesianRobotProfile robotProfile,
         double? requestedVelocityMillimetersPerSecond = null) =>
         PlanMove(
             start,
@@ -71,7 +71,7 @@ public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, RobotProfi
     private static Axis[] GetInvolvedAxes(
         CartesianPosition start,
         CartesianPosition end,
-        RobotProfile robotProfile) =>
+        CartesianRobotProfile robotProfile) =>
         robotProfile.Axes
             .Where(axis => Math.Abs(end.GetCoordinate(axis.Id) - start.GetCoordinate(axis.Id)) > MovementToleranceMillimeters)
             .ToArray();

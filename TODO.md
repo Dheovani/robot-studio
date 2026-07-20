@@ -31,7 +31,7 @@ Goal: keep the existing first vertical slice compiling and tested before expandi
 - [x] Create `RobotStudio.Motion.Tests`.
 - [x] Add `Axis`.
 - [x] Add `CartesianPosition`.
-- [x] Add `RobotProfile`.
+- [x] Add `CartesianRobotProfile`.
 - [x] Add domain validation for Cartesian axis limits.
 - [x] Add `MoveToCommand`.
 - [x] Add `HomeCommand`.
@@ -55,7 +55,7 @@ Goal: separate general robotics concepts from the first Cartesian robot implemen
 - [x] Introduce a general robot position concept without breaking the current Cartesian example.
 - [x] Introduce a general robot profile concept without making the current code abstract too early.
 - [x] Keep `CartesianPosition` as the first concrete position type.
-- [x] Keep `RobotProfile` working for the current Cartesian robot until a better name is chosen.
+- [x] Rename the current Cartesian profile from `RobotProfile` to `CartesianRobotProfile`.
 - [x] Add tests proving the current Cartesian validation still works after the cleanup.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.

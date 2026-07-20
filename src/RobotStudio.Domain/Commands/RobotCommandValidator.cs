@@ -5,7 +5,7 @@ namespace RobotStudio.Domain.Commands;
 
 public static class RobotCommandValidator
 {
-    public static void Validate(RobotCommand command, RobotProfile profile)
+    public static void Validate(RobotCommand command, CartesianRobotProfile profile)
     {
         ArgumentNullException.ThrowIfNull(command);
         ArgumentNullException.ThrowIfNull(profile);

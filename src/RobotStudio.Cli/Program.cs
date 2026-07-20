@@ -14,7 +14,7 @@ const string ExampleScript =
 CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
 CultureInfo.CurrentUICulture = CultureInfo.InvariantCulture;
 
-var profile = RobotProfile.CreateCartesian(
+var profile = CartesianRobotProfile.CreateCartesian(
     new Axis(AxisId.X, 0, 300, 120, 240),
     new Axis(AxisId.Y, 0, 200, 100, 200),
     new Axis(AxisId.Z, 0, 150, 80, 160));
@@ -63,7 +63,7 @@ static int PrintExampleScript()
 
 static int ValidateScriptFile(
     string path,
-    RobotProfile profile,
+    CartesianRobotProfile profile,
     RobotScriptParser parser)
 {
     var script = File.ReadAllText(path);
@@ -79,7 +79,7 @@ static int ValidateScriptFile(
 
 static int SimulateScriptFile(
     string path,
-    RobotProfile profile,
+    CartesianRobotProfile profile,
     CartesianPosition initialPosition,
     RobotScriptParser parser)
 {
@@ -90,7 +90,7 @@ static int SimulateScriptFile(
 
 static int SimulateScript(
     string script,
-    RobotProfile profile,
+    CartesianRobotProfile profile,
     CartesianPosition initialPosition,
     RobotScriptParser parser)
 {
@@ -129,7 +129,7 @@ static int PrintUsage()
 
 static void ValidateCommandSequence(
     RobotCommandSequence commandSequence,
-    RobotProfile profile)
+    CartesianRobotProfile profile)
 {
     foreach (var command in commandSequence.Commands)
     {
@@ -137,7 +137,7 @@ static void ValidateCommandSequence(
     }
 }
 
-static void PrintProfile(RobotProfile profile)
+static void PrintProfile(CartesianRobotProfile profile)
 {
     Console.WriteLine("Robot profile:");
 

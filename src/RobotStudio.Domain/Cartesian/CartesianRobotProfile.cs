@@ -1,8 +1,10 @@
+using RobotStudio.Domain;
+
 namespace RobotStudio.Domain.Cartesian;
 
-public sealed record RobotProfile(Axis XAxis, Axis YAxis, Axis ZAxis) : IRobotProfile<CartesianPosition>
+public sealed record CartesianRobotProfile(Axis XAxis, Axis YAxis, Axis ZAxis) : IRobotProfile<CartesianPosition>
 {
-    public static RobotProfile CreateCartesian(
+    public static CartesianRobotProfile CreateCartesian(
         Axis xAxis,
         Axis yAxis,
         Axis zAxis) => new(xAxis, yAxis, zAxis);

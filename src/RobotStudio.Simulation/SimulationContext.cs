@@ -4,13 +4,13 @@ using RobotStudio.Domain.Cartesian;
 namespace RobotStudio.Simulation;
 
 public sealed record SimulationContext(
-    RobotProfile RobotProfile,
+    CartesianRobotProfile RobotProfile,
     CartesianPosition CurrentPosition,
     RobotState State,
     TimeSpan ElapsedTime)
 {
     public static SimulationContext Create(
-        RobotProfile robotProfile,
+        CartesianRobotProfile robotProfile,
         CartesianPosition currentPosition)
     {
         ArgumentNullException.ThrowIfNull(robotProfile);

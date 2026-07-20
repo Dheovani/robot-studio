@@ -13,9 +13,9 @@ public sealed class RobotAbstractionTests
     }
 
     [Fact]
-    public void RobotProfile_ShouldImplementRobotProfileForCartesianPosition()
+    public void CartesianRobotProfile_ShouldImplementRobotProfileForCartesianPosition()
     {
-        var profile = RobotProfile.CreateCartesian(
+        var profile = CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));

@@ -3,7 +3,7 @@ using RobotStudio.Domain.Exceptions;
 
 namespace RobotStudio.Domain.Tests;
 
-public sealed class RobotProfileTests
+public sealed class CartesianRobotProfileTests
 {
     [Fact]
     public void ValidatePosition_DoesNotThrow_WhenPositionIsInsideAxisLimits()
@@ -49,8 +49,8 @@ public sealed class RobotProfileTests
         Assert.Equal(AxisId.X, exception.Axis);
     }
 
-    private static RobotProfile CreateProfile() =>
-        RobotProfile.CreateCartesian(
+    private static CartesianRobotProfile CreateProfile() =>
+        CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));

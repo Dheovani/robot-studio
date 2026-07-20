@@ -10,7 +10,7 @@ The domain exposes small general contracts for robot positions and profiles. Con
 
 General robotics concepts stay in `RobotStudio.Domain`. This includes robot state, state transitions, command abstractions, command sequences, source metadata, general position/profile contracts, and domain exceptions.
 
-Cartesian-specific concepts stay in `RobotStudio.Domain.Cartesian`. This includes `Axis`, `AxisId`, `CartesianPosition`, and the current `RobotProfile`. The `RobotProfile` name remains temporarily compatible with the first implementation, but its namespace now makes clear that it represents the introductory Cartesian model.
+Cartesian-specific concepts stay in `RobotStudio.Domain.Cartesian`. This includes `Axis`, `AxisId`, `CartesianPosition`, and `CartesianRobotProfile`.
 
 ### First Robot Model
 

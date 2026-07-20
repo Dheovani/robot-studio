@@ -1,3 +1,5 @@
+using RobotStudio.Domain;
+
 namespace RobotStudio.Domain.Cartesian;
 
 public readonly record struct CartesianPosition(double X, double Y, double Z) : IRobotPosition

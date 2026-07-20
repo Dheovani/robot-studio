@@ -61,8 +61,8 @@ public sealed class RobotCommandValidatorTests
         Assert.Throws<PositionOutOfRangeException>(() => RobotCommandValidator.Validate(command, profile));
     }
 
-    private static RobotProfile CreateProfile() =>
-        RobotProfile.CreateCartesian(
+    private static CartesianRobotProfile CreateProfile() =>
+        CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));
