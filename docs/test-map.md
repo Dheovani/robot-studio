@@ -8,6 +8,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [x] Valid Cartesian position inside limits does not throw.
 - [x] Cartesian position outside limits throws `PositionOutOfRangeException`.
+- [x] Cartesian position implements the general robot position contract.
+- [x] Cartesian robot profile implements the general robot profile contract.
 - [x] Robot state exposes the first execution state values.
 - [x] `HOME` can transition from every robot state to `Homing`.
 - [x] Active states can transition to `Completed`.
@@ -35,6 +37,7 @@ This document maps expected automated tests to project behavior. It should be up
 ### Current Coverage
 
 - [x] Planner creates a plan for valid movement.
+- [x] Planner implements the general motion planner contract for the Cartesian profile.
 - [x] Planner rejects target position outside limits.
 - [x] Non-zero displacement has positive duration.
 - [x] Start position equal to end position returns a stationary plan.

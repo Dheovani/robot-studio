@@ -6,6 +6,14 @@ namespace RobotStudio.Motion.Tests;
 public sealed class MotionPlannerTests
 {
     [Fact]
+    public void MotionPlanner_ShouldImplementMotionPlannerForCartesianProfile()
+    {
+        var planner = new MotionPlanner();
+
+        Assert.IsAssignableFrom<IMotionPlanner<CartesianPosition, RobotProfile>>(planner);
+    }
+
+    [Fact]
     public void PlanLinearMove_ReturnsPlan_WhenMovementIsValid()
     {
         var planner = new MotionPlanner();
@@ -73,8 +81,8 @@ public sealed class MotionPlannerTests
             new CartesianPosition(X: 50, Y: 0, Z: 0),
             profile);
 
-        var axis = Assert.Single(plan.Segments[0].InvolvedAxes);
-        Assert.Equal(AxisId.X, axis);
+        var component = Assert.Single(plan.Segments[0].InvolvedComponents);
+        Assert.Equal("X", component.Name);
     }
 
     [Fact]
@@ -88,7 +96,7 @@ public sealed class MotionPlannerTests
             new CartesianPosition(X: 50, Y: 25, Z: 0),
             profile);
 
-        Assert.Equal([AxisId.X, AxisId.Y], plan.Segments[0].InvolvedAxes);
+        Assert.Equal(["X", "Y"], plan.Segments[0].InvolvedComponents.Select(component => component.Name));
         Assert.Equal(100, plan.Segments[0].VelocityMillimetersPerSecond);
     }
 
@@ -103,7 +111,7 @@ public sealed class MotionPlannerTests
             new CartesianPosition(X: 50, Y: 25, Z: 10),
             profile);
 
-        Assert.Equal([AxisId.X, AxisId.Y, AxisId.Z], plan.Segments[0].InvolvedAxes);
+        Assert.Equal(["X", "Y", "Z"], plan.Segments[0].InvolvedComponents.Select(component => component.Name));
         Assert.Equal(80, plan.Segments[0].VelocityMillimetersPerSecond);
     }
 

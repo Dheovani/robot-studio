@@ -2,11 +2,11 @@ using RobotStudio.Domain;
 
 namespace RobotStudio.Motion;
 
-public sealed class MotionPlanner
+public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, RobotProfile>
 {
     private const double MovementToleranceMillimeters = 0.000_001;
 
-    public MotionPlan PlanLinearMove(
+    public MotionPlan<CartesianPosition> PlanMove(
         CartesianPosition start,
         CartesianPosition end,
         RobotProfile robotProfile,
@@ -29,26 +29,37 @@ public sealed class MotionPlanner
 
         if (distanceMillimeters <= MovementToleranceMillimeters)
         {
-            return new MotionPlan(
+            return new MotionPlan<CartesianPosition>(
                 start,
                 end,
                 DistanceMillimeters: 0,
-                Segments: Array.Empty<MotionSegment>());
+                Segments: Array.Empty<MotionSegment<CartesianPosition>>());
         }
 
         var velocityMillimetersPerSecond = GetEffectiveVelocity(
             involvedAxes,
             requestedVelocityMillimetersPerSecond);
         var duration = TimeSpan.FromSeconds(distanceMillimeters / velocityMillimetersPerSecond);
-        var segment = new MotionSegment(
+        var segment = new MotionSegment<CartesianPosition>(
             start,
             end,
-            involvedAxes.Select(axis => axis.Id).ToArray(),
+            involvedAxes.Select(axis => new MotionComponent(axis.Id.ToString())).ToArray(),
             duration,
             velocityMillimetersPerSecond);
 
-        return new MotionPlan(start, end, distanceMillimeters, new[] { segment });
+        return new MotionPlan<CartesianPosition>(start, end, distanceMillimeters, new[] { segment });
     }
+
+    public MotionPlan<CartesianPosition> PlanLinearMove(
+        CartesianPosition start,
+        CartesianPosition end,
+        RobotProfile robotProfile,
+        double? requestedVelocityMillimetersPerSecond = null) =>
+        PlanMove(
+            start,
+            end,
+            robotProfile,
+            requestedVelocityMillimetersPerSecond);
 
     private static Axis[] GetInvolvedAxes(
         CartesianPosition start,

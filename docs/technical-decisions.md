@@ -6,6 +6,8 @@
 
 RobotStudio must not be treated as only a Cartesian robot simulator. The first supported robot is a generic three-axis Cartesian robot, but the architecture should allow future robot families such as articulated robots and drones.
 
+The domain exposes small general contracts for robot positions and profiles. Concrete robot families should implement these contracts instead of forcing every robot into Cartesian assumptions.
+
 ### First Robot Model
 
 The first robot model is a generic introductory Cartesian robot with X, Y, and Z axes. It is not modeled as a CNC machine, 3D printer, plotter, or pick-and-place machine yet.
@@ -33,6 +35,8 @@ The first motion planner is intentionally simple. It plans a linear movement, va
 When a movement command provides a requested speed, the planner uses the lower value between the requested speed and the involved axis limits. This keeps scripts expressive without allowing them to bypass physical constraints.
 
 Motion plans expose total movement distance, and motion segments expose the involved axes. These values are useful for CLI output, tests, future visualization, and classroom explanations.
+
+Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.
 
 Advanced robotics physics is out of scope for now.
 

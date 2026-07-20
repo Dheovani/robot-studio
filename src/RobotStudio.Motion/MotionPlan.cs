@@ -2,11 +2,12 @@ using RobotStudio.Domain;
 
 namespace RobotStudio.Motion;
 
-public sealed record MotionPlan(
-    CartesianPosition Start,
-    CartesianPosition End,
+public sealed record MotionPlan<TPosition>(
+    TPosition Start,
+    TPosition End,
     double DistanceMillimeters,
-    IReadOnlyList<MotionSegment> Segments)
+    IReadOnlyList<MotionSegment<TPosition>> Segments)
+    where TPosition : IRobotPosition
 {
     public TimeSpan TotalDuration => TimeSpan.FromTicks(Segments.Sum(segment => segment.Duration.Ticks));
 

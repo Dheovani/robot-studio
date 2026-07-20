@@ -48,15 +48,15 @@ Goal: keep the existing first vertical slice compiling and tested before expandi
 Goal: separate general robotics concepts from the first Cartesian robot implementation.
 
 - [ ] Review current domain type names and classify each type as general robotics or Cartesian-specific.
-- [ ] Decide which namespace will hold general robot concepts.
+- [x] Decide which namespace will hold general robot concepts.
 - [ ] Decide which namespace will hold Cartesian robot concepts.
-- [ ] Introduce a general robot model concept without breaking the current Cartesian example.
-- [ ] Introduce a general robot profile concept without making the current code abstract too early.
-- [ ] Keep `CartesianPosition` as the first concrete position type.
-- [ ] Keep `RobotProfile` working for the current Cartesian robot until a better name is chosen.
-- [ ] Add tests proving the current Cartesian validation still works after the cleanup.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Introduce a general robot position concept without breaking the current Cartesian example.
+- [x] Introduce a general robot profile concept without making the current code abstract too early.
+- [x] Keep `CartesianPosition` as the first concrete position type.
+- [x] Keep `RobotProfile` working for the current Cartesian robot until a better name is chosen.
+- [x] Add tests proving the current Cartesian validation still works after the cleanup.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 3. Domain State Model
 
@@ -134,6 +134,8 @@ Goal: keep movement planning simple, deterministic, and easy to explain.
 - [x] Add tests for two-axis movement.
 - [x] Add tests for three-axis movement.
 - [x] Add tests proving the slowest involved axis limits the movement.
+- [x] Add general motion planner contract.
+- [x] Make current motion planner implement the general planner contract.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

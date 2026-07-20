@@ -1,6 +1,6 @@
 namespace RobotStudio.Domain;
 
-public readonly record struct CartesianPosition(double X, double Y, double Z)
+public readonly record struct CartesianPosition(double X, double Y, double Z) : IRobotPosition
 {
     public double GetCoordinate(AxisId axis) => axis switch
     {
