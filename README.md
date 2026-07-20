@@ -34,6 +34,9 @@ The current goal is to build a clean, testable foundation before adding hardware
 - [Test Map](docs/test-map.md)
 - [User Guide](docs/user-guide.md)
 - [Continuous Integration](docs/ci.md)
+- [Contributing](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 ## Build
 
@@ -60,6 +63,15 @@ dotnet run --project src/RobotStudio.Cli -- example
 dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 ```
+
+## License
+
+RobotStudio is proprietary software. Personal, non-commercial study use is
+allowed under the [RobotStudio Personal Study License](LICENSE).
+
+Commercial, business, organizational, institutional, brand-related,
+redistribution, sublicensing, and public hosting uses are not allowed without
+prior written permission from the copyright holder.
 
 ## Not In Scope Yet
 
