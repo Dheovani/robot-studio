@@ -32,6 +32,8 @@ The first motion planner is intentionally simple. It plans a linear movement, va
 
 When a movement command provides a requested speed, the planner uses the lower value between the requested speed and the involved axis limits. This keeps scripts expressive without allowing them to bypass physical constraints.
 
+Motion plans expose total movement distance, and motion segments expose the involved axes. These values are useful for CLI output, tests, future visualization, and classroom explanations.
+
 Advanced robotics physics is out of scope for now.
 
 Out of scope:

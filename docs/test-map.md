@@ -40,14 +40,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Start position equal to end position returns a stationary plan.
 - [x] Requested velocity below the axis limit is used.
 - [x] Requested velocity above the axis limit is capped by the axis limit.
+- [x] Motion plan exposes total distance.
+- [x] Motion segment exposes involved axes.
 
 ### Required Next Coverage
 
-- [ ] Single-axis movement uses that axis velocity limit.
-- [ ] Two-axis movement uses the slowest involved axis.
-- [ ] Three-axis movement uses the slowest involved axis.
-- [ ] Motion plan exposes total distance after distance is added.
-- [ ] Motion segment exposes involved axes after involved axes are added.
+- [x] Single-axis movement uses that axis velocity limit.
+- [x] Two-axis movement uses the slowest involved axis.
+- [x] Three-axis movement uses the slowest involved axis.
 
 ## `RobotStudio.Simulation.Tests`
 

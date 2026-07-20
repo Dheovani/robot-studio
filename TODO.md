@@ -128,14 +128,14 @@ Goal: keep movement planning simple, deterministic, and easy to explain.
 - [x] Return positive duration for non-zero movement.
 - [x] Respect requested command speed when it is below axis limits.
 - [x] Cap requested command speed when it is above axis limits.
-- [ ] Expose total movement distance in `MotionPlan`.
-- [ ] Expose involved axes in `MotionSegment` or equivalent type.
-- [ ] Add tests for single-axis movement.
-- [ ] Add tests for two-axis movement.
-- [ ] Add tests for three-axis movement.
-- [ ] Add tests proving the slowest involved axis limits the movement.
-- [ ] Run `dotnet build`.
-- [ ] Run `dotnet test`.
+- [x] Expose total movement distance in `MotionPlan`.
+- [x] Expose involved axes in `MotionSegment` or equivalent type.
+- [x] Add tests for single-axis movement.
+- [x] Add tests for two-axis movement.
+- [x] Add tests for three-axis movement.
+- [x] Add tests proving the slowest involved axis limits the movement.
+- [x] Run `dotnet build`.
+- [x] Run `dotnet test`.
 
 ## 7. Command Execution Model
 
