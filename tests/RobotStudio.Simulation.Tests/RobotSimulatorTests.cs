@@ -144,6 +144,35 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenSequenceHasMultipleCommands_ShouldRecordExactStateTransitionsInOrder()
+    {
+        var simulator = new RobotSimulator();
+        var context = SimulationContext.Create(
+            CreateProfile(),
+            new CartesianPosition(X: 0, Y: 0, Z: 0));
+        var sequence = new RobotCommandSequence(
+        [
+            new HomeCommand(),
+            new MoveToCommand(new CartesianPosition(X: 20, Y: 10, Z: 5)),
+            new WaitCommand(TimeSpan.FromSeconds(1))
+        ]);
+
+        var result = simulator.Execute(context, sequence);
+
+        Assert.Equal(
+            [
+                RobotState.Idle,
+                RobotState.Homing,
+                RobotState.Completed,
+                RobotState.Moving,
+                RobotState.Completed,
+                RobotState.Waiting,
+                RobotState.Completed
+            ],
+            result.Timeline.Select(step => step.State));
+    }
+
+    [Fact]
     public void Execute_WhenCommandHasSource_ShouldRecordCommandSourceInTimeline()
     {
         var simulator = new RobotSimulator();

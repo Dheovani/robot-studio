@@ -12,6 +12,8 @@
 - [x] Start students with ready-made CLI examples before asking them to write scripts.
 - [x] Simulate robot state, not only position.
 - [x] Use technical state names in code.
+- [x] Use a proprietary personal-study license.
+- [x] Reserve commercial, organizational, institutional, brand, redistribution, and sublicensing rights.
 - [x] Do not add lesson/scenario management inside the app.
 - [x] Do not build UI yet.
 
@@ -195,7 +197,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Keep simulation-generated timeline steps without command source.
 - [x] Record command source when a command fails.
 - [x] Add tests proving timeline steps preserve command source.
-- [ ] Add tests proving timeline records exact state transitions in order.
+- [x] Add tests proving timeline records exact state transitions in order.
 - [x] Add tests proving invalid initial simulation context is rejected.
 - [x] Add tests proving faulted simulations preserve the last valid position.
 - [x] Add tests proving zero-distance `MOVE` is simulated predictably.
@@ -289,7 +291,7 @@ Goal: prepare for real devices without implementing hardware communication too e
 
 Goal: prepare a future visual inspection tool without influencing the current core.
 
-- [ ] Complete the pre-visual simulation readiness checklist before adding any visual framework.
+- [x] Complete the pre-visual simulation readiness checklist before adding any visual framework.
 - [ ] Do not add Avalonia, WPF, MAUI, game engines, or 3D libraries yet.
 - [ ] Keep visual coordinate decisions outside the current domain model.
 - [ ] Later, define a fixed virtual environment for robot visualization.
