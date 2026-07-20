@@ -69,12 +69,16 @@ Goal: make robot execution state explicit and teachable.
 - [x] Add state value `Waiting`.
 - [x] Add state value `Completed`.
 - [x] Add state value `Faulted`.
-- [ ] Define which state is the initial state of a new simulation.
-- [ ] Define which states can transition to `Moving`.
-- [ ] Define which states can transition to `Waiting`.
+- [x] Define which state is the initial state of a new simulation.
+- [x] Define which states can transition to `Moving`.
+- [x] Define which states can transition to `Waiting`.
 - [x] Define which states can transition to `Homing`.
-- [ ] Define which states can transition to `Completed`.
-- [ ] Define which failures transition to `Faulted`.
+- [x] Define which states can transition to `Completed`.
+- [x] Define which failures transition to `Faulted`.
+- [x] Add helper for states that are actively executing work.
+- [x] Add helper for states that can start normal commands.
+- [x] Add helper for states that end the current command.
+- [x] Add helper for recoverable states.
 - [x] Add tests proving the first state values exist.
 - [x] Add tests for valid state transitions.
 - [x] Add tests for invalid state transitions.

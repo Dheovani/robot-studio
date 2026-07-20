@@ -15,8 +15,16 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Axis configuration rejects non-positive maximum acceleration.
 - [x] Axis accepts coordinates exactly at minimum and maximum limits.
 - [x] Robot state exposes the first execution state values.
+- [x] Robot state initial value is explicitly defined as `Idle`.
 - [x] `HOME` can transition from every robot state to `Homing`.
+- [x] Ready states can transition to `Moving`.
+- [x] Ready states can transition to `Waiting`.
 - [x] Active states can transition to `Completed`.
+- [x] Non-faulted states can transition to `Faulted`.
+- [x] State helpers identify active states.
+- [x] State helpers identify states ready for normal commands.
+- [x] State helpers identify command end states.
+- [x] State helpers identify recoverable states.
 - [x] Invalid state transitions return `false`.
 - [x] Invalid enforced state transitions throw `InvalidRobotStateTransitionException`.
 - [x] Command validator accepts `HOME`.

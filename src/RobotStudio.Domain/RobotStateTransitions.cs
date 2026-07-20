@@ -4,6 +4,8 @@ namespace RobotStudio.Domain;
 
 public static class RobotStateTransitions
 {
+    public const RobotState InitialState = RobotState.Idle;
+
     public static void EnsureCanTransitionTo(RobotState current, RobotState next)
     {
         if (!CanTransitionTo(current, next))
@@ -25,4 +27,16 @@ public static class RobotStateTransitions
             _ => false
         };
     }
+
+    public static bool IsActive(RobotState state) =>
+        state is RobotState.Moving or RobotState.Homing or RobotState.Waiting;
+
+    public static bool IsRecoverable(RobotState state) =>
+        state is RobotState.Faulted;
+
+    public static bool IsReadyForCommand(RobotState state) =>
+        state is RobotState.Idle or RobotState.Completed;
+
+    public static bool IsTerminalForCurrentCommand(RobotState state) =>
+        state is RobotState.Completed or RobotState.Faulted;
 }

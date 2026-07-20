@@ -69,6 +69,17 @@ The simulator must eventually model both position and robot state. State names a
 
 `HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable, initially through either `Idle` or `Homing`, while the exact recovery command remains open. Invalid state transitions must be explicit and use `InvalidRobotStateTransitionException`.
 
+The initial simulation state is `Idle`. Normal commands may start from `Idle` or `Completed`. The active execution states are `Moving`, `Homing`, and `Waiting`. A command ends in either `Completed` or `Faulted`.
+
+The allowed first-version transitions are:
+
+- `Idle` to `Moving`, `Homing`, `Waiting`, or `Faulted`.
+- `Moving` to `Homing`, `Completed`, or `Faulted`.
+- `Homing` to `Homing`, `Completed`, or `Faulted`.
+- `Waiting` to `Homing`, `Completed`, or `Faulted`.
+- `Completed` to `Idle`, `Moving`, `Homing`, `Waiting`, or `Faulted`.
+- `Faulted` to `Idle` or `Homing`.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

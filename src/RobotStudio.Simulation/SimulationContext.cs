@@ -18,7 +18,7 @@ public sealed record SimulationContext(
         return new SimulationContext(
             robotProfile,
             currentPosition,
-            RobotState.Idle,
+            RobotStateTransitions.InitialState,
             TimeSpan.Zero);
     }
 }
