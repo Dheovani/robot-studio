@@ -384,15 +384,15 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.4. Desktop Script Workflow
 
-- [ ] Add a DSL script editor panel.
+- [x] Add a DSL script editor panel.
 - [ ] Add line numbering to the script editor.
 - [ ] Add simple command highlighting for `HOME`, `MOVE`, and `WAIT`.
-- [ ] Add `Validate` button.
-- [ ] Add `Simulate` button.
-- [ ] Add `Play` button integration with simulated script output.
-- [ ] Show parser errors with line numbers.
-- [ ] Highlight the script line that produced the current playback frame.
-- [ ] Keep G-code out of this milestone.
+- [x] Add `Validate` button.
+- [x] Add `Simulate` button.
+- [x] Add `Play` button integration with simulated script output.
+- [x] Show parser errors with line numbers.
+- [x] Highlight the script line that produced the current playback frame.
+- [x] Keep G-code out of this milestone.
 
 #### 13.1.5. Manual Cartesian Control
 

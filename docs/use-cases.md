@@ -119,6 +119,22 @@ Expected result:
 - students can inspect current state, position, command, source line, and simulated time;
 - visual controls do not change domain rules.
 
+### Edit And Simulate A DSL Script In The Desktop App
+
+Actor: student.
+
+Goal: change a Cartesian robot script and immediately inspect the simulated result.
+
+Current status: implemented for the first Cartesian WPF viewer.
+
+Expected result:
+
+- the student edits DSL text in the Cartesian viewer;
+- `Validate` reports parser or physical limit errors without running playback;
+- `Simulate` regenerates playback from the current script when the script is valid;
+- playback displays the command source line associated with the current frame;
+- G-code remains out of scope for this workflow.
+
 ### Send Commands To Real Hardware
 
 Actor: instructor or advanced student.

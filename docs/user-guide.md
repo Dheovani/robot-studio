@@ -49,8 +49,12 @@ Current desktop controls:
 - `Open Robot` on the Cartesian robot card.
 - disabled planned robot entries for future families.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
+- DSL editor inside the Cartesian viewer.
+- `Validate` to parse the current DSL script and check Cartesian limits.
+- `Simulate` to regenerate the visual playback from the current DSL script.
 - `Play` and `Reset` for playback.
 - Timeline slider for frame scrubbing.
+- current script line indicator during playback.
 - azimuth, elevation, and zoom sliders for camera control.
 - mouse drag inside the 3D viewport for orbit rotation.
 - mouse wheel inside the 3D viewport for zoom.
@@ -166,7 +170,9 @@ The CLI should later support:
 
 ## Not Available Yet
 
-- Loading custom scripts in the desktop viewer.
+- Loading script files in the desktop viewer.
+- Script editor line numbers.
+- Script syntax highlighting.
 - G-code parsing.
 - Hardware communication.
 - Arduino or ESP32 integration.

@@ -170,6 +170,55 @@
                         Background="#0F172A">
                     <ScrollViewer VerticalScrollBarVisibility="Auto">
                         <StackPanel>
+                            <TextBlock Text="Script"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <TextBox x:Name="ScriptEditorTextBox"
+                                     MinHeight="126"
+                                     Margin="0,10,0,10"
+                                     Padding="10"
+                                     AcceptsReturn="True"
+                                     AcceptsTab="True"
+                                     FontFamily="Consolas"
+                                     FontSize="13"
+                                     TextWrapping="NoWrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Auto"
+                                     Foreground="#E5E7EB"
+                                     Background="#111827"
+                                     BorderBrush="#334155"
+                                     CaretBrush="#E5E7EB" />
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        Margin="0,0,6,0"
+                                        Content="Validate"
+                                        Click="ValidateScriptButton_Click" />
+                                <Button Grid.Column="1"
+                                        Margin="6,0,0,0"
+                                        Content="Simulate"
+                                        Click="SimulateScriptButton_Click" />
+                            </Grid>
+
+                            <TextBlock x:Name="ScriptStatusText"
+                                       Margin="0,0,0,18"
+                                       Foreground="#94A3B8"
+                                       TextWrapping="Wrap"
+                                       Text="Edit the DSL script and validate it before simulation." />
+
+                            <TextBlock x:Name="CurrentScriptLineText"
+                                       Margin="0,0,0,18"
+                                       Foreground="#93C5FD"
+                                       TextWrapping="Wrap"
+                                       Text="Current script line: -" />
+
                             <TextBlock Text="Robot State"
                                        Foreground="#F9FAFB"
                                        FontSize="16"

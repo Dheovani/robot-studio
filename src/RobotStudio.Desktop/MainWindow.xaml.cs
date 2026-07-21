@@ -6,6 +6,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Domain.Cartesian;
+using RobotStudio.Domain.Commands;
 using RobotStudio.Scripting;
 using RobotStudio.Simulation;
 
@@ -48,6 +49,7 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
+        ScriptEditorTextBox.Text = ExampleScript;
         BuildRobotSelectionCards();
     }
 
@@ -143,6 +145,7 @@ public partial class MainWindow : Window
             $"Frame {currentFrameIndex + 1}/{snapshot.SceneFrameCount} | " +
             $"t={sceneFrame.Time.TotalSeconds:0.###}s | {sceneFrame.State}";
         UpdateStatePanel(sceneFrame);
+        UpdateScriptLineIndicator(sceneFrame);
     }
 
     private void CameraSlider_ValueChanged(
@@ -202,6 +205,36 @@ public partial class MainWindow : Window
         {
             OpenRobot(template);
         }
+    }
+
+    private void ValidateScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateSnapshotFromScript(ScriptEditorTextBox.Text, out _, out var message))
+        {
+            SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateSnapshotFromScript(ScriptEditorTextBox.Text, out var nextSnapshot, out var message))
+        {
+            SetScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        snapshot = nextSnapshot;
+        InitializeTimelineForSnapshot();
+        RenderFrame(index: 0);
+        SetScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
 
     private void RobotViewport_MouseLeftButtonDown(
@@ -308,14 +341,29 @@ public partial class MainWindow : Window
         FramesValueText.Text = $"{currentFrameIndex + 1} / {snapshot.SceneFrameCount}";
     }
 
-    private static CartesianPlaybackSnapshot CreateSnapshot()
+    private void UpdateScriptLineIndicator(CartesianSceneFrame sceneFrame)
     {
-        var profile = CartesianRobotProfile.CreateCartesian(
-            new Axis(AxisId.X, 0, 300, 120, 240),
-            new Axis(AxisId.Y, 0, 200, 100, 200),
-            new Axis(AxisId.Z, 0, 150, 80, 160));
+        if (sceneFrame.CommandSource is null)
+        {
+            CurrentScriptLineText.Text = "Current script line: -";
+            ScriptEditorTextBox.Select(0, 0);
+            return;
+        }
+
+        CurrentScriptLineText.Text =
+            $"Current script line: {sceneFrame.CommandSource.LineNumber} | {sceneFrame.CommandSource.Text}";
+
+        var selection = GetLineSelection(ScriptEditorTextBox.Text, sceneFrame.CommandSource.LineNumber);
+        ScriptEditorTextBox.Select(selection.Start, selection.Length);
+    }
+
+    private static CartesianPlaybackSnapshot CreateSnapshot(string script)
+    {
+        var profile = CreateCartesianProfile();
         var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-        var commands = new RobotScriptParser().Parse(ExampleScript);
+        var commands = new RobotScriptParser().Parse(script);
+        ValidateCommandSequence(commands, profile);
+
         var context = SimulationContext.Create(profile, initialPosition);
         var result = new RobotSimulator().Execute(context, commands);
 
@@ -484,7 +532,17 @@ public partial class MainWindow : Window
             return;
         }
 
-        snapshot = CreateSnapshot();
+        snapshot = CreateSnapshot(ScriptEditorTextBox.Text);
+        InitializeTimelineForSnapshot();
+    }
+
+    private void InitializeTimelineForSnapshot()
+    {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         baseCameraDistanceMillimeters = CalculateDistance(
             snapshot.Viewport.Target,
             snapshot.Viewport.CameraPosition);
@@ -501,6 +559,49 @@ public partial class MainWindow : Window
         playbackTimer.Stop();
         isPlaying = false;
         PlayPauseButton.Content = "Play";
+    }
+
+    private static CartesianRobotProfile CreateCartesianProfile() =>
+        CartesianRobotProfile.CreateCartesian(
+            new Axis(AxisId.X, 0, 300, 120, 240),
+            new Axis(AxisId.Y, 0, 200, 100, 200),
+            new Axis(AxisId.Z, 0, 150, 80, 160));
+
+    private static void ValidateCommandSequence(
+        RobotCommandSequence commands,
+        CartesianRobotProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private bool TryCreateSnapshotFromScript(
+        string script,
+        out CartesianPlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateSnapshot(script);
+            message = $"Script is valid. Generated {nextSnapshot.SceneFrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = exception.Message;
+            return false;
+        }
+    }
+
+    private void SetScriptStatus(
+        string message,
+        Color color)
+    {
+        ScriptStatusText.Text = message;
+        ScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private static Brush GetStatusBrush(RobotAvailabilityStatus status) => status switch
@@ -537,6 +638,51 @@ public partial class MainWindow : Window
         RobotCapability.GCode => "G-code",
         _ => capability.ToString()
     };
+
+    private static (int Start, int Length) GetLineSelection(
+        string text,
+        int lineNumber)
+    {
+        if (lineNumber <= 0)
+        {
+            return (0, 0);
+        }
+
+        var currentLine = 1;
+        var start = 0;
+
+        for (var index = 0; index < text.Length; index++)
+        {
+            if (currentLine == lineNumber)
+            {
+                start = index;
+                break;
+            }
+
+            if (text[index] == '\n')
+            {
+                currentLine++;
+            }
+        }
+
+        if (currentLine != lineNumber)
+        {
+            return (0, 0);
+        }
+
+        var end = text.IndexOf('\n', start);
+        if (end < 0)
+        {
+            end = text.Length;
+        }
+
+        while (end > start && text[end - 1] == '\r')
+        {
+            end--;
+        }
+
+        return (start, end - start);
+    }
 
     private static PerspectiveCamera CreateCamera(
         CartesianViewportSnapshot viewport,
