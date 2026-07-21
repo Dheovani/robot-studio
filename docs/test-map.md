@@ -173,3 +173,21 @@ Additional manual CLI checks:
 - `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
 - `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json` exports fixed-interval playback data.
 - `dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json` validates exported playback data.
+
+## Desktop Verification
+
+The first desktop viewer may be verified manually until UI behavior becomes stable enough for automated UI tests.
+
+Current command:
+
+```bash
+dotnet run --project src/RobotStudio.Desktop
+```
+
+Expected current behavior:
+
+- opens a WPF desktop window;
+- renders the built-in Cartesian robot scene in a 3D viewport;
+- provides play and reset controls;
+- provides a timeline slider;
+- updates the displayed frame, time, and state while playing.

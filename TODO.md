@@ -313,12 +313,14 @@ Goal: prepare for real devices without implementing hardware communication too e
 Goal: prepare a future visual inspection tool without influencing the current core.
 
 - [x] Complete the pre-visual simulation readiness checklist before adding any visual framework.
-- [ ] Do not add Avalonia, WPF, MAUI, game engines, or 3D libraries yet.
-- [ ] Keep visual coordinate decisions outside the current domain model.
-- [ ] Later, define a fixed virtual environment for robot visualization.
-- [ ] Later, allow camera rotation around the robot.
+- [x] Add the first WPF desktop viewer project.
+- [x] Render Cartesian scene frames in a desktop 3D viewport.
+- [x] Add basic playback controls for the desktop viewer.
+- [x] Keep visual coordinate decisions outside the current domain model.
+- [x] Define a fixed virtual environment for robot visualization.
+- [ ] Allow camera rotation around the robot.
 - [ ] Later, show technical tooltips for complex concepts.
-- [ ] Later, ensure UI consumes simulation output instead of duplicating simulation logic.
+- [x] Ensure UI consumes simulation output instead of duplicating simulation logic.
 
 ## 14. Pre-Visual Simulation Readiness
 

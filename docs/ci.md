@@ -2,6 +2,8 @@
 
 RobotStudio uses GitHub Actions to validate the project on pushes and pull requests targeting `main` or `master`.
 
+The workflow runs on Windows because the solution includes the first WPF desktop viewer.
+
 ## Workflow
 
 The workflow file is:

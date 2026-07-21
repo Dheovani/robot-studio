@@ -130,9 +130,11 @@ G-code support is planned for a future course module and should eventually produ
 
 ### UI And Visualization
 
-No UI should be added yet. Future 3D visualization should observe simulation output instead of defining business rules.
+The first desktop UI uses WPF and targets Windows. This keeps the first visual iteration package-free and focused on rendering the simulation contract already produced by `RobotStudio.Simulation`.
 
-Visual coordinate and camera decisions should remain outside the current domain model until the visual layer exists.
+The desktop viewer must consume simulation output, especially scene frames and viewport data, instead of duplicating simulation, motion, or geometry rules.
+
+Visual coordinate and camera decisions must remain outside the domain model.
 
 ### Hardware
 

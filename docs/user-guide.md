@@ -31,6 +31,16 @@ dotnet run --project src/RobotStudio.Cli
 
 The default CLI run uses the built-in example script, executes it through the simulator, and prints the result.
 
+## Run The Desktop Viewer
+
+Run from the repository root on Windows:
+
+```bash
+dotnet run --project src/RobotStudio.Desktop
+```
+
+The first desktop viewer opens a WPF window with a 3D viewport, renders the built-in Cartesian simulation, and provides basic playback controls.
+
 Print the built-in example script:
 
 ```bash
@@ -140,8 +150,8 @@ The CLI should later support:
 
 ## Not Available Yet
 
-- Desktop UI.
-- 3D robot visualization.
+- Loading custom scripts in the desktop viewer.
+- Rich camera controls in the desktop viewer.
 - G-code parsing.
 - Hardware communication.
 - Arduino or ESP32 integration.
