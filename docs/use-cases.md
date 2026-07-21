@@ -40,10 +40,16 @@ Current status: implemented for the first WPF desktop shell.
 
 Expected result:
 
-- the desktop app lists available and planned robot templates;
+- the desktop app lists available and planned robot templates in didactic complexity order;
 - the Cartesian robot appears as `Available`;
-- the articulated arm appears as `Planned`;
+- the XY plotter appears as `Planned`;
+- the differential drive robot appears as `Planned`;
+- the SCARA robot appears as `Planned`;
+- the simple articulated arm appears as `Planned`;
+- the delta robot appears as `Planned`;
 - the drone appears as `Planned`;
+- the 6-DOF industrial arm appears as `Planned`;
+- each robot card shows family, status, complexity, description, and capabilities;
 - planned robot entries cannot be opened yet;
 - the selection screen remains a simulator entry point, not a lesson manager.
 

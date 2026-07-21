@@ -39,15 +39,15 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app opens a WPF window with a robot selection screen. The Cartesian robot is available now. The articulated arm and drone entries are visible as planned future robot families.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot is available now. Planned templates are shown for the XY plotter, differential drive robot, SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm.
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
 
 Current desktop controls:
 
-- robot cards showing name, family, status badge, description, and capability tags.
+- robot cards showing name, family, status badge, complexity badge, description, and capability tags.
 - `Open Robot` on the Cartesian robot card.
-- disabled planned robot entries for future families.
+- disabled planned robot entries ordered by didactic complexity.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
 - DSL editor inside the Cartesian viewer.
 - `Validate` to parse the current DSL script and check Cartesian limits.

@@ -353,21 +353,38 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Add `RobotTemplate`.
 - [x] Add `RobotCapability`.
 - [x] Add `RobotViewerDescriptor`.
+- [x] Add `RobotComplexityLevel`.
 - [x] Add the first robot selection screen.
 - [x] Show the Cartesian robot as `Available`.
-- [x] Show articulated arm as `Planned`.
+- [x] Show XY plotter as `Planned`.
+- [x] Show differential drive robot as `Planned`.
+- [x] Show SCARA robot as `Planned`.
+- [x] Show simple articulated arm as `Planned`.
+- [x] Show delta robot as `Planned`.
 - [x] Show drone as `Planned`.
+- [x] Show 6-DOF industrial arm as `Planned`.
+- [x] Order robot templates by didactic complexity.
+- [x] Show robot complexity on selection cards.
 - [x] List capabilities without implementing unavailable robots.
 - [x] Keep the selection screen as a simulator entry point, not an LMS.
 
 #### 13.1.3. Initial Robot Capabilities Metadata
 
 - [x] Add `Simulation` capability.
-- [x] Add `ScriptExecution` capability.
+- [x] Add `Dsl` capability.
 - [x] Add `ThreeDimensionalView` capability.
+- [x] Add `TwoDimensionalView` capability.
 - [x] Add `ManualControl` capability.
+- [x] Add `Playback` capability.
+- [x] Add `PathDrawing` capability.
+- [x] Add `PathPlanning` capability.
+- [x] Add `Odometry` capability.
+- [x] Add `ForwardKinematics` capability.
+- [x] Add `InverseKinematics` capability.
+- [x] Add `WorkspaceVisualization` capability.
+- [x] Add `AttitudeControl` capability.
 - [x] Add `HardwareCommunication` capability as metadata only.
-- [x] Add `GCode` capability as metadata only.
+- [x] Add `FutureGCode` capability as metadata only.
 - [x] Mark unavailable robot templates clearly in the UI.
 
 #### 13.1.3.1. Desktop UI Polish

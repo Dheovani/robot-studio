@@ -1,6 +1,6 @@
 # RobotStudio
 
-RobotStudio is a didactic robotics platform built with C# and .NET. Its first supported robot is a generic three-axis Cartesian robot, but the project is being designed to grow into a learning tool for multiple robot families, such as articulated robots and drones.
+RobotStudio is a didactic robotics platform built with C# and .NET. Its first supported robot is a generic three-axis Cartesian robot, but the project is being designed to grow into a learning tool for multiple robot families, such as Cartesian, mobile, articulated, parallel, and aerial robots.
 
 The current goal is to build a clean, testable foundation and the first desktop visualization before adding hardware integration.
 
@@ -13,6 +13,7 @@ The current goal is to build a clean, testable foundation and the first desktop 
 - The simple DSL parser can read `HOME`, `MOVE`, and `WAIT` scripts.
 - The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, prints fixed-interval playback frames with workspace bounds, and exports versioned playback snapshots with Cartesian robot poses, renderable scene frames, and viewport data as JSON.
 - The first desktop viewer opens a WPF window and renders the Cartesian scene frames in a 3D viewport.
+- The desktop start screen lists a didactic robot catalog ordered by complexity; only the Cartesian robot is currently available.
 - xUnit tests cover the first domain and motion planner behaviors.
 - Hardware communication is planned but not implemented yet.
 
@@ -26,6 +27,7 @@ The current goal is to build a clean, testable foundation and the first desktop 
 - `src/RobotStudio.Cli`: terminal entry point for command sequence examples and early learning workflows.
 - `src/RobotStudio.Desktop`: first WPF desktop viewer for the Cartesian 3D simulation.
 - `tests/RobotStudio.Domain.Tests`: xUnit tests for domain behavior.
+- `tests/RobotStudio.Desktop.Tests`: xUnit tests for desktop robot catalog metadata.
 - `tests/RobotStudio.Motion.Tests`: xUnit tests for motion planning behavior.
 - `docs`: product, architecture, use case, testing, and user documentation.
 

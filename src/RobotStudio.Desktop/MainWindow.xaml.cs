@@ -644,10 +644,10 @@ public partial class MainWindow : Window
         var card = new Border
         {
             Width = 350,
-            MinHeight = 306,
+            MinHeight = 342,
             Margin = new Thickness(0, 0, 18, 18),
             Padding = new Thickness(20),
-            BorderBrush = template.Status == RobotAvailabilityStatus.Available
+            BorderBrush = RobotCatalog.CanOpen(template)
                 ? new SolidColorBrush(Color.FromRgb(37, 99, 235))
                 : new SolidColorBrush(Color.FromRgb(51, 65, 85)),
             BorderThickness = new Thickness(1),
@@ -682,6 +682,7 @@ public partial class MainWindow : Window
         });
 
         topContent.Children.Add(CreateStatusBadge(template.Status));
+        topContent.Children.Add(CreateComplexityBadge(template.Complexity));
 
         var middleContent = new StackPanel
         {
@@ -713,10 +714,10 @@ public partial class MainWindow : Window
         {
             Height = 36,
             Margin = new Thickness(0, 10, 0, 0),
-            Content = template.Status == RobotAvailabilityStatus.Available
+            Content = RobotCatalog.CanOpen(template)
                 ? "Open Robot"
                 : "Planned",
-            IsEnabled = template.Status == RobotAvailabilityStatus.Available,
+            IsEnabled = RobotCatalog.CanOpen(template),
             Tag = template
         };
         button.Click += OpenRobotButton_Click;
@@ -740,6 +741,25 @@ public partial class MainWindow : Window
             {
                 Text = status.ToString(),
                 Foreground = GetStatusBrush(status),
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold
+            }
+        };
+
+    private static Border CreateComplexityBadge(RobotComplexityLevel complexity) =>
+        new()
+        {
+            Margin = new Thickness(0, 8, 0, 0),
+            Padding = new Thickness(9, 4, 9, 4),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(71, 85, 105)),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(999),
+            Child = new TextBlock
+            {
+                Text = complexity.ToString(),
+                Foreground = new SolidColorBrush(Color.FromRgb(191, 219, 254)),
                 FontSize = 12,
                 FontWeight = FontWeights.SemiBold
             }
@@ -773,7 +793,8 @@ public partial class MainWindow : Window
 
     private void OpenRobot(RobotTemplate template)
     {
-        if (template.Viewer.Kind != RobotViewerKind.CartesianThreeDimensional)
+        if (!RobotCatalog.CanOpen(template) ||
+            template.Viewer.Kind != RobotViewerKind.CartesianThreeDimensional)
         {
             return;
         }
@@ -2026,11 +2047,20 @@ public partial class MainWindow : Window
     private static string FormatCapability(RobotCapability capability) => capability switch
     {
         RobotCapability.Simulation => "simulation",
-        RobotCapability.ScriptExecution => "DSL",
+        RobotCapability.Dsl => "DSL",
         RobotCapability.ThreeDimensionalView => "3D view",
+        RobotCapability.TwoDimensionalView => "2D view",
         RobotCapability.ManualControl => "manual control",
+        RobotCapability.Playback => "playback",
+        RobotCapability.PathDrawing => "path drawing",
+        RobotCapability.PathPlanning => "path planning",
+        RobotCapability.Odometry => "odometry",
+        RobotCapability.ForwardKinematics => "forward kinematics",
+        RobotCapability.InverseKinematics => "inverse kinematics",
+        RobotCapability.WorkspaceVisualization => "workspace",
+        RobotCapability.AttitudeControl => "attitude control",
+        RobotCapability.FutureGCode => "future G-code",
         RobotCapability.HardwareCommunication => "hardware",
-        RobotCapability.GCode => "G-code",
         _ => capability.ToString()
     };
 

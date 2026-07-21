@@ -136,6 +136,21 @@ The desktop viewer must consume simulation output, especially scene frames and v
 
 Visual coordinate and camera decisions must remain outside the domain model.
 
+The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.
+
+The current didactic order is:
+
+- Cartesian Robot.
+- XY Plotter.
+- Differential Drive Robot.
+- SCARA Robot.
+- Simple Articulated Arm.
+- Delta Robot.
+- Drone.
+- 6-DOF Industrial Arm.
+
+Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot is the only available template for now; all other templates are planned metadata.
+
 ### Hardware
 
 Hardware communication is not part of the first implementation. Future hardware work should live in `RobotStudio.Hardware` and must not leak into `RobotStudio.Domain`.

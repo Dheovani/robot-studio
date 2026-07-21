@@ -3,9 +3,18 @@ namespace RobotStudio.Desktop.Robots;
 public enum RobotCapability
 {
     Simulation,
-    ScriptExecution,
+    Dsl,
     ThreeDimensionalView,
+    TwoDimensionalView,
     ManualControl,
-    HardwareCommunication,
-    GCode
+    Playback,
+    PathDrawing,
+    PathPlanning,
+    Odometry,
+    ForwardKinematics,
+    InverseKinematics,
+    WorkspaceVisualization,
+    AttitudeControl,
+    FutureGCode,
+    HardwareCommunication
 }

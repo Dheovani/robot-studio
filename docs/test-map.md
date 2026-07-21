@@ -145,6 +145,20 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
+## `RobotStudio.Desktop.Tests`
+
+### Current Coverage
+
+- [x] Robot catalog contains the Cartesian robot.
+- [x] Robot catalog keeps the expected didactic complexity order.
+- [x] Robot templates expose the expected complexity levels.
+- [x] Every robot template has a family.
+- [x] Every robot template has at least one capability.
+- [x] The Cartesian robot is the only openable robot template.
+- [x] Planned robot templates are not openable.
+
+### Required Next Coverage
+
 ## CLI Verification
 
 The CLI may be verified manually until CLI behavior becomes complex enough to require automated tests.
@@ -188,10 +202,11 @@ Expected current behavior:
 
 - opens a WPF desktop window;
 - shows a robot selection screen on startup;
-- presents robot status as badges and capabilities as tags;
+- presents robot status and complexity as badges and capabilities as tags;
 - keeps robot card badges visible above the footer button without clipping;
+- lists robot templates in the expected didactic complexity order;
 - lists the Cartesian robot as available;
-- lists the articulated arm and drone as planned;
+- lists the XY plotter, differential drive robot, SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
 - opens the Cartesian viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
