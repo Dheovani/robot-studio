@@ -206,6 +206,8 @@ Expected current behavior:
 - shows a robot selection screen on startup;
 - presents robot status and complexity as badges and capabilities as tags;
 - keeps robot card badges visible above the footer button without clipping;
+- keeps robot card footer buttons aligned across cards;
+- adjusts robot selection cards responsively across one, two, and three columns;
 - lists robot templates in the expected didactic complexity order;
 - lists the Cartesian robot as available;
 - lists the XY plotter, differential drive robot, SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;

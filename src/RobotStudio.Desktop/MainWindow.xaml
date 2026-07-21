@@ -66,13 +66,15 @@
                         <ColumnDefinition Width="Auto" />
                     </Grid.ColumnDefinitions>
 
-                    <StackPanel Grid.Column="0">
+                    <StackPanel Grid.Column="0"
+                                HorizontalAlignment="Left">
                         <TextBlock Text="RobotStudio"
                                    Foreground="#F9FAFB"
                                    FontSize="30"
                                    FontWeight="SemiBold" />
                         <TextBlock MaxWidth="780"
                                    Margin="0,8,0,0"
+                                   HorizontalAlignment="Left"
                                    Foreground="#CBD5E1"
                                    FontSize="14"
                                    TextWrapping="Wrap"
@@ -96,10 +98,17 @@
                 </Grid>
             </Border>
 
-            <ScrollViewer Grid.Row="1"
+            <ScrollViewer x:Name="RobotCardsScrollViewer"
+                          Grid.Row="1"
                           Margin="24,22,24,24"
-                          VerticalScrollBarVisibility="Auto">
-                <WrapPanel x:Name="RobotCardsPanel" />
+                          Background="#111827"
+                          BorderThickness="0"
+                          FocusVisualStyle="{x:Null}"
+                          VerticalScrollBarVisibility="Auto"
+                          SizeChanged="RobotCardsScrollViewer_SizeChanged">
+                <UniformGrid x:Name="RobotCardsPanel"
+                             Columns="3"
+                             FocusVisualStyle="{x:Null}" />
             </ScrollViewer>
         </Grid>
 

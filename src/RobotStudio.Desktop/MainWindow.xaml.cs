@@ -33,6 +33,8 @@ public partial class MainWindow : Window
     private const double ChartPaddingBottom = 24;
     private const double StateChartPaddingLeft = 78;
     private const double StateChartRowGap = 4;
+    private const double RobotCardGap = 18;
+    private const double RobotCardMinimumWidth = 280;
     private const int MaximumPathPointCount = 140;
 
     private const string ExampleScript =
@@ -468,6 +470,11 @@ public partial class MainWindow : Window
         UpdateStateChart();
     }
 
+    private void RobotCardsScrollViewer_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e) =>
+        UpdateRobotCardColumns(e.NewSize.Width);
+
     private void ScriptEditorTextBox_TextChanged(
         object sender,
         TextChangedEventArgs e) =>
@@ -649,16 +656,21 @@ public partial class MainWindow : Window
         {
             RobotCardsPanel.Children.Add(CreateRobotCard(template));
         }
+
+        UpdateRobotCardColumns(RobotCardsScrollViewer.ActualWidth);
     }
 
     private UIElement CreateRobotCard(RobotTemplate template)
     {
         var card = new Border
         {
-            Width = 350,
-            MinHeight = 342,
-            Margin = new Thickness(0, 0, 18, 18),
+            MinWidth = RobotCardMinimumWidth,
+            MinHeight = 392,
+            Margin = new Thickness(0, 0, RobotCardGap, RobotCardGap),
             Padding = new Thickness(20),
+            HorizontalAlignment = HorizontalAlignment.Stretch,
+            VerticalAlignment = VerticalAlignment.Stretch,
+            FocusVisualStyle = null,
             BorderBrush = RobotCatalog.CanOpen(template)
                 ? new SolidColorBrush(Color.FromRgb(37, 99, 235))
                 : new SolidColorBrush(Color.FromRgb(51, 65, 85)),
@@ -669,7 +681,7 @@ public partial class MainWindow : Window
 
         var content = new Grid();
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         card.Child = content;
 
@@ -725,7 +737,7 @@ public partial class MainWindow : Window
         var button = new Button
         {
             Height = 36,
-            Margin = new Thickness(0, 10, 0, 0),
+            Margin = new Thickness(0, 12, 0, 0),
             Content = RobotCatalog.CanOpen(template)
                 ? "Open Robot"
                 : "Planned",
@@ -737,6 +749,22 @@ public partial class MainWindow : Window
         content.Children.Add(button);
 
         return card;
+    }
+
+    private void UpdateRobotCardColumns(double availableWidth)
+    {
+        if (availableWidth <= 0)
+        {
+            return;
+        }
+
+        var columns = availableWidth >= 1020
+            ? 3
+            : availableWidth >= 660
+                ? 2
+                : 1;
+
+        RobotCardsPanel.Columns = columns;
     }
 
     private static Border CreateStatusBadge(RobotAvailabilityStatus status) =>
