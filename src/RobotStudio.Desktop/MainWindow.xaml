@@ -145,8 +145,9 @@
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="300" />
+                    <ColumnDefinition Width="*" MinWidth="420" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="340" MinWidth="300" MaxWidth="540" />
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
@@ -162,14 +163,25 @@
                                 MouseWheel="RobotViewport_MouseWheel" />
                 </Border>
 
-                <Border Grid.Column="1"
+                <GridSplitter Grid.Column="1"
+                              Width="8"
+                              Margin="6,0,0,0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="#1E293B"
+                              ResizeBehavior="PreviousAndNext"
+                              ResizeDirection="Columns"
+                              ShowsPreview="True" />
+
+                <Border Grid.Column="2"
                         Margin="12,0,0,0"
                         Padding="14"
                         BorderBrush="#334155"
                         BorderThickness="1"
                         Background="#0F172A">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto">
-                        <StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,10,0">
                             <TextBlock Text="Script"
                                        Foreground="#F9FAFB"
                                        FontSize="16"

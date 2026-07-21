@@ -344,6 +344,7 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Add mouse wheel zoom.
 - [x] Render workspace limits without hiding the robot mechanism.
 - [x] Add a state panel with time, state, position, command, and source line.
+- [x] Allow manual resizing between the 3D simulation viewport and the control sidebar.
 - [x] Keep the viewer consuming `CartesianPlaybackSnapshot` and `CartesianSceneFrame`.
 
 #### 13.1.2. Robot Selection Shell
