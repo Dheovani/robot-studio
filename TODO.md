@@ -398,8 +398,8 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Align robot selection card footer buttons across cards.
 - [x] Make robot selection cards responsive across one, two, and three columns.
 - [x] Organize the Cartesian viewer sidebar into collapsible panels.
-- [ ] Extract repeated desktop colors and spacing into reusable resources.
-- [ ] Add hover/focus states for robot cards.
+- [x] Extract repeated desktop colors and spacing into reusable resources.
+- [x] Add hover/focus states for robot cards.
 - [ ] Improve the Cartesian viewer layout with the same visual language.
 - [ ] Add technical tooltips for complex controls.
 - [ ] Review the desktop UI at smaller window sizes.

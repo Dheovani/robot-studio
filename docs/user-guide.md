@@ -47,6 +47,7 @@ Current desktop controls:
 
 - robot cards showing name, family, status badge, complexity badge, description, and capability tags.
 - robot selection cards arrange responsively across one, two, or three columns depending on window width.
+- robot selection cards show hover and keyboard focus feedback.
 - `Open Robot` on the Cartesian robot card.
 - disabled planned robot entries ordered by didactic complexity.
 - `Robots` inside the Cartesian viewer to return to the selection screen.

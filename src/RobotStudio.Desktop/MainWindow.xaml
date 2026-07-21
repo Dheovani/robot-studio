@@ -6,14 +6,31 @@
         Height="780"
         MinWidth="960"
         MinHeight="640"
-        Background="#111827">
+        Background="{DynamicResource AppBackgroundBrush}">
     <Window.Resources>
+        <SolidColorBrush x:Key="AppBackgroundBrush" Color="#111827" />
+        <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#0F172A" />
+        <SolidColorBrush x:Key="HeaderBackgroundBrush" Color="#0B1220" />
+        <SolidColorBrush x:Key="SubtlePanelBackgroundBrush" Color="#122033" />
+        <SolidColorBrush x:Key="PrimaryTextBrush" Color="#F9FAFB" />
+        <SolidColorBrush x:Key="SecondaryTextBrush" Color="#CBD5E1" />
+        <SolidColorBrush x:Key="MutedTextBrush" Color="#94A3B8" />
+        <SolidColorBrush x:Key="BorderBrush" Color="#334155" />
+        <SolidColorBrush x:Key="SubtleBorderBrush" Color="#1E293B" />
+        <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#2563EB" />
+        <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3B82F6" />
+        <SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#1D4ED8" />
+        <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#60A5FA" />
+        <SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#1E40AF" />
+        <SolidColorBrush x:Key="DisabledTextBrush" Color="#64748B" />
+        <Thickness x:Key="PanelSectionSpacing">0,0,0,10</Thickness>
+
         <Style TargetType="Button">
             <Setter Property="Height" Value="36" />
             <Setter Property="Padding" Value="14,0" />
-            <Setter Property="Foreground" Value="#F8FAFC" />
-            <Setter Property="Background" Value="#2563EB" />
-            <Setter Property="BorderBrush" Value="#3B82F6" />
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="FontWeight" Value="SemiBold" />
             <Setter Property="Cursor" Value="Hand" />
@@ -30,16 +47,16 @@
                         </Border>
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
-                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1D4ED8" />
-                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="#60A5FA" />
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="{StaticResource ButtonHoverBackgroundBrush}" />
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource ButtonHoverBorderBrush}" />
                             </Trigger>
                             <Trigger Property="IsPressed" Value="True">
-                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1E40AF" />
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="{StaticResource ButtonPressedBackgroundBrush}" />
                             </Trigger>
                             <Trigger Property="IsEnabled" Value="False">
-                                <Setter Property="Foreground" Value="#64748B" />
-                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1E293B" />
-                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="#334155" />
+                                <Setter Property="Foreground" Value="{StaticResource DisabledTextBrush}" />
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="{StaticResource SubtleBorderBrush}" />
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource BorderBrush}" />
                             </Trigger>
                         </ControlTemplate.Triggers>
                     </ControlTemplate>
@@ -48,10 +65,10 @@
         </Style>
 
         <Style TargetType="Expander">
-            <Setter Property="Margin" Value="0,0,0,10" />
-            <Setter Property="Foreground" Value="#F9FAFB" />
-            <Setter Property="Background" Value="#0F172A" />
-            <Setter Property="BorderBrush" Value="#334155" />
+            <Setter Property="Margin" Value="{StaticResource PanelSectionSpacing}" />
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="{StaticResource PanelBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
             <Setter Property="BorderThickness" Value="1" />
             <Setter Property="Padding" Value="10" />
             <Setter Property="FontSize" Value="16" />
@@ -68,8 +85,8 @@
 
             <Border Grid.Row="0"
                     Padding="24,22,24,18"
-                    Background="#0B1220"
-                    BorderBrush="#1E293B"
+                    Background="{StaticResource HeaderBackgroundBrush}"
+                    BorderBrush="{StaticResource SubtleBorderBrush}"
                     BorderThickness="0,0,0,1">
                 <Grid>
                     <Grid.ColumnDefinitions>
@@ -80,13 +97,13 @@
                     <StackPanel Grid.Column="0"
                                 HorizontalAlignment="Left">
                         <TextBlock Text="RobotStudio"
-                                   Foreground="#F9FAFB"
+                                   Foreground="{StaticResource PrimaryTextBrush}"
                                    FontSize="30"
                                    FontWeight="SemiBold" />
                         <TextBlock MaxWidth="780"
                                    Margin="0,8,0,0"
                                    HorizontalAlignment="Left"
-                                   Foreground="#CBD5E1"
+                                   Foreground="{StaticResource SecondaryTextBrush}"
                                    FontSize="14"
                                    TextWrapping="Wrap"
                                    Text="Choose a robot model to inspect, simulate, and control. The Cartesian robot is available now; future families are shown as planned learning paths." />
@@ -97,8 +114,8 @@
                             Margin="24,3,0,0"
                             Padding="12,0"
                             VerticalAlignment="Top"
-                            Background="#122033"
-                            BorderBrush="#334155"
+                            Background="{StaticResource SubtlePanelBackgroundBrush}"
+                            BorderBrush="{StaticResource BorderBrush}"
                             BorderThickness="1"
                             CornerRadius="6">
                         <TextBlock VerticalAlignment="Center"
@@ -112,7 +129,7 @@
             <ScrollViewer x:Name="RobotCardsScrollViewer"
                           Grid.Row="1"
                           Margin="24,22,24,24"
-                          Background="#111827"
+                          Background="{StaticResource AppBackgroundBrush}"
                           BorderThickness="0"
                           FocusVisualStyle="{x:Null}"
                           VerticalScrollBarVisibility="Auto"

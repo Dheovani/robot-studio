@@ -37,6 +37,24 @@ public partial class MainWindow : Window
     private const double RobotCardMinimumWidth = 280;
     private const int MaximumPathPointCount = 140;
 
+    private static readonly SolidColorBrush RobotCardBackgroundBrush =
+        new(Color.FromRgb(15, 23, 42));
+
+    private static readonly SolidColorBrush RobotCardHighlightBackgroundBrush =
+        new(Color.FromRgb(17, 32, 55));
+
+    private static readonly SolidColorBrush RobotCardPlannedBorderBrush =
+        new(Color.FromRgb(51, 65, 85));
+
+    private static readonly SolidColorBrush RobotCardPlannedHighlightBorderBrush =
+        new(Color.FromRgb(71, 85, 105));
+
+    private static readonly SolidColorBrush RobotCardAvailableBorderBrush =
+        new(Color.FromRgb(37, 99, 235));
+
+    private static readonly SolidColorBrush RobotCardAvailableHighlightBorderBrush =
+        new(Color.FromRgb(96, 165, 250));
+
     private const string ExampleScript =
         """
         HOME
@@ -662,6 +680,7 @@ public partial class MainWindow : Window
 
     private UIElement CreateRobotCard(RobotTemplate template)
     {
+        var canOpen = RobotCatalog.CanOpen(template);
         var card = new Border
         {
             MinWidth = RobotCardMinimumWidth,
@@ -671,12 +690,31 @@ public partial class MainWindow : Window
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch,
             FocusVisualStyle = null,
-            BorderBrush = RobotCatalog.CanOpen(template)
-                ? new SolidColorBrush(Color.FromRgb(37, 99, 235))
-                : new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+            Focusable = true,
+            Cursor = canOpen ? Cursors.Hand : Cursors.Arrow,
+            BorderBrush = canOpen
+                ? RobotCardAvailableBorderBrush
+                : RobotCardPlannedBorderBrush,
             BorderThickness = new Thickness(1),
-            Background = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+            Background = RobotCardBackgroundBrush,
             CornerRadius = new CornerRadius(8)
+        };
+        card.MouseEnter += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
+        card.MouseLeave += (_, _) => ApplyRobotCardVisualState(
+            card,
+            template,
+            isHighlighted: card.IsKeyboardFocusWithin);
+        card.GotKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
+        card.LostKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: false);
+        card.KeyDown += (_, e) =>
+        {
+            if (!canOpen || e.Key is not (Key.Enter or Key.Space))
+            {
+                return;
+            }
+
+            e.Handled = true;
+            OpenRobot(template);
         };
 
         var content = new Grid();
@@ -738,10 +776,10 @@ public partial class MainWindow : Window
         {
             Height = 36,
             Margin = new Thickness(0, 12, 0, 0),
-            Content = RobotCatalog.CanOpen(template)
+            Content = canOpen
                 ? "Open Robot"
                 : "Planned",
-            IsEnabled = RobotCatalog.CanOpen(template),
+            IsEnabled = canOpen,
             Tag = template
         };
         button.Click += OpenRobotButton_Click;
@@ -749,6 +787,27 @@ public partial class MainWindow : Window
         content.Children.Add(button);
 
         return card;
+    }
+
+    private static void ApplyRobotCardVisualState(
+        Border card,
+        RobotTemplate template,
+        bool isHighlighted)
+    {
+        var canOpen = RobotCatalog.CanOpen(template);
+        card.Background = isHighlighted
+            ? RobotCardHighlightBackgroundBrush
+            : RobotCardBackgroundBrush;
+        card.BorderBrush = canOpen
+            ? isHighlighted
+                ? RobotCardAvailableHighlightBorderBrush
+                : RobotCardAvailableBorderBrush
+            : isHighlighted
+                ? RobotCardPlannedHighlightBorderBrush
+                : RobotCardPlannedBorderBrush;
+        card.BorderThickness = isHighlighted
+            ? new Thickness(1.5)
+            : new Thickness(1);
     }
 
     private void UpdateRobotCardColumns(double availableWidth)
