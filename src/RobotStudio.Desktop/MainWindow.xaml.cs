@@ -644,7 +644,7 @@ public partial class MainWindow : Window
         var card = new Border
         {
             Width = 350,
-            Height = 306,
+            MinHeight = 306,
             Margin = new Thickness(0, 0, 18, 18),
             Padding = new Thickness(20),
             BorderBrush = template.Status == RobotAvailabilityStatus.Available
@@ -657,7 +657,7 @@ public partial class MainWindow : Window
 
         var content = new Grid();
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
-        content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         card.Child = content;
 
@@ -712,6 +712,7 @@ public partial class MainWindow : Window
         var button = new Button
         {
             Height = 36,
+            Margin = new Thickness(0, 10, 0, 0),
             Content = template.Status == RobotAvailabilityStatus.Available
                 ? "Open Robot"
                 : "Planned",

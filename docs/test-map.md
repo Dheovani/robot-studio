@@ -189,6 +189,7 @@ Expected current behavior:
 - opens a WPF desktop window;
 - shows a robot selection screen on startup;
 - presents robot status as badges and capabilities as tags;
+- keeps robot card badges visible above the footer button without clipping;
 - lists the Cartesian robot as available;
 - lists the articulated arm and drone as planned;
 - opens the Cartesian viewer from the selection screen;
