@@ -156,6 +156,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every robot template has at least one capability.
 - [x] The Cartesian robot is the only openable robot template.
 - [x] Planned robot templates are not openable.
+- [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
+- [x] Script editor metadata classifies blank and unknown lines predictably.
 
 ### Required Next Coverage
 
@@ -214,6 +216,8 @@ Expected current behavior:
 - reports script parser or validation errors without closing the app;
 - shows the current script line during playback;
 - keeps the script editor height stable as commands are appended;
+- shows script editor line numbers;
+- shows simple command highlighting for `HOME`, `MOVE`, and `WAIT`;
 - appends `HOME` when the manual home button is used;
 - appends `MOVE` commands when manual jog buttons are used;
 - rejects invalid manual step or speed values;

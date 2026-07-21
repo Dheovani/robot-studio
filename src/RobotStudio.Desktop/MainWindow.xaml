@@ -187,23 +187,45 @@
                                        FontSize="16"
                                        FontWeight="SemiBold" />
 
-                            <TextBox x:Name="ScriptEditorTextBox"
-                                     MinHeight="126"
-                                     Height="190"
-                                     MaxHeight="190"
-                                     Margin="0,10,0,10"
-                                     Padding="10"
-                                     AcceptsReturn="True"
-                                     AcceptsTab="True"
-                                     FontFamily="Consolas"
-                                     FontSize="13"
-                                     TextWrapping="NoWrap"
-                                     VerticalScrollBarVisibility="Auto"
-                                     HorizontalScrollBarVisibility="Auto"
-                                     Foreground="#E5E7EB"
-                                     Background="#111827"
-                                     BorderBrush="#334155"
-                                     CaretBrush="#E5E7EB" />
+                            <Border Height="190"
+                                    Margin="0,10,0,10"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="82" />
+                                        <ColumnDefinition Width="*" />
+                                    </Grid.ColumnDefinitions>
+
+                                    <ScrollViewer x:Name="ScriptEditorGutterScrollViewer"
+                                                  Grid.Column="0"
+                                                  Padding="0,10,0,10"
+                                                  Background="#0B1220"
+                                                  HorizontalScrollBarVisibility="Disabled"
+                                                  VerticalScrollBarVisibility="Hidden"
+                                                  IsHitTestVisible="False">
+                                        <StackPanel x:Name="ScriptEditorGutterPanel" />
+                                    </ScrollViewer>
+
+                                    <TextBox x:Name="ScriptEditorTextBox"
+                                             Grid.Column="1"
+                                             Padding="10"
+                                             AcceptsReturn="True"
+                                             AcceptsTab="True"
+                                             FontFamily="Consolas"
+                                             FontSize="13"
+                                             TextWrapping="NoWrap"
+                                             VerticalScrollBarVisibility="Auto"
+                                             HorizontalScrollBarVisibility="Auto"
+                                             Foreground="#E5E7EB"
+                                             Background="#111827"
+                                             BorderThickness="0"
+                                             CaretBrush="#E5E7EB"
+                                             ScrollViewer.ScrollChanged="ScriptEditorTextBox_ScrollChanged"
+                                             TextChanged="ScriptEditorTextBox_TextChanged" />
+                                </Grid>
+                            </Border>
 
                             <Grid Margin="0,0,0,10">
                                 <Grid.ColumnDefinitions>

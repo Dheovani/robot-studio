@@ -136,6 +136,7 @@ Current status: implemented for the first Cartesian WPF viewer.
 Expected result:
 
 - the student edits DSL text in the Cartesian viewer;
+- the script editor shows line numbers and simple command tags for `HOME`, `MOVE`, and `WAIT`;
 - `Validate` reports parser or physical limit errors without running playback;
 - `Simulate` regenerates playback from the current script when the script is valid;
 - playback displays the command source line associated with the current frame;

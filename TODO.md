@@ -405,8 +405,8 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 - [x] Add a DSL script editor panel.
 - [x] Keep the DSL editor height stable when commands are appended.
-- [ ] Add line numbering to the script editor.
-- [ ] Add simple command highlighting for `HOME`, `MOVE`, and `WAIT`.
+- [x] Add line numbering to the script editor.
+- [x] Add simple command highlighting for `HOME`, `MOVE`, and `WAIT`.
 - [x] Add `Validate` button.
 - [x] Add `Simulate` button.
 - [x] Add `Play` button integration with simulated script output.

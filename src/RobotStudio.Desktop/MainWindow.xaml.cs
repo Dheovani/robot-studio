@@ -8,6 +8,7 @@ using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 using RobotStudio.Desktop.Robots;
+using RobotStudio.Desktop.Scripting;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
@@ -102,6 +103,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         ScriptEditorTextBox.Text = ExampleScript;
+        RefreshScriptEditorGutter();
         BuildRobotSelectionCards();
     }
 
@@ -465,6 +467,16 @@ public partial class MainWindow : Window
 
         UpdateStateChart();
     }
+
+    private void ScriptEditorTextBox_TextChanged(
+        object sender,
+        TextChangedEventArgs e) =>
+        RefreshScriptEditorGutter();
+
+    private void ScriptEditorTextBox_ScrollChanged(
+        object sender,
+        ScrollChangedEventArgs e) =>
+        ScriptEditorGutterScrollViewer.ScrollToVerticalOffset(e.VerticalOffset);
 
     private void OverlayCheckBox_Changed(
         object sender,
@@ -971,6 +983,7 @@ public partial class MainWindow : Window
 
         StopPlayback();
         ScriptEditorTextBox.Text = nextScript;
+        RefreshScriptEditorGutter();
         snapshot = nextSnapshot;
         InitializeTimelineForSnapshot();
         RenderFrame(nextSnapshot.SceneFrameCount - 1);
@@ -2019,6 +2032,88 @@ public partial class MainWindow : Window
         ScriptStatusText.Text = message;
         ScriptStatusText.Foreground = new SolidColorBrush(color);
     }
+
+    private void RefreshScriptEditorGutter()
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        ScriptEditorGutterPanel.Children.Clear();
+
+        foreach (var line in ScriptEditorLineMetadataBuilder.Build(ScriptEditorTextBox.Text))
+        {
+            ScriptEditorGutterPanel.Children.Add(CreateScriptGutterLine(line));
+        }
+    }
+
+    private static UIElement CreateScriptGutterLine(ScriptEditorLineMetadata line)
+    {
+        var container = new Grid
+        {
+            Height = 16.35
+        };
+        container.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(28) });
+        container.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(48) });
+
+        var lineNumber = new TextBlock
+        {
+            Text = line.LineNumber.ToString(CultureInfo.InvariantCulture),
+            Foreground = new SolidColorBrush(Color.FromRgb(100, 116, 139)),
+            FontFamily = new FontFamily("Consolas"),
+            FontSize = 13,
+            TextAlignment = TextAlignment.Right,
+            VerticalAlignment = VerticalAlignment.Center
+        };
+        Grid.SetColumn(lineNumber, 0);
+        container.Children.Add(lineNumber);
+
+        if (line.Kind != ScriptEditorLineKind.Empty)
+        {
+            var commandTag = new Border
+            {
+                Height = 15,
+                Margin = new Thickness(8, 0, 0, 0),
+                Padding = new Thickness(5, 0, 5, 0),
+                HorizontalAlignment = HorizontalAlignment.Left,
+                VerticalAlignment = VerticalAlignment.Center,
+                Background = new SolidColorBrush(GetScriptCommandBackground(line.Kind)),
+                CornerRadius = new CornerRadius(4),
+                Child = new TextBlock
+                {
+                    Text = line.CommandText,
+                    Foreground = new SolidColorBrush(GetScriptCommandForeground(line.Kind)),
+                    FontFamily = new FontFamily("Consolas"),
+                    FontSize = 9,
+                    FontWeight = FontWeights.SemiBold,
+                    VerticalAlignment = VerticalAlignment.Center
+                }
+            };
+            Grid.SetColumn(commandTag, 1);
+            container.Children.Add(commandTag);
+        }
+
+        return container;
+    }
+
+    private static Color GetScriptCommandBackground(ScriptEditorLineKind kind) => kind switch
+    {
+        ScriptEditorLineKind.Home => Color.FromRgb(30, 64, 175),
+        ScriptEditorLineKind.Move => Color.FromRgb(22, 101, 52),
+        ScriptEditorLineKind.Wait => Color.FromRgb(133, 77, 14),
+        ScriptEditorLineKind.Other => Color.FromRgb(127, 29, 29),
+        _ => Color.FromRgb(30, 41, 59)
+    };
+
+    private static Color GetScriptCommandForeground(ScriptEditorLineKind kind) => kind switch
+    {
+        ScriptEditorLineKind.Home => Color.FromRgb(191, 219, 254),
+        ScriptEditorLineKind.Move => Color.FromRgb(187, 247, 208),
+        ScriptEditorLineKind.Wait => Color.FromRgb(254, 240, 138),
+        ScriptEditorLineKind.Other => Color.FromRgb(254, 202, 202),
+        _ => Color.FromRgb(203, 213, 225)
+    };
 
     private static Brush GetStatusBrush(RobotAvailabilityStatus status) => status switch
     {
