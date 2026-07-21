@@ -1,0 +1,119 @@
+namespace RobotStudio.Simulation;
+
+public sealed class PlaybackSnapshotValidator
+{
+    public PlaybackSnapshotValidationResult Validate(CartesianPlaybackSnapshot? snapshot)
+    {
+        var errors = new List<string>();
+
+        if (snapshot is null)
+        {
+            errors.Add("Snapshot is missing.");
+            return new PlaybackSnapshotValidationResult(errors);
+        }
+
+        ValidateMetadata(snapshot.Metadata, errors);
+        ValidateRequiredSections(snapshot, errors);
+        ValidateCounts(snapshot, errors);
+
+        if (snapshot.TotalDuration < TimeSpan.Zero)
+        {
+            errors.Add("Snapshot total duration cannot be negative.");
+        }
+
+        return errors.Count == 0
+            ? PlaybackSnapshotValidationResult.Valid
+            : new PlaybackSnapshotValidationResult(errors);
+    }
+
+    private static void ValidateMetadata(
+        PlaybackSnapshotMetadata? metadata,
+        List<string> errors)
+    {
+        if (metadata is null)
+        {
+            errors.Add("Snapshot metadata is missing.");
+            return;
+        }
+
+        if (metadata.FormatVersion != 1)
+        {
+            errors.Add($"Unsupported snapshot format version: {metadata.FormatVersion}.");
+        }
+
+        if (!string.Equals(metadata.RobotFamily, "Cartesian", StringComparison.Ordinal))
+        {
+            errors.Add($"Unsupported robot family: {metadata.RobotFamily}.");
+        }
+
+        if (!string.Equals(metadata.DistanceUnit, "Millimeters", StringComparison.Ordinal))
+        {
+            errors.Add($"Unsupported distance unit: {metadata.DistanceUnit}.");
+        }
+
+        if (!string.Equals(metadata.TimeUnit, "Seconds", StringComparison.Ordinal))
+        {
+            errors.Add($"Unsupported time unit: {metadata.TimeUnit}.");
+        }
+
+        if (metadata.SampleIntervalMilliseconds <= 0)
+        {
+            errors.Add("Snapshot sample interval must be greater than zero.");
+        }
+    }
+
+    private static void ValidateRequiredSections(
+        CartesianPlaybackSnapshot snapshot,
+        List<string> errors)
+    {
+        if (snapshot.WorkspaceBounds is null)
+        {
+            errors.Add("Snapshot workspace bounds are missing.");
+        }
+
+        if (snapshot.Viewport is null)
+        {
+            errors.Add("Snapshot viewport is missing.");
+        }
+
+        if (snapshot.Frames is null)
+        {
+            errors.Add("Snapshot frames are missing.");
+        }
+
+        if (snapshot.Poses is null)
+        {
+            errors.Add("Snapshot poses are missing.");
+        }
+
+        if (snapshot.SceneFrames is null)
+        {
+            errors.Add("Snapshot scene frames are missing.");
+        }
+    }
+
+    private static void ValidateCounts(
+        CartesianPlaybackSnapshot snapshot,
+        List<string> errors)
+    {
+        if (snapshot.Frames is null || snapshot.Poses is null || snapshot.SceneFrames is null)
+        {
+            return;
+        }
+
+        if (snapshot.Frames.Count == 0)
+        {
+            errors.Add("Snapshot must contain at least one frame.");
+        }
+
+        if (snapshot.Frames.Count != snapshot.Poses.Count)
+        {
+            errors.Add("Snapshot frame count must match pose count.");
+        }
+
+        if (snapshot.Frames.Count != snapshot.SceneFrames.Count)
+        {
+            errors.Add("Snapshot frame count must match scene frame count.");
+        }
+    }
+}

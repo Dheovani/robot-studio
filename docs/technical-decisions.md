@@ -112,6 +112,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately.
 
+`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks metadata compatibility, required sections, frame/pose/scene-frame count consistency, and non-negative duration.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

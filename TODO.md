@@ -216,6 +216,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add Cartesian scene frame mapping with renderable primitives for future 3D UI.
 - [x] Add Cartesian viewport planning for the initial 3D camera framing.
 - [x] Add versioned playback snapshot metadata for future UI compatibility.
+- [x] Add playback snapshot validation for exported JSON compatibility checks.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
@@ -229,6 +230,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests for Cartesian scene frame mapping.
 - [x] Add tests for Cartesian viewport planning.
 - [x] Add tests for playback snapshot metadata.
+- [x] Add tests for playback snapshot validation.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 
@@ -280,6 +282,7 @@ Goal: provide repeatable examples students can run before writing scripts manual
 - [x] Add CLI option to simulate a script file.
 - [x] Add CLI option to print fixed-interval playback frames.
 - [x] Add CLI option to export fixed-interval playback snapshots as JSON.
+- [x] Add CLI option to validate exported playback snapshots.
 - [x] Print robot profile limits in example output.
 - [x] Print command sequence summary before simulation.
 - [x] Print final robot state after simulation.

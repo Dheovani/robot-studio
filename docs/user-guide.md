@@ -61,6 +61,12 @@ Export fixed-interval playback data as JSON:
 dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
 ```
 
+Validate exported playback data:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json
+```
+
 Current output includes:
 
 - robot profile limits;
@@ -70,6 +76,7 @@ Current output includes:
 - fixed-interval playback frames when using the `playback` command;
 - Cartesian workspace bounds when using the `playback` command;
 - JSON playback snapshots when using the `export-playback` command;
+- playback snapshot validation when using the `validate-playback` command;
 - Cartesian robot poses in exported playback snapshots;
 - Cartesian scene frames with renderable primitives in exported playback snapshots;
 - Cartesian viewport data for initial 3D camera framing in exported playback snapshots;
@@ -99,6 +106,7 @@ Current simulation output includes:
 - renderable Cartesian scene primitives for future 3D tools;
 - deterministic initial viewport data for future 3D tools;
 - versioned snapshot metadata for future UI compatibility checks;
+- snapshot validation for future UI compatibility checks;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

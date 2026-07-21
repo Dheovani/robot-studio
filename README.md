@@ -65,6 +65,7 @@ dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
 dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
+dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json
 ```
 
 ## License

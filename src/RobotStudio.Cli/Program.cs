@@ -45,6 +45,7 @@ try
             profile,
             initialPosition,
             parser),
+        ["validate-playback", var path] => ValidatePlaybackFile(path),
         _ => PrintUsage()
     };
 }
@@ -62,6 +63,11 @@ catch (ScriptParseException exception)
 {
     Console.Error.WriteLine($"Script error: {exception.Message}");
     Console.Error.WriteLine($"Source: {exception.LineText}");
+    return 1;
+}
+catch (JsonException exception)
+{
+    Console.Error.WriteLine($"Snapshot JSON error: {exception.Message}");
     return 1;
 }
 catch (InvalidOperationException exception)
@@ -140,6 +146,7 @@ static int PrintUsage()
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file>");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- playback <script-file> <interval-ms>");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- export-playback <script-file> <interval-ms> <output-json>");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate-playback <snapshot-json>");
 
     return 1;
 }
@@ -199,6 +206,34 @@ static int ExportPlaybackFile(
     Console.WriteLine($"Total duration: {snapshot.TotalDuration.TotalSeconds:0.###} s");
 
     return snapshot.Succeeded ? 0 : 1;
+}
+
+static int ValidatePlaybackFile(string path)
+{
+    var json = File.ReadAllText(path);
+    var snapshot = JsonSerializer.Deserialize<CartesianPlaybackSnapshot>(json, CreateJsonOptions());
+    var validator = new PlaybackSnapshotValidator();
+    var result = validator.Validate(snapshot);
+
+    if (result.IsValid)
+    {
+        Console.WriteLine("Playback snapshot is valid.");
+        Console.WriteLine($"Format version: {snapshot!.Metadata.FormatVersion}");
+        Console.WriteLine($"Robot family: {snapshot.Metadata.RobotFamily}");
+        Console.WriteLine($"Frames: {snapshot.FrameCount}");
+        Console.WriteLine($"Scene frames: {snapshot.SceneFrameCount}");
+
+        return 0;
+    }
+
+    Console.Error.WriteLine("Playback snapshot is invalid.");
+
+    foreach (var error in result.Errors)
+    {
+        Console.Error.WriteLine($"- {error}");
+    }
+
+    return 1;
 }
 
 static void ValidateCommandSequence(

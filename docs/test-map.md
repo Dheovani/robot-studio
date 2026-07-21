@@ -116,6 +116,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian viewport planning creates positive clipping distances.
 - [x] Playback snapshot metadata exposes format version, robot family, units, and sample interval.
 - [x] Playback snapshot metadata rejects non-positive sample intervals.
+- [x] Playback snapshot validation accepts compatible snapshots.
+- [x] Playback snapshot validation reports incompatible metadata.
+- [x] Playback snapshot validation reports missing sections and inconsistent counts.
 
 ### Required Next Coverage
 
@@ -169,3 +172,4 @@ Additional manual CLI checks:
 - `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.
 - `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
 - `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json` exports fixed-interval playback data.
+- `dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json` validates exported playback data.
