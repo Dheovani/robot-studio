@@ -7,6 +7,7 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
 using RobotStudio.Desktop.Robots;
+using RobotStudio.Domain;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Scripting;
@@ -45,6 +46,23 @@ public partial class MainWindow : Window
     private double zoomMultiplier = 1;
     private bool isRotatingCamera;
     private Point lastMousePosition;
+
+    private sealed class TimelineMarker
+    {
+        public TimelineMarker(
+            string label,
+            int frameIndex)
+        {
+            Label = label;
+            FrameIndex = frameIndex;
+        }
+
+        public string Label { get; }
+
+        public int FrameIndex { get; }
+
+        public override string ToString() => Label;
+    }
 
     public MainWindow()
     {
@@ -350,6 +368,19 @@ public partial class MainWindow : Window
         }
 
         ApplyPlaybackSpeed();
+    }
+
+    private void TimelineMarkerListBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (sender is not ListBox { SelectedItem: TimelineMarker marker })
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderFrame(marker.FrameIndex);
     }
 
     private void OverlayCheckBox_Changed(
@@ -693,6 +724,7 @@ public partial class MainWindow : Window
         TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
         TimelineSlider.TickFrequency = 1;
         ApplyPlaybackSpeed();
+        UpdateTimelineMarkers();
         SetCameraControls(
             azimuth: azimuthDegrees,
             elevation: elevationDegrees,
@@ -860,6 +892,66 @@ public partial class MainWindow : Window
         CommandHistoryListBox.Items.Add(text);
         CommandHistoryListBox.ScrollIntoView(text);
     }
+
+    private void UpdateTimelineMarkers()
+    {
+        CommandMarkersListBox.Items.Clear();
+        StateMarkersListBox.Items.Clear();
+
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        AddCommandTimelineMarkers(snapshot);
+        AddStateTimelineMarkers(snapshot);
+    }
+
+    private void AddCommandTimelineMarkers(CartesianPlaybackSnapshot snapshot)
+    {
+        int? previousCommandIndex = null;
+
+        for (var index = 0; index < snapshot.SceneFrames.Count; index++)
+        {
+            var frame = snapshot.SceneFrames[index];
+            if (frame.CommandIndex is null || frame.CommandIndex == previousCommandIndex)
+            {
+                continue;
+            }
+
+            previousCommandIndex = frame.CommandIndex;
+            var sourceText = frame.CommandSource is null
+                ? frame.CommandName ?? "command"
+                : $"line {frame.CommandSource.LineNumber}: {frame.CommandSource.Text}";
+            CommandMarkersListBox.Items.Add(new TimelineMarker(
+                $"{FormatFrameMarker(index, frame.Time)} | {sourceText}",
+                index));
+        }
+    }
+
+    private void AddStateTimelineMarkers(CartesianPlaybackSnapshot snapshot)
+    {
+        RobotState? previousState = null;
+
+        for (var index = 0; index < snapshot.SceneFrames.Count; index++)
+        {
+            var frame = snapshot.SceneFrames[index];
+            if (frame.State == previousState)
+            {
+                continue;
+            }
+
+            previousState = frame.State;
+            StateMarkersListBox.Items.Add(new TimelineMarker(
+                $"{FormatFrameMarker(index, frame.Time)} | {frame.State}",
+                index));
+        }
+    }
+
+    private static string FormatFrameMarker(
+        int frameIndex,
+        TimeSpan time) =>
+        $"#{frameIndex + 1} t={time.TotalSeconds:0.###}s";
 
     private void UpdateMovementExplanation(CartesianSceneFrame sceneFrame)
     {

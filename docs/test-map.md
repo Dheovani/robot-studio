@@ -209,6 +209,8 @@ Expected current behavior:
 - moves one frame backward with `Prev`;
 - moves one frame forward with `Next`;
 - changes playback timer speed with the playback speed selector;
+- jumps to command start frames from the command marker list;
+- jumps to state change frames from the state marker list;
 - resizes the 3D viewport and side control panel with the vertical splitter;
 - toggles grid, global axes, X/Y/Z labels, workspace, planned path, start/end markers, rails, carriages, and TCP/tool visibility without regenerating the simulation;
 - explains the current command from the active playback frame;

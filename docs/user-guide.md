@@ -61,6 +61,7 @@ Current desktop controls:
 - `Prev` and `Next` for frame-by-frame inspection.
 - playback speed selector with `0.5x`, `1x`, `2x`, and `4x`.
 - Timeline slider for frame scrubbing.
+- clickable timeline marker lists for command starts and state changes.
 - draggable splitter between the 3D viewport and the side control panel.
 - current script line indicator during playback.
 - movement explanation panel describing current command behavior.

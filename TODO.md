@@ -440,8 +440,8 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 - [x] Add frame-by-frame stepping.
 - [x] Add playback speed control.
-- [ ] Add command markers on the timeline.
-- [ ] Add state markers on the timeline.
+- [x] Add command markers on the timeline.
+- [x] Add state markers on the timeline.
 - [x] Add movement explanation text.
 - [x] Explain involved axes for the current movement.
 - [x] Explain requested velocity.
