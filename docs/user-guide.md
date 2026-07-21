@@ -58,6 +58,8 @@ Current desktop controls:
 - command console for executing one DSL command at a time.
 - command history with accepted and rejected command entries.
 - `Play` and `Reset` for playback.
+- `Prev` and `Next` for frame-by-frame inspection.
+- playback speed selector with `0.5x`, `1x`, `2x`, and `4x`.
 - Timeline slider for frame scrubbing.
 - current script line indicator during playback.
 - azimuth, elevation, and zoom sliders for camera control.

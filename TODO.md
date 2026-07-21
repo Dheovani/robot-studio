@@ -436,8 +436,8 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.8. Timeline And Movement Explanation
 
-- [ ] Add frame-by-frame stepping.
-- [ ] Add playback speed control.
+- [x] Add frame-by-frame stepping.
+- [x] Add playback speed control.
 - [ ] Add command markers on the timeline.
 - [ ] Add state markers on the timeline.
 - [ ] Add movement explanation text.

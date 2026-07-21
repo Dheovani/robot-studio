@@ -407,18 +407,43 @@
 
             <Grid Grid.Row="2" Margin="16,0,16,16">
                 <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
                     <ColumnDefinition Width="260" />
                 </Grid.ColumnDefinitions>
 
+                <StackPanel Grid.Column="0"
+                            Orientation="Horizontal"
+                            VerticalAlignment="Center">
+                    <Button Width="48"
+                            Margin="0,0,8,0"
+                            Content="Prev"
+                            Click="PreviousFrameButton_Click" />
+                    <Button Width="48"
+                            Margin="0,0,12,0"
+                            Content="Next"
+                            Click="NextFrameButton_Click" />
+                    <ComboBox x:Name="PlaybackSpeedComboBox"
+                              Width="88"
+                              Height="32"
+                              VerticalContentAlignment="Center"
+                              SelectionChanged="PlaybackSpeedComboBox_SelectionChanged">
+                        <ComboBoxItem Content="0.5x" Tag="0.5" />
+                        <ComboBoxItem Content="1x" Tag="1" IsSelected="True" />
+                        <ComboBoxItem Content="2x" Tag="2" />
+                        <ComboBoxItem Content="4x" Tag="4" />
+                    </ComboBox>
+                </StackPanel>
+
                 <Slider x:Name="TimelineSlider"
-                        Grid.Column="0"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
                         Minimum="0"
                         IsSnapToTickEnabled="True"
                         ValueChanged="TimelineSlider_ValueChanged" />
 
                 <TextBlock x:Name="StatusText"
-                           Grid.Column="1"
+                           Grid.Column="2"
                            Margin="16,0,0,0"
                            VerticalAlignment="Center"
                            Foreground="#E5E7EB"

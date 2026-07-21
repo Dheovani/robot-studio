@@ -23,6 +23,7 @@ public partial class MainWindow : Window
         """;
 
     private readonly DispatcherTimer playbackTimer;
+    private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private CartesianPlaybackSnapshot? snapshot;
     private int currentFrameIndex;
     private bool isPlaying;
@@ -39,7 +40,7 @@ public partial class MainWindow : Window
 
         playbackTimer = new DispatcherTimer
         {
-            Interval = TimeSpan.FromMilliseconds(120)
+            Interval = basePlaybackInterval
         };
         playbackTimer.Tick += PlaybackTimer_Tick;
 
@@ -279,6 +280,34 @@ public partial class MainWindow : Window
     {
         StopPlayback();
         SetManualControlStatus("Playback stopped.", Color.FromRgb(147, 197, 253));
+    }
+
+    private void PreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderFrame(currentFrameIndex - 1);
+    }
+
+    private void NextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderFrame(currentFrameIndex + 1);
+    }
+
+    private void PlaybackSpeedComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        ApplyPlaybackSpeed();
     }
 
     private void ExecuteCommandButton_Click(
@@ -610,6 +639,7 @@ public partial class MainWindow : Window
             snapshot.Viewport.CameraPosition);
         TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
         TimelineSlider.TickFrequency = 1;
+        ApplyPlaybackSpeed();
         SetCameraControls(
             azimuth: azimuthDegrees,
             elevation: elevationDegrees,
@@ -621,6 +651,12 @@ public partial class MainWindow : Window
         playbackTimer.Stop();
         isPlaying = false;
         PlayPauseButton.Content = "Play";
+    }
+
+    private void ApplyPlaybackSpeed()
+    {
+        var speed = GetSelectedPlaybackSpeed();
+        playbackTimer.Interval = TimeSpan.FromMilliseconds(basePlaybackInterval.TotalMilliseconds / speed);
     }
 
     private void Jog(AxisId axis, int direction)
@@ -770,6 +806,18 @@ public partial class MainWindow : Window
     {
         CommandHistoryListBox.Items.Add(text);
         CommandHistoryListBox.ScrollIntoView(text);
+    }
+
+    private double GetSelectedPlaybackSpeed()
+    {
+        if (PlaybackSpeedComboBox.SelectedItem is ComboBoxItem { Tag: string tag } &&
+            double.TryParse(tag, NumberStyles.Float, CultureInfo.InvariantCulture, out var speed) &&
+            speed > 0)
+        {
+            return speed;
+        }
+
+        return 1;
     }
 
     private static CartesianRobotProfile CreateCartesianProfile() =>

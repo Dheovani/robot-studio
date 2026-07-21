@@ -206,6 +206,9 @@ Expected current behavior:
 - executes the command console when the user presses `Enter`;
 - appends accepted console commands to the DSL script;
 - records accepted and rejected console commands in the command history;
+- moves one frame backward with `Prev`;
+- moves one frame forward with `Next`;
+- changes playback timer speed with the playback speed selector;
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - provides play and reset controls;
 - provides a timeline slider;
