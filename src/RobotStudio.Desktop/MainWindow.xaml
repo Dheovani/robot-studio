@@ -7,6 +7,47 @@
         MinWidth="960"
         MinHeight="640"
         Background="#111827">
+    <Window.Resources>
+        <Style TargetType="Button">
+            <Setter Property="Height" Value="36" />
+            <Setter Property="Padding" Value="14,0" />
+            <Setter Property="Foreground" Value="#F8FAFC" />
+            <Setter Property="Background" Value="#2563EB" />
+            <Setter Property="BorderBrush" Value="#3B82F6" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+            <Setter Property="Cursor" Value="Hand" />
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="ButtonChrome"
+                                Background="{TemplateBinding Background}"
+                                BorderBrush="{TemplateBinding BorderBrush}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                CornerRadius="6">
+                            <ContentPresenter HorizontalAlignment="Center"
+                                              VerticalAlignment="Center" />
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1D4ED8" />
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="#60A5FA" />
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="True">
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1E40AF" />
+                            </Trigger>
+                            <Trigger Property="IsEnabled" Value="False">
+                                <Setter Property="Foreground" Value="#64748B" />
+                                <Setter TargetName="ButtonChrome" Property="Background" Value="#1E293B" />
+                                <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="#334155" />
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+    </Window.Resources>
+
     <Grid>
         <Grid x:Name="RobotSelectionView">
             <Grid.RowDefinitions>
@@ -14,20 +55,49 @@
                 <RowDefinition Height="*" />
             </Grid.RowDefinitions>
 
-            <StackPanel Grid.Row="0" Margin="24,22,24,12">
-                <TextBlock Text="RobotStudio"
-                           Foreground="#F9FAFB"
-                           FontSize="28"
-                           FontWeight="SemiBold" />
-                <TextBlock MaxWidth="820"
-                           Margin="0,6,0,0"
-                           Foreground="#CBD5E1"
-                           FontSize="14"
-                           Text="Choose a robot model to inspect, simulate, and control. The Cartesian robot is available now; future families are shown as planned learning paths." />
-            </StackPanel>
+            <Border Grid.Row="0"
+                    Padding="24,22,24,18"
+                    Background="#0B1220"
+                    BorderBrush="#1E293B"
+                    BorderThickness="0,0,0,1">
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="Auto" />
+                    </Grid.ColumnDefinitions>
+
+                    <StackPanel Grid.Column="0">
+                        <TextBlock Text="RobotStudio"
+                                   Foreground="#F9FAFB"
+                                   FontSize="30"
+                                   FontWeight="SemiBold" />
+                        <TextBlock MaxWidth="780"
+                                   Margin="0,8,0,0"
+                                   Foreground="#CBD5E1"
+                                   FontSize="14"
+                                   TextWrapping="Wrap"
+                                   Text="Choose a robot model to inspect, simulate, and control. The Cartesian robot is available now; future families are shown as planned learning paths." />
+                    </StackPanel>
+
+                    <Border Grid.Column="1"
+                            Height="34"
+                            Margin="24,3,0,0"
+                            Padding="12,0"
+                            VerticalAlignment="Top"
+                            Background="#122033"
+                            BorderBrush="#334155"
+                            BorderThickness="1"
+                            CornerRadius="6">
+                        <TextBlock VerticalAlignment="Center"
+                                   Foreground="#93C5FD"
+                                   FontWeight="SemiBold"
+                                   Text="Desktop Preview" />
+                    </Border>
+                </Grid>
+            </Border>
 
             <ScrollViewer Grid.Row="1"
-                          Margin="24,8,24,24"
+                          Margin="24,22,24,24"
                           VerticalScrollBarVisibility="Auto">
                 <WrapPanel x:Name="RobotCardsPanel" />
             </ScrollViewer>

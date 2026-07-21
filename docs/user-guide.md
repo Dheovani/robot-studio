@@ -45,7 +45,7 @@ Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D vi
 
 Current desktop controls:
 
-- robot cards showing name, family, status, description, and supported capabilities.
+- robot cards showing name, family, status badge, description, and capability tags.
 - `Open Robot` on the Cartesian robot card.
 - disabled planned robot entries for future families.
 - `Robots` inside the Cartesian viewer to return to the selection screen.

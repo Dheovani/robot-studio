@@ -337,27 +337,37 @@ public partial class MainWindow : Window
     {
         var card = new Border
         {
-            Width = 340,
-            MinHeight = 270,
-            Margin = new Thickness(0, 0, 16, 16),
-            Padding = new Thickness(18),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+            Width = 350,
+            Height = 306,
+            Margin = new Thickness(0, 0, 18, 18),
+            Padding = new Thickness(20),
+            BorderBrush = template.Status == RobotAvailabilityStatus.Available
+                ? new SolidColorBrush(Color.FromRgb(37, 99, 235))
+                : new SolidColorBrush(Color.FromRgb(51, 65, 85)),
             BorderThickness = new Thickness(1),
-            Background = new SolidColorBrush(Color.FromRgb(15, 23, 42))
+            Background = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+            CornerRadius = new CornerRadius(8)
         };
 
-        var content = new StackPanel();
+        var content = new Grid();
+        content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
+        content.RowDefinitions.Add(new RowDefinition { Height = new GridLength(1, GridUnitType.Star) });
+        content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
         card.Child = content;
 
-        content.Children.Add(new TextBlock
+        var topContent = new StackPanel();
+        Grid.SetRow(topContent, 0);
+        content.Children.Add(topContent);
+
+        topContent.Children.Add(new TextBlock
         {
             Text = template.Name,
             Foreground = new SolidColorBrush(Color.FromRgb(249, 250, 251)),
-            FontSize = 20,
+            FontSize = 21,
             FontWeight = FontWeights.SemiBold
         });
 
-        content.Children.Add(new TextBlock
+        topContent.Children.Add(new TextBlock
         {
             Text = template.Family.Name,
             Margin = new Thickness(0, 2, 0, 0),
@@ -365,34 +375,37 @@ public partial class MainWindow : Window
             FontSize = 13
         });
 
-        content.Children.Add(new TextBlock
+        topContent.Children.Add(CreateStatusBadge(template.Status));
+
+        var middleContent = new StackPanel
         {
-            Text = $"Status: {template.Status}",
-            Margin = new Thickness(0, 14, 0, 0),
-            Foreground = GetStatusBrush(template.Status),
+            Margin = new Thickness(0, 14, 0, 12)
+        };
+        Grid.SetRow(middleContent, 1);
+        content.Children.Add(middleContent);
+
+        middleContent.Children.Add(new TextBlock
+        {
+            Text = template.Description,
+            Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
+            LineHeight = 18,
+            TextWrapping = TextWrapping.Wrap
+        });
+
+        middleContent.Children.Add(new TextBlock
+        {
+            Text = "Capabilities",
+            Margin = new Thickness(0, 16, 0, 8),
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 12,
             FontWeight = FontWeights.SemiBold
         });
 
-        content.Children.Add(new TextBlock
-        {
-            Text = template.Description,
-            Margin = new Thickness(0, 12, 0, 0),
-            Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
-            TextWrapping = TextWrapping.Wrap
-        });
-
-        content.Children.Add(new TextBlock
-        {
-            Text = $"Supports: {FormatCapabilities(template.Capabilities)}",
-            Margin = new Thickness(0, 14, 0, 0),
-            Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
-            TextWrapping = TextWrapping.Wrap
-        });
+        middleContent.Children.Add(CreateCapabilityTags(template.Capabilities));
 
         var button = new Button
         {
             Height = 36,
-            Margin = new Thickness(0, 18, 0, 0),
             Content = template.Status == RobotAvailabilityStatus.Available
                 ? "Open Robot"
                 : "Planned",
@@ -400,9 +413,55 @@ public partial class MainWindow : Window
             Tag = template
         };
         button.Click += OpenRobotButton_Click;
+        Grid.SetRow(button, 2);
         content.Children.Add(button);
 
         return card;
+    }
+
+    private static Border CreateStatusBadge(RobotAvailabilityStatus status) =>
+        new()
+        {
+            Margin = new Thickness(0, 14, 0, 0),
+            Padding = new Thickness(9, 4, 9, 4),
+            HorizontalAlignment = HorizontalAlignment.Left,
+            Background = GetStatusBackgroundBrush(status),
+            BorderBrush = GetStatusBorderBrush(status),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(999),
+            Child = new TextBlock
+            {
+                Text = status.ToString(),
+                Foreground = GetStatusBrush(status),
+                FontSize = 12,
+                FontWeight = FontWeights.SemiBold
+            }
+        };
+
+    private static WrapPanel CreateCapabilityTags(IReadOnlyList<RobotCapability> capabilities)
+    {
+        var panel = new WrapPanel();
+
+        foreach (var capability in capabilities)
+        {
+            panel.Children.Add(new Border
+            {
+                Margin = new Thickness(0, 0, 6, 6),
+                Padding = new Thickness(8, 4, 8, 4),
+                Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
+                BorderBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+                BorderThickness = new Thickness(1),
+                CornerRadius = new CornerRadius(999),
+                Child = new TextBlock
+                {
+                    Text = FormatCapability(capability),
+                    Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+                    FontSize = 12
+                }
+            });
+        }
+
+        return panel;
     }
 
     private void OpenRobot(RobotTemplate template)
@@ -452,8 +511,21 @@ public partial class MainWindow : Window
         _ => new SolidColorBrush(Colors.White)
     };
 
-    private static string FormatCapabilities(IReadOnlyList<RobotCapability> capabilities) =>
-        string.Join(", ", capabilities.Select(FormatCapability));
+    private static Brush GetStatusBackgroundBrush(RobotAvailabilityStatus status) => status switch
+    {
+        RobotAvailabilityStatus.Available => new SolidColorBrush(Color.FromRgb(5, 46, 22)),
+        RobotAvailabilityStatus.Experimental => new SolidColorBrush(Color.FromRgb(66, 32, 6)),
+        RobotAvailabilityStatus.Planned => new SolidColorBrush(Color.FromRgb(30, 41, 59)),
+        _ => new SolidColorBrush(Color.FromRgb(30, 41, 59))
+    };
+
+    private static Brush GetStatusBorderBrush(RobotAvailabilityStatus status) => status switch
+    {
+        RobotAvailabilityStatus.Available => new SolidColorBrush(Color.FromRgb(22, 101, 52)),
+        RobotAvailabilityStatus.Experimental => new SolidColorBrush(Color.FromRgb(161, 98, 7)),
+        RobotAvailabilityStatus.Planned => new SolidColorBrush(Color.FromRgb(71, 85, 105)),
+        _ => new SolidColorBrush(Color.FromRgb(71, 85, 105))
+    };
 
     private static string FormatCapability(RobotCapability capability) => capability switch
     {

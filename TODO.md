@@ -369,6 +369,19 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Add `GCode` capability as metadata only.
 - [x] Mark unavailable robot templates clearly in the UI.
 
+#### 13.1.3.1. Desktop UI Polish
+
+- [x] Replace default WPF button visuals with a dark desktop style.
+- [x] Improve robot selection header hierarchy and spacing.
+- [x] Render robot status as compact badges.
+- [x] Render robot capabilities as compact tags.
+- [x] Keep robot selection cards visually scannable at the current desktop size.
+- [ ] Extract repeated desktop colors and spacing into reusable resources.
+- [ ] Add hover/focus states for robot cards.
+- [ ] Improve the Cartesian viewer layout with the same visual language.
+- [ ] Add technical tooltips for complex controls.
+- [ ] Review the desktop UI at smaller window sizes.
+
 #### 13.1.4. Desktop Script Workflow
 
 - [ ] Add a DSL script editor panel.
