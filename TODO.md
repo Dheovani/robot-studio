@@ -394,6 +394,10 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Render robot status as compact badges.
 - [x] Render robot capabilities as compact tags.
 - [x] Keep robot selection cards visually scannable at the current desktop size.
+- [x] Prevent robot selection card content from being clipped by the footer button.
+- [x] Align robot selection card footer buttons across cards.
+- [x] Make robot selection cards responsive across one, two, and three columns.
+- [x] Organize the Cartesian viewer sidebar into collapsible panels.
 - [ ] Extract repeated desktop colors and spacing into reusable resources.
 - [ ] Add hover/focus states for robot cards.
 - [ ] Improve the Cartesian viewer layout with the same visual language.

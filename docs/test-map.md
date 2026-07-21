@@ -214,6 +214,7 @@ Expected current behavior:
 - opens the Cartesian viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
+- groups dense Cartesian viewer controls into collapsible sidebar panels;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;
 - shows the current script line during playback;

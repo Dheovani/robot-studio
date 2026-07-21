@@ -52,6 +52,7 @@ Current desktop controls:
 - `Robots` inside the Cartesian viewer to return to the selection screen.
 - DSL editor inside the Cartesian viewer.
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.
+- collapsible sidebar panels for script, manual control, command console, robot state, charts, movement explanation, timeline markers, overlays, and camera controls.
 - `Validate` to parse the current DSL script and check Cartesian limits.
 - `Simulate` to regenerate the visual playback from the current DSL script.
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
