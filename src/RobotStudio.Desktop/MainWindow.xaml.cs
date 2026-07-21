@@ -75,6 +75,10 @@ public partial class MainWindow : Window
         TimeSpan Time,
         double VelocityMillimetersPerSecond);
 
+    private sealed record ScalarSample(
+        TimeSpan Time,
+        double Value);
+
     private sealed record StateSegment(
         RobotState State,
         TimeSpan Start,
@@ -226,6 +230,8 @@ public partial class MainWindow : Window
         UpdateMovementExplanation(sceneFrame);
         UpdatePositionChart();
         UpdateVelocityChart();
+        UpdateVelocityComparisonChart();
+        UpdateDistanceChart();
         UpdateStateChart();
     }
 
@@ -424,6 +430,30 @@ public partial class MainWindow : Window
         }
 
         UpdateVelocityChart();
+    }
+
+    private void VelocityComparisonChartCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        UpdateVelocityComparisonChart();
+    }
+
+    private void DistanceChartCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        UpdateDistanceChart();
     }
 
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -1344,6 +1374,253 @@ public partial class MainWindow : Window
         return new Point(
             ToChartX(sample.Time, width),
             ChartPaddingTop + ((1 - normalizedVelocity) * (height - ChartPaddingTop - ChartPaddingBottom)));
+    }
+
+    private void UpdateVelocityComparisonChart()
+    {
+        VelocityComparisonChartCanvas.Children.Clear();
+
+        if (snapshot is null || snapshot.SceneFrames.Count == 0)
+        {
+            return;
+        }
+
+        var width = VelocityComparisonChartCanvas.ActualWidth;
+        var height = VelocityComparisonChartCanvas.ActualHeight;
+        if (width <= ChartPaddingLeft + ChartPaddingRight ||
+            height <= ChartPaddingTop + ChartPaddingBottom)
+        {
+            return;
+        }
+
+        var effectiveSamples = CreateVelocitySamples(snapshot)
+            .Select(sample => new ScalarSample(sample.Time, sample.VelocityMillimetersPerSecond))
+            .ToArray();
+        var requestedSamples = CreateRequestedVelocitySamples(snapshot);
+        var maximumVelocity = Math.Max(
+            1,
+            Math.Max(
+                effectiveSamples.Length == 0 ? 0 : effectiveSamples.Max(sample => sample.Value),
+                requestedSamples.Count == 0 ? 0 : requestedSamples.Max(sample => sample.Value)));
+
+        DrawScalarChartGrid(
+            VelocityComparisonChartCanvas,
+            width,
+            height,
+            maximumVelocity,
+            "mm/s");
+        DrawScalarSeries(
+            VelocityComparisonChartCanvas,
+            requestedSamples,
+            maximumVelocity,
+            Color.FromRgb(56, 189, 248),
+            width,
+            height);
+        DrawScalarSeries(
+            VelocityComparisonChartCanvas,
+            effectiveSamples,
+            maximumVelocity,
+            Color.FromRgb(250, 204, 21),
+            width,
+            height);
+        DrawScalarChartCursor(VelocityComparisonChartCanvas, width, height);
+    }
+
+    private static IReadOnlyList<ScalarSample> CreateRequestedVelocitySamples(CartesianPlaybackSnapshot snapshot)
+    {
+        var samples = new List<ScalarSample>();
+        foreach (var frame in snapshot.SceneFrames)
+        {
+            var requestedVelocity = 0d;
+            if (frame.State == RobotState.Moving &&
+                frame.CommandSource is not null &&
+                TryParseSingleCommand(frame.CommandSource.Text) is MoveToCommand moveCommand)
+            {
+                requestedVelocity = moveCommand.RequestedVelocityMillimetersPerSecond ?? 0;
+            }
+
+            samples.Add(new ScalarSample(frame.Time, requestedVelocity));
+        }
+
+        return samples;
+    }
+
+    private void UpdateDistanceChart()
+    {
+        DistanceChartCanvas.Children.Clear();
+
+        if (snapshot is null || snapshot.Poses.Count == 0)
+        {
+            return;
+        }
+
+        var width = DistanceChartCanvas.ActualWidth;
+        var height = DistanceChartCanvas.ActualHeight;
+        if (width <= ChartPaddingLeft + ChartPaddingRight ||
+            height <= ChartPaddingTop + ChartPaddingBottom)
+        {
+            return;
+        }
+
+        var samples = CreateDistanceSamples(snapshot);
+        var maximumDistance = Math.Max(1, samples.Count == 0 ? 0 : samples.Max(sample => sample.Value));
+
+        DrawScalarChartGrid(
+            DistanceChartCanvas,
+            width,
+            height,
+            maximumDistance,
+            "mm");
+        DrawScalarSeries(
+            DistanceChartCanvas,
+            samples,
+            maximumDistance,
+            Color.FromRgb(45, 212, 191),
+            width,
+            height);
+        DrawScalarChartCursor(DistanceChartCanvas, width, height);
+    }
+
+    private static IReadOnlyList<ScalarSample> CreateDistanceSamples(CartesianPlaybackSnapshot snapshot)
+    {
+        var samples = new List<ScalarSample>
+        {
+            new(snapshot.Poses[0].Time, 0)
+        };
+        var totalDistance = 0d;
+
+        for (var index = 1; index < snapshot.Poses.Count; index++)
+        {
+            var previous = snapshot.Poses[index - 1];
+            var current = snapshot.Poses[index];
+            totalDistance += CalculateDistance(previous.ToolCenterPoint, current.ToolCenterPoint);
+            samples.Add(new ScalarSample(current.Time, totalDistance));
+        }
+
+        return samples;
+    }
+
+    private void DrawScalarChartGrid(
+        Canvas canvas,
+        double width,
+        double height,
+        double maximumValue,
+        string unit)
+    {
+        var plotLeft = ChartPaddingLeft;
+        var plotTop = ChartPaddingTop;
+        var plotRight = width - ChartPaddingRight;
+        var plotBottom = height - ChartPaddingBottom;
+        var gridBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85));
+
+        for (var index = 0; index <= 2; index++)
+        {
+            var y = plotTop + ((plotBottom - plotTop) * index / 2);
+            canvas.Children.Add(new Line
+            {
+                X1 = plotLeft,
+                X2 = plotRight,
+                Y1 = y,
+                Y2 = y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+
+        var maximumLabel = new TextBlock
+        {
+            Text = $"{maximumValue:0.#} {unit}",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        canvas.Children.Add(maximumLabel);
+        Canvas.SetLeft(maximumLabel, 4);
+        Canvas.SetTop(maximumLabel, 2);
+
+        var zeroLabel = new TextBlock
+        {
+            Text = "0",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        canvas.Children.Add(zeroLabel);
+        Canvas.SetLeft(zeroLabel, 12);
+        Canvas.SetTop(zeroLabel, plotBottom - 10);
+
+        var timeLabel = new TextBlock
+        {
+            Text = "time",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        canvas.Children.Add(timeLabel);
+        Canvas.SetLeft(timeLabel, plotRight - 28);
+        Canvas.SetTop(timeLabel, plotBottom + 4);
+    }
+
+    private void DrawScalarSeries(
+        Canvas canvas,
+        IReadOnlyList<ScalarSample> samples,
+        double maximumValue,
+        Color color,
+        double width,
+        double height)
+    {
+        if (samples.Count == 0)
+        {
+            return;
+        }
+
+        var points = new PointCollection();
+        foreach (var sample in samples)
+        {
+            points.Add(ToScalarChartPoint(sample, maximumValue, width, height));
+        }
+
+        canvas.Children.Add(new Polyline
+        {
+            Points = points,
+            Stroke = new SolidColorBrush(color),
+            StrokeThickness = 2
+        });
+    }
+
+    private void DrawScalarChartCursor(
+        Canvas canvas,
+        double width,
+        double height)
+    {
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        var sceneFrame = snapshot.SceneFrames[currentFrameIndex];
+        var cursorX = ToChartX(sceneFrame.Time, width);
+        canvas.Children.Add(new Line
+        {
+            X1 = cursorX,
+            X2 = cursorX,
+            Y1 = ChartPaddingTop,
+            Y2 = height - ChartPaddingBottom,
+            Stroke = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+            StrokeThickness = 1.5
+        });
+    }
+
+    private Point ToScalarChartPoint(
+        ScalarSample sample,
+        double maximumValue,
+        double width,
+        double height)
+    {
+        var normalizedValue = maximumValue <= 0
+            ? 0
+            : Math.Clamp(sample.Value / maximumValue, 0, 1);
+
+        return new Point(
+            ToChartX(sample.Time, width),
+            ChartPaddingTop + ((1 - normalizedValue) * (height - ChartPaddingTop - ChartPaddingBottom)));
     }
 
     private void UpdateStateChart()

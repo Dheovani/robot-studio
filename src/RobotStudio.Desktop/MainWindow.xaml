@@ -423,6 +423,46 @@
                                        Text="Effective velocity in mm/s from playback samples."
                                        TextWrapping="Wrap" />
 
+                            <TextBlock Text="Requested vs Effective"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Border Height="128"
+                                    Margin="0,10,0,8"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="VelocityComparisonChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="VelocityComparisonChartCanvas_SizeChanged" />
+                            </Border>
+
+                            <UniformGrid Columns="2" Margin="0,0,0,20">
+                                <TextBlock Foreground="#38BDF8" Text="Requested" />
+                                <TextBlock Foreground="#FACC15" Text="Effective" />
+                            </UniformGrid>
+
+                            <TextBlock Text="Distance Chart"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Border Height="128"
+                                    Margin="0,10,0,8"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="DistanceChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="DistanceChartCanvas_SizeChanged" />
+                            </Border>
+
+                            <TextBlock Margin="0,0,0,20"
+                                       Foreground="#94A3B8"
+                                       Text="Accumulated TCP distance in millimeters."
+                                       TextWrapping="Wrap" />
+
                             <TextBlock Text="State Chart"
                                        Foreground="#F9FAFB"
                                        FontSize="16"

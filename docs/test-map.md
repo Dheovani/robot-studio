@@ -214,6 +214,8 @@ Expected current behavior:
 - updates the X/Y/Z position chart and current-frame cursor during playback navigation;
 - updates the effective velocity chart and current-frame cursor during playback navigation;
 - updates the robot state chart and current-frame cursor during playback navigation;
+- updates the requested-versus-effective velocity chart during playback navigation;
+- updates the accumulated distance chart during playback navigation;
 - resizes the 3D viewport and side control panel with the vertical splitter;
 - toggles grid, global axes, X/Y/Z labels, workspace, planned path, start/end markers, rails, carriages, and TCP/tool visibility without regenerating the simulation;
 - explains the current command from the active playback frame;
