@@ -348,26 +348,26 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.2. Robot Selection Shell
 
-- [ ] Add `RobotFamilyDescriptor`.
-- [ ] Add `RobotTemplate`.
-- [ ] Add `RobotCapability`.
-- [ ] Add `RobotViewerDescriptor`.
-- [ ] Add the first robot selection screen.
-- [ ] Show the Cartesian robot as `Available`.
-- [ ] Show articulated arm as `Planned`.
-- [ ] Show drone as `Planned`.
-- [ ] List capabilities without implementing unavailable robots.
-- [ ] Keep the selection screen as a simulator entry point, not an LMS.
+- [x] Add `RobotFamilyDescriptor`.
+- [x] Add `RobotTemplate`.
+- [x] Add `RobotCapability`.
+- [x] Add `RobotViewerDescriptor`.
+- [x] Add the first robot selection screen.
+- [x] Show the Cartesian robot as `Available`.
+- [x] Show articulated arm as `Planned`.
+- [x] Show drone as `Planned`.
+- [x] List capabilities without implementing unavailable robots.
+- [x] Keep the selection screen as a simulator entry point, not an LMS.
 
 #### 13.1.3. Initial Robot Capabilities Metadata
 
-- [ ] Add `Simulation` capability.
-- [ ] Add `ScriptExecution` capability.
-- [ ] Add `ThreeDimensionalView` capability.
-- [ ] Add `ManualControl` capability.
-- [ ] Add `HardwareCommunication` capability as metadata only.
-- [ ] Add `GCode` capability as metadata only.
-- [ ] Mark unavailable capabilities clearly in the UI.
+- [x] Add `Simulation` capability.
+- [x] Add `ScriptExecution` capability.
+- [x] Add `ThreeDimensionalView` capability.
+- [x] Add `ManualControl` capability.
+- [x] Add `HardwareCommunication` capability as metadata only.
+- [x] Add `GCode` capability as metadata only.
+- [x] Mark unavailable robot templates clearly in the UI.
 
 #### 13.1.4. Desktop Script Workflow
 

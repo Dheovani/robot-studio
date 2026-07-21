@@ -2,164 +2,196 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         Title="RobotStudio"
-        Width="1100"
-        Height="760"
-        MinWidth="900"
-        MinHeight="620"
+        Width="1180"
+        Height="780"
+        MinWidth="960"
+        MinHeight="640"
         Background="#111827">
     <Grid>
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
-            <RowDefinition Height="*" />
-            <RowDefinition Height="Auto" />
-        </Grid.RowDefinitions>
+        <Grid x:Name="RobotSelectionView">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+            </Grid.RowDefinitions>
 
-        <DockPanel Grid.Row="0" Margin="16,14,16,10">
-            <StackPanel DockPanel.Dock="Left">
+            <StackPanel Grid.Row="0" Margin="24,22,24,12">
                 <TextBlock Text="RobotStudio"
                            Foreground="#F9FAFB"
-                           FontSize="24"
+                           FontSize="28"
                            FontWeight="SemiBold" />
-                <TextBlock Text="Cartesian robot simulation"
+                <TextBlock MaxWidth="820"
+                           Margin="0,6,0,0"
                            Foreground="#CBD5E1"
-                           FontSize="13" />
+                           FontSize="14"
+                           Text="Choose a robot model to inspect, simulate, and control. The Cartesian robot is available now; future families are shown as planned learning paths." />
             </StackPanel>
 
-            <StackPanel DockPanel.Dock="Right"
-                        Orientation="Horizontal"
-                        HorizontalAlignment="Right">
-                <Button x:Name="PlayPauseButton"
-                        Width="96"
-                        Height="34"
-                        Margin="8,0,0,0"
-                        Click="PlayPauseButton_Click"
-                        Content="Play" />
-                <Button Width="80"
-                        Height="34"
-                        Margin="8,0,0,0"
-                        Click="ResetButton_Click"
-                        Content="Reset" />
-            </StackPanel>
-        </DockPanel>
-
-        <Grid Grid.Row="1" Margin="16,0,16,12">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="300" />
-            </Grid.ColumnDefinitions>
-
-            <Border Grid.Column="0"
-                    BorderBrush="#334155"
-                    BorderThickness="1"
-                    Background="#0F172A">
-                <Viewport3D x:Name="RobotViewport"
-                            ClipToBounds="True"
-                            Cursor="Hand"
-                            MouseLeftButtonDown="RobotViewport_MouseLeftButtonDown"
-                            MouseLeftButtonUp="RobotViewport_MouseLeftButtonUp"
-                            MouseMove="RobotViewport_MouseMove"
-                            MouseWheel="RobotViewport_MouseWheel" />
-            </Border>
-
-            <Border Grid.Column="1"
-                    Margin="12,0,0,0"
-                    Padding="14"
-                    BorderBrush="#334155"
-                    BorderThickness="1"
-                    Background="#0F172A">
-                <ScrollViewer VerticalScrollBarVisibility="Auto">
-                    <StackPanel>
-                        <TextBlock Text="Robot State"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
-
-                        <Grid Margin="0,12,0,20">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="105" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Grid.RowDefinitions>
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                                <RowDefinition Height="Auto" />
-                            </Grid.RowDefinitions>
-
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="StateValueText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Position" />
-                            <TextBlock x:Name="PositionValueText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="CommandValueText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Source" />
-                            <TextBlock x:Name="SourceValueText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="TimeValueText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-
-                            <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Frames" />
-                            <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                        </Grid>
-
-                        <TextBlock Text="Camera"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
-
-                        <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Azimuth" />
-                        <Slider x:Name="AzimuthSlider"
-                                Minimum="-180"
-                                Maximum="180"
-                                ValueChanged="CameraSlider_ValueChanged" />
-
-                        <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Elevation" />
-                        <Slider x:Name="ElevationSlider"
-                                Minimum="10"
-                                Maximum="80"
-                                ValueChanged="CameraSlider_ValueChanged" />
-
-                        <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Zoom" />
-                        <Slider x:Name="ZoomSlider"
-                                Minimum="0.6"
-                                Maximum="2.4"
-                                ValueChanged="CameraSlider_ValueChanged" />
-
-                        <WrapPanel Margin="0,14,0,0">
-                            <Button Width="82" Margin="0,0,8,8" Content="Iso" Click="IsoViewButton_Click" />
-                            <Button Width="82" Margin="0,0,8,8" Content="Front" Click="FrontViewButton_Click" />
-                            <Button Width="82" Margin="0,0,0,8" Content="Side" Click="SideViewButton_Click" />
-                            <Button Width="82" Margin="0,0,8,0" Content="Top" Click="TopViewButton_Click" />
-                            <Button Width="172" Margin="0,0,0,0" Content="Reset Camera" Click="ResetCameraButton_Click" />
-                        </WrapPanel>
-                    </StackPanel>
-                </ScrollViewer>
-            </Border>
+            <ScrollViewer Grid.Row="1"
+                          Margin="24,8,24,24"
+                          VerticalScrollBarVisibility="Auto">
+                <WrapPanel x:Name="RobotCardsPanel" />
+            </ScrollViewer>
         </Grid>
 
-        <Grid Grid.Row="2" Margin="16,0,16,16">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*" />
-                <ColumnDefinition Width="260" />
-            </Grid.ColumnDefinitions>
+        <Grid x:Name="CartesianViewerView" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
 
-            <Slider x:Name="TimelineSlider"
-                    Grid.Column="0"
-                    Minimum="0"
-                    IsSnapToTickEnabled="True"
-                    ValueChanged="TimelineSlider_ValueChanged" />
+            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="RobotStudio"
+                               Foreground="#F9FAFB"
+                               FontSize="24"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="Cartesian robot simulation"
+                               Foreground="#CBD5E1"
+                               FontSize="13" />
+                </StackPanel>
 
-            <TextBlock x:Name="StatusText"
-                       Grid.Column="1"
-                       Margin="16,0,0,0"
-                       VerticalAlignment="Center"
-                       Foreground="#E5E7EB"
-                       TextAlignment="Right" />
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Button Width="104"
+                            Height="34"
+                            Margin="8,0,0,0"
+                            Click="BackToSelectionButton_Click"
+                            Content="Robots" />
+                    <Button x:Name="PlayPauseButton"
+                            Width="96"
+                            Height="34"
+                            Margin="8,0,0,0"
+                            Click="PlayPauseButton_Click"
+                            Content="Play" />
+                    <Button Width="80"
+                            Height="34"
+                            Margin="8,0,0,0"
+                            Click="ResetButton_Click"
+                            Content="Reset" />
+                </StackPanel>
+            </DockPanel>
+
+            <Grid Grid.Row="1" Margin="16,0,16,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="300" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A">
+                    <Viewport3D x:Name="RobotViewport"
+                                ClipToBounds="True"
+                                Cursor="Hand"
+                                MouseLeftButtonDown="RobotViewport_MouseLeftButtonDown"
+                                MouseLeftButtonUp="RobotViewport_MouseLeftButtonUp"
+                                MouseMove="RobotViewport_MouseMove"
+                                MouseWheel="RobotViewport_MouseWheel" />
+                </Border>
+
+                <Border Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Padding="14"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto">
+                        <StackPanel>
+                            <TextBlock Text="Robot State"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Grid Margin="0,12,0,20">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="105" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
+                                <TextBlock x:Name="StateValueText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Position" />
+                                <TextBlock x:Name="PositionValueText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
+                                <TextBlock x:Name="CommandValueText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Source" />
+                                <TextBlock x:Name="SourceValueText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
+                                <TextBlock x:Name="TimeValueText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Frames" />
+                                <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            </Grid>
+
+                            <TextBlock Text="Camera"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Azimuth" />
+                            <Slider x:Name="AzimuthSlider"
+                                    Minimum="-180"
+                                    Maximum="180"
+                                    ValueChanged="CameraSlider_ValueChanged" />
+
+                            <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Elevation" />
+                            <Slider x:Name="ElevationSlider"
+                                    Minimum="10"
+                                    Maximum="80"
+                                    ValueChanged="CameraSlider_ValueChanged" />
+
+                            <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Zoom" />
+                            <Slider x:Name="ZoomSlider"
+                                    Minimum="0.6"
+                                    Maximum="2.4"
+                                    ValueChanged="CameraSlider_ValueChanged" />
+
+                            <WrapPanel Margin="0,14,0,0">
+                                <Button Width="82" Margin="0,0,8,8" Content="Iso" Click="IsoViewButton_Click" />
+                                <Button Width="82" Margin="0,0,8,8" Content="Front" Click="FrontViewButton_Click" />
+                                <Button Width="82" Margin="0,0,0,8" Content="Side" Click="SideViewButton_Click" />
+                                <Button Width="82" Margin="0,0,8,0" Content="Top" Click="TopViewButton_Click" />
+                                <Button Width="172" Content="Reset Camera" Click="ResetCameraButton_Click" />
+                            </WrapPanel>
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="16,0,16,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="260" />
+                </Grid.ColumnDefinitions>
+
+                <Slider x:Name="TimelineSlider"
+                        Grid.Column="0"
+                        Minimum="0"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="TimelineSlider_ValueChanged" />
+
+                <TextBlock x:Name="StatusText"
+                           Grid.Column="1"
+                           Margin="16,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="#E5E7EB"
+                           TextAlignment="Right" />
+            </Grid>
         </Grid>
     </Grid>
 </Window>

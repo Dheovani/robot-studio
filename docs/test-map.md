@@ -187,6 +187,11 @@ dotnet run --project src/RobotStudio.Desktop
 Expected current behavior:
 
 - opens a WPF desktop window;
+- shows a robot selection screen on startup;
+- lists the Cartesian robot as available;
+- lists the articulated arm and drone as planned;
+- opens the Cartesian viewer from the selection screen;
+- returns from the Cartesian viewer to the selection screen;
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - provides play and reset controls;
 - provides a timeline slider;

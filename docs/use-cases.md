@@ -30,6 +30,23 @@ Command:
 dotnet run --project src/RobotStudio.Cli
 ```
 
+### Select A Robot In The Desktop App
+
+Actor: student.
+
+Goal: choose a robot model before opening a simulator.
+
+Current status: implemented for the first WPF desktop shell.
+
+Expected result:
+
+- the desktop app lists available and planned robot templates;
+- the Cartesian robot appears as `Available`;
+- the articulated arm appears as `Planned`;
+- the drone appears as `Planned`;
+- planned robot entries cannot be opened yet;
+- the selection screen remains a simulator entry point, not a lesson manager.
+
 ## Planned Use Cases
 
 ### Execute A Command Sequence

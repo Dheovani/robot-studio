@@ -39,10 +39,16 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The first desktop viewer opens a WPF window with a 3D viewport, renders the built-in Cartesian simulation, and provides basic playback and camera controls.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot is available now. The articulated arm and drone entries are visible as planned future robot families.
+
+Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
 
 Current desktop controls:
 
+- robot cards showing name, family, status, description, and supported capabilities.
+- `Open Robot` on the Cartesian robot card.
+- disabled planned robot entries for future families.
+- `Robots` inside the Cartesian viewer to return to the selection screen.
 - `Play` and `Reset` for playback.
 - Timeline slider for frame scrubbing.
 - azimuth, elevation, and zoom sliders for camera control.

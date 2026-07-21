@@ -1,8 +1,10 @@
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
+using RobotStudio.Desktop.Robots;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Scripting;
 using RobotStudio.Simulation;
@@ -19,7 +21,7 @@ public partial class MainWindow : Window
         """;
 
     private readonly DispatcherTimer playbackTimer;
-    private CartesianPlaybackSnapshot snapshot = null!;
+    private CartesianPlaybackSnapshot? snapshot;
     private int currentFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
@@ -46,18 +48,7 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        snapshot = CreateSnapshot();
-        baseCameraDistanceMillimeters = CalculateDistance(
-            snapshot.Viewport.Target,
-            snapshot.Viewport.CameraPosition);
-        TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
-        TimelineSlider.TickFrequency = 1;
-        SetCameraControls(
-            azimuth: azimuthDegrees,
-            elevation: elevationDegrees,
-            zoom: zoomMultiplier);
-
-        RenderFrame(index: 0);
+        BuildRobotSelectionCards();
     }
 
     private void PlayPauseButton_Click(
@@ -81,6 +72,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         playbackTimer.Stop();
         isPlaying = false;
         PlayPauseButton.Content = "Play";
@@ -103,6 +99,11 @@ public partial class MainWindow : Window
         object? sender,
         EventArgs e)
     {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         var nextFrame = currentFrameIndex + 1;
         if (nextFrame >= snapshot.SceneFrameCount)
         {
@@ -114,6 +115,11 @@ public partial class MainWindow : Window
 
     private void RenderFrame(int index)
     {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         currentFrameIndex = Math.Clamp(index, 0, snapshot.SceneFrameCount - 1);
         TimelineSlider.Value = currentFrameIndex;
 
@@ -178,6 +184,25 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e) =>
         SetCameraControls(azimuth: -45, elevation: 35, zoom: 1);
+
+    private void BackToSelectionButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        CartesianViewerView.Visibility = Visibility.Collapsed;
+        RobotSelectionView.Visibility = Visibility.Visible;
+    }
+
+    private void OpenRobotButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: RobotTemplate template })
+        {
+            OpenRobot(template);
+        }
+    }
 
     private void RobotViewport_MouseLeftButtonDown(
         object sender,
@@ -250,6 +275,11 @@ public partial class MainWindow : Window
 
     private void ApplyCamera()
     {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         RobotViewport.Camera = CreateCamera(
             snapshot.Viewport,
             azimuthDegrees,
@@ -259,6 +289,11 @@ public partial class MainWindow : Window
 
     private void UpdateStatePanel(CartesianSceneFrame sceneFrame)
     {
+        if (snapshot is null)
+        {
+            return;
+        }
+
         var pose = snapshot.Poses[currentFrameIndex];
         StateValueText.Text = sceneFrame.State.ToString();
         PositionValueText.Text =
@@ -287,6 +322,149 @@ public partial class MainWindow : Window
         return new CartesianPlaybackSnapshotBuilder()
             .Build(profile, result, TimeSpan.FromMilliseconds(100));
     }
+
+    private void BuildRobotSelectionCards()
+    {
+        RobotCardsPanel.Children.Clear();
+
+        foreach (var template in RobotCatalog.Templates)
+        {
+            RobotCardsPanel.Children.Add(CreateRobotCard(template));
+        }
+    }
+
+    private UIElement CreateRobotCard(RobotTemplate template)
+    {
+        var card = new Border
+        {
+            Width = 340,
+            MinHeight = 270,
+            Margin = new Thickness(0, 0, 16, 16),
+            Padding = new Thickness(18),
+            BorderBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+            BorderThickness = new Thickness(1),
+            Background = new SolidColorBrush(Color.FromRgb(15, 23, 42))
+        };
+
+        var content = new StackPanel();
+        card.Child = content;
+
+        content.Children.Add(new TextBlock
+        {
+            Text = template.Name,
+            Foreground = new SolidColorBrush(Color.FromRgb(249, 250, 251)),
+            FontSize = 20,
+            FontWeight = FontWeights.SemiBold
+        });
+
+        content.Children.Add(new TextBlock
+        {
+            Text = template.Family.Name,
+            Margin = new Thickness(0, 2, 0, 0),
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 13
+        });
+
+        content.Children.Add(new TextBlock
+        {
+            Text = $"Status: {template.Status}",
+            Margin = new Thickness(0, 14, 0, 0),
+            Foreground = GetStatusBrush(template.Status),
+            FontWeight = FontWeights.SemiBold
+        });
+
+        content.Children.Add(new TextBlock
+        {
+            Text = template.Description,
+            Margin = new Thickness(0, 12, 0, 0),
+            Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
+            TextWrapping = TextWrapping.Wrap
+        });
+
+        content.Children.Add(new TextBlock
+        {
+            Text = $"Supports: {FormatCapabilities(template.Capabilities)}",
+            Margin = new Thickness(0, 14, 0, 0),
+            Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+            TextWrapping = TextWrapping.Wrap
+        });
+
+        var button = new Button
+        {
+            Height = 36,
+            Margin = new Thickness(0, 18, 0, 0),
+            Content = template.Status == RobotAvailabilityStatus.Available
+                ? "Open Robot"
+                : "Planned",
+            IsEnabled = template.Status == RobotAvailabilityStatus.Available,
+            Tag = template
+        };
+        button.Click += OpenRobotButton_Click;
+        content.Children.Add(button);
+
+        return card;
+    }
+
+    private void OpenRobot(RobotTemplate template)
+    {
+        if (template.Viewer.Kind != RobotViewerKind.CartesianThreeDimensional)
+        {
+            return;
+        }
+
+        RobotSelectionView.Visibility = Visibility.Collapsed;
+        CartesianViewerView.Visibility = Visibility.Visible;
+        EnsureCartesianSnapshot();
+        RenderFrame(index: 0);
+    }
+
+    private void EnsureCartesianSnapshot()
+    {
+        if (snapshot is not null)
+        {
+            return;
+        }
+
+        snapshot = CreateSnapshot();
+        baseCameraDistanceMillimeters = CalculateDistance(
+            snapshot.Viewport.Target,
+            snapshot.Viewport.CameraPosition);
+        TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
+        TimelineSlider.TickFrequency = 1;
+        SetCameraControls(
+            azimuth: azimuthDegrees,
+            elevation: elevationDegrees,
+            zoom: zoomMultiplier);
+    }
+
+    private void StopPlayback()
+    {
+        playbackTimer.Stop();
+        isPlaying = false;
+        PlayPauseButton.Content = "Play";
+    }
+
+    private static Brush GetStatusBrush(RobotAvailabilityStatus status) => status switch
+    {
+        RobotAvailabilityStatus.Available => new SolidColorBrush(Color.FromRgb(74, 222, 128)),
+        RobotAvailabilityStatus.Experimental => new SolidColorBrush(Color.FromRgb(250, 204, 21)),
+        RobotAvailabilityStatus.Planned => new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+        _ => new SolidColorBrush(Colors.White)
+    };
+
+    private static string FormatCapabilities(IReadOnlyList<RobotCapability> capabilities) =>
+        string.Join(", ", capabilities.Select(FormatCapability));
+
+    private static string FormatCapability(RobotCapability capability) => capability switch
+    {
+        RobotCapability.Simulation => "simulation",
+        RobotCapability.ScriptExecution => "DSL",
+        RobotCapability.ThreeDimensionalView => "3D view",
+        RobotCapability.ManualControl => "manual control",
+        RobotCapability.HardwareCommunication => "hardware",
+        RobotCapability.GCode => "G-code",
+        _ => capability.ToString()
+    };
 
     private static PerspectiveCamera CreateCamera(
         CartesianViewportSnapshot viewport,
