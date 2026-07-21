@@ -395,6 +395,41 @@
                                        TextWrapping="Wrap"
                                        Text="Open a robot simulation to inspect command explanations." />
 
+                            <TextBlock Text="Overlays"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <UniformGrid Columns="2" Margin="0,10,0,20">
+                                <CheckBox x:Name="ShowWorkspaceCheckBox"
+                                          Margin="0,0,8,8"
+                                          Foreground="#CBD5E1"
+                                          IsChecked="True"
+                                          Checked="OverlayCheckBox_Changed"
+                                          Unchecked="OverlayCheckBox_Changed"
+                                          Content="Workspace" />
+                                <CheckBox x:Name="ShowRailsCheckBox"
+                                          Margin="0,0,0,8"
+                                          Foreground="#CBD5E1"
+                                          IsChecked="True"
+                                          Checked="OverlayCheckBox_Changed"
+                                          Unchecked="OverlayCheckBox_Changed"
+                                          Content="Rails" />
+                                <CheckBox x:Name="ShowCarriagesCheckBox"
+                                          Margin="0,0,8,0"
+                                          Foreground="#CBD5E1"
+                                          IsChecked="True"
+                                          Checked="OverlayCheckBox_Changed"
+                                          Unchecked="OverlayCheckBox_Changed"
+                                          Content="Carriages" />
+                                <CheckBox x:Name="ShowToolCheckBox"
+                                          Foreground="#CBD5E1"
+                                          IsChecked="True"
+                                          Checked="OverlayCheckBox_Changed"
+                                          Unchecked="OverlayCheckBox_Changed"
+                                          Content="TCP / tool" />
+                            </UniformGrid>
+
                             <TextBlock Text="Camera"
                                        Foreground="#F9FAFB"
                                        FontSize="16"

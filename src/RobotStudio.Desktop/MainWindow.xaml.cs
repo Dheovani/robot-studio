@@ -138,7 +138,7 @@ public partial class MainWindow : Window
         sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(92, 105, 130)));
         sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
 
-        foreach (var primitive in sceneFrame.Primitives)
+        foreach (CartesianScenePrimitive primitive in sceneFrame.Primitives.Where(IsPrimitiveVisible))
         {
             sceneRoot.Children.Add(CreateModel(primitive));
         }
@@ -311,6 +311,18 @@ public partial class MainWindow : Window
         }
 
         ApplyPlaybackSpeed();
+    }
+
+    private void OverlayCheckBox_Changed(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        RenderFrame(currentFrameIndex);
     }
 
     private void ExecuteCommandButton_Click(
@@ -1125,6 +1137,16 @@ public partial class MainWindow : Window
         primitive.Kind == CartesianScenePrimitiveKind.Workspace
             ? CreateWorkspaceBoundsModel(primitive)
             : CreateBoxModel(primitive);
+
+    private bool IsPrimitiveVisible(CartesianScenePrimitive primitive) =>
+        primitive.Kind switch
+        {
+            CartesianScenePrimitiveKind.Workspace => ShowWorkspaceCheckBox.IsChecked == true,
+            CartesianScenePrimitiveKind.Rail => ShowRailsCheckBox.IsChecked == true,
+            CartesianScenePrimitiveKind.Carriage => ShowCarriagesCheckBox.IsChecked == true,
+            CartesianScenePrimitiveKind.Tool => ShowToolCheckBox.IsChecked == true,
+            _ => true
+        };
 
     private static GeometryModel3D CreateBoxModel(CartesianScenePrimitive primitive) =>
         new(

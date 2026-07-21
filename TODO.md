@@ -425,15 +425,16 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.7. Didactic Overlays
 
-- [ ] Toggle workspace visibility.
+- [x] Toggle workspace visibility.
 - [ ] Toggle global axes.
 - [ ] Toggle grid.
 - [ ] Toggle X/Y/Z labels.
-- [ ] Toggle TCP marker.
+- [x] Toggle TCP marker.
 - [ ] Toggle planned path.
 - [ ] Toggle start marker.
 - [ ] Toggle end marker.
-- [ ] Toggle robot components.
+- [x] Toggle robot components.
+- [x] Toggle Cartesian rails separately from moving components.
 
 #### 13.1.8. Timeline And Movement Explanation
 

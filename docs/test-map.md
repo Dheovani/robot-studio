@@ -210,6 +210,7 @@ Expected current behavior:
 - moves one frame forward with `Next`;
 - changes playback timer speed with the playback speed selector;
 - resizes the 3D viewport and side control panel with the vertical splitter;
+- toggles workspace, rails, carriages, and TCP/tool visibility without regenerating the simulation;
 - explains the current command from the active playback frame;
 - explains involved axes, requested speed, effective speed, and limiting axis for `MOVE`;
 - renders the built-in Cartesian robot scene in a 3D viewport;
