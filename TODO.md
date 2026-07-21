@@ -415,11 +415,12 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.6. Direct Command Console
 
-- [ ] Add a simple command input panel.
-- [ ] Execute one DSL command at a time from the command input.
-- [ ] Show command validation errors without crashing the desktop app.
-- [ ] Append accepted commands to a visible command history.
-- [ ] Reuse the same parser and simulation path used by scripts.
+- [x] Add a simple command input panel.
+- [x] Execute one DSL command at a time from the command input.
+- [x] Show command validation errors without crashing the desktop app.
+- [x] Append accepted commands to a visible command history.
+- [x] Reuse the same parser and simulation path used by scripts.
+- [x] Keep command history height stable with its own scroll.
 
 #### 13.1.7. Didactic Overlays
 

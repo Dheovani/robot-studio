@@ -202,6 +202,10 @@ Expected current behavior:
 - appends `MOVE` commands when manual jog buttons are used;
 - rejects invalid manual step or speed values;
 - rejects manual jog commands that exceed Cartesian axis limits;
+- executes one DSL command from the command console;
+- executes the command console when the user presses `Enter`;
+- appends accepted console commands to the DSL script;
+- records accepted and rejected console commands in the command history;
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - provides play and reset controls;
 - provides a timeline slider;

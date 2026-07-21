@@ -281,6 +281,24 @@ public partial class MainWindow : Window
         SetManualControlStatus("Playback stopped.", Color.FromRgb(147, 197, 253));
     }
 
+    private void ExecuteCommandButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ExecuteConsoleCommand();
+
+    private void CommandConsoleTextBox_KeyDown(
+        object sender,
+        KeyEventArgs e)
+    {
+        if (e.Key != Key.Enter)
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ExecuteConsoleCommand();
+    }
+
     private void RobotViewport_MouseLeftButtonDown(
         object sender,
         MouseButtonEventArgs e)
@@ -675,21 +693,54 @@ public partial class MainWindow : Window
 
     private void AppendManualCommandAndSimulate(string commandText)
     {
-        var currentScript = ScriptEditorTextBox.Text.TrimEnd();
-        var nextScript = currentScript.Length == 0
-            ? commandText
-            : $"{currentScript}{Environment.NewLine}{commandText}";
-
-        if (!TryCreateSnapshotFromScript(nextScript, out var nextSnapshot, out var message))
+        if (!AppendCommandAndSimulate(commandText, out var message))
         {
             SetManualControlStatus(message, Color.FromRgb(248, 113, 113));
             return;
         }
 
+        SetManualControlStatus($"Added command: {commandText}", Color.FromRgb(74, 222, 128));
+    }
+
+    private void ExecuteConsoleCommand()
+    {
+        var commandText = CommandConsoleTextBox.Text.Trim();
+        if (commandText.Length == 0)
+        {
+            SetCommandConsoleStatus("Command cannot be empty.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (!AppendCommandAndSimulate(commandText, out var message))
+        {
+            AddCommandHistoryEntry($"> {commandText} | rejected");
+            SetCommandConsoleStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        AddCommandHistoryEntry($"> {commandText}");
+        CommandConsoleTextBox.SelectAll();
+        SetCommandConsoleStatus("Command executed and appended to the script.", Color.FromRgb(74, 222, 128));
+    }
+
+    private bool AppendCommandAndSimulate(
+        string commandText,
+        out string message)
+    {
+        var currentScript = ScriptEditorTextBox.Text.TrimEnd();
+        var nextScript = currentScript.Length == 0
+            ? commandText
+            : $"{currentScript}{Environment.NewLine}{commandText}";
+
+        if (!TryCreateSnapshotFromScript(nextScript, out var nextSnapshot, out message))
+        {
+            return false;
+        }
+
         if (nextSnapshot is null)
         {
-            SetManualControlStatus("Manual command did not produce a playback snapshot.", Color.FromRgb(248, 113, 113));
-            return;
+            message = "Command did not produce a playback snapshot.";
+            return false;
         }
 
         StopPlayback();
@@ -698,13 +749,27 @@ public partial class MainWindow : Window
         InitializeTimelineForSnapshot();
         RenderFrame(nextSnapshot.SceneFrameCount - 1);
         SetScriptStatus(message, Color.FromRgb(74, 222, 128));
-        SetManualControlStatus($"Added command: {commandText}", Color.FromRgb(74, 222, 128));
+        return true;
     }
 
     private void SetManualControlStatus(string message, Color color)
     {
         ManualControlStatusText.Text = message;
         ManualControlStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetCommandConsoleStatus(
+        string message,
+        Color color)
+    {
+        CommandConsoleStatusText.Text = message;
+        CommandConsoleStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void AddCommandHistoryEntry(string text)
+    {
+        CommandHistoryListBox.Items.Add(text);
+        CommandHistoryListBox.ScrollIntoView(text);
     }
 
     private static CartesianRobotProfile CreateCartesianProfile() =>

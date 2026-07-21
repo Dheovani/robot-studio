@@ -152,6 +152,23 @@ Expected result:
 - each manual action reuses the DSL parser and simulator;
 - invalid manual movements report the same domain validation errors as scripts.
 
+### Execute A Direct Command In The Desktop App
+
+Actor: student.
+
+Goal: type and execute one DSL command without editing the full script manually.
+
+Current status: implemented for the first Cartesian WPF viewer.
+
+Expected result:
+
+- the student types one DSL command in the command console;
+- pressing `Enter` or `Execute` runs the command;
+- accepted commands are appended to the DSL script;
+- rejected commands are reported without closing the app;
+- command history records accepted and rejected command attempts;
+- direct commands reuse the same parser and simulator as scripts and manual controls.
+
 ### Send Commands To Real Hardware
 
 Actor: instructor or advanced student.

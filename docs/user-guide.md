@@ -55,6 +55,8 @@ Current desktop controls:
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
 - step size and requested speed fields for manual jog commands.
 - manual actions append DSL commands and regenerate playback.
+- command console for executing one DSL command at a time.
+- command history with accepted and rejected command entries.
 - `Play` and `Reset` for playback.
 - Timeline slider for frame scrubbing.
 - current script line indicator during playback.
