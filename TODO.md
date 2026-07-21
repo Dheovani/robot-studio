@@ -426,8 +426,8 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 #### 13.1.7. Didactic Overlays
 
 - [x] Toggle workspace visibility.
-- [ ] Toggle global axes.
-- [ ] Toggle grid.
+- [x] Toggle global axes.
+- [x] Toggle grid.
 - [ ] Toggle X/Y/Z labels.
 - [x] Toggle TCP marker.
 - [ ] Toggle planned path.

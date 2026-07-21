@@ -65,7 +65,7 @@ Current desktop controls:
 - current script line indicator during playback.
 - movement explanation panel describing current command behavior.
 - MOVE explanations include involved axes, distance, duration, requested speed, effective speed, and axis speed limits.
-- overlay toggles for workspace bounds, rails, carriages, and TCP/tool visibility.
+- overlay toggles for grid, global axes, workspace bounds, rails, carriages, and TCP/tool visibility.
 - azimuth, elevation, and zoom sliders for camera control.
 - mouse drag inside the 3D viewport for orbit rotation.
 - mouse wheel inside the 3D viewport for zoom.

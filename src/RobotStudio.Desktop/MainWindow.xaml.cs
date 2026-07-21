@@ -16,6 +16,10 @@ namespace RobotStudio.Desktop;
 
 public partial class MainWindow : Window
 {
+    private const double GridSpacingMillimeters = 25;
+    private const double GridLineThicknessMillimeters = 1.2;
+    private const double AxisLineThicknessMillimeters = 4;
+
     private const string ExampleScript =
         """
         HOME
@@ -137,6 +141,16 @@ public partial class MainWindow : Window
         var sceneRoot = new Model3DGroup();
         sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(92, 105, 130)));
         sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+
+        if (ShowGridCheckBox.IsChecked == true)
+        {
+            sceneRoot.Children.Add(CreateGridModel(snapshot.WorkspaceBounds));
+        }
+
+        if (ShowGlobalAxesCheckBox.IsChecked == true)
+        {
+            sceneRoot.Children.Add(CreateGlobalAxesModel(snapshot.WorkspaceBounds));
+        }
 
         foreach (CartesianScenePrimitive primitive in sceneFrame.Primitives.Where(IsPrimitiveVisible))
         {
@@ -1148,12 +1162,75 @@ public partial class MainWindow : Window
             _ => true
         };
 
+    private static Model3DGroup CreateGridModel(CartesianWorkspaceBounds bounds)
+    {
+        var group = new Model3DGroup();
+        var size = bounds.Size;
+        var gridZ = bounds.Minimum.ZMillimeters - GridLineThicknessMillimeters;
+        var gridColor = Color.FromArgb(90, 71, 85, 105);
+
+        for (var x = bounds.Minimum.XMillimeters; x <= bounds.Maximum.XMillimeters; x += GridSpacingMillimeters)
+        {
+            group.Children.Add(CreateColoredBoxModel(
+                new VisualVector3(x, bounds.Center.YMillimeters, gridZ),
+                new VisualVector3(GridLineThicknessMillimeters, size.YMillimeters, GridLineThicknessMillimeters),
+                gridColor));
+        }
+
+        for (var y = bounds.Minimum.YMillimeters; y <= bounds.Maximum.YMillimeters; y += GridSpacingMillimeters)
+        {
+            group.Children.Add(CreateColoredBoxModel(
+                new VisualVector3(bounds.Center.XMillimeters, y, gridZ),
+                new VisualVector3(size.XMillimeters, GridLineThicknessMillimeters, GridLineThicknessMillimeters),
+                gridColor));
+        }
+
+        return group;
+    }
+
+    private static Model3DGroup CreateGlobalAxesModel(CartesianWorkspaceBounds bounds)
+    {
+        var origin = new VisualVector3(
+            Math.Clamp(0, bounds.Minimum.XMillimeters, bounds.Maximum.XMillimeters),
+            Math.Clamp(0, bounds.Minimum.YMillimeters, bounds.Maximum.YMillimeters),
+            Math.Clamp(0, bounds.Minimum.ZMillimeters, bounds.Maximum.ZMillimeters));
+        var group = new Model3DGroup();
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(bounds.Center.XMillimeters, origin.YMillimeters, origin.ZMillimeters),
+            new VisualVector3(bounds.Size.XMillimeters, AxisLineThicknessMillimeters, AxisLineThicknessMillimeters),
+            Color.FromRgb(248, 113, 113)));
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(origin.XMillimeters, bounds.Center.YMillimeters, origin.ZMillimeters),
+            new VisualVector3(AxisLineThicknessMillimeters, bounds.Size.YMillimeters, AxisLineThicknessMillimeters),
+            Color.FromRgb(34, 197, 94)));
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(origin.XMillimeters, origin.YMillimeters, bounds.Center.ZMillimeters),
+            new VisualVector3(AxisLineThicknessMillimeters, AxisLineThicknessMillimeters, bounds.Size.ZMillimeters),
+            Color.FromRgb(96, 165, 250)));
+
+        return group;
+    }
+
     private static GeometryModel3D CreateBoxModel(CartesianScenePrimitive primitive) =>
         new(
             CreateBoxMesh(primitive.Center, primitive.Size),
             new DiffuseMaterial(new SolidColorBrush(GetColor(primitive.Kind))))
         {
             BackMaterial = new DiffuseMaterial(new SolidColorBrush(GetColor(primitive.Kind)))
+        };
+
+    private static GeometryModel3D CreateColoredBoxModel(
+        VisualVector3 center,
+        VisualVector3 size,
+        Color color) =>
+        new(
+            CreateBoxMesh(center, size),
+            new DiffuseMaterial(new SolidColorBrush(color)))
+        {
+            BackMaterial = new DiffuseMaterial(new SolidColorBrush(color))
         };
 
     private static Model3DGroup CreateWorkspaceBoundsModel(CartesianScenePrimitive primitive)
