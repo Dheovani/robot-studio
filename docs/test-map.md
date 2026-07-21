@@ -111,6 +111,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian scene frame mapping creates renderable workspace, rail, carriage, and tool primitives.
 - [x] Cartesian scene frame mapping positions moving primitives from robot poses.
 - [x] Cartesian scene frame mapping preserves pose metadata.
+- [x] Cartesian viewport planning targets the workspace center.
+- [x] Cartesian viewport planning creates a deterministic diagonal camera position.
+- [x] Cartesian viewport planning creates positive clipping distances.
 
 ### Required Next Coverage
 

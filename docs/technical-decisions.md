@@ -108,6 +108,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianSceneFrameMapper` converts a Cartesian robot pose into simple renderable primitives. The first scene format uses named boxes with an identifier, primitive kind, center, and size. Future UI layers should render these primitives instead of deriving robot geometry from raw coordinates.
 
+`CartesianViewportPlanner` derives an initial camera target, camera position, up direction, and clipping distances from the workspace bounds. This keeps first-load scene framing deterministic while leaving camera interaction and rendering technology for the future UI layer.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

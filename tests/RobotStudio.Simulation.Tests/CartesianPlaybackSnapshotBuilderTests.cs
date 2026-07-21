@@ -14,6 +14,7 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         var snapshot = builder.Build(profile, result, TimeSpan.FromSeconds(1));
 
         Assert.Equal(CartesianWorkspaceBounds.FromProfile(profile), snapshot.WorkspaceBounds);
+        Assert.Equal(snapshot.WorkspaceBounds.Center, snapshot.Viewport.Target);
         Assert.Equal(TimeSpan.FromSeconds(2), snapshot.TotalDuration);
         Assert.True(snapshot.Succeeded);
         Assert.Null(snapshot.FailureMessage);
@@ -80,6 +81,17 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
             new CartesianPlaybackSnapshotBuilder(
                 new CartesianPlaybackSampler(),
                 new CartesianRobotPoseMapper(),
+                null!));
+    }
+
+    [Fact]
+    public void Constructor_WhenViewportPlannerIsNull_ShouldThrow()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new CartesianPlaybackSnapshotBuilder(
+                new CartesianPlaybackSampler(),
+                new CartesianRobotPoseMapper(),
+                new CartesianSceneFrameMapper(),
                 null!));
     }
 

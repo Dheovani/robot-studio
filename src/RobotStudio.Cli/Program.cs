@@ -188,6 +188,10 @@ static int ExportPlaybackFile(
     Console.WriteLine($"Frames: {snapshot.FrameCount}");
     Console.WriteLine($"Poses: {snapshot.PoseCount}");
     Console.WriteLine($"Scene frames: {snapshot.SceneFrameCount}");
+    Console.WriteLine(
+        $"Viewport target: X={snapshot.Viewport.Target.XMillimeters:0.###} mm, " +
+        $"Y={snapshot.Viewport.Target.YMillimeters:0.###} mm, " +
+        $"Z={snapshot.Viewport.Target.ZMillimeters:0.###} mm");
     Console.WriteLine($"Total duration: {snapshot.TotalDuration.TotalSeconds:0.###} s");
 
     return snapshot.Succeeded ? 0 : 1;

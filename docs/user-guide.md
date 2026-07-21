@@ -72,6 +72,7 @@ Current output includes:
 - JSON playback snapshots when using the `export-playback` command;
 - Cartesian robot poses in exported playback snapshots;
 - Cartesian scene frames with renderable primitives in exported playback snapshots;
+- Cartesian viewport data for initial 3D camera framing in exported playback snapshots;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -95,6 +96,7 @@ Current simulation output includes:
 - exportable playback snapshots for future visual tools;
 - didactic Cartesian mechanism poses derived from playback frames;
 - renderable Cartesian scene primitives for future 3D tools;
+- deterministic initial viewport data for future 3D tools;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

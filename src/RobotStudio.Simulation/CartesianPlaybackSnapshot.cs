@@ -2,6 +2,7 @@ namespace RobotStudio.Simulation;
 
 public sealed record CartesianPlaybackSnapshot(
     CartesianWorkspaceBounds WorkspaceBounds,
+    CartesianViewportSnapshot Viewport,
     IReadOnlyList<RobotVisualState> Frames,
     IReadOnlyList<CartesianRobotPose> Poses,
     IReadOnlyList<CartesianSceneFrame> SceneFrames,
