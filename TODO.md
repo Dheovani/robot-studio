@@ -215,6 +215,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add Cartesian robot pose mapping for the first didactic 3D mechanism model.
 - [x] Add Cartesian scene frame mapping with renderable primitives for future 3D UI.
 - [x] Add Cartesian viewport planning for the initial 3D camera framing.
+- [x] Add versioned playback snapshot metadata for future UI compatibility.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
@@ -227,6 +228,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests for Cartesian robot pose mapping.
 - [x] Add tests for Cartesian scene frame mapping.
 - [x] Add tests for Cartesian viewport planning.
+- [x] Add tests for playback snapshot metadata.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

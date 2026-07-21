@@ -73,6 +73,7 @@ Current output includes:
 - Cartesian robot poses in exported playback snapshots;
 - Cartesian scene frames with renderable primitives in exported playback snapshots;
 - Cartesian viewport data for initial 3D camera framing in exported playback snapshots;
+- versioned playback metadata in exported playback snapshots;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -97,6 +98,7 @@ Current simulation output includes:
 - didactic Cartesian mechanism poses derived from playback frames;
 - renderable Cartesian scene primitives for future 3D tools;
 - deterministic initial viewport data for future 3D tools;
+- versioned snapshot metadata for future UI compatibility checks;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

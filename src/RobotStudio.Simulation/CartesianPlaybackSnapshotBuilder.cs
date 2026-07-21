@@ -63,6 +63,7 @@ public sealed class CartesianPlaybackSnapshotBuilder
         ArgumentNullException.ThrowIfNull(profile);
         ArgumentNullException.ThrowIfNull(result);
 
+        var metadata = PlaybackSnapshotMetadata.CreateCartesian(interval);
         var workspaceBounds = CartesianWorkspaceBounds.FromProfile(profile);
         var viewport = viewportPlanner.Plan(workspaceBounds);
         var frames = playbackSampler.Sample(result, interval);
@@ -70,6 +71,7 @@ public sealed class CartesianPlaybackSnapshotBuilder
         var sceneFrames = poses.Select(pose => sceneFrameMapper.Map(workspaceBounds, pose)).ToArray();
 
         return new CartesianPlaybackSnapshot(
+            metadata,
             workspaceBounds,
             viewport,
             frames,

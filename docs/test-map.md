@@ -114,6 +114,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian viewport planning targets the workspace center.
 - [x] Cartesian viewport planning creates a deterministic diagonal camera position.
 - [x] Cartesian viewport planning creates positive clipping distances.
+- [x] Playback snapshot metadata exposes format version, robot family, units, and sample interval.
+- [x] Playback snapshot metadata rejects non-positive sample intervals.
 
 ### Required Next Coverage
 

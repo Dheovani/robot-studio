@@ -110,6 +110,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianViewportPlanner` derives an initial camera target, camera position, up direction, and clipping distances from the workspace bounds. This keeps first-load scene framing deterministic while leaving camera interaction and rendering technology for the future UI layer.
 
+Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

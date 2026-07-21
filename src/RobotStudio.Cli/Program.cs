@@ -185,6 +185,10 @@ static int ExportPlaybackFile(
 
     Console.WriteLine("Playback snapshot exported.");
     Console.WriteLine($"Output: {outputPath}");
+    Console.WriteLine($"Format version: {snapshot.Metadata.FormatVersion}");
+    Console.WriteLine($"Robot family: {snapshot.Metadata.RobotFamily}");
+    Console.WriteLine($"Distance unit: {snapshot.Metadata.DistanceUnit}");
+    Console.WriteLine($"Sample interval: {snapshot.Metadata.SampleIntervalMilliseconds:0.###} ms");
     Console.WriteLine($"Frames: {snapshot.FrameCount}");
     Console.WriteLine($"Poses: {snapshot.PoseCount}");
     Console.WriteLine($"Scene frames: {snapshot.SceneFrameCount}");

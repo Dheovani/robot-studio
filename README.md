@@ -11,7 +11,7 @@ The current goal is to build a clean, testable foundation before adding hardware
 - The first linear motion planner can estimate a simple movement plan.
 - The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
 - The simple DSL parser can read `HOME`, `MOVE`, and `WAIT` scripts.
-- The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, prints fixed-interval playback frames with workspace bounds, and exports playback snapshots with Cartesian robot poses, renderable scene frames, and viewport data as JSON.
+- The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, prints fixed-interval playback frames with workspace bounds, and exports versioned playback snapshots with Cartesian robot poses, renderable scene frames, and viewport data as JSON.
 - xUnit tests cover the first domain and motion planner behaviors.
 - Hardware communication and UI are planned but not implemented yet.
 
