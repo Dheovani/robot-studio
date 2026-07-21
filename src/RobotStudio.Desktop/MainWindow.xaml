@@ -423,6 +423,21 @@
                                        Text="Effective velocity in mm/s from playback samples."
                                        TextWrapping="Wrap" />
 
+                            <TextBlock Text="State Chart"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Border Height="168"
+                                    Margin="0,10,0,20"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="StateChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="StateChartCanvas_SizeChanged" />
+                            </Border>
+
                             <TextBlock Text="Movement Explanation"
                                        Foreground="#F9FAFB"
                                        FontSize="16"

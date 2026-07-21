@@ -453,7 +453,7 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 - [x] Plot X/Y/Z position over time.
 - [x] Plot effective velocity over time.
-- [ ] Plot robot state over time.
+- [x] Plot robot state over time.
 - [ ] Plot requested versus effective velocity.
 - [ ] Plot total distance.
 

@@ -64,6 +64,7 @@ Current desktop controls:
 - clickable timeline marker lists for command starts and state changes.
 - position chart plotting X/Y/Z over simulated time with a cursor for the current frame.
 - effective velocity chart derived from playback samples.
+- state chart showing robot state intervals over simulated time.
 - draggable splitter between the 3D viewport and the side control panel.
 - current script line indicator during playback.
 - movement explanation panel describing current command behavior.
