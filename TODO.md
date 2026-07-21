@@ -316,9 +316,16 @@ Goal: prepare a future visual inspection tool without influencing the current co
 - [x] Add the first WPF desktop viewer project.
 - [x] Render Cartesian scene frames in a desktop 3D viewport.
 - [x] Add basic playback controls for the desktop viewer.
+- [x] Add camera orbit controls to the desktop viewer.
+- [x] Add camera zoom and reset controls to the desktop viewer.
+- [x] Add predefined camera views to the desktop viewer.
+- [x] Add mouse drag orbit rotation to the desktop viewer.
+- [x] Add mouse wheel zoom to the desktop viewer.
+- [x] Render workspace limits as a boundary instead of an opaque block.
+- [x] Add a didactic state panel to the desktop viewer.
 - [x] Keep visual coordinate decisions outside the current domain model.
 - [x] Define a fixed virtual environment for robot visualization.
-- [ ] Allow camera rotation around the robot.
+- [x] Allow camera rotation around the robot.
 - [ ] Later, show technical tooltips for complex concepts.
 - [x] Ensure UI consumes simulation output instead of duplicating simulation logic.
 

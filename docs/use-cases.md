@@ -83,18 +83,23 @@ Expected result:
 - invalid numbers are reported clearly;
 - invalid positions are reported with the expected axis limits.
 
-### Observe A Robot In A Future 3D View
+### Observe A Robot In A 3D View
 
 Actor: student.
 
 Goal: inspect robot movement from multiple camera angles.
 
-Current status: future work.
+Current status: implemented for the first Cartesian WPF viewer.
 
 Expected result:
 
 - visualization consumes simulation output;
 - students can observe mechanical behavior;
+- students can drag inside the viewport to rotate the camera around the robot;
+- students can use the mouse wheel or zoom slider to inspect the robot from closer or farther away;
+- students can reset the camera or choose predefined views;
+- workspace limits are visible without covering the robot mechanism;
+- students can inspect current state, position, command, source line, and simulated time;
 - visual controls do not change domain rules.
 
 ### Send Commands To Real Hardware

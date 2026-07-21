@@ -190,4 +190,9 @@ Expected current behavior:
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - provides play and reset controls;
 - provides a timeline slider;
+- provides camera orbit, zoom, reset, and predefined view controls;
+- rotates the camera when the user drags inside the 3D viewport;
+- zooms the camera when the user uses the mouse wheel inside the 3D viewport;
+- renders workspace limits as a visible boundary instead of an opaque block over the robot;
+- shows a didactic state panel with state, position, command, source line, time, and frame number;
 - updates the displayed frame, time, and state while playing.

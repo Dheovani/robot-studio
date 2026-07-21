@@ -39,7 +39,17 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The first desktop viewer opens a WPF window with a 3D viewport, renders the built-in Cartesian simulation, and provides basic playback controls.
+The first desktop viewer opens a WPF window with a 3D viewport, renders the built-in Cartesian simulation, and provides basic playback and camera controls.
+
+Current desktop controls:
+
+- `Play` and `Reset` for playback.
+- Timeline slider for frame scrubbing.
+- azimuth, elevation, and zoom sliders for camera control.
+- mouse drag inside the 3D viewport for orbit rotation.
+- mouse wheel inside the 3D viewport for zoom.
+- isometric, front, side, top, and reset camera buttons.
+- state panel showing current state, position, command, source line, simulated time, and frame number.
 
 Print the built-in example script:
 
@@ -151,7 +161,6 @@ The CLI should later support:
 ## Not Available Yet
 
 - Loading custom scripts in the desktop viewer.
-- Rich camera controls in the desktop viewer.
 - G-code parsing.
 - Hardware communication.
 - Arduino or ESP32 integration.
