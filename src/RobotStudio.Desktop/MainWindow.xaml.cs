@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -235,6 +236,49 @@ public partial class MainWindow : Window
         InitializeTimelineForSnapshot();
         RenderFrame(index: 0);
         SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
+    private void ManualHomeButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        AppendManualCommandAndSimulate("HOME");
+
+    private void JogPositiveXButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.X, direction: 1);
+
+    private void JogNegativeXButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.X, direction: -1);
+
+    private void JogPositiveYButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.Y, direction: 1);
+
+    private void JogNegativeYButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.Y, direction: -1);
+
+    private void JogPositiveZButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.Z, direction: 1);
+
+    private void JogNegativeZButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        Jog(AxisId.Z, direction: -1);
+
+    private void StopPlaybackButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        SetManualControlStatus("Playback stopped.", Color.FromRgb(147, 197, 253));
     }
 
     private void RobotViewport_MouseLeftButtonDown(
@@ -561,6 +605,108 @@ public partial class MainWindow : Window
         PlayPauseButton.Content = "Play";
     }
 
+    private void Jog(AxisId axis, int direction)
+    {
+        if (!TryReadManualInputs(out var stepMillimeters, out var speedMillimetersPerSecond))
+        {
+            return;
+        }
+
+        var currentPosition = GetCurrentToolPosition();
+        var targetPosition = axis switch
+        {
+            AxisId.X => currentPosition with { X = currentPosition.X + (stepMillimeters * direction) },
+            AxisId.Y => currentPosition with { Y = currentPosition.Y + (stepMillimeters * direction) },
+            AxisId.Z => currentPosition with { Z = currentPosition.Z + (stepMillimeters * direction) },
+            _ => currentPosition
+        };
+        var command =
+            $"MOVE X={FormatNumber(targetPosition.X)} " +
+            $"Y={FormatNumber(targetPosition.Y)} " +
+            $"Z={FormatNumber(targetPosition.Z)} " +
+            $"SPEED={FormatNumber(speedMillimetersPerSecond)}";
+
+        AppendManualCommandAndSimulate(command);
+    }
+
+    private CartesianPosition GetCurrentToolPosition()
+    {
+        if (snapshot is null)
+        {
+            return new CartesianPosition(X: 40, Y: 30, Z: 20);
+        }
+
+        var pose = snapshot.Poses[currentFrameIndex];
+        return new CartesianPosition(
+            pose.ToolCenterPoint.XMillimeters,
+            pose.ToolCenterPoint.YMillimeters,
+            pose.ToolCenterPoint.ZMillimeters);
+    }
+
+    private bool TryReadManualInputs(
+        out double stepMillimeters,
+        out double speedMillimetersPerSecond)
+    {
+        if (!double.TryParse(
+            ManualStepTextBox.Text,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out stepMillimeters) ||
+            stepMillimeters <= 0)
+        {
+            speedMillimetersPerSecond = 0;
+            SetManualControlStatus("Step must be a positive number in millimeters.", Color.FromRgb(248, 113, 113));
+            return false;
+        }
+
+        if (!double.TryParse(
+            ManualSpeedTextBox.Text,
+            NumberStyles.Float,
+            CultureInfo.InvariantCulture,
+            out speedMillimetersPerSecond) ||
+            speedMillimetersPerSecond <= 0)
+        {
+            SetManualControlStatus("Speed must be a positive number in millimeters per second.", Color.FromRgb(248, 113, 113));
+            return false;
+        }
+
+        return true;
+    }
+
+    private void AppendManualCommandAndSimulate(string commandText)
+    {
+        var currentScript = ScriptEditorTextBox.Text.TrimEnd();
+        var nextScript = currentScript.Length == 0
+            ? commandText
+            : $"{currentScript}{Environment.NewLine}{commandText}";
+
+        if (!TryCreateSnapshotFromScript(nextScript, out var nextSnapshot, out var message))
+        {
+            SetManualControlStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetManualControlStatus("Manual command did not produce a playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        ScriptEditorTextBox.Text = nextScript;
+        snapshot = nextSnapshot;
+        InitializeTimelineForSnapshot();
+        RenderFrame(nextSnapshot.SceneFrameCount - 1);
+        SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+        SetManualControlStatus($"Added command: {commandText}", Color.FromRgb(74, 222, 128));
+    }
+
+    private void SetManualControlStatus(string message, Color color)
+    {
+        ManualControlStatusText.Text = message;
+        ManualControlStatusText.Foreground = new SolidColorBrush(color);
+    }
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -867,4 +1013,7 @@ public partial class MainWindow : Window
 
         return normalized;
     }
+
+    private static string FormatNumber(double value) =>
+        value.ToString("0.###", CultureInfo.InvariantCulture);
 }

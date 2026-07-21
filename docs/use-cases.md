@@ -135,6 +135,23 @@ Expected result:
 - playback displays the command source line associated with the current frame;
 - G-code remains out of scope for this workflow.
 
+### Jog A Cartesian Robot Manually In The Desktop App
+
+Actor: student.
+
+Goal: move the Cartesian robot without typing the full command manually.
+
+Current status: implemented for the first Cartesian WPF viewer.
+
+Expected result:
+
+- the student chooses a step size in millimeters;
+- the student chooses a requested speed in millimeters per second;
+- `HOME` appends a `HOME` command to the DSL script;
+- jog buttons append `MOVE` commands to the DSL script;
+- each manual action reuses the DSL parser and simulator;
+- invalid manual movements report the same domain validation errors as scripts.
+
 ### Send Commands To Real Hardware
 
 Actor: instructor or advanced student.

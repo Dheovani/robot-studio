@@ -385,6 +385,7 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 #### 13.1.4. Desktop Script Workflow
 
 - [x] Add a DSL script editor panel.
+- [x] Keep the DSL editor height stable when commands are appended.
 - [ ] Add line numbering to the script editor.
 - [ ] Add simple command highlighting for `HOME`, `MOVE`, and `WAIT`.
 - [x] Add `Validate` button.
@@ -396,19 +397,21 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.5. Manual Cartesian Control
 
-- [ ] Add `HOME` button.
-- [ ] Add `X+` jog button.
-- [ ] Add `X-` jog button.
-- [ ] Add `Y+` jog button.
-- [ ] Add `Y-` jog button.
-- [ ] Add `Z+` jog button.
-- [ ] Add `Z-` jog button.
-- [ ] Add step size input in millimeters.
-- [ ] Add requested velocity input in millimeters per second.
-- [ ] Add reset simulation button.
-- [ ] Add stop playback button.
-- [ ] Generate simulation commands from manual actions.
-- [ ] Decide whether manual actions should generate a script automatically.
+- [x] Add `HOME` button.
+- [x] Add `X+` jog button.
+- [x] Add `X-` jog button.
+- [x] Add `Y+` jog button.
+- [x] Add `Y-` jog button.
+- [x] Add `Z+` jog button.
+- [x] Add `Z-` jog button.
+- [x] Add step size input in millimeters.
+- [x] Add requested velocity input in millimeters per second.
+- [x] Add reset simulation button.
+- [x] Add stop playback button.
+- [x] Generate simulation commands from manual actions.
+- [x] Decide whether manual actions should generate a script automatically.
+- [x] Append manual actions to the DSL script automatically.
+- [x] Reuse the DSL parser and simulator for manual actions.
 
 #### 13.1.6. Direct Command Console
 

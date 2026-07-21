@@ -52,6 +52,9 @@ Current desktop controls:
 - DSL editor inside the Cartesian viewer.
 - `Validate` to parse the current DSL script and check Cartesian limits.
 - `Simulate` to regenerate the visual playback from the current DSL script.
+- manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
+- step size and requested speed fields for manual jog commands.
+- manual actions append DSL commands and regenerate playback.
 - `Play` and `Reset` for playback.
 - Timeline slider for frame scrubbing.
 - current script line indicator during playback.

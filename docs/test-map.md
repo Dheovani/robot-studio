@@ -197,6 +197,11 @@ Expected current behavior:
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;
 - shows the current script line during playback;
+- keeps the script editor height stable as commands are appended;
+- appends `HOME` when the manual home button is used;
+- appends `MOVE` commands when manual jog buttons are used;
+- rejects invalid manual step or speed values;
+- rejects manual jog commands that exceed Cartesian axis limits;
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - provides play and reset controls;
 - provides a timeline slider;
