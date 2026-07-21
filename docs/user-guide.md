@@ -62,6 +62,8 @@ Current desktop controls:
 - playback speed selector with `0.5x`, `1x`, `2x`, and `4x`.
 - Timeline slider for frame scrubbing.
 - current script line indicator during playback.
+- movement explanation panel describing current command behavior.
+- MOVE explanations include involved axes, distance, duration, requested speed, effective speed, and axis speed limits.
 - azimuth, elevation, and zoom sliders for camera control.
 - mouse drag inside the 3D viewport for orbit rotation.
 - mouse wheel inside the 3D viewport for zoom.

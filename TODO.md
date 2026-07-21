@@ -440,12 +440,12 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Add playback speed control.
 - [ ] Add command markers on the timeline.
 - [ ] Add state markers on the timeline.
-- [ ] Add movement explanation text.
-- [ ] Explain involved axes for the current movement.
-- [ ] Explain requested velocity.
-- [ ] Explain effective velocity.
-- [ ] Explain when axis limits cap the requested velocity.
-- [ ] Explain duration calculation for simple linear movement.
+- [x] Add movement explanation text.
+- [x] Explain involved axes for the current movement.
+- [x] Explain requested velocity.
+- [x] Explain effective velocity.
+- [x] Explain when axis limits cap the requested velocity.
+- [x] Explain duration calculation for simple linear movement.
 
 #### 13.1.9. Charts
 

@@ -370,6 +370,19 @@
                                 <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                             </Grid>
 
+                            <TextBlock Text="Movement Explanation"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <TextBlock x:Name="MovementExplanationText"
+                                       Margin="0,10,0,20"
+                                       Padding="10"
+                                       Foreground="#CBD5E1"
+                                       Background="#111827"
+                                       TextWrapping="Wrap"
+                                       Text="Open a robot simulation to inspect command explanations." />
+
                             <TextBlock Text="Camera"
                                        Foreground="#F9FAFB"
                                        FontSize="16"
