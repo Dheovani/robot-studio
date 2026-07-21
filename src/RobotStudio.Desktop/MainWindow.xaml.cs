@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
+using System.Windows.Shapes;
 using System.Windows.Threading;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Domain;
@@ -25,6 +26,10 @@ public partial class MainWindow : Window
     private const double AxisLabelOffsetMillimeters = 24;
     private const double AxisLabelWidthMillimeters = 22;
     private const double AxisLabelHeightMillimeters = 16;
+    private const double ChartPaddingLeft = 28;
+    private const double ChartPaddingTop = 12;
+    private const double ChartPaddingRight = 10;
+    private const double ChartPaddingBottom = 24;
     private const int MaximumPathPointCount = 140;
 
     private const string ExampleScript =
@@ -208,6 +213,7 @@ public partial class MainWindow : Window
         UpdateStatePanel(sceneFrame);
         UpdateScriptLineIndicator(sceneFrame);
         UpdateMovementExplanation(sceneFrame);
+        UpdatePositionChart();
     }
 
     private void CameraSlider_ValueChanged(
@@ -381,6 +387,18 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderFrame(marker.FrameIndex);
+    }
+
+    private void PositionChartCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        UpdatePositionChart();
     }
 
     private void OverlayCheckBox_Changed(
@@ -952,6 +970,181 @@ public partial class MainWindow : Window
         int frameIndex,
         TimeSpan time) =>
         $"#{frameIndex + 1} t={time.TotalSeconds:0.###}s";
+
+    private void UpdatePositionChart()
+    {
+        PositionChartCanvas.Children.Clear();
+
+        if (snapshot is null || snapshot.Poses.Count == 0)
+        {
+            return;
+        }
+
+        var width = PositionChartCanvas.ActualWidth;
+        var height = PositionChartCanvas.ActualHeight;
+        if (width <= ChartPaddingLeft + ChartPaddingRight ||
+            height <= ChartPaddingTop + ChartPaddingBottom)
+        {
+            return;
+        }
+
+        DrawPositionChartGrid(width, height);
+        DrawPositionSeries(
+            pose => pose.ToolCenterPoint.XMillimeters,
+            profile.XAxis.MinimumMillimeters,
+            profile.XAxis.MaximumMillimeters,
+            Color.FromRgb(248, 113, 113),
+            width,
+            height);
+        DrawPositionSeries(
+            pose => pose.ToolCenterPoint.YMillimeters,
+            profile.YAxis.MinimumMillimeters,
+            profile.YAxis.MaximumMillimeters,
+            Color.FromRgb(34, 197, 94),
+            width,
+            height);
+        DrawPositionSeries(
+            pose => pose.ToolCenterPoint.ZMillimeters,
+            profile.ZAxis.MinimumMillimeters,
+            profile.ZAxis.MaximumMillimeters,
+            Color.FromRgb(96, 165, 250),
+            width,
+            height);
+        DrawPositionChartCursor(width, height);
+    }
+
+    private void DrawPositionChartGrid(
+        double width,
+        double height)
+    {
+        var plotLeft = ChartPaddingLeft;
+        var plotTop = ChartPaddingTop;
+        var plotRight = width - ChartPaddingRight;
+        var plotBottom = height - ChartPaddingBottom;
+        var gridBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85));
+
+        for (var index = 0; index <= 3; index++)
+        {
+            var y = plotTop + ((plotBottom - plotTop) * index / 3);
+            PositionChartCanvas.Children.Add(new Line
+            {
+                X1 = plotLeft,
+                X2 = plotRight,
+                Y1 = y,
+                Y2 = y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+
+        var positionLabel = new TextBlock
+        {
+            Text = "pos",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        PositionChartCanvas.Children.Add(positionLabel);
+        Canvas.SetLeft(positionLabel, 4);
+        Canvas.SetTop(positionLabel, 2);
+
+        var timeLabel = new TextBlock
+        {
+            Text = "time",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        PositionChartCanvas.Children.Add(timeLabel);
+        Canvas.SetLeft(timeLabel, plotRight - 28);
+        Canvas.SetTop(timeLabel, plotBottom + 4);
+    }
+
+    private void DrawPositionSeries(
+        Func<CartesianRobotPose, double> selectValue,
+        double minimum,
+        double maximum,
+        Color color,
+        double width,
+        double height)
+    {
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        var points = new PointCollection();
+        foreach (var pose in snapshot.Poses)
+        {
+            points.Add(ToChartPoint(
+                pose.Time,
+                selectValue(pose),
+                minimum,
+                maximum,
+                width,
+                height));
+        }
+
+        PositionChartCanvas.Children.Add(new Polyline
+        {
+            Points = points,
+            Stroke = new SolidColorBrush(color),
+            StrokeThickness = 2
+        });
+    }
+
+    private void DrawPositionChartCursor(
+        double width,
+        double height)
+    {
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        var sceneFrame = snapshot.SceneFrames[currentFrameIndex];
+        var cursorX = ToChartX(sceneFrame.Time, width);
+        PositionChartCanvas.Children.Add(new Line
+        {
+            X1 = cursorX,
+            X2 = cursorX,
+            Y1 = ChartPaddingTop,
+            Y2 = height - ChartPaddingBottom,
+            Stroke = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+            StrokeThickness = 1.5
+        });
+    }
+
+    private Point ToChartPoint(
+        TimeSpan time,
+        double value,
+        double minimum,
+        double maximum,
+        double width,
+        double height)
+    {
+        var normalizedValue = maximum <= minimum
+            ? 0
+            : Math.Clamp((value - minimum) / (maximum - minimum), 0, 1);
+
+        return new Point(
+            ToChartX(time, width),
+            ChartPaddingTop + ((1 - normalizedValue) * (height - ChartPaddingTop - ChartPaddingBottom)));
+    }
+
+    private double ToChartX(
+        TimeSpan time,
+        double width)
+    {
+        if (snapshot is null || snapshot.TotalDuration <= TimeSpan.Zero)
+        {
+            return ChartPaddingLeft;
+        }
+
+        var normalizedTime = Math.Clamp(
+            time.TotalSeconds / snapshot.TotalDuration.TotalSeconds,
+            0,
+            1);
+        return ChartPaddingLeft + (normalizedTime * (width - ChartPaddingLeft - ChartPaddingRight));
+    }
 
     private void UpdateMovementExplanation(CartesianSceneFrame sceneFrame)
     {

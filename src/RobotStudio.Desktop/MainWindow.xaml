@@ -382,6 +382,27 @@
                                 <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                             </Grid>
 
+                            <TextBlock Text="Position Chart"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Border Height="156"
+                                    Margin="0,10,0,8"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="PositionChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="PositionChartCanvas_SizeChanged" />
+                            </Border>
+
+                            <UniformGrid Columns="3" Margin="0,0,0,20">
+                                <TextBlock Foreground="#F87171" Text="X axis" />
+                                <TextBlock Foreground="#22C55E" Text="Y axis" />
+                                <TextBlock Foreground="#60A5FA" Text="Z axis" />
+                            </UniformGrid>
+
                             <TextBlock Text="Movement Explanation"
                                        Foreground="#F9FAFB"
                                        FontSize="16"
