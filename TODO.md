@@ -15,7 +15,8 @@
 - [x] Use a proprietary personal-study license.
 - [x] Reserve commercial, organizational, institutional, brand, redistribution, and sublicensing rights.
 - [x] Do not add lesson/scenario management inside the app.
-- [x] Do not build UI yet.
+- [x] Use WPF as the first desktop viewer stack.
+- [x] Do not replace the current desktop UI stack without a strong technical reason.
 
 ## 1. Current Baseline
 
@@ -328,6 +329,132 @@ Goal: prepare a future visual inspection tool without influencing the current co
 - [x] Allow camera rotation around the robot.
 - [ ] Later, show technical tooltips for complex concepts.
 - [x] Ensure UI consumes simulation output instead of duplicating simulation logic.
+
+### 13.1. Desktop Didactic Roadmap
+
+Goal: evolve the first WPF viewer into a visual teaching tool while keeping future work centralized in this checklist.
+
+#### 13.1.1. Cartesian Viewer Usability
+
+- [x] Add orbit camera controls.
+- [x] Add zoom control.
+- [x] Add reset camera command.
+- [x] Add basic predefined views: front, side, top, and isometric.
+- [x] Add mouse drag orbit rotation.
+- [x] Add mouse wheel zoom.
+- [x] Render workspace limits without hiding the robot mechanism.
+- [x] Add a state panel with time, state, position, command, and source line.
+- [x] Keep the viewer consuming `CartesianPlaybackSnapshot` and `CartesianSceneFrame`.
+
+#### 13.1.2. Robot Selection Shell
+
+- [ ] Add `RobotFamilyDescriptor`.
+- [ ] Add `RobotTemplate`.
+- [ ] Add `RobotCapability`.
+- [ ] Add `RobotViewerDescriptor`.
+- [ ] Add the first robot selection screen.
+- [ ] Show the Cartesian robot as `Available`.
+- [ ] Show articulated arm as `Planned`.
+- [ ] Show drone as `Planned`.
+- [ ] List capabilities without implementing unavailable robots.
+- [ ] Keep the selection screen as a simulator entry point, not an LMS.
+
+#### 13.1.3. Initial Robot Capabilities Metadata
+
+- [ ] Add `Simulation` capability.
+- [ ] Add `ScriptExecution` capability.
+- [ ] Add `ThreeDimensionalView` capability.
+- [ ] Add `ManualControl` capability.
+- [ ] Add `HardwareCommunication` capability as metadata only.
+- [ ] Add `GCode` capability as metadata only.
+- [ ] Mark unavailable capabilities clearly in the UI.
+
+#### 13.1.4. Desktop Script Workflow
+
+- [ ] Add a DSL script editor panel.
+- [ ] Add line numbering to the script editor.
+- [ ] Add simple command highlighting for `HOME`, `MOVE`, and `WAIT`.
+- [ ] Add `Validate` button.
+- [ ] Add `Simulate` button.
+- [ ] Add `Play` button integration with simulated script output.
+- [ ] Show parser errors with line numbers.
+- [ ] Highlight the script line that produced the current playback frame.
+- [ ] Keep G-code out of this milestone.
+
+#### 13.1.5. Manual Cartesian Control
+
+- [ ] Add `HOME` button.
+- [ ] Add `X+` jog button.
+- [ ] Add `X-` jog button.
+- [ ] Add `Y+` jog button.
+- [ ] Add `Y-` jog button.
+- [ ] Add `Z+` jog button.
+- [ ] Add `Z-` jog button.
+- [ ] Add step size input in millimeters.
+- [ ] Add requested velocity input in millimeters per second.
+- [ ] Add reset simulation button.
+- [ ] Add stop playback button.
+- [ ] Generate simulation commands from manual actions.
+- [ ] Decide whether manual actions should generate a script automatically.
+
+#### 13.1.6. Direct Command Console
+
+- [ ] Add a simple command input panel.
+- [ ] Execute one DSL command at a time from the command input.
+- [ ] Show command validation errors without crashing the desktop app.
+- [ ] Append accepted commands to a visible command history.
+- [ ] Reuse the same parser and simulation path used by scripts.
+
+#### 13.1.7. Didactic Overlays
+
+- [ ] Toggle workspace visibility.
+- [ ] Toggle global axes.
+- [ ] Toggle grid.
+- [ ] Toggle X/Y/Z labels.
+- [ ] Toggle TCP marker.
+- [ ] Toggle planned path.
+- [ ] Toggle start marker.
+- [ ] Toggle end marker.
+- [ ] Toggle robot components.
+
+#### 13.1.8. Timeline And Movement Explanation
+
+- [ ] Add frame-by-frame stepping.
+- [ ] Add playback speed control.
+- [ ] Add command markers on the timeline.
+- [ ] Add state markers on the timeline.
+- [ ] Add movement explanation text.
+- [ ] Explain involved axes for the current movement.
+- [ ] Explain requested velocity.
+- [ ] Explain effective velocity.
+- [ ] Explain when axis limits cap the requested velocity.
+- [ ] Explain duration calculation for simple linear movement.
+
+#### 13.1.9. Charts
+
+- [ ] Plot X/Y/Z position over time.
+- [ ] Plot effective velocity over time.
+- [ ] Plot robot state over time.
+- [ ] Plot requested versus effective velocity.
+- [ ] Plot total distance.
+
+#### 13.1.10. Future Interfaces Kept Out Of Scope
+
+- [ ] Prepare G-code as a second parser dialect that produces domain commands.
+- [ ] Prepare hardware command boundaries without serial implementation.
+- [ ] Keep Arduino communication out until the simulator and desktop flows are stable.
+- [ ] Keep ESP32 communication out until the simulator and desktop flows are stable.
+- [ ] Keep real hardware execution out of the desktop viewer until hardware boundaries are designed.
+
+#### 13.1.11. Desktop Architecture Rules
+
+- [x] Keep `RobotStudio.Domain` free of UI, rendering, files, and hardware.
+- [x] Keep `RobotStudio.Motion` free of UI.
+- [x] Keep `RobotStudio.Simulation` producing contracts consumed by UI.
+- [x] Keep `RobotStudio.Desktop` consuming snapshots, scene frames, poses, and viewport data.
+- [x] Keep camera interaction and visual view state inside the UI layer.
+- [x] Do not duplicate simulation or domain validation rules in the UI.
+- [x] Keep hardware and G-code planned, not implemented, until explicitly started.
 
 ## 14. Pre-Visual Simulation Readiness
 
