@@ -108,6 +108,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian playback snapshot preserves failure messages.
 - [x] Cartesian robot pose mapping creates base, X carriage, Y carriage, Z carriage, and tool center point positions.
 - [x] Cartesian robot pose mapping preserves timeline metadata.
+- [x] Cartesian scene frame mapping creates renderable workspace, rail, carriage, and tool primitives.
+- [x] Cartesian scene frame mapping positions moving primitives from robot poses.
+- [x] Cartesian scene frame mapping preserves pose metadata.
 
 ### Required Next Coverage
 

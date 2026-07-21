@@ -187,6 +187,7 @@ static int ExportPlaybackFile(
     Console.WriteLine($"Output: {outputPath}");
     Console.WriteLine($"Frames: {snapshot.FrameCount}");
     Console.WriteLine($"Poses: {snapshot.PoseCount}");
+    Console.WriteLine($"Scene frames: {snapshot.SceneFrameCount}");
     Console.WriteLine($"Total duration: {snapshot.TotalDuration.TotalSeconds:0.###} s");
 
     return snapshot.Succeeded ? 0 : 1;

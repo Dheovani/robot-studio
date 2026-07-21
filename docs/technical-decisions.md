@@ -106,6 +106,8 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianRobotPoseMapper` converts a visual TCP position into a simple didactic mechanism pose. The first convention keeps the base at `(0, 0, 0)`, places the X carriage at `(x, 0, 0)`, the Y carriage at `(x, y, 0)`, and the Z carriage/tool center point at `(x, y, z)`. This is intentionally a teaching model for visualization, not a detailed CAD assembly.
 
+`CartesianSceneFrameMapper` converts a Cartesian robot pose into simple renderable primitives. The first scene format uses named boxes with an identifier, primitive kind, center, and size. Future UI layers should render these primitives instead of deriving robot geometry from raw coordinates.
+
 ### Scripting
 
 The first scripting format is a simple educational DSL, not G-code.

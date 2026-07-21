@@ -19,9 +19,11 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.Null(snapshot.FailureMessage);
         Assert.Equal(3, snapshot.FrameCount);
         Assert.Equal(3, snapshot.PoseCount);
+        Assert.Equal(3, snapshot.SceneFrameCount);
         Assert.Equal(TimeSpan.Zero, snapshot.Frames[0].Time);
         Assert.Equal(TimeSpan.FromSeconds(2), snapshot.Frames[^1].Time);
         Assert.Equal(snapshot.Frames[^1].Position, snapshot.Poses[^1].ToolCenterPoint);
+        Assert.Equal(snapshot.Poses[^1].ToolCenterPoint, GetPrimitive(snapshot.SceneFrames[^1], "tool").Center);
     }
 
     [Fact]
@@ -70,6 +72,21 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.Throws<ArgumentNullException>(() =>
             new CartesianPlaybackSnapshotBuilder(new CartesianPlaybackSampler(), null!));
     }
+
+    [Fact]
+    public void Constructor_WhenSceneFrameMapperIsNull_ShouldThrow()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new CartesianPlaybackSnapshotBuilder(
+                new CartesianPlaybackSampler(),
+                new CartesianRobotPoseMapper(),
+                null!));
+    }
+
+    private static CartesianScenePrimitive GetPrimitive(
+        CartesianSceneFrame sceneFrame,
+        string id) =>
+        sceneFrame.Primitives.Single(primitive => primitive.Id == id);
 
     private static SimulationResult CreateMoveSimulation(CartesianRobotProfile profile)
     {
