@@ -19,6 +19,12 @@ public partial class MainWindow : Window
     private const double GridSpacingMillimeters = 25;
     private const double GridLineThicknessMillimeters = 1.2;
     private const double AxisLineThicknessMillimeters = 4;
+    private const double PathPointSizeMillimeters = 5;
+    private const double StartEndMarkerSizeMillimeters = 14;
+    private const double AxisLabelOffsetMillimeters = 24;
+    private const double AxisLabelWidthMillimeters = 22;
+    private const double AxisLabelHeightMillimeters = 16;
+    private const int MaximumPathPointCount = 140;
 
     private const string ExampleScript =
         """
@@ -152,12 +158,31 @@ public partial class MainWindow : Window
             sceneRoot.Children.Add(CreateGlobalAxesModel(snapshot.WorkspaceBounds));
         }
 
+        if (ShowPlannedPathCheckBox.IsChecked == true)
+        {
+            sceneRoot.Children.Add(CreatePlannedPathModel(snapshot));
+        }
+
+        if (ShowStartEndMarkersCheckBox.IsChecked == true)
+        {
+            sceneRoot.Children.Add(CreateStartEndMarkersModel(snapshot));
+        }
+
         foreach (CartesianScenePrimitive primitive in sceneFrame.Primitives.Where(IsPrimitiveVisible))
         {
             sceneRoot.Children.Add(CreateModel(primitive));
         }
 
         RobotViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+
+        if (ShowAxisLabelsCheckBox.IsChecked == true &&
+            RobotViewport.Camera is PerspectiveCamera camera)
+        {
+            foreach (var label in CreateAxisLabelVisuals(snapshot.WorkspaceBounds, camera))
+            {
+                RobotViewport.Children.Add(label);
+            }
+        }
 
         StatusText.Text =
             $"Frame {currentFrameIndex + 1}/{snapshot.SceneFrameCount} | " +
@@ -1214,6 +1239,188 @@ public partial class MainWindow : Window
         return group;
     }
 
+    private static Model3DGroup CreatePlannedPathModel(CartesianPlaybackSnapshot snapshot)
+    {
+        var group = new Model3DGroup();
+        var pathPointSize = new VisualVector3(
+            PathPointSizeMillimeters,
+            PathPointSizeMillimeters,
+            PathPointSizeMillimeters);
+        var pathPointColor = Color.FromArgb(190, 250, 204, 21);
+        var step = Math.Max(1, snapshot.Poses.Count / MaximumPathPointCount);
+        VisualVector3? previousPoint = null;
+
+        for (var index = 0; index < snapshot.Poses.Count; index += step)
+        {
+            var point = snapshot.Poses[index].ToolCenterPoint;
+            if (previousPoint is not null && AreNear(previousPoint.Value, point))
+            {
+                continue;
+            }
+
+            group.Children.Add(CreateColoredBoxModel(point, pathPointSize, pathPointColor));
+            previousPoint = point;
+        }
+
+        var finalPoint = snapshot.Poses[^1].ToolCenterPoint;
+        if (previousPoint is null || !AreNear(previousPoint.Value, finalPoint))
+        {
+            group.Children.Add(CreateColoredBoxModel(finalPoint, pathPointSize, pathPointColor));
+        }
+
+        return group;
+    }
+
+    private static Model3DGroup CreateStartEndMarkersModel(CartesianPlaybackSnapshot snapshot)
+    {
+        var markerSize = new VisualVector3(
+            StartEndMarkerSizeMillimeters,
+            StartEndMarkerSizeMillimeters,
+            StartEndMarkerSizeMillimeters);
+        var group = new Model3DGroup();
+
+        group.Children.Add(CreateColoredBoxModel(
+            snapshot.Poses[0].ToolCenterPoint,
+            markerSize,
+            Color.FromRgb(74, 222, 128)));
+        group.Children.Add(CreateColoredBoxModel(
+            snapshot.Poses[^1].ToolCenterPoint,
+            markerSize,
+            Color.FromRgb(251, 146, 60)));
+
+        return group;
+    }
+
+    private static IReadOnlyList<Viewport2DVisual3D> CreateAxisLabelVisuals(
+        CartesianWorkspaceBounds bounds,
+        PerspectiveCamera camera)
+    {
+        var origin = new VisualVector3(
+            Math.Clamp(0, bounds.Minimum.XMillimeters, bounds.Maximum.XMillimeters),
+            Math.Clamp(0, bounds.Minimum.YMillimeters, bounds.Maximum.YMillimeters),
+            Math.Clamp(0, bounds.Minimum.ZMillimeters, bounds.Maximum.ZMillimeters));
+
+        return
+        [
+            CreateAxisLabelVisual(
+                "X",
+                new VisualVector3(
+                    bounds.Maximum.XMillimeters + AxisLabelOffsetMillimeters,
+                    origin.YMillimeters,
+                    origin.ZMillimeters),
+                Color.FromRgb(248, 113, 113),
+                camera),
+            CreateAxisLabelVisual(
+                "Y",
+                new VisualVector3(
+                    origin.XMillimeters,
+                    bounds.Maximum.YMillimeters + AxisLabelOffsetMillimeters,
+                    origin.ZMillimeters),
+                Color.FromRgb(34, 197, 94),
+                camera),
+            CreateAxisLabelVisual(
+                "Z",
+                new VisualVector3(
+                    origin.XMillimeters,
+                    origin.YMillimeters,
+                    bounds.Maximum.ZMillimeters + AxisLabelOffsetMillimeters),
+                Color.FromRgb(96, 165, 250),
+                camera)
+        ];
+    }
+
+    private static Viewport2DVisual3D CreateAxisLabelVisual(
+        string text,
+        VisualVector3 center,
+        Color accent,
+        PerspectiveCamera camera)
+    {
+        var material = new DiffuseMaterial(Brushes.White);
+        Viewport2DVisual3D.SetIsVisualHostMaterial(material, true);
+
+        return new Viewport2DVisual3D
+        {
+            Geometry = CreateBillboardMesh(
+                center,
+                AxisLabelWidthMillimeters,
+                AxisLabelHeightMillimeters,
+                camera),
+            Material = material,
+            Visual = CreateAxisLabelElement(text, accent)
+        };
+    }
+
+    private static Border CreateAxisLabelElement(
+        string text,
+        Color accent) =>
+        new()
+        {
+            Width = 32,
+            Height = 24,
+            Background = new SolidColorBrush(Color.FromArgb(210, 15, 23, 42)),
+            BorderBrush = new SolidColorBrush(accent),
+            BorderThickness = new Thickness(1),
+            CornerRadius = new CornerRadius(4),
+            Child = new TextBlock
+            {
+                Text = text,
+                Foreground = new SolidColorBrush(accent),
+                FontWeight = FontWeights.Bold,
+                HorizontalAlignment = HorizontalAlignment.Center,
+                VerticalAlignment = VerticalAlignment.Center,
+                TextAlignment = TextAlignment.Center
+            }
+        };
+
+    private static MeshGeometry3D CreateBillboardMesh(
+        VisualVector3 center,
+        double widthMillimeters,
+        double heightMillimeters,
+        PerspectiveCamera camera)
+    {
+        var look = camera.LookDirection;
+        var up = camera.UpDirection;
+        look.Normalize();
+        up.Normalize();
+
+        var right = Vector3D.CrossProduct(look, up);
+        if (right.LengthSquared <= 0.000001)
+        {
+            right = new Vector3D(1, 0, 0);
+        }
+
+        right.Normalize();
+        up = Vector3D.CrossProduct(right, look);
+        up.Normalize();
+
+        var centerPoint = ToPoint3D(center);
+        var halfRight = right * (widthMillimeters / 2);
+        var halfUp = up * (heightMillimeters / 2);
+
+        return new MeshGeometry3D
+        {
+            Positions = new Point3DCollection
+            {
+                centerPoint - halfRight - halfUp,
+                centerPoint + halfRight - halfUp,
+                centerPoint + halfRight + halfUp,
+                centerPoint - halfRight + halfUp
+            },
+            TextureCoordinates = new PointCollection
+            {
+                new(0, 1),
+                new(1, 1),
+                new(1, 0),
+                new(0, 0)
+            },
+            TriangleIndices = new Int32Collection
+            {
+                0, 1, 2,
+                0, 2, 3
+            }
+        };
+    }
+
     private static GeometryModel3D CreateBoxModel(CartesianScenePrimitive primitive) =>
         new(
             CreateBoxMesh(primitive.Center, primitive.Size),
@@ -1358,6 +1565,17 @@ public partial class MainWindow : Window
         var deltaZ = left.ZMillimeters - right.ZMillimeters;
 
         return Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY) + (deltaZ * deltaZ));
+    }
+
+    private static bool AreNear(
+        VisualVector3 left,
+        VisualVector3 right)
+    {
+        const double toleranceMillimeters = 0.001;
+
+        return Math.Abs(left.XMillimeters - right.XMillimeters) <= toleranceMillimeters &&
+               Math.Abs(left.YMillimeters - right.YMillimeters) <= toleranceMillimeters &&
+               Math.Abs(left.ZMillimeters - right.ZMillimeters) <= toleranceMillimeters;
     }
 
     private static double DegreesToRadians(double degrees) =>

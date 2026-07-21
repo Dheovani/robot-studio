@@ -428,11 +428,11 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 - [x] Toggle workspace visibility.
 - [x] Toggle global axes.
 - [x] Toggle grid.
-- [ ] Toggle X/Y/Z labels.
+- [x] Toggle X/Y/Z labels.
 - [x] Toggle TCP marker.
-- [ ] Toggle planned path.
-- [ ] Toggle start marker.
-- [ ] Toggle end marker.
+- [x] Toggle planned path.
+- [x] Toggle start marker.
+- [x] Toggle end marker.
 - [x] Toggle robot components.
 - [x] Toggle Cartesian rails separately from moving components.
 
