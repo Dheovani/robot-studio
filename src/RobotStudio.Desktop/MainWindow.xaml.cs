@@ -69,6 +69,10 @@ public partial class MainWindow : Window
         public override string ToString() => Label;
     }
 
+    private sealed record VelocitySample(
+        TimeSpan Time,
+        double VelocityMillimetersPerSecond);
+
     public MainWindow()
     {
         InitializeComponent();
@@ -214,6 +218,7 @@ public partial class MainWindow : Window
         UpdateScriptLineIndicator(sceneFrame);
         UpdateMovementExplanation(sceneFrame);
         UpdatePositionChart();
+        UpdateVelocityChart();
     }
 
     private void CameraSlider_ValueChanged(
@@ -399,6 +404,18 @@ public partial class MainWindow : Window
         }
 
         UpdatePositionChart();
+    }
+
+    private void VelocityChartCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        UpdateVelocityChart();
     }
 
     private void OverlayCheckBox_Changed(
@@ -1144,6 +1161,171 @@ public partial class MainWindow : Window
             0,
             1);
         return ChartPaddingLeft + (normalizedTime * (width - ChartPaddingLeft - ChartPaddingRight));
+    }
+
+    private void UpdateVelocityChart()
+    {
+        VelocityChartCanvas.Children.Clear();
+
+        if (snapshot is null || snapshot.Poses.Count == 0)
+        {
+            return;
+        }
+
+        var width = VelocityChartCanvas.ActualWidth;
+        var height = VelocityChartCanvas.ActualHeight;
+        if (width <= ChartPaddingLeft + ChartPaddingRight ||
+            height <= ChartPaddingTop + ChartPaddingBottom)
+        {
+            return;
+        }
+
+        var samples = CreateVelocitySamples(snapshot);
+        var maximumVelocity = Math.Max(1, samples.Count == 0 ? 0 : samples.Max(sample => sample.VelocityMillimetersPerSecond));
+
+        DrawVelocityChartGrid(width, height, maximumVelocity);
+        if (samples.Count > 0)
+        {
+            DrawVelocitySeries(samples, maximumVelocity, width, height);
+        }
+
+        DrawVelocityChartCursor(width, height);
+    }
+
+    private static IReadOnlyList<VelocitySample> CreateVelocitySamples(CartesianPlaybackSnapshot snapshot)
+    {
+        var samples = new List<VelocitySample>();
+        for (var index = 1; index < snapshot.Poses.Count; index++)
+        {
+            var previous = snapshot.Poses[index - 1];
+            var current = snapshot.Poses[index];
+            var elapsedSeconds = (current.Time - previous.Time).TotalSeconds;
+            if (elapsedSeconds <= 0)
+            {
+                continue;
+            }
+
+            var distance = CalculateDistance(previous.ToolCenterPoint, current.ToolCenterPoint);
+            samples.Add(new VelocitySample(
+                current.Time,
+                distance / elapsedSeconds));
+        }
+
+        return samples;
+    }
+
+    private void DrawVelocityChartGrid(
+        double width,
+        double height,
+        double maximumVelocity)
+    {
+        var plotLeft = ChartPaddingLeft;
+        var plotTop = ChartPaddingTop;
+        var plotRight = width - ChartPaddingRight;
+        var plotBottom = height - ChartPaddingBottom;
+        var gridBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85));
+
+        for (var index = 0; index <= 2; index++)
+        {
+            var y = plotTop + ((plotBottom - plotTop) * index / 2);
+            VelocityChartCanvas.Children.Add(new Line
+            {
+                X1 = plotLeft,
+                X2 = plotRight,
+                Y1 = y,
+                Y2 = y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+
+        var velocityLabel = new TextBlock
+        {
+            Text = $"{maximumVelocity:0.#}",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        VelocityChartCanvas.Children.Add(velocityLabel);
+        Canvas.SetLeft(velocityLabel, 4);
+        Canvas.SetTop(velocityLabel, 2);
+
+        var zeroLabel = new TextBlock
+        {
+            Text = "0",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        VelocityChartCanvas.Children.Add(zeroLabel);
+        Canvas.SetLeft(zeroLabel, 12);
+        Canvas.SetTop(zeroLabel, plotBottom - 10);
+
+        var timeLabel = new TextBlock
+        {
+            Text = "time",
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+        VelocityChartCanvas.Children.Add(timeLabel);
+        Canvas.SetLeft(timeLabel, plotRight - 28);
+        Canvas.SetTop(timeLabel, plotBottom + 4);
+    }
+
+    private void DrawVelocitySeries(
+        IReadOnlyList<VelocitySample> samples,
+        double maximumVelocity,
+        double width,
+        double height)
+    {
+        var points = new PointCollection();
+        foreach (var sample in samples)
+        {
+            points.Add(ToVelocityChartPoint(sample, maximumVelocity, width, height));
+        }
+
+        VelocityChartCanvas.Children.Add(new Polyline
+        {
+            Points = points,
+            Stroke = new SolidColorBrush(Color.FromRgb(250, 204, 21)),
+            StrokeThickness = 2
+        });
+    }
+
+    private void DrawVelocityChartCursor(
+        double width,
+        double height)
+    {
+        if (snapshot is null)
+        {
+            return;
+        }
+
+        var sceneFrame = snapshot.SceneFrames[currentFrameIndex];
+        var cursorX = ToChartX(sceneFrame.Time, width);
+        VelocityChartCanvas.Children.Add(new Line
+        {
+            X1 = cursorX,
+            X2 = cursorX,
+            Y1 = ChartPaddingTop,
+            Y2 = height - ChartPaddingBottom,
+            Stroke = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
+            StrokeThickness = 1.5
+        });
+    }
+
+    private Point ToVelocityChartPoint(
+        VelocitySample sample,
+        double maximumVelocity,
+        double width,
+        double height)
+    {
+        var normalizedVelocity = Math.Clamp(
+            sample.VelocityMillimetersPerSecond / maximumVelocity,
+            0,
+            1);
+
+        return new Point(
+            ToChartX(sample.Time, width),
+            ChartPaddingTop + ((1 - normalizedVelocity) * (height - ChartPaddingTop - ChartPaddingBottom)));
     }
 
     private void UpdateMovementExplanation(CartesianSceneFrame sceneFrame)

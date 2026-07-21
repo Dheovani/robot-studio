@@ -403,6 +403,26 @@
                                 <TextBlock Foreground="#60A5FA" Text="Z axis" />
                             </UniformGrid>
 
+                            <TextBlock Text="Velocity Chart"
+                                       Foreground="#F9FAFB"
+                                       FontSize="16"
+                                       FontWeight="SemiBold" />
+
+                            <Border Height="128"
+                                    Margin="0,10,0,8"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="VelocityChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="VelocityChartCanvas_SizeChanged" />
+                            </Border>
+
+                            <TextBlock Margin="0,0,0,20"
+                                       Foreground="#94A3B8"
+                                       Text="Effective velocity in mm/s from playback samples."
+                                       TextWrapping="Wrap" />
+
                             <TextBlock Text="Movement Explanation"
                                        Foreground="#F9FAFB"
                                        FontSize="16"
