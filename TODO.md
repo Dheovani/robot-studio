@@ -212,6 +212,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add Cartesian playback sampler that generates visual states at fixed time intervals.
 - [x] Add Cartesian workspace bounds for future 3D viewport framing.
 - [x] Add Cartesian playback snapshot that packages workspace bounds, frames, duration, and failure state.
+- [x] Add Cartesian robot pose mapping for the first didactic 3D mechanism model.
 - [x] Add tests for position sampling before the first command.
 - [x] Add tests for position sampling during movement.
 - [x] Add tests for position sampling during wait.
@@ -221,6 +222,7 @@ Goal: prepare simulation output for timeline inspection, interpolation, and futu
 - [x] Add tests for Cartesian playback sampling.
 - [x] Add tests for Cartesian workspace bounds.
 - [x] Add tests for Cartesian playback snapshot creation.
+- [x] Add tests for Cartesian robot pose mapping.
 - [x] Run `dotnet build`.
 - [x] Run `dotnet test`.
 

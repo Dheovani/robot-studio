@@ -106,6 +106,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian workspace bounds identify positions inside, on, and outside the workspace.
 - [x] Cartesian playback snapshot includes workspace bounds, frames, duration, and success state.
 - [x] Cartesian playback snapshot preserves failure messages.
+- [x] Cartesian robot pose mapping creates base, X carriage, Y carriage, Z carriage, and tool center point positions.
+- [x] Cartesian robot pose mapping preserves timeline metadata.
 
 ### Required Next Coverage
 

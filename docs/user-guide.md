@@ -70,6 +70,7 @@ Current output includes:
 - fixed-interval playback frames when using the `playback` command;
 - Cartesian workspace bounds when using the `playback` command;
 - JSON playback snapshots when using the `export-playback` command;
+- Cartesian robot poses in exported playback snapshots;
 - final robot state;
 - final robot position;
 - total simulated duration.
@@ -91,6 +92,7 @@ Current simulation output includes:
 - timeline steps;
 - fixed-interval visual playback frames;
 - exportable playback snapshots for future visual tools;
+- didactic Cartesian mechanism poses derived from playback frames;
 - command source metadata for script-generated steps;
 - success/failure flag;
 - failure exception when execution cannot continue.

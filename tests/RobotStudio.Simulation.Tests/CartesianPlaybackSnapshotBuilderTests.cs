@@ -18,8 +18,10 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.True(snapshot.Succeeded);
         Assert.Null(snapshot.FailureMessage);
         Assert.Equal(3, snapshot.FrameCount);
+        Assert.Equal(3, snapshot.PoseCount);
         Assert.Equal(TimeSpan.Zero, snapshot.Frames[0].Time);
         Assert.Equal(TimeSpan.FromSeconds(2), snapshot.Frames[^1].Time);
+        Assert.Equal(snapshot.Frames[^1].Position, snapshot.Poses[^1].ToolCenterPoint);
     }
 
     [Fact]
@@ -60,6 +62,13 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
     {
         Assert.Throws<ArgumentNullException>(() =>
             new CartesianPlaybackSnapshotBuilder(null!));
+    }
+
+    [Fact]
+    public void Constructor_WhenPoseMapperIsNull_ShouldThrow()
+    {
+        Assert.Throws<ArgumentNullException>(() =>
+            new CartesianPlaybackSnapshotBuilder(new CartesianPlaybackSampler(), null!));
     }
 
     private static SimulationResult CreateMoveSimulation(CartesianRobotProfile profile)
