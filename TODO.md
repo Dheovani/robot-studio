@@ -480,7 +480,7 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 
 #### 13.1.10. Future Interfaces Kept Out Of Scope
 
-- [ ] Prepare G-code as a second parser dialect that produces domain commands.
+- [x] Prepare G-code as a second parser dialect that produces domain commands.
 - [ ] Prepare hardware command boundaries without serial implementation.
 - [ ] Keep Arduino communication out until the simulator and desktop flows are stable.
 - [ ] Keep ESP32 communication out until the simulator and desktop flows are stable.
@@ -544,7 +544,8 @@ Goal: expand RobotStudio beyond the introductory Cartesian robot when the founda
 Goal: add G-code after students understand the simple DSL.
 
 - [ ] Keep G-code out of the first DSL implementation.
-- [ ] Design a G-code module for a future course section.
+- [x] Design the scripting boundary so G-code can become a future dialect.
+- [ ] Design G-code command parsing for a future course section.
 - [ ] Map `G28` to homing behavior.
 - [ ] Map `G1` to movement behavior.
 - [ ] Map `G4` to wait/dwell behavior.

@@ -22,29 +22,29 @@ var profile = CartesianRobotProfile.CreateCartesian(
     new Axis(AxisId.Z, 0, 150, 80, 160));
 
 var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-var parser = new RobotScriptParser();
+IRobotScriptDialect scriptDialect = new RobotScriptParser();
 
 try
 {
     return args switch
     {
-        [] => SimulateScript(ExampleScript, profile, initialPosition, parser),
+        [] => SimulateScript(ExampleScript, profile, initialPosition, scriptDialect),
         ["example"] => PrintExampleScript(),
-        ["validate", var path] => ValidateScriptFile(path, profile, parser),
-        ["simulate", var path] => SimulateScriptFile(path, profile, initialPosition, parser),
+        ["validate", var path] => ValidateScriptFile(path, profile, scriptDialect),
+        ["simulate", var path] => SimulateScriptFile(path, profile, initialPosition, scriptDialect),
         ["playback", var path, var intervalMilliseconds] => PrintPlaybackFile(
             path,
             intervalMilliseconds,
             profile,
             initialPosition,
-            parser),
+            scriptDialect),
         ["export-playback", var path, var intervalMilliseconds, var outputPath] => ExportPlaybackFile(
             path,
             intervalMilliseconds,
             outputPath,
             profile,
             initialPosition,
-            parser),
+            scriptDialect),
         ["validate-playback", var path] => ValidatePlaybackFile(path),
         _ => PrintUsage()
     };
@@ -85,10 +85,10 @@ static int PrintExampleScript()
 static int ValidateScriptFile(
     string path,
     CartesianRobotProfile profile,
-    RobotScriptParser parser)
+    IRobotScriptDialect scriptDialect)
 {
     var script = File.ReadAllText(path);
-    var commands = parser.Parse(script);
+    var commands = scriptDialect.Parse(script);
     ValidateCommandSequence(commands, profile);
 
     Console.WriteLine("Script is valid.");
@@ -102,21 +102,21 @@ static int SimulateScriptFile(
     string path,
     CartesianRobotProfile profile,
     CartesianPosition initialPosition,
-    RobotScriptParser parser)
+    IRobotScriptDialect scriptDialect)
 {
     var script = File.ReadAllText(path);
 
-    return SimulateScript(script, profile, initialPosition, parser);
+    return SimulateScript(script, profile, initialPosition, scriptDialect);
 }
 
 static int SimulateScript(
     string script,
     CartesianRobotProfile profile,
     CartesianPosition initialPosition,
-    RobotScriptParser parser)
+    IRobotScriptDialect scriptDialect)
 {
     var context = SimulationContext.Create(profile, initialPosition);
-    var commands = parser.Parse(script);
+    var commands = scriptDialect.Parse(script);
     ValidateCommandSequence(commands, profile);
 
     var simulator = new RobotSimulator();
@@ -156,11 +156,11 @@ static int PrintPlaybackFile(
     string intervalMillisecondsText,
     CartesianRobotProfile profile,
     CartesianPosition initialPosition,
-    RobotScriptParser parser)
+    IRobotScriptDialect scriptDialect)
 {
     var interval = ParsePositiveMilliseconds(intervalMillisecondsText);
     var script = File.ReadAllText(path);
-    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, parser, interval);
+    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, scriptDialect, interval);
 
     Console.WriteLine("RobotStudio CLI");
     Console.WriteLine();
@@ -181,11 +181,11 @@ static int ExportPlaybackFile(
     string outputPath,
     CartesianRobotProfile profile,
     CartesianPosition initialPosition,
-    RobotScriptParser parser)
+    IRobotScriptDialect scriptDialect)
 {
     var interval = ParsePositiveMilliseconds(intervalMillisecondsText);
     var script = File.ReadAllText(path);
-    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, parser, interval);
+    var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, scriptDialect, interval);
     var json = JsonSerializer.Serialize(snapshot, CreateJsonOptions());
 
     File.WriteAllText(outputPath, json);
@@ -383,11 +383,11 @@ static CartesianPlaybackSnapshot BuildPlaybackSnapshot(
     string script,
     CartesianRobotProfile profile,
     CartesianPosition initialPosition,
-    RobotScriptParser parser,
+    IRobotScriptDialect scriptDialect,
     TimeSpan interval)
 {
     var context = SimulationContext.Create(profile, initialPosition);
-    var commands = parser.Parse(script);
+    var commands = scriptDialect.Parse(script);
     ValidateCommandSequence(commands, profile);
 
     var simulator = new RobotSimulator();

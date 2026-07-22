@@ -165,7 +165,7 @@ Current simulation output includes:
 
 ## Current DSL
 
-The simple DSL parser can convert text scripts into command sequences. The CLI can validate and simulate script files.
+The simple DSL parser can convert text scripts into command sequences. Internally, scripting now uses a dialect contract so future formats such as G-code can produce the same command sequence type. The CLI can validate and simulate script files.
 
 ```txt
 HOME
@@ -181,6 +181,7 @@ Current parser behavior:
 - `SPEED` requests a movement speed in millimeters per second;
 - physical axis limits still cap the effective movement speed;
 - parser errors include the script line number.
+- G-code is tracked as a planned future dialect, not as an executable parser.
 
 ## Planned CLI Learning Flow
 

@@ -4,8 +4,10 @@ using RobotStudio.Domain.Commands;
 
 namespace RobotStudio.Scripting;
 
-public sealed class RobotScriptParser
+public sealed class RobotScriptParser : IRobotScriptDialect
 {
+    public RobotScriptDialectDescriptor Descriptor => RobotScriptDialects.SimpleDsl;
+
     public RobotCommandSequence Parse(string script)
     {
         ArgumentNullException.ThrowIfNull(script);

@@ -118,6 +118,8 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 The first scripting format is a simple educational DSL, not G-code.
 
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+
 Initial target syntax:
 
 ```txt

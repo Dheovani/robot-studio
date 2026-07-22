@@ -140,7 +140,7 @@ Expected result:
 - `Validate` reports parser or physical limit errors without running playback;
 - `Simulate` regenerates playback from the current script when the script is valid;
 - playback displays the command source line associated with the current frame;
-- G-code remains out of scope for this workflow.
+- G-code remains out of scope for this workflow, but the scripting boundary can accept future dialects that produce the same command sequence.
 
 ### Jog A Cartesian Robot Manually In The Desktop App
 

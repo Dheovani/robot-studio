@@ -128,6 +128,9 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Current Coverage
 
+- [x] The Simple DSL parser implements the script dialect contract.
+- [x] The Simple DSL dialect is marked as available.
+- [x] The G-code dialect is marked as planned.
 - [x] Parse `HOME`.
 - [x] Parse `WAIT 500`.
 - [x] Parse `MOVE X=10 Y=20 Z=5`.

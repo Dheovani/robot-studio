@@ -65,6 +65,7 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly CartesianRobotProfile profile = CreateCartesianProfile();
+    private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
     private CartesianPlaybackSnapshot? snapshot;
     private int currentFrameIndex;
     private bool isPlaying;
@@ -656,7 +657,7 @@ public partial class MainWindow : Window
     private CartesianPlaybackSnapshot CreateSnapshot(string script)
     {
         var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-        var commands = new RobotScriptParser().Parse(script);
+        var commands = scriptDialect.Parse(script);
         ValidateCommandSequence(commands, profile);
 
         var context = SimulationContext.Create(profile, initialPosition);
@@ -1548,7 +1549,7 @@ public partial class MainWindow : Window
         DrawScalarChartCursor(VelocityComparisonChartCanvas, width, height);
     }
 
-    private static IReadOnlyList<ScalarSample> CreateRequestedVelocitySamples(CartesianPlaybackSnapshot snapshot)
+    private IReadOnlyList<ScalarSample> CreateRequestedVelocitySamples(CartesianPlaybackSnapshot snapshot)
     {
         var samples = new List<ScalarSample>();
         foreach (var frame in snapshot.SceneFrames)
@@ -2022,11 +2023,11 @@ public partial class MainWindow : Window
         }
     }
 
-    private static RobotCommand? TryParseSingleCommand(string commandText)
+    private RobotCommand? TryParseSingleCommand(string commandText)
     {
         try
         {
-            return new RobotScriptParser().Parse(commandText).Commands[0];
+            return scriptDialect.Parse(commandText).Commands[0];
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
