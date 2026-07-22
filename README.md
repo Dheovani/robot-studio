@@ -15,14 +15,14 @@ The current goal is to build a clean, testable foundation and the first desktop 
 - The first desktop viewer opens a WPF window and renders the Cartesian scene frames in a 3D viewport.
 - The desktop start screen lists a didactic robot catalog ordered by complexity; only the Cartesian robot is currently available.
 - xUnit tests cover the first domain and motion planner behaviors.
-- Hardware communication is planned but not implemented yet; the first hardware command boundary contracts are in place.
+- Hardware communication is planned but not implemented yet; the first hardware command boundary contracts and planned Arduino-compatible stepper prototype metadata are in place.
 
 ## Project Structure
 
 - `src/RobotStudio.Domain`: pure domain model for general robot concepts, commands, state, contracts, domain errors, and the first Cartesian model under `RobotStudio.Domain.Cartesian`.
 - `src/RobotStudio.Motion`: simple motion planning based on domain types.
 - `src/RobotStudio.Simulation`: deterministic command execution and robot state simulation.
-- `src/RobotStudio.Hardware`: future serial communication and hardware adapters, currently limited to boundary contracts.
+- `src/RobotStudio.Hardware`: future serial communication and hardware adapters, currently limited to boundary contracts and planned prototype metadata.
 - `src/RobotStudio.Scripting`: simple educational DSL parser exposed through a dialect contract; G-code support is planned for later.
 - `src/RobotStudio.Cli`: terminal entry point for command sequence examples and early learning workflows.
 - `src/RobotStudio.Desktop`: first WPF desktop viewer for the Cartesian 3D simulation.

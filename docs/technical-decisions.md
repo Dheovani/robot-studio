@@ -159,11 +159,9 @@ Hardware communication is not part of the first implementation. Future hardware 
 
 `RobotStudio.Hardware` currently defines only boundary contracts. `HardwareCommandEnvelope` describes a domain command being prepared for a future hardware adapter, including a command id and timeout. `HardwareCommandResult` describes the result returned by a future adapter. `IHardwareRobotConnection` defines the future send boundary without choosing serial APIs, port discovery, Arduino, ESP32, firmware protocols, or actuator models.
 
-Likely future targets include Arduino or ESP32 with educational actuators such as stepper motors or servos.
+The first planned educational hardware target is an Arduino-compatible controller using stepper motors for the introductory Cartesian prototype. This is metadata only: no serial adapter, firmware protocol, board detection, pin mapping, or motor driver implementation exists yet.
 
 ## Open Decisions
 
 - Whether DSL `MOVE` requires `SPEED` or uses a default speed.
 - Exact user-facing recovery command for `Faulted`.
-- First real hardware target: Arduino or ESP32.
-- First actuator model: stepper motor or servo.

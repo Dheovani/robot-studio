@@ -303,11 +303,11 @@ Goal: prepare for real devices without implementing hardware communication too e
 - [x] Keep `RobotStudio.Hardware` empty or placeholder-only until simulation and DSL are stable.
 - [x] Define what information a future serial command must receive.
 - [x] Define what information a future serial response must return.
-- [ ] Decide whether the first hardware target will be Arduino or ESP32.
-- [ ] Decide whether the first actuator model will be stepper motor or servo.
-- [ ] Do not reference hardware types from `RobotStudio.Domain`.
-- [ ] Do not reference hardware types from `RobotStudio.Motion`.
-- [ ] Do not reference hardware types from `RobotStudio.Simulation`.
+- [x] Decide whether the first hardware target will be Arduino or ESP32.
+- [x] Decide whether the first actuator model will be stepper motor or servo.
+- [x] Do not reference hardware types from `RobotStudio.Domain`.
+- [x] Do not reference hardware types from `RobotStudio.Motion`.
+- [x] Do not reference hardware types from `RobotStudio.Simulation`.
 
 ## 13. Future 3D Visualization
 

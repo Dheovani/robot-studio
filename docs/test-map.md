@@ -161,6 +161,11 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Hardware command results reject blank messages.
 - [x] Hardware connection descriptors preserve target, display name, and transport name.
 - [x] Hardware connection descriptors reject blank display or transport names.
+- [x] Hardware prototype catalog exposes the first planned Cartesian prototype.
+- [x] The first planned hardware prototype uses an Arduino-compatible target.
+- [x] The first planned hardware prototype uses stepper motors.
+- [x] The first planned hardware prototype remains metadata only, not implemented.
+- [x] Hardware prototype descriptors reject blank names and descriptions.
 
 ### Required Next Coverage
 
