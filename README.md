@@ -68,6 +68,52 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app starts with a robot selection screen. Only `Cartesian Robot` is available in `1.0.0`; future robot families are listed as planned learning steps.
 
+## Preview
+
+![RobotStudio desktop preview](docs/assets/screenshots/robot-studio.gif)
+
+## Screenshots
+
+### Robot Selection
+
+![RobotStudio robot selection screen](docs/assets/screenshots/robot-studio.png)
+
+### Cartesian 3D Viewer
+
+![RobotStudio Cartesian 3D viewer](docs/assets/screenshots/cartesian-manipulator.png)
+
+### Script And Manual Control
+
+![RobotStudio script editor](docs/assets/screenshots/script-area.png)
+
+![RobotStudio manual control panel](docs/assets/screenshots/manual-control-area.png)
+
+![RobotStudio command console](docs/assets/screenshots/command-console-area.png)
+
+### Simulation State And Explanations
+
+![RobotStudio robot state panel](docs/assets/screenshots/robot-state-area.png)
+
+![RobotStudio movement explanation panel](docs/assets/screenshots/movement-explanation-area.png)
+
+![RobotStudio timeline markers panel](docs/assets/screenshots/timeline-markers-area.png)
+
+### Charts And Overlays
+
+![RobotStudio position chart](docs/assets/screenshots/position-chart.png)
+
+![RobotStudio velocity chart](docs/assets/screenshots/velocity-chart.png)
+
+![RobotStudio requested versus effective velocity chart](docs/assets/screenshots/req-eff-chart.png)
+
+![RobotStudio distance chart](docs/assets/screenshots/distance-chart.png)
+
+![RobotStudio state chart](docs/assets/screenshots/state-chart.png)
+
+![RobotStudio overlays panel](docs/assets/screenshots/overlays-area.png)
+
+![RobotStudio camera controls](docs/assets/screenshots/camera-area.png)
+
 ## Run The CLI
 
 Run the built-in simulation example:

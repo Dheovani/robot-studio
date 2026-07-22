@@ -45,6 +45,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
+- [ ] Add recovery workflow tests after the user-facing `Faulted` recovery command is defined.
+
 ## `RobotStudio.Motion.Tests`
 
 ### Current Coverage
@@ -62,9 +64,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [x] Single-axis movement uses that axis velocity limit.
-- [x] Two-axis movement uses the slowest involved axis.
-- [x] Three-axis movement uses the slowest involved axis.
+- [ ] Add acceleration-aware planning tests when acceleration is introduced into motion planning.
 
 ## `RobotStudio.Simulation.Tests`
 
@@ -122,7 +122,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [x] Timeline records exact state transitions in order.
+- [ ] Add richer failure recovery tests after the recovery workflow is defined.
 
 ## `RobotStudio.Scripting.Tests`
 
@@ -148,6 +148,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
+- [ ] Add G-code dialect tests when G-code parsing is implemented.
+
 ## `RobotStudio.Hardware.Tests`
 
 ### Current Coverage
@@ -169,6 +171,8 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
+- [ ] Add serial connection tests when real hardware communication is implemented.
+
 ## `RobotStudio.Desktop.Tests`
 
 ### Current Coverage
@@ -184,6 +188,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Script editor metadata classifies blank and unknown lines predictably.
 
 ### Required Next Coverage
+
+- [ ] Add UI smoke tests when the desktop workflow becomes stable enough to automate.
 
 ## CLI Verification
 

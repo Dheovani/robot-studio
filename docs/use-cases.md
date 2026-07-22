@@ -53,8 +53,6 @@ Expected result:
 - planned robot entries cannot be opened yet;
 - the selection screen remains a simulator entry point, not a lesson manager.
 
-## Planned Use Cases
-
 ### Execute A Command Sequence
 
 Actor: student.
@@ -175,6 +173,8 @@ Expected result:
 - rejected commands are reported without closing the app;
 - command history records accepted and rejected command attempts;
 - direct commands reuse the same parser and simulator as scripts and manual controls.
+
+## Planned Future Use Cases
 
 ### Send Commands To Real Hardware
 

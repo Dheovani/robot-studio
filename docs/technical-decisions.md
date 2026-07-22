@@ -163,5 +163,4 @@ The first planned educational hardware target is an Arduino-compatible controlle
 
 ## Open Decisions
 
-- Whether DSL `MOVE` requires `SPEED` or uses a default speed.
 - Exact user-facing recovery command for `Faulted`.

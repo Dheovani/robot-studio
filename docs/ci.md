@@ -37,6 +37,8 @@ dotnet format RobotStudio.slnx --verify-no-changes --verbosity diagnostic
 
 The goal is to keep formatting aligned with `.editorconfig`.
 
+Line endings are normalized through `.gitattributes` so Windows runners and local Windows checkouts keep text files compatible with the repository's LF formatting rule.
+
 ## Current Quality Scope
 
 The first CI version checks:

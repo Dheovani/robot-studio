@@ -4,13 +4,10 @@ This file tracks future work after the first stable Cartesian simulation release
 
 ## 1. Release And Distribution
 
-- [ ] Review the `1.0.0` release documentation before tagging.
 - [ ] Create the `v1.0.0` Git tag when the release is approved.
 - [ ] Decide whether the first distributed build will be a zipped folder, installer, or self-contained executable.
 - [ ] Add a repeatable Release build command for the desktop app.
 - [ ] Add release artifact generation to GitHub Actions.
-- [ ] Add desktop screenshots to `README.md`.
-- [ ] Add a short animated preview or playback GIF when the UI stabilizes visually.
 
 ## 2. Additional Robot Families
 

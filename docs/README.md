@@ -9,11 +9,11 @@ This folder keeps the project decisions and learning-oriented documentation clos
 - [Test Map](test-map.md): expected automated test coverage by project area.
 - [User Guide](user-guide.md): current and planned ways to use the CLI and future scripting flow.
 - [Continuous Integration](ci.md): GitHub Actions validation for build, tests, and formatting.
-- [Changelog](../CHANGELOG.md): release history and milestone summaries.
+- [Changelog](../CHANGELOG.md): user-facing release history and included capabilities.
 
 ## Maintenance Rules
 
 - Update these documents when a product rule, architectural boundary, or user workflow changes.
-- Keep `TODO.md` as the single source for roadmap, milestones, and execution checklists.
+- Keep `TODO.md` as the single source for future pending work.
 - Keep docs concise, specific, and aligned with implemented behavior.
 - Do not document future features as available before they are implemented.
