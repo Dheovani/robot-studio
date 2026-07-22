@@ -11,6 +11,7 @@
   <Folder Name="/tests/">
     <Project Path="tests/RobotStudio.Desktop.Tests/RobotStudio.Desktop.Tests.csproj" />
     <Project Path="tests/RobotStudio.Domain.Tests/RobotStudio.Domain.Tests.csproj" />
+    <Project Path="tests/RobotStudio.Hardware.Tests/RobotStudio.Hardware.Tests.csproj" />
     <Project Path="tests/RobotStudio.Motion.Tests/RobotStudio.Motion.Tests.csproj" />
     <Project Path="tests/RobotStudio.Scripting.Tests/RobotStudio.Scripting.Tests.csproj" />
     <Project Path="tests/RobotStudio.Simulation.Tests/RobotStudio.Simulation.Tests.csproj" />

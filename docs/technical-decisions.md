@@ -157,6 +157,8 @@ Only templates marked as `Available` and backed by a concrete viewer are openabl
 
 Hardware communication is not part of the first implementation. Future hardware work should live in `RobotStudio.Hardware` and must not leak into `RobotStudio.Domain`.
 
+`RobotStudio.Hardware` currently defines only boundary contracts. `HardwareCommandEnvelope` describes a domain command being prepared for a future hardware adapter, including a command id and timeout. `HardwareCommandResult` describes the result returned by a future adapter. `IHardwareRobotConnection` defines the future send boundary without choosing serial APIs, port discovery, Arduino, ESP32, firmware protocols, or actuator models.
+
 Likely future targets include Arduino or ESP32 with educational actuators such as stepper motors or servos.
 
 ## Open Decisions

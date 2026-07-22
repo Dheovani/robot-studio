@@ -148,6 +148,22 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
+## `RobotStudio.Hardware.Tests`
+
+### Current Coverage
+
+- [x] Hardware command envelopes preserve command id, command, and timeout.
+- [x] Hardware command envelopes reject empty command ids.
+- [x] Hardware command envelopes reject null commands.
+- [x] Hardware command envelopes reject non-positive timeouts.
+- [x] Hardware command results preserve command id, status, and message.
+- [x] Hardware command results reject empty command ids.
+- [x] Hardware command results reject blank messages.
+- [x] Hardware connection descriptors preserve target, display name, and transport name.
+- [x] Hardware connection descriptors reject blank display or transport names.
+
+### Required Next Coverage
+
 ## `RobotStudio.Desktop.Tests`
 
 ### Current Coverage

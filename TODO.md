@@ -300,9 +300,9 @@ Goal: provide repeatable examples students can run before writing scripts manual
 
 Goal: prepare for real devices without implementing hardware communication too early.
 
-- [ ] Keep `RobotStudio.Hardware` empty or placeholder-only until simulation and DSL are stable.
-- [ ] Define what information a future serial command must receive.
-- [ ] Define what information a future serial response must return.
+- [x] Keep `RobotStudio.Hardware` empty or placeholder-only until simulation and DSL are stable.
+- [x] Define what information a future serial command must receive.
+- [x] Define what information a future serial response must return.
 - [ ] Decide whether the first hardware target will be Arduino or ESP32.
 - [ ] Decide whether the first actuator model will be stepper motor or servo.
 - [ ] Do not reference hardware types from `RobotStudio.Domain`.
@@ -481,10 +481,10 @@ Goal: evolve the first WPF viewer into a visual teaching tool while keeping futu
 #### 13.1.10. Future Interfaces Kept Out Of Scope
 
 - [x] Prepare G-code as a second parser dialect that produces domain commands.
-- [ ] Prepare hardware command boundaries without serial implementation.
-- [ ] Keep Arduino communication out until the simulator and desktop flows are stable.
-- [ ] Keep ESP32 communication out until the simulator and desktop flows are stable.
-- [ ] Keep real hardware execution out of the desktop viewer until hardware boundaries are designed.
+- [x] Prepare hardware command boundaries without serial implementation.
+- [x] Keep Arduino communication out until the simulator and desktop flows are stable.
+- [x] Keep ESP32 communication out until the simulator and desktop flows are stable.
+- [x] Keep real hardware execution out of the desktop viewer until hardware boundaries are designed.
 
 #### 13.1.11. Desktop Architecture Rules
 
