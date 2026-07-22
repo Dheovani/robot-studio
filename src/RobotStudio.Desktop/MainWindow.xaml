@@ -4,8 +4,8 @@
         Title="RobotStudio"
         Width="1180"
         Height="780"
-        MinWidth="960"
-        MinHeight="640"
+        MinWidth="900"
+        MinHeight="600"
         Background="{DynamicResource AppBackgroundBrush}">
     <Window.Resources>
         <SolidColorBrush x:Key="AppBackgroundBrush" Color="#111827" />
@@ -73,6 +73,33 @@
             <Setter Property="Padding" Value="10" />
             <Setter Property="FontSize" Value="16" />
             <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style TargetType="TextBox">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="CaretBrush" Value="{StaticResource PrimaryTextBrush}" />
+        </Style>
+
+        <Style TargetType="ListBox">
+            <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}" />
+            <Setter Property="Background" Value="{StaticResource AppBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        </Style>
+
+        <Style TargetType="CheckBox">
+            <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}" />
+            <Setter Property="VerticalAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="ComboBox">
+            <Setter Property="Height" Value="32" />
+            <Setter Property="VerticalContentAlignment" Value="Center" />
+        </Style>
+
+        <Style TargetType="Slider">
+            <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
     </Window.Resources>
 
@@ -182,9 +209,9 @@
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*" MinWidth="420" />
+                    <ColumnDefinition Width="*" MinWidth="380" />
                     <ColumnDefinition Width="8" />
-                    <ColumnDefinition Width="340" MinWidth="300" MaxWidth="540" />
+                    <ColumnDefinition Width="320" MinWidth="280" MaxWidth="540" />
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
@@ -219,7 +246,9 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,0,10,0">
-                            <Expander Header="Script" IsExpanded="True">
+                            <Expander Header="Script"
+                                      IsExpanded="True"
+                                      ToolTip="Edit DSL commands before validating or simulating the robot.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Border Height="190"
                                     Margin="0,10,0,10"
@@ -256,6 +285,7 @@
                                              Background="#111827"
                                              BorderThickness="0"
                                              CaretBrush="#E5E7EB"
+                                             ToolTip="DSL script editor. Supported commands are HOME, MOVE, and WAIT."
                                              ScrollViewer.ScrollChanged="ScriptEditorTextBox_ScrollChanged"
                                              TextChanged="ScriptEditorTextBox_TextChanged" />
                                 </Grid>
@@ -270,10 +300,12 @@
                                 <Button Grid.Column="0"
                                         Margin="0,0,6,0"
                                         Content="Validate"
+                                        ToolTip="Parse the DSL script and check Cartesian limits without changing playback."
                                         Click="ValidateScriptButton_Click" />
                                 <Button Grid.Column="1"
                                         Margin="6,0,0,0"
                                         Content="Simulate"
+                                        ToolTip="Generate a deterministic playback snapshot from the current valid script."
                                         Click="SimulateScriptButton_Click" />
                             </Grid>
 
@@ -291,7 +323,9 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Manual Control" IsExpanded="True">
+                            <Expander Header="Manual Control"
+                                      IsExpanded="True"
+                                      ToolTip="Jog the simulated Cartesian robot by appending DSL commands.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
                                 <Grid.ColumnDefinitions>
@@ -314,6 +348,7 @@
                                          Margin="0,4,6,0"
                                          Padding="8,4"
                                          Text="10"
+                                         ToolTip="Distance applied by each jog command, in millimeters."
                                          Foreground="#E5E7EB"
                                          Background="#111827"
                                          BorderBrush="#334155"
@@ -330,6 +365,7 @@
                                          Margin="6,4,0,0"
                                          Padding="8,4"
                                          Text="80"
+                                         ToolTip="Requested jog speed in millimeters per second. Axis limits can cap the effective speed."
                                          Foreground="#E5E7EB"
                                          Background="#111827"
                                          BorderBrush="#334155"
@@ -337,15 +373,15 @@
                             </Grid>
 
                             <UniformGrid Columns="3" Margin="0,0,0,8">
-                                <Button Margin="0,0,6,6" Content="X-" Click="JogNegativeXButton_Click" />
-                                <Button Margin="0,0,6,6" Content="HOME" Click="ManualHomeButton_Click" />
-                                <Button Margin="0,0,0,6" Content="X+" Click="JogPositiveXButton_Click" />
-                                <Button Margin="0,0,6,6" Content="Y-" Click="JogNegativeYButton_Click" />
-                                <Button Margin="0,0,6,6" Content="Stop" Click="StopPlaybackButton_Click" />
-                                <Button Margin="0,0,0,6" Content="Y+" Click="JogPositiveYButton_Click" />
-                                <Button Margin="0,0,6,0" Content="Z-" Click="JogNegativeZButton_Click" />
-                                <Button Margin="0,0,6,0" Content="Reset" Click="ResetButton_Click" />
-                                <Button Content="Z+" Click="JogPositiveZButton_Click" />
+                                <Button Margin="0,0,6,6" Content="X-" ToolTip="Move one step in the negative X direction." Click="JogNegativeXButton_Click" />
+                                <Button Margin="0,0,6,6" Content="HOME" ToolTip="Append HOME and move the robot to the origin." Click="ManualHomeButton_Click" />
+                                <Button Margin="0,0,0,6" Content="X+" ToolTip="Move one step in the positive X direction." Click="JogPositiveXButton_Click" />
+                                <Button Margin="0,0,6,6" Content="Y-" ToolTip="Move one step in the negative Y direction." Click="JogNegativeYButton_Click" />
+                                <Button Margin="0,0,6,6" Content="Stop" ToolTip="Stop visual playback without changing the simulated command sequence." Click="StopPlaybackButton_Click" />
+                                <Button Margin="0,0,0,6" Content="Y+" ToolTip="Move one step in the positive Y direction." Click="JogPositiveYButton_Click" />
+                                <Button Margin="0,0,6,0" Content="Z-" ToolTip="Move one step in the negative Z direction." Click="JogNegativeZButton_Click" />
+                                <Button Margin="0,0,6,0" Content="Reset" ToolTip="Return playback to the first generated frame." Click="ResetButton_Click" />
+                                <Button Content="Z+" ToolTip="Move one step in the positive Z direction." Click="JogPositiveZButton_Click" />
                             </UniformGrid>
 
                             <TextBlock x:Name="ManualControlStatusText"
@@ -356,7 +392,9 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Command Console" IsExpanded="False">
+                            <Expander Header="Command Console"
+                                      IsExpanded="False"
+                                      ToolTip="Execute one DSL command at a time and append valid commands to the script.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
                                 <Grid.ColumnDefinitions>
@@ -371,6 +409,7 @@
                                          Padding="8,5"
                                          FontFamily="Consolas"
                                          Text="MOVE X=100 Y=50 Z=20 SPEED=80"
+                                         ToolTip="Type one DSL command. Press Enter or Execute to validate and append it."
                                          Foreground="#E5E7EB"
                                          Background="#111827"
                                          BorderBrush="#334155"
@@ -378,6 +417,7 @@
                                          KeyDown="CommandConsoleTextBox_KeyDown" />
                                 <Button Grid.Column="1"
                                         Content="Execute"
+                                        ToolTip="Validate and execute the command currently typed in the console."
                                         Click="ExecuteCommandButton_Click" />
                             </Grid>
 
@@ -400,7 +440,9 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Robot State" IsExpanded="True">
+                            <Expander Header="Robot State"
+                                      IsExpanded="True"
+                                      ToolTip="Inspect the current playback frame state, position, source command, and simulated time.">
                                 <Grid Margin="0,12,0,20">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="105" />
@@ -435,7 +477,9 @@
                             </Grid>
                             </Expander>
 
-                            <Expander Header="Charts" IsExpanded="False">
+                            <Expander Header="Charts"
+                                      IsExpanded="False"
+                                      ToolTip="Inspect position, velocity, state, and distance values derived from playback frames.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Text="Position Chart"
                                                Foreground="#F9FAFB"
@@ -535,7 +579,9 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Movement Explanation" IsExpanded="False">
+                            <Expander Header="Movement Explanation"
+                                      IsExpanded="False"
+                                      ToolTip="Read a didactic explanation of the current command and movement constraints.">
                                 <TextBlock x:Name="MovementExplanationText"
                                        Margin="0,10,0,20"
                                        Padding="10"
@@ -545,7 +591,9 @@
                                        Text="Open a robot simulation to inspect command explanations." />
                             </Expander>
 
-                            <Expander Header="Timeline Markers" IsExpanded="False">
+                            <Expander Header="Timeline Markers"
+                                      IsExpanded="False"
+                                      ToolTip="Jump to command starts or state changes in the playback timeline.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Margin="0,10,0,4"
                                        Foreground="#94A3B8"
@@ -579,12 +627,15 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Overlays" IsExpanded="False">
+                            <Expander Header="Overlays"
+                                      IsExpanded="False"
+                                      ToolTip="Show or hide educational 3D overlays without regenerating the simulation.">
                                 <UniformGrid Columns="2" Margin="0,10,0,20">
                                 <CheckBox x:Name="ShowGridCheckBox"
                                           Margin="0,0,8,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show the workspace reference grid."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Grid" />
@@ -592,6 +643,7 @@
                                           Margin="0,0,0,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show the global X, Y, and Z coordinate axes."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Global axes" />
@@ -599,6 +651,7 @@
                                           Margin="0,0,8,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show labels near the global X, Y, and Z axes."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="X/Y/Z labels" />
@@ -606,6 +659,7 @@
                                           Margin="0,0,0,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show the physical Cartesian workspace boundary."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Workspace" />
@@ -613,6 +667,7 @@
                                           Margin="0,0,0,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show fixed Cartesian rails."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Rails" />
@@ -620,6 +675,7 @@
                                           Margin="0,0,8,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show sampled TCP positions along the planned playback path."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Path" />
@@ -627,6 +683,7 @@
                                           Margin="0,0,0,8"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show markers for the first and final TCP positions."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Start / end" />
@@ -634,6 +691,7 @@
                                           Margin="0,0,8,0"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show moving carriage components."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="Carriages" />
@@ -641,39 +699,80 @@
                                           Margin="0,0,0,0"
                                           Foreground="#CBD5E1"
                                           IsChecked="True"
+                                          ToolTip="Show the tool and tool center point representation."
                                           Checked="OverlayCheckBox_Changed"
                                           Unchecked="OverlayCheckBox_Changed"
                                           Content="TCP / tool" />
                             </UniformGrid>
                             </Expander>
 
-                            <Expander Header="Camera" IsExpanded="True">
+                            <Expander Header="Camera"
+                                      IsExpanded="True"
+                                      ToolTip="Control only the desktop camera. This does not change robot simulation data.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Azimuth" />
-                            <Slider x:Name="AzimuthSlider"
-                                    Minimum="-180"
-                                    Maximum="180"
-                                    ValueChanged="CameraSlider_ValueChanged" />
+                                    <Slider x:Name="AzimuthSlider"
+                                            Minimum="-180"
+                                            Maximum="180"
+                                            ToolTip="Rotate the camera horizontally around the robot."
+                                            ValueChanged="CameraSlider_ValueChanged" />
 
-                            <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Elevation" />
-                            <Slider x:Name="ElevationSlider"
-                                    Minimum="10"
-                                    Maximum="80"
-                                    ValueChanged="CameraSlider_ValueChanged" />
+                                    <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Elevation" />
+                                    <Slider x:Name="ElevationSlider"
+                                            Minimum="10"
+                                            Maximum="80"
+                                            ToolTip="Raise or lower the camera angle around the robot."
+                                            ValueChanged="CameraSlider_ValueChanged" />
 
-                            <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Zoom" />
-                            <Slider x:Name="ZoomSlider"
-                                    Minimum="0.6"
-                                    Maximum="2.4"
-                                    ValueChanged="CameraSlider_ValueChanged" />
+                                    <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Zoom" />
+                                    <Slider x:Name="ZoomSlider"
+                                            Minimum="0.6"
+                                            Maximum="2.4"
+                                            ToolTip="Move the camera closer to or farther from the robot."
+                                            ValueChanged="CameraSlider_ValueChanged" />
 
-                            <WrapPanel Margin="0,14,0,0">
-                                <Button Width="82" Margin="0,0,8,8" Content="Iso" Click="IsoViewButton_Click" />
-                                <Button Width="82" Margin="0,0,8,8" Content="Front" Click="FrontViewButton_Click" />
-                                <Button Width="82" Margin="0,0,0,8" Content="Side" Click="SideViewButton_Click" />
-                                <Button Width="82" Margin="0,0,8,0" Content="Top" Click="TopViewButton_Click" />
-                                <Button Width="172" Content="Reset Camera" Click="ResetCameraButton_Click" />
-                            </WrapPanel>
+                                    <Grid Margin="0,14,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <Button Grid.Row="0"
+                                                Grid.Column="0"
+                                                Margin="0,0,6,8"
+                                                Content="Iso"
+                                                ToolTip="Use an isometric didactic camera view."
+                                                Click="IsoViewButton_Click" />
+                                        <Button Grid.Row="0"
+                                                Grid.Column="1"
+                                                Margin="6,0,0,8"
+                                                Content="Front"
+                                                ToolTip="View the robot from the front."
+                                                Click="FrontViewButton_Click" />
+                                        <Button Grid.Row="1"
+                                                Grid.Column="0"
+                                                Margin="0,0,6,8"
+                                                Content="Side"
+                                                ToolTip="View the robot from the side."
+                                                Click="SideViewButton_Click" />
+                                        <Button Grid.Row="1"
+                                                Grid.Column="1"
+                                                Margin="6,0,0,8"
+                                                Content="Top"
+                                                ToolTip="View the robot from above."
+                                                Click="TopViewButton_Click" />
+                                        <Button Grid.Row="2"
+                                                Grid.Column="0"
+                                                Grid.ColumnSpan="2"
+                                                Content="Reset Camera"
+                                                ToolTip="Return the camera to the default isometric view."
+                                                Click="ResetCameraButton_Click" />
+                                    </Grid>
                                 </StackPanel>
                             </Expander>
                         </StackPanel>
@@ -694,15 +793,16 @@
                     <Button Width="48"
                             Margin="0,0,8,0"
                             Content="Prev"
+                            ToolTip="Move one playback frame backward."
                             Click="PreviousFrameButton_Click" />
                     <Button Width="48"
                             Margin="0,0,12,0"
                             Content="Next"
+                            ToolTip="Move one playback frame forward."
                             Click="NextFrameButton_Click" />
                     <ComboBox x:Name="PlaybackSpeedComboBox"
                               Width="88"
-                              Height="32"
-                              VerticalContentAlignment="Center"
+                              ToolTip="Change visual playback speed without changing simulated time."
                               SelectionChanged="PlaybackSpeedComboBox_SelectionChanged">
                         <ComboBoxItem Content="0.5x" Tag="0.5" />
                         <ComboBoxItem Content="1x" Tag="1" IsSelected="True" />
@@ -716,6 +816,7 @@
                         Margin="12,0,0,0"
                         Minimum="0"
                         IsSnapToTickEnabled="True"
+                        ToolTip="Scrub through fixed playback frames generated by the simulator."
                         ValueChanged="TimelineSlider_ValueChanged" />
 
                 <TextBlock x:Name="StatusText"
