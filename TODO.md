@@ -327,7 +327,7 @@ Goal: prepare a future visual inspection tool without influencing the current co
 - [x] Keep visual coordinate decisions outside the current domain model.
 - [x] Define a fixed virtual environment for robot visualization.
 - [x] Allow camera rotation around the robot.
-- [ ] Later, show technical tooltips for complex concepts.
+- [x] Later, show technical tooltips for complex concepts.
 - [x] Ensure UI consumes simulation output instead of duplicating simulation logic.
 
 ### 13.1. Desktop Didactic Roadmap

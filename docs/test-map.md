@@ -241,6 +241,7 @@ Expected current behavior:
 - validates the current DSL script from the Cartesian viewer;
 - groups dense Cartesian viewer controls into collapsible sidebar panels;
 - shows technical tooltips for dense desktop controls;
+- shows didactic tooltips for workspace, TCP, homing, timeline, requested velocity, and effective velocity concepts;
 - remains usable at the current minimum desktop window size;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;

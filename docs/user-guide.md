@@ -55,6 +55,7 @@ Current desktop controls:
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.
 - collapsible sidebar panels for script, manual control, command console, robot state, charts, movement explanation, timeline markers, overlays, and camera controls.
 - technical tooltips on dense script, manual control, overlay, camera, and timeline controls.
+- didactic tooltips for robotics concepts such as workspace, TCP, homing, timeline, requested velocity, and effective velocity.
 - `Validate` to parse the current DSL script and check Cartesian limits.
 - `Simulate` to regenerate the visual playback from the current DSL script.
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
