@@ -4,10 +4,12 @@ This file tracks future work after the first stable Cartesian simulation release
 
 ## 1. Release And Distribution
 
-- [ ] Create the `v1.0.0` Git tag when the release is approved.
-- [ ] Decide whether the first distributed build will be a zipped folder, installer, or self-contained executable.
-- [ ] Add a repeatable Release build command for the desktop app.
-- [ ] Add release artifact generation to GitHub Actions.
+- [x] Create the `v1.0.0` Git tag when the release is approved.
+- [ ] Add Windows installer artifact generation to GitHub Actions.
+- [ ] Add optional code signing for the Windows installer.
+- [ ] Evaluate Linux support for the core libraries and CLI after the Windows v1 release.
+- [ ] Evaluate macOS support for the core libraries and CLI after the Windows v1 release.
+- [ ] Evaluate a future cross-platform desktop UI strategy after the Windows v1 release.
 
 ## 2. Additional Robot Families
 

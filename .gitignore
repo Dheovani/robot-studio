@@ -5,6 +5,9 @@ obj/
 # Test output
 /TestResults/
 
+# Release output
+/artifacts/
+
 # User-specific IDE files
 .vs/
 *.user

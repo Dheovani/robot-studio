@@ -153,6 +153,20 @@ Check formatting:
 dotnet format RobotStudio.slnx --verify-no-changes
 ```
 
+## Build The Windows Installer
+
+RobotStudio `1.0.0` is distributed as a Windows installer for the WPF desktop app.
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.0.0 -Runtime win-x64
+```
+
+The installer is generated at:
+
+```txt
+artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
+```
+
 ## Project Structure
 
 - `src/RobotStudio.Domain`: pure domain model for robot concepts, commands, state, contracts, domain errors, and the first Cartesian model.

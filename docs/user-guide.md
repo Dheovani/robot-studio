@@ -43,6 +43,20 @@ The desktop app opens a WPF window with a robot selection screen. The Cartesian 
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
 
+## Build The Windows Installer
+
+Run from the repository root on Windows:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.0.0 -Runtime win-x64
+```
+
+The installer is generated at:
+
+```txt
+artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
+```
+
 Current desktop controls:
 
 - robot cards showing name, family, status badge, complexity badge, description, and capability tags.
