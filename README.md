@@ -1,68 +1,82 @@
 # RobotStudio
 
-RobotStudio is a didactic robotics platform built with C# and .NET. Its first supported robot is a generic three-axis Cartesian robot, but the project is being designed to grow into a learning tool for multiple robot families, such as Cartesian, mobile, articulated, parallel, and aerial robots.
+RobotStudio is a didactic robotics and C#/.NET learning platform.
 
-The current goal is to build a clean, testable foundation and the first desktop visualization before adding hardware integration.
+Version `1.0.0` delivers the first stable vertical slice: a generic three-axis Cartesian robot can be scripted, validated, simulated, inspected through CLI output, and visualized in a WPF desktop 3D viewer.
 
-## Current Status
+The project is intentionally educational. It is designed to help students understand both robotics concepts and software architecture: domain modeling, motion planning, deterministic simulation, scripting, UI boundaries, tests, and future hardware integration.
 
-- The first domain model exists for a generic Cartesian robot.
-- Axis position, velocity, and acceleration limits are validated in the domain layer.
-- The first linear motion planner can estimate a simple movement plan.
-- The first deterministic simulator can execute `HOME`, `MOVE`, and `WAIT` command sequences.
-- The simple DSL parser can read `HOME`, `MOVE`, and `WAIT` scripts through a script dialect boundary prepared for future G-code.
-- The CLI runs the built-in script, validates script files, simulates script files, prints a readable simulation timeline, prints fixed-interval playback frames with workspace bounds, and exports versioned playback snapshots with Cartesian robot poses, renderable scene frames, and viewport data as JSON.
-- The first desktop viewer opens a WPF window and renders the Cartesian scene frames in a 3D viewport.
-- The desktop start screen lists a didactic robot catalog ordered by complexity; only the Cartesian robot is currently available.
-- xUnit tests cover the first domain and motion planner behaviors.
-- Hardware communication is planned but not implemented yet; the first hardware command boundary contracts and planned Arduino-compatible stepper prototype metadata are in place.
+## What You Can Do Now
 
-## Project Structure
+- Simulate a generic Cartesian robot with X/Y/Z axes.
+- Validate physical axis limits for position, velocity, and acceleration.
+- Run `HOME`, `MOVE`, and `WAIT` commands.
+- Write simple DSL scripts such as:
 
-- `src/RobotStudio.Domain`: pure domain model for general robot concepts, commands, state, contracts, domain errors, and the first Cartesian model under `RobotStudio.Domain.Cartesian`.
-- `src/RobotStudio.Motion`: simple motion planning based on domain types.
-- `src/RobotStudio.Simulation`: deterministic command execution and robot state simulation.
-- `src/RobotStudio.Hardware`: future serial communication and hardware adapters, currently limited to boundary contracts and planned prototype metadata.
-- `src/RobotStudio.Scripting`: simple educational DSL parser exposed through a dialect contract; G-code support is planned for later.
-- `src/RobotStudio.Cli`: terminal entry point for command sequence examples and early learning workflows.
-- `src/RobotStudio.Desktop`: first WPF desktop viewer for the Cartesian 3D simulation.
-- `tests/RobotStudio.Domain.Tests`: xUnit tests for domain behavior.
-- `tests/RobotStudio.Desktop.Tests`: xUnit tests for desktop robot catalog metadata.
-- `tests/RobotStudio.Hardware.Tests`: xUnit tests for hardware boundary contracts.
-- `tests/RobotStudio.Motion.Tests`: xUnit tests for motion planning behavior.
-- `docs`: product, architecture, use case, testing, and user documentation.
-
-## Documentation
-
-- [Documentation Index](docs/README.md)
-- [Technical Decisions](docs/technical-decisions.md)
-- [Use Cases](docs/use-cases.md)
-- [Test Map](docs/test-map.md)
-- [User Guide](docs/user-guide.md)
-- [Continuous Integration](docs/ci.md)
-- [Contributing](CONTRIBUTING.md)
-- [Code of Conduct](CODE_OF_CONDUCT.md)
-- [Security Policy](SECURITY.md)
-
-## Build
-
-```bash
-dotnet build
+```txt
+HOME
+MOVE X=120 Y=80 Z=40 SPEED=90
+WAIT 500
 ```
 
-## Run Tests
+- Run the CLI to inspect commands, timeline steps, final state, and final position.
+- Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
+- Rotate, zoom, and reset the camera.
+- Use manual jog buttons and a direct command console.
+- Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
+- Export and validate playback snapshots as JSON.
+
+## Current Release
+
+Current stable version: `1.0.0`.
+
+This release is stable for the first educational goal: simulate and inspect the first robot model without real hardware.
+
+Implemented:
+
+- domain model;
+- Cartesian robot profile;
+- motion planner;
+- deterministic simulator;
+- simple DSL;
+- CLI workflow;
+- desktop 3D viewer;
+- robot catalog metadata;
+- playback snapshots;
+- didactic overlays, charts, timeline, and tooltips;
+- future boundaries for G-code and hardware.
+
+Not implemented yet:
+
+- real serial communication;
+- Arduino or ESP32 firmware/protocols;
+- G-code parser;
+- additional robot simulations such as articulated arms, drones, SCARA, delta robots, or mobile robots.
+
+## Run The Desktop App
+
+Requirements:
+
+- Windows;
+- .NET SDK matching `global.json`.
+
+From the repository root:
 
 ```bash
-dotnet test
+dotnet run --project src/RobotStudio.Desktop
 ```
 
-## Run CLI
+The desktop app starts with a robot selection screen. Only `Cartesian Robot` is available in `1.0.0`; future robot families are listed as planned learning steps.
+
+## Run The CLI
+
+Run the built-in simulation example:
 
 ```bash
 dotnet run --project src/RobotStudio.Cli
 ```
 
-Other CLI modes:
+Other useful CLI commands:
 
 ```bash
 dotnet run --project src/RobotStudio.Cli -- example
@@ -73,23 +87,53 @@ dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.r
 dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json
 ```
 
-## Run Desktop Viewer
+## Build And Test
+
+Build:
 
 ```bash
-dotnet run --project src/RobotStudio.Desktop
+dotnet build
 ```
+
+Run tests:
+
+```bash
+dotnet test
+```
+
+Check formatting:
+
+```bash
+dotnet format RobotStudio.slnx --verify-no-changes
+```
+
+## Project Structure
+
+- `src/RobotStudio.Domain`: pure domain model for robot concepts, commands, state, contracts, domain errors, and the first Cartesian model.
+- `src/RobotStudio.Motion`: simple motion planning based on domain types.
+- `src/RobotStudio.Simulation`: deterministic command execution, sampling, playback snapshots, visual states, and scene frames.
+- `src/RobotStudio.Scripting`: simple educational DSL exposed through a dialect contract prepared for future G-code.
+- `src/RobotStudio.Hardware`: future hardware integration boundary contracts and planned prototype metadata.
+- `src/RobotStudio.Cli`: terminal entry point for examples, validation, simulation, playback, and snapshot export.
+- `src/RobotStudio.Desktop`: WPF desktop app for robot selection and Cartesian 3D simulation.
+- `tests`: xUnit test projects for domain, motion, simulation, scripting, hardware boundaries, and desktop metadata/tooling.
+- `docs`: product, architecture, use case, testing, CI, and user documentation.
+
+## Documentation
+
+- [Changelog](CHANGELOG.md)
+- [Documentation Index](docs/README.md)
+- [Technical Decisions](docs/technical-decisions.md)
+- [Use Cases](docs/use-cases.md)
+- [Test Map](docs/test-map.md)
+- [User Guide](docs/user-guide.md)
+- [Continuous Integration](docs/ci.md)
+- [Contributing](CONTRIBUTING.md)
+- [Code of Conduct](CODE_OF_CONDUCT.md)
+- [Security Policy](SECURITY.md)
 
 ## License
 
-RobotStudio is proprietary software. Personal, non-commercial study use is
-allowed under the [RobotStudio Personal Study License](LICENSE).
+RobotStudio is proprietary software. Personal, non-commercial study use is allowed under the [RobotStudio Personal Study License](LICENSE).
 
-Commercial, business, organizational, institutional, brand-related,
-redistribution, sublicensing, and public hosting uses are not allowed without
-prior written permission from the copyright holder.
-
-## Not In Scope Yet
-
-- Serial communication.
-- Arduino or ESP32 integration.
-- G-code parser.
+Commercial, business, organizational, institutional, brand-related, redistribution, sublicensing, and public hosting uses are not allowed without prior written permission from the copyright holder.

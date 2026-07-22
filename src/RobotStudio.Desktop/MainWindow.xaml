@@ -7,6 +7,7 @@
         Height="780"
         MinWidth="900"
         MinHeight="600"
+        Icon="Assets/RobotStudio.ico"
         Background="{DynamicResource AppBackgroundBrush}">
     <Window.Resources>
         <SolidColorBrush x:Key="AppBackgroundBrush" Color="#111827" />

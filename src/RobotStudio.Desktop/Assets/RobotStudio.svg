@@ -1,0 +1,29 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" role="img" aria-label="RobotStudio logo">
+  <defs>
+    <linearGradient id="background" x1="32" y1="24" x2="224" y2="232" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#082F63" />
+      <stop offset="0.55" stop-color="#071D3D" />
+      <stop offset="1" stop-color="#020617" />
+    </linearGradient>
+    <linearGradient id="face" x1="68" y1="84" x2="188" y2="196" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#FFFFFF" />
+      <stop offset="1" stop-color="#D8ECFF" />
+    </linearGradient>
+    <linearGradient id="accent" x1="108" y1="64" x2="148" y2="104" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#60A5FA" />
+      <stop offset="1" stop-color="#2563EB" />
+    </linearGradient>
+  </defs>
+
+  <rect x="0" y="0" width="256" height="256" rx="48" fill="url(#background)" />
+  <rect x="120" y="55" width="16" height="38" rx="8" fill="#D8ECFF" />
+  <circle cx="128" cy="50" r="22" fill="url(#accent)" />
+  <rect x="42" y="121" width="34" height="56" rx="18" fill="#D8ECFF" opacity="0.95" />
+  <rect x="180" y="121" width="34" height="56" rx="18" fill="#D8ECFF" opacity="0.95" />
+  <rect x="58" y="91" width="140" height="112" rx="34" fill="url(#face)" />
+  <circle cx="96" cy="143" r="17" fill="#071D3D" />
+  <circle cx="160" cy="143" r="17" fill="#071D3D" />
+  <circle cx="90" cy="137" r="5" fill="#FFFFFF" />
+  <circle cx="154" cy="137" r="5" fill="#FFFFFF" />
+  <path d="M111 172 C121 178 135 178 145 172" fill="none" stroke="#2F80ED" stroke-width="8" stroke-linecap="round" />
+</svg>

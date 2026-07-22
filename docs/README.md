@@ -9,6 +9,7 @@ This folder keeps the project decisions and learning-oriented documentation clos
 - [Test Map](test-map.md): expected automated test coverage by project area.
 - [User Guide](user-guide.md): current and planned ways to use the CLI and future scripting flow.
 - [Continuous Integration](ci.md): GitHub Actions validation for build, tests, and formatting.
+- [Changelog](../CHANGELOG.md): release history and milestone summaries.
 
 ## Maintenance Rules
 
