@@ -4,9 +4,8 @@ This file tracks future work after the first stable Cartesian simulation release
 
 ## 1. Release And Distribution
 
-- [x] Create the `v1.0.0` Git tag when the release is approved.
-- [ ] Add Windows installer artifact generation to GitHub Actions.
-- [ ] Add optional code signing for the Windows installer.
+- [ ] Create the `v1.0.0` Git tag when the release is approved.
+- [ ] Acquire a code signing certificate before publishing signed Windows releases.
 - [ ] Evaluate Linux support for the core libraries and CLI after the Windows v1 release.
 - [ ] Evaluate macOS support for the core libraries and CLI after the Windows v1 release.
 - [ ] Evaluate a future cross-platform desktop UI strategy after the Windows v1 release.

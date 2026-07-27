@@ -57,6 +57,12 @@ The installer is generated at:
 artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
 ```
 
+The script also generates a SHA256 checksum file next to the installer:
+
+```txt
+artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
+```
+
 Current desktop controls:
 
 - robot cards showing name, family, status badge, complexity badge, description, and capability tags.

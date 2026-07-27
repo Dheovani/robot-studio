@@ -167,6 +167,12 @@ The installer is generated at:
 artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
 ```
 
+The release script also generates:
+
+```txt
+artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
+```
+
 ## Project Structure
 
 - `src/RobotStudio.Domain`: pure domain model for robot concepts, commands, state, contracts, domain errors, and the first Cartesian model.
