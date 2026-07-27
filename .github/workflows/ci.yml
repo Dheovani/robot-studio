@@ -150,3 +150,46 @@ jobs:
             artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
             artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
           if-no-files-found: error
+
+  cli-release-artifacts:
+    name: CLI release artifact (${{ matrix.runtime }})
+    runs-on: ${{ matrix.os }}
+    needs:
+      - portable-build-and-test
+      - code-quality
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.ref, 'refs/tags/v')
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: windows-latest
+            runtime: win-x64
+          - os: ubuntu-latest
+            runtime: linux-x64
+          - os: macos-latest
+            runtime: osx-x64
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore portable solution
+        run: dotnet restore build/RobotStudio.Portable.slnx
+
+      - name: Build CLI artifact
+        shell: pwsh
+        run: ./scripts/release/build-cli-artifact.ps1 -Version 1.0.0 -Runtime ${{ matrix.runtime }}
+
+      - name: Upload CLI artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: robotstudio-1.0.0-cli-${{ matrix.runtime }}
+          path: |
+            artifacts/release/RobotStudio-1.0.0-cli-${{ matrix.runtime }}.zip
+            artifacts/release/RobotStudio-1.0.0-cli-${{ matrix.runtime }}.zip.sha256
+          if-no-files-found: error

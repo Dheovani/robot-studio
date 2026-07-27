@@ -84,6 +84,18 @@ Run portable tests:
 dotnet test build/RobotStudio.Portable.slnx
 ```
 
+Build a portable CLI release artifact:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.0.0 -Runtime linux-x64
+```
+
+Supported initial CLI release runtimes:
+
+- `win-x64`
+- `linux-x64`
+- `osx-x64`
+
 ## Preview
 
 ![RobotStudio desktop preview](docs/assets/screenshots/robot-studio.gif)

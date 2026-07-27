@@ -81,6 +81,18 @@ Supported optional signing configuration:
 - `ROBOTSTUDIO_SIGNING_CERTIFICATE_THUMBPRINT`: GitHub secret for signing with a certificate already available in the Windows certificate store.
 - `ROBOTSTUDIO_SIGNING_TIMESTAMP_URL`: GitHub variable with a timestamp server URL.
 
+### CLI Release Artifacts
+
+This job runs only for manual workflow dispatches and version tags such as `v1.0.0`.
+
+It builds self-contained CLI ZIP archives for:
+
+- `win-x64`
+- `linux-x64`
+- `osx-x64`
+
+Each archive is uploaded with a matching `.sha256` checksum file.
+
 ## Current Quality Scope
 
 The first CI version checks:
@@ -91,5 +103,6 @@ The first CI version checks:
 - xUnit tests;
 - formatting rules.
 - Windows installer generation for manual or tagged release builds.
+- CLI release artifacts for manual or tagged release builds.
 
 Future quality checks may include stricter analyzers, code coverage, package vulnerability scans, documentation checks, and mandatory signed release enforcement.

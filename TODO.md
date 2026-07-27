@@ -6,8 +6,7 @@ This file tracks future work after the first stable Cartesian simulation release
 
 - [x] Create the `v1.0.0` Git tag when the release is approved.
 - [ ] Acquire a code signing certificate before publishing signed Windows releases.
-- [ ] Add Linux CLI release artifacts after the portable CI remains stable.
-- [ ] Add macOS CLI release artifacts after the portable CI remains stable.
+- [ ] Add ARM64 CLI release artifacts if student machines need them.
 - [ ] Evaluate a future cross-platform desktop UI strategy after the Windows desktop release.
 
 ## 2. Additional Robot Families
