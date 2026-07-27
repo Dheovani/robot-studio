@@ -17,8 +17,45 @@ permissions:
   contents: read
 
 jobs:
+  portable-build-and-test:
+    name: Portable build and test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os:
+          - windows-latest
+          - ubuntu-latest
+          - macos-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          global-json-file: global.json
+
+      - name: Restore portable solution
+        run: dotnet restore build/RobotStudio.Portable.slnx
+
+      - name: Build portable solution
+        run: dotnet build build/RobotStudio.Portable.slnx --configuration Release --no-restore
+
+      - name: Test portable solution
+        run: dotnet test build/RobotStudio.Portable.slnx --configuration Release --no-build --logger "trx;LogFilePrefix=test-results" --results-directory TestResults/${{ matrix.os }}
+
+      - name: Upload portable test results
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: portable-test-results-${{ matrix.os }}
+          path: TestResults/${{ matrix.os }}/**/*.trx
+          if-no-files-found: ignore
+
   build-and-test:
-    name: Build and test
+    name: Windows desktop build and test
     runs-on: windows-latest
 
     steps:
@@ -30,13 +67,13 @@ jobs:
         with:
           global-json-file: global.json
 
-      - name: Restore
+      - name: Restore full solution
         run: dotnet restore RobotStudio.slnx
 
-      - name: Build
+      - name: Build full solution
         run: dotnet build RobotStudio.slnx --configuration Release --no-restore
 
-      - name: Test
+      - name: Test full solution
         run: dotnet test RobotStudio.slnx --configuration Release --no-build --logger "trx;LogFilePrefix=test-results" --results-directory TestResults
 
       - name: Upload test results

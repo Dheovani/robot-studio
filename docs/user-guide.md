@@ -13,12 +13,26 @@ Run from the repository root:
 dotnet build
 ```
 
+The full solution includes the WPF desktop viewer and is intended for Windows.
+
+Build the portable CLI/core solution on Windows, Linux, or macOS:
+
+```bash
+dotnet build build/RobotStudio.Portable.slnx
+```
+
 ## Run Tests
 
 Run from the repository root:
 
 ```bash
 dotnet test
+```
+
+Run only the portable tests on Windows, Linux, or macOS:
+
+```bash
+dotnet test build/RobotStudio.Portable.slnx
 ```
 
 ## Run The CLI Example

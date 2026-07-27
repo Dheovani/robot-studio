@@ -2,7 +2,7 @@
 
 RobotStudio uses GitHub Actions to validate the project on pushes and pull requests targeting `main` or `master`.
 
-The workflow runs on Windows because the solution includes the first WPF desktop viewer.
+The full desktop workflow runs on Windows because the solution includes the first WPF desktop viewer. The portable CLI/core workflow runs on Windows, Linux, and macOS.
 
 ## Workflow
 
@@ -14,7 +14,25 @@ The workflow file is:
 
 ## Jobs
 
-### Build And Test
+### Portable Build And Test
+
+This job runs on:
+
+- `windows-latest`
+- `ubuntu-latest`
+- `macos-latest`
+
+It validates the portable solution:
+
+```bash
+dotnet restore build/RobotStudio.Portable.slnx
+dotnet build build/RobotStudio.Portable.slnx --configuration Release --no-restore
+dotnet test build/RobotStudio.Portable.slnx --configuration Release --no-build
+```
+
+The portable solution file is `build/RobotStudio.Portable.slnx`. It excludes WPF desktop projects and validates the CLI, domain, motion, simulation, scripting, hardware boundary, and non-desktop tests.
+
+### Windows Desktop Build And Test
 
 This job runs:
 
@@ -68,6 +86,7 @@ Supported optional signing configuration:
 The first CI version checks:
 
 - dependency restoration;
+- portable CLI/core build on Windows, Linux, and macOS;
 - Release build;
 - xUnit tests;
 - formatting rules.

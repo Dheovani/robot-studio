@@ -68,6 +68,22 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app starts with a robot selection screen. Only `Cartesian Robot` is available in `1.0.0`; future robot families are listed as planned learning steps.
 
+## Portable CLI And Core
+
+The WPF desktop viewer is Windows-only. The portable solution validates the CLI, domain, motion, simulation, scripting, hardware boundary, and their non-desktop tests on Windows, Linux, and macOS.
+
+Build the portable solution:
+
+```bash
+dotnet build build/RobotStudio.Portable.slnx
+```
+
+Run portable tests:
+
+```bash
+dotnet test build/RobotStudio.Portable.slnx
+```
+
 ## Preview
 
 ![RobotStudio desktop preview](docs/assets/screenshots/robot-studio.gif)
