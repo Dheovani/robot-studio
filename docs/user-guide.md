@@ -95,6 +95,8 @@ The script also generates a SHA256 checksum file next to the installer:
 artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
 ```
 
+For official releases, push a version tag such as `v1.0.0`. GitHub Actions will publish a GitHub Release with the Windows installer, portable CLI ZIP archives, and SHA256 checksum files attached.
+
 Current desktop controls:
 
 - robot cards showing name, family, status badge, complexity badge, description, and capability tags.

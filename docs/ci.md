@@ -93,6 +93,21 @@ It builds self-contained CLI ZIP archives for:
 
 Each archive is uploaded with a matching `.sha256` checksum file.
 
+### GitHub Release
+
+This job runs only for version tags such as `v1.0.0`.
+
+It waits for the Windows installer and CLI artifact jobs, downloads the workflow artifacts, keeps only public release assets, and creates the GitHub Release for the tag.
+
+Published assets include:
+
+- Windows installer `.exe`;
+- Windows installer `.sha256`;
+- CLI ZIP archives for `win-x64`, `linux-x64`, and `osx-x64`;
+- CLI `.sha256` files for each runtime.
+
+The release notes are read from `CHANGELOG.md`.
+
 ## Current Quality Scope
 
 The first CI version checks:
@@ -104,5 +119,6 @@ The first CI version checks:
 - formatting rules.
 - Windows installer generation for manual or tagged release builds.
 - CLI release artifacts for manual or tagged release builds.
+- GitHub Release publication for version tags.
 
 Future quality checks may include stricter analyzers, code coverage, package vulnerability scans, documentation checks, and mandatory signed release enforcement.

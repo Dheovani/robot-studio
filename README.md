@@ -201,6 +201,8 @@ The release script also generates:
 artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
 ```
 
+When a version tag such as `v1.0.0` is pushed to GitHub, CI builds the Windows installer, builds portable CLI ZIP archives for Windows/Linux/macOS, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
+
 ## Project Structure
 
 - `src/RobotStudio.Domain`: pure domain model for robot concepts, commands, state, contracts, domain errors, and the first Cartesian model.
