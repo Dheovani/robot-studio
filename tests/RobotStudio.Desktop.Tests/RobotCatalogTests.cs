@@ -64,16 +64,21 @@ public sealed class RobotCatalogTests
     }
 
     [Fact]
-    public void Templates_ShouldOnlyAllowOpeningAvailableCartesianRobot()
+    public void Templates_ShouldAllowOpeningAvailableImplementedRobots()
     {
         var openableTemplates = RobotCatalog.Templates
             .Where(RobotCatalog.CanOpen)
             .ToArray();
 
-        var template = Assert.Single(openableTemplates);
-        Assert.Equal("Cartesian Robot", template.Name);
-        Assert.Equal(RobotAvailabilityStatus.Available, template.Status);
-        Assert.Equal(RobotViewerKind.CartesianThreeDimensional, template.Viewer.Kind);
+        Assert.Equal(
+            ["Cartesian Robot", "XY Plotter"],
+            openableTemplates.Select(template => template.Name));
+        Assert.All(
+            openableTemplates,
+            template => Assert.Equal(RobotAvailabilityStatus.Available, template.Status));
+        Assert.Equal(
+            [RobotViewerKind.CartesianThreeDimensional, RobotViewerKind.XYPlotterTwoDimensional],
+            openableTemplates.Select(template => template.Viewer.Kind));
     }
 
     [Fact]

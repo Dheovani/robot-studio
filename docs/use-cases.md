@@ -42,7 +42,7 @@ Expected result:
 
 - the desktop app lists available and planned robot templates in didactic complexity order;
 - the Cartesian robot appears as `Available`;
-- the XY plotter appears as `Planned`;
+- the XY plotter appears as `Available`;
 - the differential drive robot appears as `Planned`;
 - the SCARA robot appears as `Planned`;
 - the simple articulated arm appears as `Planned`;
@@ -52,6 +52,21 @@ Expected result:
 - each robot card shows family, status, complexity, description, and capabilities;
 - planned robot entries cannot be opened yet;
 - the selection screen remains a simulator entry point, not a lesson manager.
+
+### Open The XY Plotter
+
+Actor: student.
+
+Goal: inspect the beginner two-axis Cartesian-family model before advancing to mobile or articulated robots.
+
+Current status: implemented as a fixed-plane visual simulation backed by an XY plotter domain profile and motion planner.
+
+Expected result:
+
+- the XY plotter opens from the robot selection screen;
+- the example script moves only through X/Y commands with `Z=0`;
+- attempts to move the plotter away from the drawing plane are rejected;
+- Z jog buttons are disabled in the desktop viewer.
 
 ### Execute A Command Sequence
 

@@ -26,4 +26,36 @@ public static class RobotCommandValidator
                 throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
         }
     }
+
+    public static void Validate(RobotCommand command, XYPlotterProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case MoveToCommand moveToCommand:
+                if (Math.Abs(moveToCommand.TargetPosition.Z) > 0.000_001)
+                {
+                    throw new InvalidRobotCommandException(
+                        "XY Plotter MOVE commands must stay on the drawing plane. " +
+                        $"Invalid Z value: {moveToCommand.TargetPosition.Z:0.###} mm. " +
+                        "Expected value: 0 mm.");
+                }
+
+                profile.ValidatePosition(new XYPlotterPosition(
+                    moveToCommand.TargetPosition.X,
+                    moveToCommand.TargetPosition.Y));
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
 }

@@ -182,7 +182,8 @@
                                Foreground="#F9FAFB"
                                FontSize="24"
                                FontWeight="SemiBold" />
-                    <TextBlock Text="Cartesian robot simulation"
+                    <TextBlock x:Name="ViewerSubtitleText"
+                               Text="Cartesian robot simulation"
                                Foreground="#CBD5E1"
                                FontSize="13" />
                 </StackPanel>
@@ -381,9 +382,9 @@
                                 <Button Margin="0,0,6,6" Content="Y-" ToolTip="Move one step in the negative Y direction." Click="JogNegativeYButton_Click" />
                                 <Button Margin="0,0,6,6" Content="Stop" ToolTip="Stop visual playback without changing the simulated command sequence." Click="StopPlaybackButton_Click" />
                                 <Button Margin="0,0,0,6" Content="Y+" ToolTip="Move one step in the positive Y direction." Click="JogPositiveYButton_Click" />
-                                <Button Margin="0,0,6,0" Content="Z-" ToolTip="Move one step in the negative Z direction." Click="JogNegativeZButton_Click" />
+                                <Button x:Name="JogNegativeZButton" Margin="0,0,6,0" Content="Z-" ToolTip="Move one step in the negative Z direction." Click="JogNegativeZButton_Click" />
                                 <Button Margin="0,0,6,0" Content="Reset" ToolTip="Return playback to the first generated frame." Click="ResetButton_Click" />
-                                <Button Content="Z+" ToolTip="Move one step in the positive Z direction." Click="JogPositiveZButton_Click" />
+                                <Button x:Name="JogPositiveZButton" Content="Z+" ToolTip="Move one step in the positive Z direction." Click="JogPositiveZButton_Click" />
                             </UniformGrid>
 
                             <TextBlock x:Name="ManualControlStatusText"

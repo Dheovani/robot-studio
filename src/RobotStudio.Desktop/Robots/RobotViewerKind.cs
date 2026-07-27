@@ -3,5 +3,6 @@ namespace RobotStudio.Desktop.Robots;
 public enum RobotViewerKind
 {
     None,
-    CartesianThreeDimensional
+    CartesianThreeDimensional,
+    XYPlotterTwoDimensional
 }

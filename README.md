@@ -21,6 +21,7 @@ WAIT 500
 
 - Run the CLI to inspect commands, timeline steps, final state, and final position.
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
+- Open the first XY Plotter viewer as a beginner two-axis model.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
@@ -42,6 +43,7 @@ Implemented:
 - CLI workflow;
 - desktop 3D viewer;
 - robot catalog metadata;
+- first XY Plotter domain, motion, and viewer path;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
 - future boundaries for G-code and hardware.
@@ -51,7 +53,7 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional robot simulations such as articulated arms, drones, SCARA, delta robots, or mobile robots.
+- additional robot simulations such as mobile robots, SCARA, articulated arms, delta robots, or drones.
 
 ## Run The Desktop App
 
@@ -66,7 +68,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. Only `Cartesian Robot` is available in `1.0.0`; future robot families are listed as planned learning steps.
+The desktop app starts with a robot selection screen. `Cartesian Robot` and `XY Plotter` are available in the current development build; future robot families are listed as planned learning steps.
 
 ## Portable CLI And Core
 

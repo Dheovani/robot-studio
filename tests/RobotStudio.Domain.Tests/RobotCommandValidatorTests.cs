@@ -17,7 +17,8 @@ public sealed class RobotCommandValidatorTests
     [Fact]
     public void Validate_WhenProfileIsNull_ShouldThrow()
     {
-        Assert.Throws<ArgumentNullException>(() => RobotCommandValidator.Validate(new HomeCommand(), null!));
+        Assert.Throws<ArgumentNullException>(() =>
+            RobotCommandValidator.Validate(new HomeCommand(), (CartesianRobotProfile)null!));
     }
 
     [Fact]
@@ -61,9 +62,37 @@ public sealed class RobotCommandValidatorTests
         Assert.Throws<PositionOutOfRangeException>(() => RobotCommandValidator.Validate(command, profile));
     }
 
+    [Fact]
+    public void Validate_WhenXYPlotterMoveTargetIsInsideLimitsAndZIsZero_ShouldNotThrow()
+    {
+        var profile = CreateXYPlotterProfile();
+        var command = new MoveToCommand(new CartesianPosition(X: 120, Y: 80, Z: 0));
+
+        var exception = Record.Exception(() => RobotCommandValidator.Validate(command, profile));
+
+        Assert.Null(exception);
+    }
+
+    [Fact]
+    public void Validate_WhenXYPlotterMoveUsesZ_ShouldThrow()
+    {
+        var profile = CreateXYPlotterProfile();
+        var command = new MoveToCommand(new CartesianPosition(X: 120, Y: 80, Z: 10));
+
+        var exception = Assert.Throws<InvalidRobotCommandException>(() =>
+            RobotCommandValidator.Validate(command, profile));
+
+        Assert.Contains("drawing plane", exception.Message, StringComparison.Ordinal);
+    }
+
     private static CartesianRobotProfile CreateProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));
+
+    private static XYPlotterProfile CreateXYPlotterProfile() =>
+        XYPlotterProfile.Create(
+            new Axis(AxisId.X, 0, 300, 120, 240),
+            new Axis(AxisId.Y, 0, 200, 100, 200));
 }

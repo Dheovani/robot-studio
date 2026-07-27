@@ -55,17 +55,28 @@ public partial class MainWindow : Window
     private static readonly SolidColorBrush RobotCardAvailableHighlightBorderBrush =
         new(Color.FromRgb(96, 165, 250));
 
-    private const string ExampleScript =
+    private const string CartesianExampleScript =
         """
         HOME
         MOVE X=120 Y=80 Z=40 SPEED=90
         WAIT 500
         """;
 
+    private const string XYPlotterExampleScript =
+        """
+        HOME
+        MOVE X=160 Y=90 Z=0 SPEED=90
+        MOVE X=40 Y=140 Z=0 SPEED=70
+        WAIT 500
+        """;
+
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
-    private readonly CartesianRobotProfile profile = CreateCartesianProfile();
     private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
+    private CartesianRobotProfile profile = CreateCartesianProfile();
+    private XYPlotterProfile? xyPlotterProfile;
+    private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
+    private RobotViewerKind activeViewerKind = RobotViewerKind.CartesianThreeDimensional;
     private CartesianPlaybackSnapshot? snapshot;
     private int currentFrameIndex;
     private bool isPlaying;
@@ -123,7 +134,7 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        ScriptEditorTextBox.Text = ExampleScript;
+        ScriptEditorTextBox.Text = CartesianExampleScript;
         RefreshScriptEditorGutter();
         BuildRobotSelectionCards();
     }
@@ -656,9 +667,8 @@ public partial class MainWindow : Window
 
     private CartesianPlaybackSnapshot CreateSnapshot(string script)
     {
-        var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
         var commands = scriptDialect.Parse(script);
-        ValidateCommandSequence(commands, profile);
+        ValidateCommandSequence(commands);
 
         var context = SimulationContext.Create(profile, initialPosition);
         var result = new RobotSimulator().Execute(context, commands);
@@ -893,16 +903,67 @@ public partial class MainWindow : Window
 
     private void OpenRobot(RobotTemplate template)
     {
-        if (!RobotCatalog.CanOpen(template) ||
-            template.Viewer.Kind != RobotViewerKind.CartesianThreeDimensional)
+        if (!RobotCatalog.CanOpen(template))
         {
             return;
         }
 
+        ConfigureActiveViewer(template.Viewer.Kind);
         RobotSelectionView.Visibility = Visibility.Collapsed;
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
+    }
+
+    private void ConfigureActiveViewer(RobotViewerKind viewerKind)
+    {
+        activeViewerKind = viewerKind;
+        snapshot = null;
+        currentFrameIndex = 0;
+        CommandHistoryListBox.Items.Clear();
+
+        switch (viewerKind)
+        {
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                ConfigureXYPlotterViewer();
+                break;
+
+            case RobotViewerKind.CartesianThreeDimensional:
+                ConfigureCartesianViewer();
+                break;
+
+            default:
+                ConfigureCartesianViewer();
+                break;
+        }
+
+        RefreshScriptEditorGutter();
+    }
+
+    private void ConfigureCartesianViewer()
+    {
+        profile = CreateCartesianProfile();
+        xyPlotterProfile = null;
+        initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
+        ViewerSubtitleText.Text = "Cartesian robot simulation";
+        ScriptEditorTextBox.Text = CartesianExampleScript;
+        CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=20 SPEED=80";
+        JogNegativeZButton.IsEnabled = true;
+        JogPositiveZButton.IsEnabled = true;
+        ManualControlStatusText.Text = "Manual actions append DSL commands and resimulate the robot.";
+    }
+
+    private void ConfigureXYPlotterViewer()
+    {
+        xyPlotterProfile = CreateXYPlotterProfile();
+        profile = xyPlotterProfile.ToCartesianProfile();
+        initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 0);
+        ViewerSubtitleText.Text = "XY plotter simulation";
+        ScriptEditorTextBox.Text = XYPlotterExampleScript;
+        CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=0 SPEED=80";
+        JogNegativeZButton.IsEnabled = false;
+        JogPositiveZButton.IsEnabled = false;
+        ManualControlStatusText.Text = "XY Plotter uses X/Y jog commands. Z remains fixed at 0 mm.";
     }
 
     private void EnsureCartesianSnapshot()
@@ -951,6 +1012,13 @@ public partial class MainWindow : Window
 
     private void Jog(AxisId axis, int direction)
     {
+        if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional &&
+            axis == AxisId.Z)
+        {
+            SetManualControlStatus("XY Plotter does not expose a Z jog axis.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
         if (!TryReadManualInputs(out var stepMillimeters, out var speedMillimetersPerSecond))
         {
             return;
@@ -2084,10 +2152,28 @@ public partial class MainWindow : Window
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));
 
-    private static void ValidateCommandSequence(
-        RobotCommandSequence commands,
-        CartesianRobotProfile profile)
+    private static XYPlotterProfile CreateXYPlotterProfile() =>
+        XYPlotterProfile.Create(
+            new Axis(AxisId.X, 0, 300, 120, 240),
+            new Axis(AxisId.Y, 0, 200, 100, 200));
+
+    private void ValidateCommandSequence(RobotCommandSequence commands)
     {
+        if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
+        {
+            if (xyPlotterProfile is null)
+            {
+                throw new InvalidOperationException("XY Plotter profile is not configured.");
+            }
+
+            foreach (var command in commands.Commands)
+            {
+                RobotCommandValidator.Validate(command, xyPlotterProfile);
+            }
+
+            return;
+        }
+
         foreach (var command in commands.Commands)
         {
             RobotCommandValidator.Validate(command, profile);

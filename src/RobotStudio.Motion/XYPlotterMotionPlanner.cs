@@ -1,0 +1,83 @@
+using RobotStudio.Domain.Cartesian;
+using RobotStudio.Domain.Exceptions;
+
+namespace RobotStudio.Motion;
+
+public sealed class XYPlotterMotionPlanner : IMotionPlanner<XYPlotterPosition, XYPlotterProfile>
+{
+    private const double MovementToleranceMillimeters = 0.000_001;
+
+    public MotionPlan<XYPlotterPosition> PlanMove(
+        XYPlotterPosition start,
+        XYPlotterPosition end,
+        XYPlotterProfile robotProfile,
+        double? requestedVelocityMillimetersPerSecond = null)
+    {
+        ArgumentNullException.ThrowIfNull(robotProfile);
+
+        if (requestedVelocityMillimetersPerSecond <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedVelocityMillimetersPerSecond),
+                "Requested movement velocity must be greater than zero.");
+        }
+
+        robotProfile.ValidatePosition(start);
+        robotProfile.ValidatePosition(end);
+
+        var distanceMillimeters = start.DistanceTo(end);
+        var involvedAxes = GetInvolvedAxes(start, end, robotProfile);
+
+        if (distanceMillimeters <= MovementToleranceMillimeters)
+        {
+            return new MotionPlan<XYPlotterPosition>(
+                start,
+                end,
+                DistanceMillimeters: 0,
+                Segments: Array.Empty<MotionSegment<XYPlotterPosition>>());
+        }
+
+        if (involvedAxes.Length == 0)
+        {
+            throw new ImpossibleMovementException(
+                "The movement distance is greater than zero, but no plotter axis has a measurable displacement.");
+        }
+
+        var velocityMillimetersPerSecond = GetEffectiveVelocity(
+            involvedAxes,
+            requestedVelocityMillimetersPerSecond);
+        var duration = TimeSpan.FromSeconds(distanceMillimeters / velocityMillimetersPerSecond);
+        var segment = new MotionSegment<XYPlotterPosition>(
+            start,
+            end,
+            involvedAxes.Select(axis => new MotionComponent(axis.Id.ToString())).ToArray(),
+            duration,
+            velocityMillimetersPerSecond);
+
+        return new MotionPlan<XYPlotterPosition>(start, end, distanceMillimeters, new[] { segment });
+    }
+
+    private static Axis[] GetInvolvedAxes(
+        XYPlotterPosition start,
+        XYPlotterPosition end,
+        XYPlotterProfile robotProfile) =>
+        robotProfile.Axes
+            .Where(axis => Math.Abs(end.GetCoordinate(axis.Id) - start.GetCoordinate(axis.Id)) > MovementToleranceMillimeters)
+            .ToArray();
+
+    private static double GetEffectiveVelocity(
+        IReadOnlyCollection<Axis> involvedAxes,
+        double? requestedVelocityMillimetersPerSecond)
+    {
+        if (involvedAxes.Count == 0)
+        {
+            return 0;
+        }
+
+        var axisLimitedVelocity = involvedAxes.Min(axis => axis.MaximumVelocityMillimetersPerSecond);
+
+        return requestedVelocityMillimetersPerSecond.HasValue
+            ? Math.Min(axisLimitedVelocity, requestedVelocityMillimetersPerSecond.Value)
+            : axisLimitedVelocity;
+    }
+}

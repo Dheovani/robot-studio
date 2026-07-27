@@ -51,12 +51,12 @@ public static class RobotCatalog
                 "Cartesian 3D Viewer")),
 
         new(
-            Id: "xy-plotter-planned",
+            Id: "xy-plotter",
             Name: "XY Plotter",
             Family: Cartesian,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Beginner,
-            Description: "Planned two-axis drawing robot for teaching planar movement, path drawing, and command sequencing before full 3D motion.",
+            Description: "Two-axis drawing robot for teaching planar movement, path drawing, and command sequencing before full 3D motion.",
             Capabilities:
             [
                 RobotCapability.Simulation,
@@ -67,7 +67,9 @@ public static class RobotCatalog
                 RobotCapability.PathDrawing,
                 RobotCapability.PathPlanning
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.XYPlotterTwoDimensional,
+                "XY Plotter Viewer")),
 
         new(
             Id: "differential-drive-planned",

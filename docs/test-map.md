@@ -32,6 +32,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Command validator accepts `HOME`.
 - [x] Command validator accepts `WAIT`.
 - [x] Command validator validates `MOVE` target position.
+- [x] XY plotter profile validates X/Y positions.
+- [x] XY plotter profile rejects Z axis access.
+- [x] Command validator rejects XY plotter movement away from the `Z=0` drawing plane.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -61,6 +64,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Motion plan exposes total distance.
 - [x] Motion segment exposes involved axes.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
+- [x] XY plotter planner creates valid X/Y motion plans.
+- [x] XY plotter planner rejects target positions outside X/Y limits.
+- [x] XY plotter planner handles stationary movement predictably.
 
 ### Required Next Coverage
 
@@ -182,7 +188,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Robot templates expose the expected complexity levels.
 - [x] Every robot template has a family.
 - [x] Every robot template has at least one capability.
-- [x] The Cartesian robot is the only openable robot template.
+- [x] Implemented robot templates are openable.
 - [x] Planned robot templates are not openable.
 - [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
 - [x] Script editor metadata classifies blank and unknown lines predictably.

@@ -153,7 +153,9 @@ The current didactic order is:
 - Drone.
 - 6-DOF Industrial Arm.
 
-Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot is the only available template for now; all other templates are planned metadata.
+Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot and XY plotter are available now; all other templates remain planned metadata.
+
+The XY plotter is modeled as a two-axis robot with its own `XYPlotterPosition`, `XYPlotterProfile`, and `XYPlotterMotionPlanner`. The desktop viewer maps it onto a fixed `Z=0` drawing plane so the current visual playback pipeline can be reused without pretending the domain model has a real Z axis.
 
 ### Hardware
 
