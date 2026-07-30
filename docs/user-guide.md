@@ -83,6 +83,8 @@ Opening the SCARA robot renders a 3D articulated robot viewer with reachable wor
 
 Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes an ARM DSL editor for `HOME`, `ARM`, and `WAIT` commands.
 
+The SCARA and Simple Articulated Arm viewers include a `Load Example` button that restores the default local teaching script for that robot. Their side panels also explain the current joint-space movement in terms of joints, forward kinematics, and tool pose.
+
 ## Build The Windows Installer
 
 Run from the repository root on Windows:
@@ -145,6 +147,8 @@ Current desktop controls:
 - mouse wheel inside the 3D viewport for zoom.
 - isometric, front, side, top, and reset camera buttons.
 - state panel showing current state, position, command, source line, simulated time, and frame number.
+- `Load Example` controls for available articulated viewers.
+- movement explanation text for SCARA and Simple Articulated Arm joint-space commands.
 
 Print the built-in example script:
 

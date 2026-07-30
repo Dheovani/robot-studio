@@ -140,6 +140,10 @@ The desktop viewer must consume simulation output, especially scene frames and v
 
 Visual coordinate and camera decisions must remain outside the domain model.
 
+Reusable viewport infrastructure belongs in `RobotStudio.Desktop.Rendering`. Orbit camera construction, angular normalization, and basic mesh generation are desktop rendering concerns, not domain or simulation rules. Robot-specific viewers should decide which conceptual parts to show, while shared rendering helpers should handle repeated WPF `Viewport3D` mechanics such as cameras, boxes, oriented links, planar grids, reachable workspace rings, and simple volumetric markers.
+
+Local example metadata belongs in `RobotStudio.Desktop.Examples`. Examples are product/UI teaching assets that provide starter scripts for available viewers. They should not be hard-coded inside individual event handlers, and they should remain separate from parser or simulator rules.
+
 The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.
 
 The current didactic order is:

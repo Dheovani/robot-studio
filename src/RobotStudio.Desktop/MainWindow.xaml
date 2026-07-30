@@ -1075,7 +1075,9 @@
                               ShowsPreview="True" />
 
                 <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
-                    <StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="SCARA State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
 
                         <Grid Margin="0,18,0,18">
@@ -1129,11 +1131,26 @@
                             <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateScaraScriptButton_Click" />
                         </Grid>
 
+                        <Button Margin="0,0,0,10"
+                                Content="Load Example"
+                                Click="LoadScaraExampleButton_Click" />
+
                         <TextBlock x:Name="ScaraScriptStatusText"
                                    Foreground="#94A3B8"
                                    TextWrapping="Wrap"
                                    Text="Edit SCARA joint commands and simulate the articulated robot." />
+
+                        <TextBlock Text="Movement Explanation"
+                                   Margin="0,18,0,8"
+                                   Foreground="#F9FAFB"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock x:Name="ScaraMovementExplanationText"
+                                   Foreground="#CBD5E1"
+                                   LineHeight="18"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </Grid>
 
@@ -1224,7 +1241,9 @@
                               ShowsPreview="True" />
 
                 <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
-                    <StackPanel>
+                    <ScrollViewer VerticalScrollBarVisibility="Auto"
+                                  HorizontalScrollBarVisibility="Disabled">
+                    <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Arm State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
 
                         <Grid Margin="0,18,0,18">
@@ -1278,11 +1297,26 @@
                             <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateSimpleArmScriptButton_Click" />
                         </Grid>
 
+                        <Button Margin="0,0,0,10"
+                                Content="Load Example"
+                                Click="LoadSimpleArmExampleButton_Click" />
+
                         <TextBlock x:Name="SimpleArmScriptStatusText"
                                    Foreground="#94A3B8"
                                    TextWrapping="Wrap"
                                    Text="Edit ARM joint commands and simulate the articulated arm." />
+
+                        <TextBlock Text="Movement Explanation"
+                                   Margin="0,18,0,8"
+                                   Foreground="#F9FAFB"
+                                   FontSize="16"
+                                   FontWeight="SemiBold" />
+                        <TextBlock x:Name="SimpleArmMovementExplanationText"
+                                   Foreground="#CBD5E1"
+                                   LineHeight="18"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
+                    </ScrollViewer>
                 </Border>
             </Grid>
 

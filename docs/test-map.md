@@ -253,6 +253,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every robot template has at least one capability.
 - [x] Implemented robot templates are openable.
 - [x] Planned robot templates are not openable.
+- [x] Local desktop examples cover every openable robot viewer.
+- [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
 - [x] Script editor metadata classifies blank and unknown lines predictably.
 
@@ -353,6 +355,9 @@ Expected current behavior:
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - renders the SCARA robot as a 3D viewport with volumetric links and joints;
 - renders the Simple Articulated Arm as a 3D viewport with volumetric links and joints;
+- loads the default local SCARA example from the SCARA viewer;
+- loads the default local Simple Articulated Arm example from the arm viewer;
+- explains current SCARA and Simple Articulated Arm joint-space movement from the active frame;
 - provides play and reset controls;
 - provides a timeline slider;
 - provides camera orbit, zoom, reset, and predefined view controls;

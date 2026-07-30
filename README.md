@@ -28,6 +28,7 @@ WAIT 500
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
+- Reload local teaching examples from articulated robot viewers.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
@@ -53,6 +54,8 @@ Implemented:
 - Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
+- local desktop teaching examples for available robot viewers;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
 - future boundaries for G-code and hardware.

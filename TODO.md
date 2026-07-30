@@ -61,7 +61,8 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add a more polished application logo and brand system if needed.
 - [ ] Add a view cube or compact camera orientation selector.
 - [ ] Add optional beginner, teacher, and debug display modes.
-- [ ] Add local example gallery entries for common scripts.
+- [ ] Expand the local example catalog into a multi-example gallery for common scripts.
+- [ ] Extract a common desktop viewer shell for repeated state panels, script panels, timeline controls, and playback controls.
 - [ ] Add import/export for desktop scripts.
 - [ ] Add clearer validation summaries for invalid commands.
 - [ ] Add keyboard shortcuts for playback and camera controls.
