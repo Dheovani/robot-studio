@@ -16,12 +16,14 @@ The project is intentionally educational. It is designed to help students unders
 ```txt
 HOME
 MOVE X=120 Y=80 Z=40 SPEED=90
+DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 WAIT 500
 ```
 
 - Run the CLI to inspect commands, timeline steps, final state, and final position.
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
 - Open the first XY Plotter viewer as a beginner two-axis model.
+- Open the first Differential Drive viewer for a beginner mobile-robot simulation.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
@@ -44,6 +46,7 @@ Implemented:
 - desktop 3D viewer;
 - robot catalog metadata;
 - first XY Plotter domain, motion, and viewer path;
+- Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
 - future boundaries for G-code and hardware.
@@ -53,7 +56,7 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional robot simulations such as mobile robots, SCARA, articulated arms, delta robots, or drones.
+- additional robot simulations such as SCARA, articulated arms, delta robots, or drones.
 
 ## Run The Desktop App
 
@@ -68,7 +71,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot` and `XY Plotter` are available in the current development build; future robot families are listed as planned learning steps.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, and `Differential Drive Robot` are available in the current development build.
 
 ## Portable CLI And Core
 

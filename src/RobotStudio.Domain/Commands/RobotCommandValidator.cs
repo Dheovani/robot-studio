@@ -1,5 +1,6 @@
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
+using RobotStudio.Domain.Mobile;
 
 namespace RobotStudio.Domain.Commands;
 
@@ -52,6 +53,28 @@ public static class RobotCommandValidator
                 profile.ValidatePosition(new XYPlotterPosition(
                     moveToCommand.TargetPosition.X,
                     moveToCommand.TargetPosition.Y));
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
+
+    public static void Validate(RobotCommand command, DifferentialDriveProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case DifferentialDriveMoveCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetPose);
                 return;
 
             default:

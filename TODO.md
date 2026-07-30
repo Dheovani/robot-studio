@@ -12,7 +12,7 @@ This file tracks future work after the first stable Cartesian simulation release
 ## 2. Additional Robot Families
 
 - [x] Implement the XY Plotter as the next Cartesian-family teaching model.
-- [ ] Implement the Differential Drive Robot as the first mobile robot model.
+- [X] Implement the Differential Drive Robot as the first mobile robot model.
 - [ ] Implement the SCARA Robot as the first articulated planar robot model.
 - [ ] Implement the Simple Articulated Arm as the first joint-based arm model.
 - [ ] Implement the Delta Robot as the first parallel robot model.

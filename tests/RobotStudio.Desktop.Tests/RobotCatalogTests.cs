@@ -71,24 +71,28 @@ public sealed class RobotCatalogTests
             .ToArray();
 
         Assert.Equal(
-            ["Cartesian Robot", "XY Plotter"],
+            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot"],
             openableTemplates.Select(template => template.Name));
         Assert.All(
             openableTemplates,
             template => Assert.Equal(RobotAvailabilityStatus.Available, template.Status));
         Assert.Equal(
-            [RobotViewerKind.CartesianThreeDimensional, RobotViewerKind.XYPlotterTwoDimensional],
+            [
+                RobotViewerKind.CartesianThreeDimensional,
+                RobotViewerKind.XYPlotterTwoDimensional,
+                RobotViewerKind.DifferentialDriveTwoDimensional
+            ],
             openableTemplates.Select(template => template.Viewer.Kind));
     }
 
     [Fact]
     public void Templates_WhenPlanned_ShouldNotBeOpenable()
     {
-        var plannedTemplates = RobotCatalog.Templates
-            .Where(template => template.Status == RobotAvailabilityStatus.Planned);
+        var unavailableTemplates = RobotCatalog.Templates
+            .Where(template => template.Status != RobotAvailabilityStatus.Available);
 
         Assert.All(
-            plannedTemplates,
+            unavailableTemplates,
             template => Assert.False(RobotCatalog.CanOpen(template)));
     }
 }

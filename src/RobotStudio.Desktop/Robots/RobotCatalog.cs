@@ -72,12 +72,12 @@ public static class RobotCatalog
                 "XY Plotter Viewer")),
 
         new(
-            Id: "differential-drive-planned",
+            Id: "differential-drive",
             Name: "Differential Drive Robot",
             Family: Mobile,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Intermediate,
-            Description: "Planned mobile robot for teaching wheel-based movement, odometry, turning behavior, and navigation-oriented simulation.",
+            Description: "Mobile robot model for teaching wheel-based movement, heading, turning behavior, and navigation-oriented simulation.",
             Capabilities:
             [
                 RobotCapability.Simulation,
@@ -88,7 +88,9 @@ public static class RobotCatalog
                 RobotCapability.PathPlanning,
                 RobotCapability.Odometry
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.DifferentialDriveTwoDimensional,
+                "Differential Drive 2D Viewer")),
 
         new(
             Id: "scara-planned",

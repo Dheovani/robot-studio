@@ -46,6 +46,35 @@ public sealed class RobotScriptParserTests
     }
 
     [Fact]
+    public void Parse_WhenDriveIsValid_ShouldReturnDifferentialDriveMoveCommand()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DRIVE X=10 Y=20 HEADING=90 LIN=100 ANG=45");
+
+        var drive = Assert.IsType<DifferentialDriveMoveCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(10, drive.TargetPose.X);
+        Assert.Equal(20, drive.TargetPose.Y);
+        Assert.Equal(90, drive.TargetPose.HeadingDegrees);
+        Assert.Equal(100, drive.RequestedLinearVelocityMillimetersPerSecond);
+        Assert.Equal(45, drive.RequestedAngularVelocityDegreesPerSecond);
+        Assert.Equal(1, drive.Source?.LineNumber);
+        Assert.Equal("DRIVE X=10 Y=20 HEADING=90 LIN=100 ANG=45", drive.Source?.Text);
+    }
+
+    [Fact]
+    public void Parse_WhenDriveHasNoVelocities_ShouldReturnDriveCommandWithoutRequestedVelocities()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DRIVE X=10 Y=20 HEADING=90");
+
+        var drive = Assert.IsType<DifferentialDriveMoveCommand>(Assert.Single(sequence.Commands));
+        Assert.Null(drive.RequestedLinearVelocityMillimetersPerSecond);
+        Assert.Null(drive.RequestedAngularVelocityDegreesPerSecond);
+    }
+
+    [Fact]
     public void Parse_WhenCommandIsUnknown_ShouldThrowWithLineNumber()
     {
         var parser = new RobotScriptParser();
@@ -65,6 +94,17 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("MOVE requires Z", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDriveMissesHeading_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() => parser.Parse("DRIVE X=10 Y=20"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("DRIVE requires HEADING", exception.Message);
     }
 
     [Fact]
@@ -119,6 +159,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("Unknown MOVE argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDriveHasUnknownArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("DRIVE X=10 Y=20 HEADING=90 Z=0"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Unknown DRIVE argument", exception.Message);
     }
 
     [Fact]

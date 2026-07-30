@@ -12,6 +12,7 @@ using RobotStudio.Desktop.Scripting;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Domain.Mobile;
 using RobotStudio.Scripting;
 using RobotStudio.Simulation;
 
@@ -70,6 +71,14 @@ public partial class MainWindow : Window
         WAIT 500
         """;
 
+    private const string DifferentialDriveExampleScript =
+        """
+        HOME
+        DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
+        DRIVE X=300 Y=220 HEADING=135 LIN=100 ANG=80
+        WAIT 500
+        """;
+
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
@@ -78,7 +87,9 @@ public partial class MainWindow : Window
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
     private RobotViewerKind activeViewerKind = RobotViewerKind.CartesianThreeDimensional;
     private CartesianPlaybackSnapshot? snapshot;
+    private DifferentialDrivePlaybackSnapshot? differentialDriveSnapshot;
     private int currentFrameIndex;
+    private int differentialDriveFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -145,6 +156,7 @@ public partial class MainWindow : Window
     {
         isPlaying = !isPlaying;
         PlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        DifferentialDrivePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -171,6 +183,62 @@ public partial class MainWindow : Window
         RenderFrame(index: 0);
     }
 
+    private void DifferentialDriveResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (differentialDriveSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderDifferentialDriveFrame(index: 0);
+    }
+
+    private void ValidateDifferentialDriveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateDifferentialDriveSnapshotFromScript(
+            DifferentialDriveScriptTextBox.Text,
+            out _,
+            out var message))
+        {
+            SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetDifferentialDriveScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateDifferentialDriveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateDifferentialDriveSnapshotFromScript(
+            DifferentialDriveScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message))
+        {
+            SetDifferentialDriveScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetDifferentialDriveScriptStatus("Script did not produce a playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        differentialDriveSnapshot = nextSnapshot;
+        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimelineSlider.TickFrequency = 1;
+        RenderDifferentialDriveFrame(index: 0);
+        SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
     private void TimelineSlider_ValueChanged(
         object sender,
         RoutedPropertyChangedEventArgs<double> e)
@@ -187,6 +255,23 @@ public partial class MainWindow : Window
         object? sender,
         EventArgs e)
     {
+        if (activeViewerKind == RobotViewerKind.DifferentialDriveTwoDimensional)
+        {
+            if (differentialDriveSnapshot is null)
+            {
+                return;
+            }
+
+            var nextDifferentialDriveFrame = differentialDriveFrameIndex + 1;
+            if (nextDifferentialDriveFrame >= differentialDriveSnapshot.FrameCount)
+            {
+                nextDifferentialDriveFrame = 0;
+            }
+
+            RenderDifferentialDriveFrame(nextDifferentialDriveFrame);
+            return;
+        }
+
         if (snapshot is null)
         {
             return;
@@ -315,6 +400,7 @@ public partial class MainWindow : Window
     {
         StopPlayback();
         CartesianViewerView.Visibility = Visibility.Collapsed;
+        DifferentialDriveViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -488,6 +574,46 @@ public partial class MainWindow : Window
         }
 
         UpdateDistanceChart();
+    }
+
+    private void DifferentialDriveCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || differentialDriveSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDifferentialDriveFrame(differentialDriveFrameIndex);
+    }
+
+    private void DifferentialDriveTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || differentialDriveSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDifferentialDriveFrame((int)Math.Round(e.NewValue));
+    }
+
+    private void DifferentialDrivePreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDifferentialDriveFrame(differentialDriveFrameIndex - 1);
+    }
+
+    private void DifferentialDriveNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDifferentialDriveFrame(differentialDriveFrameIndex + 1);
     }
 
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -677,6 +803,21 @@ public partial class MainWindow : Window
             .Build(profile, result, TimeSpan.FromMilliseconds(100));
     }
 
+    private DifferentialDrivePlaybackSnapshot CreateDifferentialDriveSnapshot(string script)
+    {
+        var profile = CreateDifferentialDriveProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateDifferentialDriveCommandSequence(commands, profile);
+
+        var context = DifferentialDriveSimulationContext.Create(
+            profile,
+            new DifferentialDrivePose(X: 60, Y: 50, HeadingDegrees: 0));
+        var result = new DifferentialDriveSimulator().Execute(context, commands);
+
+        return new DifferentialDrivePlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
     private void BuildRobotSelectionCards()
     {
         RobotCardsPanel.Children.Clear();
@@ -789,7 +930,7 @@ public partial class MainWindow : Window
             Margin = new Thickness(0, 12, 0, 0),
             Content = canOpen
                 ? "Open Robot"
-                : "Planned",
+                : template.Status.ToString(),
             IsEnabled = canOpen,
             Tag = template
         };
@@ -910,6 +1051,15 @@ public partial class MainWindow : Window
 
         ConfigureActiveViewer(template.Viewer.Kind);
         RobotSelectionView.Visibility = Visibility.Collapsed;
+
+        if (template.Viewer.Kind == RobotViewerKind.DifferentialDriveTwoDimensional)
+        {
+            DifferentialDriveViewerView.Visibility = Visibility.Visible;
+            EnsureDifferentialDriveSnapshot();
+            RenderDifferentialDriveFrame(index: 0);
+            return;
+        }
+
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
@@ -919,11 +1069,17 @@ public partial class MainWindow : Window
     {
         activeViewerKind = viewerKind;
         snapshot = null;
+        differentialDriveSnapshot = null;
         currentFrameIndex = 0;
+        differentialDriveFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
         {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                ConfigureDifferentialDriveViewer();
+                break;
+
             case RobotViewerKind.XYPlotterTwoDimensional:
                 ConfigureXYPlotterViewer();
                 break;
@@ -966,6 +1122,14 @@ public partial class MainWindow : Window
         ManualControlStatusText.Text = "XY Plotter uses X/Y jog commands. Z remains fixed at 0 mm.";
     }
 
+    private void ConfigureDifferentialDriveViewer()
+    {
+        DifferentialDriveScriptTextBox.Text = DifferentialDriveExampleScript;
+        SetDifferentialDriveScriptStatus(
+            "Edit DRIVE commands and simulate the mobile robot.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private void EnsureCartesianSnapshot()
     {
         if (snapshot is not null)
@@ -975,6 +1139,18 @@ public partial class MainWindow : Window
 
         snapshot = CreateSnapshot(ScriptEditorTextBox.Text);
         InitializeTimelineForSnapshot();
+    }
+
+    private void EnsureDifferentialDriveSnapshot()
+    {
+        if (differentialDriveSnapshot is not null)
+        {
+            return;
+        }
+
+        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(DifferentialDriveScriptTextBox.Text);
+        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimelineSlider.TickFrequency = 1;
     }
 
     private void InitializeTimelineForSnapshot()
@@ -1002,6 +1178,7 @@ public partial class MainWindow : Window
         playbackTimer.Stop();
         isPlaying = false;
         PlayPauseButton.Content = "Play";
+        DifferentialDrivePlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -2146,6 +2323,206 @@ public partial class MainWindow : Window
         return 1;
     }
 
+    private void RenderDifferentialDriveFrame(int index)
+    {
+        if (differentialDriveSnapshot is null)
+        {
+            return;
+        }
+
+        differentialDriveFrameIndex = Math.Clamp(index, 0, differentialDriveSnapshot.FrameCount - 1);
+        DifferentialDriveTimelineSlider.Value = differentialDriveFrameIndex;
+
+        var frame = differentialDriveSnapshot.Frames[differentialDriveFrameIndex];
+        DifferentialDriveCanvas.Children.Clear();
+
+        DrawDifferentialDriveWorkspace(differentialDriveSnapshot.Profile);
+        DrawDifferentialDrivePath(differentialDriveSnapshot);
+        DrawDifferentialDriveRobot(frame.Pose);
+
+        DifferentialDriveStateText.Text = frame.State.ToString();
+        DifferentialDrivePoseText.Text =
+            $"X={frame.Pose.X:0.###}, Y={frame.Pose.Y:0.###}, H={frame.Pose.HeadingDegrees:0.###} deg";
+        DifferentialDriveCommandText.Text = frame.CommandName ?? "simulation";
+        DifferentialDriveTimeText.Text =
+            $"{frame.Time.TotalSeconds:0.###} / {differentialDriveSnapshot.TotalDuration.TotalSeconds:0.###} s";
+        DifferentialDriveFramesText.Text = $"{differentialDriveFrameIndex + 1} / {differentialDriveSnapshot.FrameCount}";
+        DifferentialDriveStatusText.Text =
+            $"Frame {differentialDriveFrameIndex + 1}/{differentialDriveSnapshot.FrameCount} | " +
+            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
+    }
+
+    private void DrawDifferentialDriveWorkspace(DifferentialDriveProfile profile)
+    {
+        var width = DifferentialDriveCanvas.ActualWidth;
+        var height = DifferentialDriveCanvas.ActualHeight;
+        if (width <= 0 || height <= 0)
+        {
+            return;
+        }
+
+        var topLeft = MapDifferentialDrivePoint(profile.MinimumXMillimeters, profile.MaximumYMillimeters, profile);
+        var bottomRight = MapDifferentialDrivePoint(profile.MaximumXMillimeters, profile.MinimumYMillimeters, profile);
+        var borderBrush = new SolidColorBrush(Color.FromRgb(71, 85, 105));
+        var gridBrush = new SolidColorBrush(Color.FromRgb(30, 41, 59));
+
+        var workspaceRectangle = new Rectangle
+        {
+            Width = bottomRight.X - topLeft.X,
+            Height = bottomRight.Y - topLeft.Y,
+            Stroke = borderBrush,
+            StrokeThickness = 2,
+            Fill = new SolidColorBrush(Color.FromArgb(20, 59, 130, 246))
+        };
+        DifferentialDriveCanvas.Children.Add(workspaceRectangle);
+        Canvas.SetLeft(workspaceRectangle, topLeft.X);
+        Canvas.SetTop(workspaceRectangle, topLeft.Y);
+
+        for (var x = profile.MinimumXMillimeters; x <= profile.MaximumXMillimeters; x += 50)
+        {
+            var start = MapDifferentialDrivePoint(x, profile.MinimumYMillimeters, profile);
+            var end = MapDifferentialDrivePoint(x, profile.MaximumYMillimeters, profile);
+            DifferentialDriveCanvas.Children.Add(new Line
+            {
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+
+        for (var y = profile.MinimumYMillimeters; y <= profile.MaximumYMillimeters; y += 50)
+        {
+            var start = MapDifferentialDrivePoint(profile.MinimumXMillimeters, y, profile);
+            var end = MapDifferentialDrivePoint(profile.MaximumXMillimeters, y, profile);
+            DifferentialDriveCanvas.Children.Add(new Line
+            {
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+    }
+
+    private void DrawDifferentialDrivePath(DifferentialDrivePlaybackSnapshot playbackSnapshot)
+    {
+        if (playbackSnapshot.Frames.Count < 2)
+        {
+            return;
+        }
+
+        var pathBrush = new SolidColorBrush(Color.FromRgb(45, 212, 191));
+        for (var index = 1; index <= differentialDriveFrameIndex; index++)
+        {
+            var previous = playbackSnapshot.Frames[index - 1].Pose;
+            var current = playbackSnapshot.Frames[index].Pose;
+            var start = MapDifferentialDrivePoint(previous.X, previous.Y, playbackSnapshot.Profile);
+            var end = MapDifferentialDrivePoint(current.X, current.Y, playbackSnapshot.Profile);
+
+            DifferentialDriveCanvas.Children.Add(new Line
+            {
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
+                Stroke = pathBrush,
+                StrokeThickness = 3
+            });
+        }
+    }
+
+    private void DrawDifferentialDriveRobot(DifferentialDrivePose pose)
+    {
+        if (differentialDriveSnapshot is null)
+        {
+            return;
+        }
+
+        var center = MapDifferentialDrivePoint(pose.X, pose.Y, differentialDriveSnapshot.Profile);
+        const double bodyRadius = 18;
+        const double headingLength = 34;
+        var headingRadians = pose.HeadingDegrees * Math.PI / 180;
+        var headingEnd = new Point(
+            center.X + (Math.Cos(headingRadians) * headingLength),
+            center.Y - (Math.Sin(headingRadians) * headingLength));
+
+        var body = new Ellipse
+        {
+            Width = bodyRadius * 2,
+            Height = bodyRadius * 2,
+            Fill = new SolidColorBrush(Color.FromRgb(37, 99, 235)),
+            Stroke = new SolidColorBrush(Color.FromRgb(147, 197, 253)),
+            StrokeThickness = 2
+        };
+        DifferentialDriveCanvas.Children.Add(body);
+        Canvas.SetLeft(body, center.X - bodyRadius);
+        Canvas.SetTop(body, center.Y - bodyRadius);
+
+        DifferentialDriveCanvas.Children.Add(new Line
+        {
+            X1 = center.X,
+            Y1 = center.Y,
+            X2 = headingEnd.X,
+            Y2 = headingEnd.Y,
+            Stroke = new SolidColorBrush(Color.FromRgb(250, 204, 21)),
+            StrokeThickness = 4
+        });
+
+        var headingDot = new Ellipse
+        {
+            Width = 8,
+            Height = 8,
+            Fill = new SolidColorBrush(Color.FromRgb(250, 204, 21))
+        };
+        DifferentialDriveCanvas.Children.Add(headingDot);
+        Canvas.SetLeft(headingDot, headingEnd.X - 4);
+        Canvas.SetTop(headingDot, headingEnd.Y - 4);
+
+        DrawDifferentialDriveWheel(center, xOffset: -18);
+        DrawDifferentialDriveWheel(center, xOffset: 10);
+    }
+
+    private void DrawDifferentialDriveWheel(Point center, double xOffset)
+    {
+        var wheel = new Rectangle
+        {
+            Width = 8,
+            Height = 28,
+            RadiusX = 2,
+            RadiusY = 2,
+            Fill = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+            Stroke = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
+            StrokeThickness = 1
+        };
+        DifferentialDriveCanvas.Children.Add(wheel);
+        Canvas.SetLeft(wheel, center.X + xOffset);
+        Canvas.SetTop(wheel, center.Y - 14);
+    }
+
+    private Point MapDifferentialDrivePoint(
+        double xMillimeters,
+        double yMillimeters,
+        DifferentialDriveProfile profile)
+    {
+        const double padding = 36;
+        var width = Math.Max(DifferentialDriveCanvas.ActualWidth, 1);
+        var height = Math.Max(DifferentialDriveCanvas.ActualHeight, 1);
+        var workspaceWidth = profile.MaximumXMillimeters - profile.MinimumXMillimeters;
+        var workspaceHeight = profile.MaximumYMillimeters - profile.MinimumYMillimeters;
+        var scale = Math.Min(
+            (width - (padding * 2)) / workspaceWidth,
+            (height - (padding * 2)) / workspaceHeight);
+
+        return new Point(
+            padding + ((xMillimeters - profile.MinimumXMillimeters) * scale),
+            height - padding - ((yMillimeters - profile.MinimumYMillimeters) * scale));
+    }
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -2156,6 +2533,17 @@ public partial class MainWindow : Window
         XYPlotterProfile.Create(
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200));
+
+    private static DifferentialDriveProfile CreateDifferentialDriveProfile() =>
+        new(
+            minimumXMillimeters: 0,
+            maximumXMillimeters: 500,
+            minimumYMillimeters: 0,
+            maximumYMillimeters: 350,
+            wheelBaseMillimeters: 120,
+            wheelRadiusMillimeters: 30,
+            maximumLinearVelocityMillimetersPerSecond: 250,
+            maximumAngularVelocityDegreesPerSecond: 180);
 
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
@@ -2174,6 +2562,16 @@ public partial class MainWindow : Window
             return;
         }
 
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateDifferentialDriveCommandSequence(
+        RobotCommandSequence commands,
+        DifferentialDriveProfile profile)
+    {
         foreach (var command in commands.Commands)
         {
             RobotCommandValidator.Validate(command, profile);
@@ -2199,12 +2597,39 @@ public partial class MainWindow : Window
         }
     }
 
+    private bool TryCreateDifferentialDriveSnapshotFromScript(
+        string script,
+        out DifferentialDrivePlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateDifferentialDriveSnapshot(script);
+            message = $"Mobile script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = exception.Message;
+            return false;
+        }
+    }
+
     private void SetScriptStatus(
         string message,
         Color color)
     {
         ScriptStatusText.Text = message;
         ScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetDifferentialDriveScriptStatus(
+        string message,
+        Color color)
+    {
+        DifferentialDriveScriptStatusText.Text = message;
+        DifferentialDriveScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()

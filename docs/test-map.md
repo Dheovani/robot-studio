@@ -35,6 +35,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] XY plotter profile validates X/Y positions.
 - [x] XY plotter profile rejects Z axis access.
 - [x] Command validator rejects XY plotter movement away from the `Z=0` drawing plane.
+- [x] Differential drive profile validates planar poses.
+- [x] Differential drive profile rejects poses outside the X/Y workspace.
+- [x] Differential drive pose normalizes headings for one turn.
+- [x] Differential drive pose computes shortest angular distance.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -67,6 +71,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
 - [x] XY plotter planner handles stationary movement predictably.
+- [x] Differential drive planner creates translation plans.
+- [x] Differential drive planner creates rotation plans.
+- [x] Differential drive planner separates translation and rotation when both are required.
+- [x] Differential drive planner caps requested linear and angular velocities.
 
 ### Required Next Coverage
 
@@ -125,6 +133,15 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Playback snapshot validation accepts compatible snapshots.
 - [x] Playback snapshot validation reports incompatible metadata.
 - [x] Playback snapshot validation reports missing sections and inconsistent counts.
+- [x] Differential drive simulator executes `HOME`.
+- [x] Differential drive simulator executes differential-drive move commands.
+- [x] Differential drive simulator executes `WAIT`.
+- [x] Differential drive simulator records state transitions in order.
+- [x] Differential drive simulator returns `Faulted` when a command fails.
+- [x] Differential drive simulator preserves the last valid pose when a command fails.
+- [x] Differential drive playback sampling returns frames at fixed intervals.
+- [x] Differential drive playback sampling interpolates pose between timeline steps.
+- [x] Differential drive playback sampling preserves command metadata.
 
 ### Required Next Coverage
 
@@ -141,8 +158,11 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `WAIT 500`.
 - [x] Parse `MOVE X=10 Y=20 Z=5`.
 - [x] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
+- [x] Parse `DRIVE X=10 Y=20 HEADING=90`.
+- [x] Parse `DRIVE X=10 Y=20 HEADING=90 LIN=100 ANG=45`.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
+- [x] Missing `DRIVE` heading reports a clear parser error.
 - [x] Invalid number reports a clear parser error.
 - [x] Invalid wait duration reports a clear parser error.
 - [x] Parser errors preserve script line number.
@@ -150,6 +170,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parsed commands preserve script text metadata.
 - [x] Duplicate MOVE argument reports a clear parser error.
 - [x] Unknown MOVE argument reports a clear parser error.
+- [x] Unknown DRIVE argument reports a clear parser error.
 - [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage
@@ -247,7 +268,9 @@ Expected current behavior:
 - shows hover and keyboard focus feedback on robot selection cards;
 - lists robot templates in the expected didactic complexity order;
 - lists the Cartesian robot as available;
-- lists the XY plotter, differential drive robot, SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
+- lists the XY plotter as available;
+- lists the differential drive robot as available;
+- lists the SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
 - opens the Cartesian viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;

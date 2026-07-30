@@ -1,6 +1,7 @@
 using System.Globalization;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Domain.Mobile;
 
 namespace RobotStudio.Scripting;
 
@@ -46,6 +47,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "HOME" => ParseHome(lineNumber, line, arguments),
             "WAIT" => ParseWait(lineNumber, line, arguments),
             "MOVE" => ParseMove(lineNumber, line, arguments),
+            "DRIVE" => ParseDrive(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
         };
     }
@@ -105,6 +107,35 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             CreateSource(lineNumber, line));
     }
 
+    private static DifferentialDriveMoveCommand ParseDrive(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["X", "Y", "HEADING", "LIN", "ANG"]);
+
+        var x = GetRequiredDouble(lineNumber, line, values, "X", "DRIVE");
+        var y = GetRequiredDouble(lineNumber, line, values, "Y", "DRIVE");
+        var heading = GetRequiredDouble(lineNumber, line, values, "HEADING", "DRIVE");
+
+        double? requestedLinearVelocity = values.TryGetValue("LIN", out var linearText)
+            ? ParseDouble(lineNumber, line, linearText, "LIN")
+            : null;
+        double? requestedAngularVelocity = values.TryGetValue("ANG", out var angularText)
+            ? ParseDouble(lineNumber, line, angularText, "ANG")
+            : null;
+
+        return new DifferentialDriveMoveCommand(
+            new DifferentialDrivePose(x, y, heading),
+            requestedLinearVelocity,
+            requestedAngularVelocity,
+            CreateSource(lineNumber, line));
+    }
+
     private static RobotCommandSource CreateSource(
         int lineNumber,
         string line) =>
@@ -115,7 +146,23 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         string line,
         IEnumerable<string> arguments)
     {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["X", "Y", "Z", "SPEED"]);
+
+        return values;
+    }
+
+    private static Dictionary<string, string> ParseKeyValueArguments(
+        int lineNumber,
+        string line,
+        IEnumerable<string> arguments,
+        IReadOnlyCollection<string> allowedKeys)
+    {
         var values = new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase);
+        var allowed = allowedKeys.ToHashSet(StringComparer.OrdinalIgnoreCase);
 
         foreach (var argument in arguments)
         {
@@ -126,9 +173,9 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             }
 
             var key = parts[0].ToUpperInvariant();
-            if (key is not ("X" or "Y" or "Z" or "SPEED"))
+            if (!allowed.Contains(key))
             {
-                throw new ScriptParseException(lineNumber, line, $"Unknown MOVE argument '{parts[0]}'.");
+                throw new ScriptParseException(lineNumber, line, $"Unknown {line.Split(' ', 2)[0].ToUpperInvariant()} argument '{parts[0]}'.");
             }
 
             if (!values.TryAdd(key, parts[1]))
@@ -149,6 +196,21 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         if (!values.TryGetValue(key, out var value))
         {
             throw new ScriptParseException(lineNumber, line, $"MOVE requires {key}.");
+        }
+
+        return ParseDouble(lineNumber, line, value, key);
+    }
+
+    private static double GetRequiredDouble(
+        int lineNumber,
+        string line,
+        IReadOnlyDictionary<string, string> values,
+        string key,
+        string commandName)
+    {
+        if (!values.TryGetValue(key, out var value))
+        {
+            throw new ScriptParseException(lineNumber, line, $"{commandName} requires {key}.");
         }
 
         return ParseDouble(lineNumber, line, value, key);

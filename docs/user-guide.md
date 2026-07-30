@@ -71,11 +71,13 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app opens a WPF window with a robot selection screen. The Cartesian robot and XY plotter are available now. Planned templates are shown for the differential drive robot, SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, and differential drive robot are available now. Planned templates are shown for the SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm.
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
 
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, and overlay controls.
+
+Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands.
 
 ## Build The Windows Installer
 
@@ -223,6 +225,20 @@ Current simulation output includes:
 ## Current DSL
 
 The simple DSL parser can convert text scripts into command sequences. Internally, scripting now uses a dialect contract so future formats such as G-code can produce the same command sequence type. The CLI can validate and simulate script files.
+
+Cartesian movement:
+
+```txt
+MOVE X=120 Y=80 Z=40 SPEED=90
+```
+
+Differential drive movement:
+
+```txt
+DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
+```
+
+`LIN` is requested linear velocity in millimeters per second. `ANG` is requested angular velocity in degrees per second.
 
 ```txt
 HOME

@@ -43,7 +43,7 @@ Expected result:
 - the desktop app lists available and planned robot templates in didactic complexity order;
 - the Cartesian robot appears as `Available`;
 - the XY plotter appears as `Available`;
-- the differential drive robot appears as `Planned`;
+- the differential drive robot appears as `Available`;
 - the SCARA robot appears as `Planned`;
 - the simple articulated arm appears as `Planned`;
 - the delta robot appears as `Planned`;
@@ -67,6 +67,24 @@ Expected result:
 - the example script moves only through X/Y commands with `Z=0`;
 - attempts to move the plotter away from the drawing plane are rejected;
 - Z jog buttons are disabled in the desktop viewer.
+
+### Plan Differential Drive Movement From Code
+
+Actor: developer or instructor.
+
+Goal: introduce mobile robot motion where a pose includes planar position and heading.
+
+Current status: implemented for domain, motion planning, deterministic simulation, playback sampling, and the first 2D desktop viewer.
+
+Expected result:
+
+- a differential drive pose stores `X`, `Y`, and heading in degrees;
+- the profile validates planar workspace limits and physical robot dimensions;
+- the planner separates translation and rotation segments;
+- requested linear and angular velocities are capped by profile limits;
+- the simulator executes `HOME`, differential-drive move commands, and `WAIT`;
+- the desktop viewer shows the workspace, path, robot pose, heading, and frame timeline.
+- the student can edit and simulate mobile DSL commands with `DRIVE X=... Y=... HEADING=... LIN=... ANG=...`.
 
 ### Execute A Command Sequence
 
