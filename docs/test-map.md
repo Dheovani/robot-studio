@@ -44,6 +44,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] SCARA forward kinematics calculates tool pose.
 - [x] SCARA inverse kinematics calculates reachable elbow-down joint positions.
 - [x] SCARA inverse kinematics rejects unreachable tool poses.
+- [x] Simple arm profile validates joint positions.
+- [x] Simple arm profile rejects joint positions outside limits.
+- [x] Simple arm forward kinematics calculates tool pose and orientation.
+- [x] Command validator validates simple arm joint move commands.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -84,6 +88,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] SCARA planner caps requested joint velocity by involved joint limits.
 - [x] SCARA planner handles stationary joint movement predictably.
 - [x] SCARA planner rejects target joints outside physical limits.
+- [x] Simple arm planner creates coordinated joint-space plans.
+- [x] Simple arm planner caps requested joint velocity by involved joint limits.
+- [x] Simple arm planner handles stationary joint movement predictably.
+- [x] Simple arm planner rejects target joints outside physical limits.
 
 ### Required Next Coverage
 
@@ -160,6 +168,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] SCARA playback sampling interpolates joint position between timeline steps.
 - [x] SCARA playback sampling preserves command metadata.
 - [x] SCARA playback sampling includes tool poses calculated from kinematics.
+- [x] Simple arm simulator executes `HOME`.
+- [x] Simple arm simulator executes joint move commands.
+- [x] Simple arm simulator executes `WAIT`.
+- [x] Simple arm simulator returns `Faulted` when a command fails.
+- [x] Simple arm playback sampling returns frames at fixed intervals.
+- [x] Simple arm playback sampling interpolates joint position between timeline steps.
+- [x] Simple arm playback sampling preserves command metadata.
+- [x] Simple arm playback sampling includes tool poses calculated from kinematics.
 
 ### Required Next Coverage
 
@@ -180,6 +196,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `DRIVE X=10 Y=20 HEADING=90 LIN=100 ANG=45`.
 - [x] Parse `SCARA SHOULDER=45 ELBOW=30`.
 - [x] Parse `SCARA SHOULDER=45 ELBOW=30 SPEED=80`.
+- [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20`.
+- [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80`.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
 - [x] Missing `DRIVE` heading reports a clear parser error.
@@ -193,6 +211,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Unknown DRIVE argument reports a clear parser error.
 - [x] Missing SCARA joint argument reports a clear parser error.
 - [x] Unknown SCARA argument reports a clear parser error.
+- [x] Missing simple arm joint argument reports a clear parser error.
+- [x] Unknown simple arm argument reports a clear parser error.
 - [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage
@@ -293,7 +313,8 @@ Expected current behavior:
 - lists the XY plotter as available;
 - lists the differential drive robot as available;
 - lists the SCARA robot as available;
-- lists the simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
+- lists the simple articulated arm as available;
+- lists the delta robot, drone, and 6-DOF industrial arm as planned;
 - opens the Cartesian viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
@@ -330,6 +351,8 @@ Expected current behavior:
 - explains the current command from the active playback frame;
 - explains involved axes, requested speed, effective speed, and limiting axis for `MOVE`;
 - renders the built-in Cartesian robot scene in a 3D viewport;
+- renders the SCARA robot as a 3D viewport with volumetric links and joints;
+- renders the Simple Articulated Arm as a 3D viewport with volumetric links and joints;
 - provides play and reset controls;
 - provides a timeline slider;
 - provides camera orbit, zoom, reset, and predefined view controls;

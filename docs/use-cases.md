@@ -45,7 +45,7 @@ Expected result:
 - the XY plotter appears as `Available`;
 - the differential drive robot appears as `Available`;
 - the SCARA robot appears as `Available`;
-- the simple articulated arm appears as `Planned`;
+- the simple articulated arm appears as `Available`;
 - the delta robot appears as `Planned`;
 - the drone appears as `Planned`;
 - the 6-DOF industrial arm appears as `Planned`;
@@ -92,7 +92,7 @@ Actor: developer or instructor.
 
 Goal: introduce an articulated planar robot where movement is expressed through joints and the tool pose is calculated by kinematics.
 
-Current status: implemented for domain, forward/inverse kinematics, motion planning, deterministic simulation, playback sampling, simple DSL, and the first 2D desktop viewer.
+Current status: implemented for domain, forward/inverse kinematics, motion planning, deterministic simulation, playback sampling, simple DSL, and the first 3D desktop viewer.
 
 Expected result:
 
@@ -101,8 +101,26 @@ Expected result:
 - forward kinematics converts joint angles into tool X/Y pose;
 - inverse kinematics calculates an elbow-down joint solution for reachable tool poses;
 - the simulator executes `HOME`, SCARA joint moves, and `WAIT`;
-- the desktop viewer shows reachable workspace, joint links, current tool pose, planned path, state, command name, and frame timeline;
+- the desktop viewer shows reachable workspace, volumetric links, current tool pose, planned path, state, command name, camera controls, and frame timeline;
 - the student can edit and simulate SCARA DSL commands with `SCARA SHOULDER=... ELBOW=... SPEED=...`.
+
+### Simulate Simple Articulated Arm Movement From Code
+
+Actor: developer or instructor.
+
+Goal: introduce a three-joint articulated arm where base, shoulder, and elbow angles compose into a tool pose through forward kinematics.
+
+Current status: implemented for domain, forward kinematics, motion planning, deterministic simulation, playback sampling, simple DSL, and the first 3D desktop viewer.
+
+Expected result:
+
+- a simple arm profile defines three link lengths and three joint limits;
+- joint positions validate base, shoulder, and elbow angles;
+- forward kinematics converts joint angles into X/Y tool pose and orientation;
+- the planner coordinates joint-space movement and caps velocity by involved joint limits;
+- the simulator executes `HOME`, simple arm joint moves, and `WAIT`;
+- the desktop viewer shows reachable workspace, volumetric base, three links, current tool pose, tool orientation, planned path, state, command name, camera controls, and frame timeline;
+- the student can edit and simulate simple arm DSL commands with `ARM BASE=... SHOULDER=... ELBOW=... SPEED=...`.
 
 ### Execute A Command Sequence
 

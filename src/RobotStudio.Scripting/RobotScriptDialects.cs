@@ -6,7 +6,7 @@ public static class RobotScriptDialects
         RobotScriptDialectId.SimpleDsl,
         "Simple DSL",
         RobotScriptDialectStatus.Available,
-        "Beginner-friendly RobotStudio command language for HOME, MOVE, DRIVE, SCARA, and WAIT.");
+        "Beginner-friendly RobotStudio command language for HOME, MOVE, DRIVE, SCARA, ARM, and WAIT.");
 
     public static RobotScriptDialectDescriptor GCode { get; } = new(
         RobotScriptDialectId.GCode,

@@ -104,4 +104,26 @@ public static class RobotCommandValidator
                 throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
         }
     }
+
+    public static void Validate(RobotCommand command, SimpleArmRobotProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case SimpleArmMoveJointsCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetJoints);
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
 }

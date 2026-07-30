@@ -13,8 +13,8 @@ This file tracks future work after the first stable Cartesian simulation release
 
 - [x] Implement the XY Plotter as the next Cartesian-family teaching model.
 - [X] Implement the Differential Drive Robot as the first mobile robot model.
-- [ ] Implement the SCARA Robot as the first articulated planar robot model.
-- [ ] Implement the Simple Articulated Arm as the first joint-based arm model.
+- [x] Implement the SCARA Robot as the first articulated planar robot model.
+- [x] Implement the Simple Articulated Arm as the first joint-based arm model.
 - [ ] Implement the Delta Robot as the first parallel robot model.
 - [ ] Implement the Drone as the first aerial robot model.
 - [ ] Implement the 6-DOF Industrial Arm as the advanced articulated model.
@@ -26,7 +26,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add acceleration-aware motion planning.
 - [ ] Add optional trapezoidal velocity profiles.
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
-- [ ] Add joint-space simulation for articulated robots.
+- [x] Add joint-space simulation for articulated robots.
 - [ ] Add odometry simulation for mobile robots.
 - [ ] Add attitude/orientation simulation for aerial robots.
 - [ ] Add a clearer recovery workflow for faulted simulations.

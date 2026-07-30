@@ -50,6 +50,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "MOVE" => ParseMove(lineNumber, line, arguments),
             "DRIVE" => ParseDrive(lineNumber, line, arguments),
             "SCARA" => ParseScara(lineNumber, line, arguments),
+            "ARM" => ParseSimpleArm(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
         };
     }
@@ -158,6 +159,31 @@ public sealed class RobotScriptParser : IRobotScriptDialect
 
         return new ScaraMoveJointsCommand(
             new ScaraJointPosition(shoulder, elbow),
+            requestedJointVelocity,
+            CreateSource(lineNumber, line));
+    }
+
+    private static SimpleArmMoveJointsCommand ParseSimpleArm(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["BASE", "SHOULDER", "ELBOW", "SPEED"]);
+
+        var baseDegrees = GetRequiredDouble(lineNumber, line, values, "BASE", "ARM");
+        var shoulder = GetRequiredDouble(lineNumber, line, values, "SHOULDER", "ARM");
+        var elbow = GetRequiredDouble(lineNumber, line, values, "ELBOW", "ARM");
+
+        double? requestedJointVelocity = values.TryGetValue("SPEED", out var speedText)
+            ? ParseDouble(lineNumber, line, speedText, "SPEED")
+            : null;
+
+        return new SimpleArmMoveJointsCommand(
+            new SimpleArmJointPosition(baseDegrees, shoulder, elbow),
             requestedJointVelocity,
             CreateSource(lineNumber, line));
     }

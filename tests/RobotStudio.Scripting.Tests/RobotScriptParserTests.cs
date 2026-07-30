@@ -101,6 +101,33 @@ public sealed class RobotScriptParserTests
     }
 
     [Fact]
+    public void Parse_WhenSimpleArmIsValid_ShouldReturnSimpleArmMoveJointsCommand()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80");
+
+        var command = Assert.IsType<SimpleArmMoveJointsCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(45, command.TargetJoints.BaseDegrees);
+        Assert.Equal(30, command.TargetJoints.ShoulderDegrees);
+        Assert.Equal(-20, command.TargetJoints.ElbowDegrees);
+        Assert.Equal(80, command.RequestedJointVelocityDegreesPerSecond);
+        Assert.Equal(1, command.Source?.LineNumber);
+        Assert.Equal("ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80", command.Source?.Text);
+    }
+
+    [Fact]
+    public void Parse_WhenSimpleArmHasNoSpeed_ShouldReturnSimpleArmCommandWithoutRequestedVelocity()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("ARM BASE=45 SHOULDER=30 ELBOW=-20");
+
+        var command = Assert.IsType<SimpleArmMoveJointsCommand>(Assert.Single(sequence.Commands));
+        Assert.Null(command.RequestedJointVelocityDegreesPerSecond);
+    }
+
+    [Fact]
     public void Parse_WhenCommandIsUnknown_ShouldThrowWithLineNumber()
     {
         var parser = new RobotScriptParser();
@@ -142,6 +169,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("SCARA requires ELBOW", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenSimpleArmMissesBase_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(
+            () => parser.Parse("ARM SHOULDER=45 ELBOW=30"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("ARM requires BASE", exception.Message);
     }
 
     [Fact]
@@ -220,6 +259,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("Unknown SCARA argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenSimpleArmHasUnknownArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("ARM BASE=45 SHOULDER=30 ELBOW=-20 Z=0"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Unknown ARM argument", exception.Message);
     }
 
     [Fact]

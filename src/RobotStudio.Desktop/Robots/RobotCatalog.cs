@@ -40,7 +40,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.TwoDimensionalView,
+                RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.PathPlanning,
@@ -61,7 +61,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.TwoDimensionalView,
+                RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.PathDrawing,
@@ -82,7 +82,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.TwoDimensionalView,
+                RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.PathPlanning,
@@ -111,28 +111,29 @@ public static class RobotCatalog
                 RobotCapability.WorkspaceVisualization
             ],
             Viewer: new RobotViewerDescriptor(
-                RobotViewerKind.ScaraTwoDimensional,
-                "SCARA 2D Viewer")),
+                RobotViewerKind.ScaraThreeDimensional,
+                "SCARA 3D Viewer")),
 
         new(
-            Id: "simple-articulated-arm-planned",
+            Id: "simple-articulated-arm",
             Name: "Simple Articulated Arm",
             Family: Articulated,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Advanced,
-            Description: "Planned joint-based arm for teaching links, joints, forward kinematics, inverse kinematics, and coordinated motion.",
+            Description: "Joint-based arm for teaching links, joints, forward kinematics, and coordinated motion.",
             Capabilities:
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.ThreeDimensionalView,
+                RobotCapability.TwoDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.ForwardKinematics,
-                RobotCapability.InverseKinematics,
                 RobotCapability.WorkspaceVisualization
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.SimpleArmThreeDimensional,
+                "Simple Arm 3D Viewer")),
 
         new(
             Id: "delta-planned",

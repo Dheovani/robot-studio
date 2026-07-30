@@ -88,6 +88,14 @@ public partial class MainWindow : Window
         WAIT 500
         """;
 
+    private const string SimpleArmExampleScript =
+        """
+        HOME
+        ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
+        ARM BASE=90 SHOULDER=-40 ELBOW=70 SPEED=70
+        WAIT 500
+        """;
+
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
@@ -98,9 +106,11 @@ public partial class MainWindow : Window
     private CartesianPlaybackSnapshot? snapshot;
     private DifferentialDrivePlaybackSnapshot? differentialDriveSnapshot;
     private ScaraPlaybackSnapshot? scaraSnapshot;
+    private SimpleArmPlaybackSnapshot? simpleArmSnapshot;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
+    private int simpleArmFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -108,6 +118,16 @@ public partial class MainWindow : Window
     private double zoomMultiplier = 1;
     private bool isRotatingCamera;
     private Point lastMousePosition;
+    private double scaraAzimuthDegrees = -45;
+    private double scaraElevationDegrees = 32;
+    private double scaraZoomMultiplier = 1.8;
+    private bool isRotatingScaraCamera;
+    private Point lastScaraMousePosition;
+    private double simpleArmAzimuthDegrees = -45;
+    private double simpleArmElevationDegrees = 30;
+    private double simpleArmZoomMultiplier = 2.15;
+    private bool isRotatingSimpleArmCamera;
+    private Point lastSimpleArmMousePosition;
 
     private sealed class TimelineMarker
     {
@@ -169,6 +189,7 @@ public partial class MainWindow : Window
         PlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         DifferentialDrivePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         ScaraPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        SimpleArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -219,6 +240,19 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderScaraFrame(index: 0);
+    }
+
+    private void SimpleArmResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (simpleArmSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderSimpleArmFrame(index: 0);
     }
 
     private void ValidateDifferentialDriveScriptButton_Click(
@@ -301,6 +335,43 @@ public partial class MainWindow : Window
         SetScaraScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
 
+    private void ValidateSimpleArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateSimpleArmSnapshotFromScript(SimpleArmScriptTextBox.Text, out _, out var message))
+        {
+            SetSimpleArmScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetSimpleArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateSimpleArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateSimpleArmSnapshotFromScript(SimpleArmScriptTextBox.Text, out var nextSnapshot, out var message))
+        {
+            SetSimpleArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetSimpleArmScriptStatus("Script did not produce a simple arm playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        simpleArmSnapshot = nextSnapshot;
+        SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimelineSlider.TickFrequency = 1;
+        RenderSimpleArmFrame(index: 0);
+        SetSimpleArmScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
     private void TimelineSlider_ValueChanged(
         object sender,
         RoutedPropertyChangedEventArgs<double> e)
@@ -334,7 +405,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (activeViewerKind == RobotViewerKind.ScaraTwoDimensional)
+        if (activeViewerKind == RobotViewerKind.ScaraThreeDimensional)
         {
             if (scaraSnapshot is null)
             {
@@ -348,6 +419,23 @@ public partial class MainWindow : Window
             }
 
             RenderScaraFrame(nextScaraFrame);
+            return;
+        }
+
+        if (activeViewerKind == RobotViewerKind.SimpleArmThreeDimensional)
+        {
+            if (simpleArmSnapshot is null)
+            {
+                return;
+            }
+
+            var nextSimpleArmFrame = simpleArmFrameIndex + 1;
+            if (nextSimpleArmFrame >= simpleArmSnapshot.FrameCount)
+            {
+                nextSimpleArmFrame = 0;
+            }
+
+            RenderSimpleArmFrame(nextSimpleArmFrame);
             return;
         }
 
@@ -481,6 +569,7 @@ public partial class MainWindow : Window
         CartesianViewerView.Visibility = Visibility.Collapsed;
         DifferentialDriveViewerView.Visibility = Visibility.Collapsed;
         ScaraViewerView.Visibility = Visibility.Collapsed;
+        SimpleArmViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -696,7 +785,7 @@ public partial class MainWindow : Window
         RenderDifferentialDriveFrame(differentialDriveFrameIndex + 1);
     }
 
-    private void ScaraCanvas_SizeChanged(
+    private void ScaraViewport_SizeChanged(
         object sender,
         SizeChangedEventArgs e)
     {
@@ -705,6 +794,79 @@ public partial class MainWindow : Window
             return;
         }
 
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraViewport_MouseLeftButtonDown(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingScaraCamera = true;
+        lastScaraMousePosition = e.GetPosition(ScaraViewport);
+        ScaraViewport.CaptureMouse();
+        ScaraViewport.Cursor = Cursors.SizeAll;
+    }
+
+    private void ScaraViewport_MouseLeftButtonUp(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingScaraCamera = false;
+        ScaraViewport.ReleaseMouseCapture();
+        ScaraViewport.Cursor = Cursors.Hand;
+    }
+
+    private void ScaraViewport_MouseMove(
+        object sender,
+        MouseEventArgs e)
+    {
+        if (!isRotatingScaraCamera)
+        {
+            return;
+        }
+
+        var currentPosition = e.GetPosition(ScaraViewport);
+        var deltaX = currentPosition.X - lastScaraMousePosition.X;
+        var deltaY = currentPosition.Y - lastScaraMousePosition.Y;
+        lastScaraMousePosition = currentPosition;
+
+        scaraAzimuthDegrees = NormalizeDegrees(scaraAzimuthDegrees - (deltaX * 0.35));
+        scaraElevationDegrees = Math.Clamp(scaraElevationDegrees + (deltaY * 0.25), 5, 85);
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraViewport_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        var zoomDelta = e.Delta > 0 ? -0.12 : 0.12;
+        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier + zoomDelta, 0.55, 4);
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraZoomOutButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier + 0.18, 0.55, 4);
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraZoomInButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier - 0.18, 0.55, 4);
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraResetCameraButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        scaraAzimuthDegrees = -45;
+        scaraElevationDegrees = 32;
+        scaraZoomMultiplier = 1.8;
         RenderScaraFrame(scaraFrameIndex);
     }
 
@@ -734,6 +896,119 @@ public partial class MainWindow : Window
     {
         StopPlayback();
         RenderScaraFrame(scaraFrameIndex + 1);
+    }
+
+    private void SimpleArmViewport_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || simpleArmSnapshot is null)
+        {
+            return;
+        }
+
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmViewport_MouseLeftButtonDown(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingSimpleArmCamera = true;
+        lastSimpleArmMousePosition = e.GetPosition(SimpleArmViewport);
+        SimpleArmViewport.CaptureMouse();
+        SimpleArmViewport.Cursor = Cursors.SizeAll;
+    }
+
+    private void SimpleArmViewport_MouseLeftButtonUp(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingSimpleArmCamera = false;
+        SimpleArmViewport.ReleaseMouseCapture();
+        SimpleArmViewport.Cursor = Cursors.Hand;
+    }
+
+    private void SimpleArmViewport_MouseMove(
+        object sender,
+        MouseEventArgs e)
+    {
+        if (!isRotatingSimpleArmCamera)
+        {
+            return;
+        }
+
+        var currentPosition = e.GetPosition(SimpleArmViewport);
+        var deltaX = currentPosition.X - lastSimpleArmMousePosition.X;
+        var deltaY = currentPosition.Y - lastSimpleArmMousePosition.Y;
+        lastSimpleArmMousePosition = currentPosition;
+
+        simpleArmAzimuthDegrees = NormalizeDegrees(simpleArmAzimuthDegrees - (deltaX * 0.35));
+        simpleArmElevationDegrees = Math.Clamp(simpleArmElevationDegrees + (deltaY * 0.25), 5, 85);
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmViewport_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        var zoomDelta = e.Delta > 0 ? -0.12 : 0.12;
+        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + zoomDelta, 0.55, 4);
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmZoomOutButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + 0.18, 0.55, 4);
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmZoomInButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier - 0.18, 0.55, 4);
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmResetCameraButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        simpleArmAzimuthDegrees = -45;
+        simpleArmElevationDegrees = 30;
+        simpleArmZoomMultiplier = 2.15;
+        RenderSimpleArmFrame(simpleArmFrameIndex);
+    }
+
+    private void SimpleArmTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || simpleArmSnapshot is null)
+        {
+            return;
+        }
+
+        RenderSimpleArmFrame((int)Math.Round(e.NewValue));
+    }
+
+    private void SimpleArmPreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderSimpleArmFrame(simpleArmFrameIndex - 1);
+    }
+
+    private void SimpleArmNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderSimpleArmFrame(simpleArmFrameIndex + 1);
     }
 
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
@@ -950,6 +1225,21 @@ public partial class MainWindow : Window
         var result = new ScaraSimulator().Execute(context, commands);
 
         return new ScaraPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private SimpleArmPlaybackSnapshot CreateSimpleArmSnapshot(string script)
+    {
+        var profile = CreateSimpleArmProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateSimpleArmCommandSequence(commands, profile);
+
+        var context = SimpleArmSimulationContext.Create(
+            profile,
+            new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0));
+        var result = new SimpleArmSimulator().Execute(context, commands);
+
+        return new SimpleArmPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
@@ -1195,11 +1485,19 @@ public partial class MainWindow : Window
             return;
         }
 
-        if (template.Viewer.Kind == RobotViewerKind.ScaraTwoDimensional)
+        if (template.Viewer.Kind == RobotViewerKind.ScaraThreeDimensional)
         {
             ScaraViewerView.Visibility = Visibility.Visible;
             EnsureScaraSnapshot();
             RenderScaraFrame(index: 0);
+            return;
+        }
+
+        if (template.Viewer.Kind == RobotViewerKind.SimpleArmThreeDimensional)
+        {
+            SimpleArmViewerView.Visibility = Visibility.Visible;
+            EnsureSimpleArmSnapshot();
+            RenderSimpleArmFrame(index: 0);
             return;
         }
 
@@ -1214,9 +1512,11 @@ public partial class MainWindow : Window
         snapshot = null;
         differentialDriveSnapshot = null;
         scaraSnapshot = null;
+        simpleArmSnapshot = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
         scaraFrameIndex = 0;
+        simpleArmFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
@@ -1225,8 +1525,12 @@ public partial class MainWindow : Window
                 ConfigureDifferentialDriveViewer();
                 break;
 
-            case RobotViewerKind.ScaraTwoDimensional:
+            case RobotViewerKind.ScaraThreeDimensional:
                 ConfigureScaraViewer();
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                ConfigureSimpleArmViewer();
                 break;
 
             case RobotViewerKind.XYPlotterTwoDimensional:
@@ -1287,6 +1591,14 @@ public partial class MainWindow : Window
             Color.FromRgb(148, 163, 184));
     }
 
+    private void ConfigureSimpleArmViewer()
+    {
+        SimpleArmScriptTextBox.Text = SimpleArmExampleScript;
+        SetSimpleArmScriptStatus(
+            "Edit ARM joint commands and simulate the articulated arm.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private void EnsureCartesianSnapshot()
     {
         if (snapshot is not null)
@@ -1322,6 +1634,18 @@ public partial class MainWindow : Window
         ScaraTimelineSlider.TickFrequency = 1;
     }
 
+    private void EnsureSimpleArmSnapshot()
+    {
+        if (simpleArmSnapshot is not null)
+        {
+            return;
+        }
+
+        simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text);
+        SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimelineSlider.TickFrequency = 1;
+    }
+
     private void InitializeTimelineForSnapshot()
     {
         if (snapshot is null)
@@ -1349,6 +1673,7 @@ public partial class MainWindow : Window
         PlayPauseButton.Content = "Play";
         DifferentialDrivePlayPauseButton.Content = "Play";
         ScaraPlayPauseButton.Content = "Play";
+        SimpleArmPlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -2704,10 +3029,16 @@ public partial class MainWindow : Window
         ScaraTimelineSlider.Value = scaraFrameIndex;
 
         var frame = scaraSnapshot.Frames[scaraFrameIndex];
-        ScaraCanvas.Children.Clear();
-        DrawScaraWorkspace(scaraSnapshot.Profile);
-        DrawScaraPath(scaraSnapshot);
-        DrawScaraRobot(scaraSnapshot.Profile, frame);
+        ScaraViewport.Children.Clear();
+        ScaraViewport.Camera = CreateScaraCamera(scaraSnapshot.Profile);
+
+        var sceneRoot = new Model3DGroup();
+        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
+        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        sceneRoot.Children.Add(CreateScaraWorkspaceModel(scaraSnapshot.Profile));
+        sceneRoot.Children.Add(CreateScaraPathModel(scaraSnapshot));
+        sceneRoot.Children.Add(CreateScaraRobotModel(scaraSnapshot.Profile, frame));
+        ScaraViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
 
         ScaraStateText.Text = frame.State.ToString();
         ScaraJointsText.Text =
@@ -2720,146 +3051,357 @@ public partial class MainWindow : Window
             $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
     }
 
-    private void DrawScaraWorkspace(ScaraRobotProfile profile)
+    private PerspectiveCamera CreateScaraCamera(ScaraRobotProfile profile)
     {
-        var center = MapScaraPoint(0, 0, profile);
-        var scale = GetScaraScale(profile);
-        var reachRadius = (profile.FirstLinkLengthMillimeters + profile.SecondLinkLengthMillimeters) * scale;
+        var reach = GetScaraReach(profile);
+        var distance = reach * 3.1 * scaraZoomMultiplier;
+        var azimuth = DegreesToRadians(scaraAzimuthDegrees);
+        var elevation = DegreesToRadians(scaraElevationDegrees);
+        var target = new Point3D(0, 0, 22);
+        var position = new Point3D(
+            Math.Cos(elevation) * Math.Cos(azimuth) * distance,
+            Math.Cos(elevation) * Math.Sin(azimuth) * distance,
+            Math.Sin(elevation) * distance);
 
-        var reach = new Ellipse
+        return new PerspectiveCamera
         {
-            Width = reachRadius * 2,
-            Height = reachRadius * 2,
-            Fill = new SolidColorBrush(Color.FromArgb(18, 59, 130, 246)),
-            Stroke = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
-            StrokeThickness = 2
+            Position = position,
+            LookDirection = target - position,
+            UpDirection = new Vector3D(0, 0, 1),
+            FieldOfView = 42,
+            NearPlaneDistance = 1,
+            FarPlaneDistance = reach * 9
         };
-        ScaraCanvas.Children.Add(reach);
-        Canvas.SetLeft(reach, center.X - reachRadius);
-        Canvas.SetTop(reach, center.Y - reachRadius);
-
-        ScaraCanvas.Children.Add(new Line
-        {
-            X1 = 24,
-            Y1 = center.Y,
-            X2 = Math.Max(ScaraCanvas.ActualWidth - 24, 24),
-            Y2 = center.Y,
-            Stroke = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
-            StrokeThickness = 1
-        });
-        ScaraCanvas.Children.Add(new Line
-        {
-            X1 = center.X,
-            Y1 = 24,
-            X2 = center.X,
-            Y2 = Math.Max(ScaraCanvas.ActualHeight - 24, 24),
-            Stroke = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
-            StrokeThickness = 1
-        });
     }
 
-    private void DrawScaraPath(ScaraPlaybackSnapshot playbackSnapshot)
+    private static Model3DGroup CreateScaraWorkspaceModel(ScaraRobotProfile profile)
     {
-        var pathBrush = new SolidColorBrush(Color.FromRgb(45, 212, 191));
+        var group = new Model3DGroup();
+        var reach = GetScaraReach(profile);
+        var gridColor = Color.FromArgb(95, 51, 65, 85);
+        var ringColor = Color.FromArgb(170, 59, 130, 246);
+        const double floorZ = -8;
+
+        for (var offset = -reach; offset <= reach; offset += 50)
+        {
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(-reach, offset, floorZ),
+                new Point3D(reach, offset, floorZ),
+                thickness: 1.8,
+                gridColor));
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(offset, -reach, floorZ),
+                new Point3D(offset, reach, floorZ),
+                thickness: 1.8,
+                gridColor));
+        }
+
+        const int segmentCount = 72;
+        for (var index = 0; index < segmentCount; index++)
+        {
+            var startAngle = 2 * Math.PI * index / segmentCount;
+            var endAngle = 2 * Math.PI * (index + 1) / segmentCount;
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(Math.Cos(startAngle) * reach, Math.Sin(startAngle) * reach, floorZ + 2),
+                new Point3D(Math.Cos(endAngle) * reach, Math.Sin(endAngle) * reach, floorZ + 2),
+                thickness: 3,
+                ringColor));
+        }
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(0, 0, -10),
+            new VisualVector3(24, 24, 12),
+            Color.FromRgb(148, 163, 184)));
+
+        return group;
+    }
+
+    private Model3DGroup CreateScaraPathModel(ScaraPlaybackSnapshot playbackSnapshot)
+    {
+        var group = new Model3DGroup();
+        var pathColor = Color.FromArgb(210, 45, 212, 191);
         for (var index = 1; index <= scaraFrameIndex; index++)
         {
             var previous = playbackSnapshot.Frames[index - 1].ToolPose;
             var current = playbackSnapshot.Frames[index].ToolPose;
-            var start = MapScaraPoint(previous.X, previous.Y, playbackSnapshot.Profile);
-            var end = MapScaraPoint(current.X, current.Y, playbackSnapshot.Profile);
 
-            ScaraCanvas.Children.Add(new Line
-            {
-                X1 = start.X,
-                Y1 = start.Y,
-                X2 = end.X,
-                Y2 = end.Y,
-                Stroke = pathBrush,
-                StrokeThickness = 3
-            });
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(previous.X, previous.Y, 26),
+                new Point3D(current.X, current.Y, 26),
+                thickness: 5,
+                pathColor));
         }
+
+        return group;
     }
 
-    private void DrawScaraRobot(
+    private static Model3DGroup CreateScaraRobotModel(
         ScaraRobotProfile profile,
         ScaraPlaybackFrame frame)
     {
+        const double z = 26;
         var shoulderRadians = frame.Joints.ShoulderDegrees * Math.PI / 180;
-        var elbowRadians = frame.Joints.ElbowDegrees * Math.PI / 180;
-        var elbowPose = new ScaraToolPose(
+        var elbowPose = new Point3D(
             profile.FirstLinkLengthMillimeters * Math.Cos(shoulderRadians),
-            profile.FirstLinkLengthMillimeters * Math.Sin(shoulderRadians));
-        var basePoint = MapScaraPoint(0, 0, profile);
-        var elbowPoint = MapScaraPoint(elbowPose.X, elbowPose.Y, profile);
-        var toolPoint = MapScaraPoint(frame.ToolPose.X, frame.ToolPose.Y, profile);
+            profile.FirstLinkLengthMillimeters * Math.Sin(shoulderRadians),
+            z);
+        var toolPoint = new Point3D(frame.ToolPose.X, frame.ToolPose.Y, z);
+        var basePoint = new Point3D(0, 0, z);
+        var group = new Model3DGroup();
 
-        DrawScaraLink(basePoint, elbowPoint, Color.FromRgb(59, 130, 246));
-        DrawScaraLink(elbowPoint, toolPoint, Color.FromRgb(34, 197, 94));
-        DrawScaraJoint(basePoint, 18, Color.FromRgb(147, 197, 253));
-        DrawScaraJoint(elbowPoint, 14, Color.FromRgb(134, 239, 172));
-        DrawScaraJoint(toolPoint, 10, Color.FromRgb(250, 204, 21));
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(0, 0, 8),
+            new VisualVector3(42, 42, 38),
+            Color.FromRgb(30, 64, 175)));
+        group.Children.Add(CreateOrientedBoxModel(basePoint, elbowPose, thickness: 18, Color.FromRgb(59, 130, 246)));
+        group.Children.Add(CreateOrientedBoxModel(elbowPose, toolPoint, thickness: 15, Color.FromRgb(34, 197, 94)));
+        group.Children.Add(CreateJointCube(basePoint, size: 28, Color.FromRgb(147, 197, 253)));
+        group.Children.Add(CreateJointCube(elbowPose, size: 23, Color.FromRgb(134, 239, 172)));
+        group.Children.Add(CreateJointCube(toolPoint, size: 16, Color.FromRgb(250, 204, 21)));
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(toolPoint.X, toolPoint.Y, toolPoint.Z - 18),
+            new VisualVector3(12, 12, 36),
+            Color.FromRgb(248, 113, 113)));
+
+        return group;
     }
 
-    private void DrawScaraLink(
-        Point start,
-        Point end,
-        Color color)
+    private static double GetScaraReach(ScaraRobotProfile profile) =>
+        profile.FirstLinkLengthMillimeters + profile.SecondLinkLengthMillimeters;
+
+    private void RenderSimpleArmFrame(int index)
     {
-        ScaraCanvas.Children.Add(new Line
+        if (simpleArmSnapshot is null)
         {
-            X1 = start.X,
-            Y1 = start.Y,
-            X2 = end.X,
-            Y2 = end.Y,
-            Stroke = new SolidColorBrush(color),
-            StrokeThickness = 12,
-            StrokeStartLineCap = PenLineCap.Round,
-            StrokeEndLineCap = PenLineCap.Round
-        });
+            return;
+        }
+
+        simpleArmFrameIndex = Math.Clamp(index, 0, simpleArmSnapshot.FrameCount - 1);
+        SimpleArmTimelineSlider.Value = simpleArmFrameIndex;
+
+        var frame = simpleArmSnapshot.Frames[simpleArmFrameIndex];
+        SimpleArmViewport.Children.Clear();
+        SimpleArmViewport.Camera = CreateSimpleArmCamera(simpleArmSnapshot.Profile);
+
+        var sceneRoot = new Model3DGroup();
+        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
+        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        sceneRoot.Children.Add(CreateSimpleArmWorkspaceModel(simpleArmSnapshot.Profile));
+        sceneRoot.Children.Add(CreateSimpleArmPathModel(simpleArmSnapshot));
+        sceneRoot.Children.Add(CreateSimpleArmRobotModel(simpleArmSnapshot.Profile, frame));
+        SimpleArmViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+
+        SimpleArmStateText.Text = frame.State.ToString();
+        SimpleArmJointsText.Text =
+            $"B={frame.Joints.BaseDegrees:0.###}, S={frame.Joints.ShoulderDegrees:0.###}, E={frame.Joints.ElbowDegrees:0.###} deg";
+        SimpleArmToolText.Text =
+            $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###}, O={frame.ToolPose.OrientationDegrees:0.###} deg";
+        SimpleArmCommandText.Text = frame.CommandName ?? "simulation";
+        SimpleArmTimeText.Text = $"{frame.Time.TotalSeconds:0.###} / {simpleArmSnapshot.TotalDuration.TotalSeconds:0.###} s";
+        SimpleArmStatusText.Text =
+            $"Frame {simpleArmFrameIndex + 1}/{simpleArmSnapshot.FrameCount} | " +
+            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
     }
 
-    private void DrawScaraJoint(
-        Point center,
-        double radius,
-        Color color)
+    private PerspectiveCamera CreateSimpleArmCamera(SimpleArmRobotProfile profile)
     {
-        var joint = new Ellipse
+        var reach = GetSimpleArmReach(profile);
+        var distance = reach * 3.05 * simpleArmZoomMultiplier;
+        var azimuth = DegreesToRadians(simpleArmAzimuthDegrees);
+        var elevation = DegreesToRadians(simpleArmElevationDegrees);
+        var target = new Point3D(0, 0, 18);
+        var position = new Point3D(
+            Math.Cos(elevation) * Math.Cos(azimuth) * distance,
+            Math.Cos(elevation) * Math.Sin(azimuth) * distance,
+            Math.Sin(elevation) * distance);
+
+        return new PerspectiveCamera
         {
-            Width = radius * 2,
-            Height = radius * 2,
-            Fill = new SolidColorBrush(color),
-            Stroke = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
-            StrokeThickness = 2
+            Position = position,
+            LookDirection = target - position,
+            UpDirection = new Vector3D(0, 0, 1),
+            FieldOfView = 40,
+            NearPlaneDistance = 1,
+            FarPlaneDistance = reach * 8
         };
-        ScaraCanvas.Children.Add(joint);
-        Canvas.SetLeft(joint, center.X - radius);
-        Canvas.SetTop(joint, center.Y - radius);
     }
 
-    private Point MapScaraPoint(
-        double xMillimeters,
-        double yMillimeters,
-        ScaraRobotProfile profile)
+    private static Model3DGroup CreateSimpleArmWorkspaceModel(SimpleArmRobotProfile profile)
     {
-        var center = new Point(
-            Math.Max(ScaraCanvas.ActualWidth, 1) / 2,
-            Math.Max(ScaraCanvas.ActualHeight, 1) / 2);
-        var scale = GetScaraScale(profile);
+        var group = new Model3DGroup();
+        var reach = GetSimpleArmReach(profile);
+        var gridColor = Color.FromArgb(95, 51, 65, 85);
+        var ringColor = Color.FromArgb(170, 34, 197, 94);
+        const double floorZ = -8;
 
-        return new Point(
-            center.X + (xMillimeters * scale),
-            center.Y - (yMillimeters * scale));
+        for (var offset = -reach; offset <= reach; offset += 50)
+        {
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(-reach, offset, floorZ),
+                new Point3D(reach, offset, floorZ),
+                thickness: 1.8,
+                gridColor));
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(offset, -reach, floorZ),
+                new Point3D(offset, reach, floorZ),
+                thickness: 1.8,
+                gridColor));
+        }
+
+        const int segmentCount = 72;
+        for (var index = 0; index < segmentCount; index++)
+        {
+            var startAngle = 2 * Math.PI * index / segmentCount;
+            var endAngle = 2 * Math.PI * (index + 1) / segmentCount;
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(Math.Cos(startAngle) * reach, Math.Sin(startAngle) * reach, floorZ + 2),
+                new Point3D(Math.Cos(endAngle) * reach, Math.Sin(endAngle) * reach, floorZ + 2),
+                thickness: 3,
+                ringColor));
+        }
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(0, 0, -10),
+            new VisualVector3(22, 22, 12),
+            Color.FromRgb(148, 163, 184)));
+
+        return group;
     }
 
-    private double GetScaraScale(ScaraRobotProfile profile)
+    private Model3DGroup CreateSimpleArmPathModel(SimpleArmPlaybackSnapshot playbackSnapshot)
     {
-        const double padding = 52;
-        var reach = profile.FirstLinkLengthMillimeters + profile.SecondLinkLengthMillimeters;
-        var width = Math.Max(ScaraCanvas.ActualWidth - (padding * 2), 1);
-        var height = Math.Max(ScaraCanvas.ActualHeight - (padding * 2), 1);
+        var group = new Model3DGroup();
+        var pathColor = Color.FromArgb(210, 45, 212, 191);
+        for (var index = 1; index <= simpleArmFrameIndex; index++)
+        {
+            var previous = playbackSnapshot.Frames[index - 1].ToolPose;
+            var current = playbackSnapshot.Frames[index].ToolPose;
 
-        return Math.Min(width, height) / (reach * 2);
+            group.Children.Add(CreateOrientedBoxModel(
+                new Point3D(previous.X, previous.Y, 22),
+                new Point3D(current.X, current.Y, 22),
+                thickness: 5,
+                pathColor));
+        }
+
+        return group;
     }
+
+    private static Model3DGroup CreateSimpleArmRobotModel(
+        SimpleArmRobotProfile profile,
+        SimpleArmPlaybackFrame frame)
+    {
+        const double z = 24;
+        var baseRadians = frame.Joints.BaseDegrees * Math.PI / 180;
+        var shoulderRadians = baseRadians + (frame.Joints.ShoulderDegrees * Math.PI / 180);
+        var elbowRadians = shoulderRadians + (frame.Joints.ElbowDegrees * Math.PI / 180);
+
+        var shoulder = new Point3D(
+            profile.FirstLinkLengthMillimeters * Math.Cos(baseRadians),
+            profile.FirstLinkLengthMillimeters * Math.Sin(baseRadians),
+            z);
+        var elbow = new Point3D(
+            shoulder.X + (profile.SecondLinkLengthMillimeters * Math.Cos(shoulderRadians)),
+            shoulder.Y + (profile.SecondLinkLengthMillimeters * Math.Sin(shoulderRadians)),
+            z);
+        var tool = new Point3D(frame.ToolPose.X, frame.ToolPose.Y, z);
+        var basePoint = new Point3D(0, 0, z);
+        var group = new Model3DGroup();
+
+        group.Children.Add(CreateColoredBoxModel(
+            new VisualVector3(0, 0, 5),
+            new VisualVector3(38, 38, 34),
+            Color.FromRgb(30, 64, 175)));
+        group.Children.Add(CreateOrientedBoxModel(basePoint, shoulder, thickness: 16, Color.FromRgb(59, 130, 246)));
+        group.Children.Add(CreateOrientedBoxModel(shoulder, elbow, thickness: 14, Color.FromRgb(34, 197, 94)));
+        group.Children.Add(CreateOrientedBoxModel(elbow, tool, thickness: 12, Color.FromRgb(250, 204, 21)));
+        group.Children.Add(CreateJointCube(basePoint, size: 26, Color.FromRgb(147, 197, 253)));
+        group.Children.Add(CreateJointCube(shoulder, size: 22, Color.FromRgb(134, 239, 172)));
+        group.Children.Add(CreateJointCube(elbow, size: 20, Color.FromRgb(253, 224, 71)));
+        group.Children.Add(CreateJointCube(tool, size: 16, Color.FromRgb(248, 113, 113)));
+        group.Children.Add(CreateOrientedBoxModel(
+            tool,
+            new Point3D(
+                tool.X + (Math.Cos(elbowRadians) * 42),
+                tool.Y + (Math.Sin(elbowRadians) * 42),
+                tool.Z),
+            thickness: 5,
+            Color.FromRgb(248, 113, 113)));
+
+        return group;
+    }
+
+    private static GeometryModel3D CreateJointCube(
+        Point3D center,
+        double size,
+        Color color) =>
+        CreateColoredBoxModel(
+            new VisualVector3(center.X, center.Y, center.Z),
+            new VisualVector3(size, size, size),
+            color);
+
+    private static GeometryModel3D CreateOrientedBoxModel(
+        Point3D start,
+        Point3D end,
+        double thickness,
+        Color color)
+    {
+        var direction = end - start;
+        if (direction.LengthSquared <= 0.000_001)
+        {
+            return CreateJointCube(start, thickness, color);
+        }
+
+        direction.Normalize();
+        var up = new Vector3D(0, 0, 1);
+        var side = Vector3D.CrossProduct(direction, up);
+        if (side.LengthSquared <= 0.000_001)
+        {
+            side = new Vector3D(1, 0, 0);
+        }
+
+        side.Normalize();
+        var vertical = Vector3D.CrossProduct(side, direction);
+        vertical.Normalize();
+
+        side *= thickness / 2;
+        vertical *= thickness / 2;
+
+        var mesh = new MeshGeometry3D
+        {
+            Positions = new Point3DCollection
+            {
+                start - side - vertical,
+                start + side - vertical,
+                start + side + vertical,
+                start - side + vertical,
+                end - side - vertical,
+                end + side - vertical,
+                end + side + vertical,
+                end - side + vertical
+            },
+            TriangleIndices = new Int32Collection
+            {
+                0, 2, 1, 0, 3, 2,
+                4, 5, 6, 4, 6, 7,
+                0, 1, 5, 0, 5, 4,
+                1, 2, 6, 1, 6, 5,
+                2, 3, 7, 2, 7, 6,
+                3, 0, 4, 3, 4, 7
+            }
+        };
+        var material = new DiffuseMaterial(new SolidColorBrush(color));
+
+        return new GeometryModel3D(mesh, material)
+        {
+            BackMaterial = material
+        };
+    }
+
+    private static double GetSimpleArmReach(SimpleArmRobotProfile profile) =>
+        profile.FirstLinkLengthMillimeters +
+        profile.SecondLinkLengthMillimeters +
+        profile.ThirdLinkLengthMillimeters;
 
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
@@ -2898,6 +3440,27 @@ public partial class MainWindow : Window
                 maximumDegrees: 150,
                 maximumVelocityDegreesPerSecond: 100));
 
+    private static SimpleArmRobotProfile CreateSimpleArmProfile() =>
+        new(
+            firstLinkLengthMillimeters: 120,
+            secondLinkLengthMillimeters: 90,
+            thirdLinkLengthMillimeters: 60,
+            baseJoint: new SimpleArmJoint(
+                SimpleArmJointId.Base,
+                minimumDegrees: -180,
+                maximumDegrees: 180,
+                maximumVelocityDegreesPerSecond: 100),
+            shoulderJoint: new SimpleArmJoint(
+                SimpleArmJointId.Shoulder,
+                minimumDegrees: -120,
+                maximumDegrees: 120,
+                maximumVelocityDegreesPerSecond: 90),
+            elbowJoint: new SimpleArmJoint(
+                SimpleArmJointId.Elbow,
+                minimumDegrees: -150,
+                maximumDegrees: 150,
+                maximumVelocityDegreesPerSecond: 80));
+
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
         if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
@@ -2934,6 +3497,16 @@ public partial class MainWindow : Window
     private static void ValidateScaraCommandSequence(
         RobotCommandSequence commands,
         ScaraRobotProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateSimpleArmCommandSequence(
+        RobotCommandSequence commands,
+        SimpleArmRobotProfile profile)
     {
         foreach (var command in commands.Commands)
         {
@@ -2998,6 +3571,25 @@ public partial class MainWindow : Window
         }
     }
 
+    private bool TryCreateSimpleArmSnapshotFromScript(
+        string script,
+        out SimpleArmPlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateSimpleArmSnapshot(script);
+            message = $"Simple arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = exception.Message;
+            return false;
+        }
+    }
+
     private void SetScriptStatus(
         string message,
         Color color)
@@ -3020,6 +3612,14 @@ public partial class MainWindow : Window
     {
         ScaraScriptStatusText.Text = message;
         ScaraScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetSimpleArmScriptStatus(
+        string message,
+        Color color)
+    {
+        SimpleArmScriptStatusText.Text = message;
+        SimpleArmScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()

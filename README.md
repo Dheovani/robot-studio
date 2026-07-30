@@ -18,6 +18,7 @@ HOME
 MOVE X=120 Y=80 Z=40 SPEED=90
 DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 SCARA SHOULDER=45 ELBOW=30 SPEED=80
+ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
 WAIT 500
 ```
 
@@ -26,6 +27,7 @@ WAIT 500
 - Open the first XY Plotter viewer as a beginner two-axis model.
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
+- Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
@@ -49,7 +51,8 @@ Implemented:
 - robot catalog metadata;
 - first XY Plotter domain, motion, and viewer path;
 - Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
-- SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 2D viewer;
+- SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
 - future boundaries for G-code and hardware.
@@ -59,7 +62,7 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional robot simulations such as simple articulated arms, delta robots, or drones.
+- additional robot visual simulations such as delta robots or drones.
 
 ## Run The Desktop App
 
@@ -74,7 +77,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, and `SCARA Robot` are available in the current development build.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, and `Simple Articulated Arm` are available in the current development build.
 
 ## Portable CLI And Core
 
@@ -219,7 +222,7 @@ When a version tag such as `v1.0.0` is pushed to GitHub, CI builds the Windows i
 - `src/RobotStudio.Scripting`: simple educational DSL exposed through a dialect contract prepared for future G-code.
 - `src/RobotStudio.Hardware`: future hardware integration boundary contracts and planned prototype metadata.
 - `src/RobotStudio.Cli`: terminal entry point for examples, validation, simulation, playback, and snapshot export.
-- `src/RobotStudio.Desktop`: WPF desktop app for robot selection and Cartesian 3D simulation.
+- `src/RobotStudio.Desktop`: WPF desktop app for robot selection and visual robot simulation.
 - `tests`: xUnit test projects for domain, motion, simulation, scripting, hardware boundaries, and desktop metadata/tooling.
 - `docs`: product, architecture, use case, testing, CI, and user documentation.
 
