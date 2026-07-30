@@ -1015,5 +1015,144 @@
                            TextAlignment="Right" />
             </Grid>
         </Grid>
+
+        <Grid x:Name="ScaraViewerView" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="RobotStudio"
+                               Foreground="#F9FAFB"
+                               FontSize="24"
+                               FontWeight="SemiBold" />
+                    <TextBlock Text="SCARA robot simulation"
+                               Foreground="#CBD5E1"
+                               FontSize="13" />
+                </StackPanel>
+
+                <StackPanel DockPanel.Dock="Right"
+                            Orientation="Horizontal"
+                            HorizontalAlignment="Right">
+                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button x:Name="ScaraPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
+                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="ScaraResetButton_Click" Content="Reset" />
+                </StackPanel>
+            </DockPanel>
+
+            <Grid Grid.Row="1" Margin="16,0,16,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="420" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="320" MinWidth="280" MaxWidth="460" />
+                </Grid.ColumnDefinitions>
+
+                <Border Grid.Column="0" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                    <Canvas x:Name="ScaraCanvas" ClipToBounds="True" SizeChanged="ScaraCanvas_SizeChanged" />
+                </Border>
+
+                <GridSplitter Grid.Column="1"
+                              Width="8"
+                              Margin="6,0,0,0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="#1E293B"
+                              ResizeBehavior="PreviousAndNext"
+                              ResizeDirection="Columns"
+                              ShowsPreview="True" />
+
+                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                    <StackPanel>
+                        <TextBlock Text="SCARA State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+
+                        <Grid Margin="0,18,0,18">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="110" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                                <RowDefinition Height="Auto" />
+                            </Grid.RowDefinitions>
+
+                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
+                            <TextBlock x:Name="ScaraStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Joints" />
+                            <TextBlock x:Name="ScaraJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Tool" />
+                            <TextBlock x:Name="ScaraToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
+                            <TextBlock x:Name="ScaraCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
+                            <TextBlock x:Name="ScaraTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                        </Grid>
+
+                        <TextBlock Text="SCARA DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <TextBox x:Name="ScaraScriptTextBox"
+                                 Height="132"
+                                 Margin="0,10,0,10"
+                                 Padding="10"
+                                 AcceptsReturn="True"
+                                 AcceptsTab="True"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 TextWrapping="NoWrap"
+                                 VerticalScrollBarVisibility="Auto"
+                                 HorizontalScrollBarVisibility="Auto"
+                                 Foreground="#E5E7EB"
+                                 Background="#111827"
+                                 BorderBrush="#334155"
+                                 CaretBrush="#E5E7EB" />
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateScaraScriptButton_Click" />
+                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateScaraScriptButton_Click" />
+                        </Grid>
+
+                        <TextBlock x:Name="ScaraScriptStatusText"
+                                   Foreground="#94A3B8"
+                                   TextWrapping="Wrap"
+                                   Text="Edit SCARA joint commands and simulate the articulated robot." />
+                    </StackPanel>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="16,0,16,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="260" />
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="ScaraPreviousFrameButton_Click" />
+                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="ScaraNextFrameButton_Click" />
+                </StackPanel>
+
+                <Slider x:Name="ScaraTimelineSlider"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Minimum="0"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="ScaraTimelineSlider_ValueChanged" />
+
+                <TextBlock x:Name="ScaraStatusText"
+                           Grid.Column="2"
+                           Margin="16,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="#E5E7EB"
+                           TextAlignment="Right" />
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

@@ -71,7 +71,7 @@ public sealed class RobotCatalogTests
             .ToArray();
 
         Assert.Equal(
-            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot"],
+            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot", "SCARA Robot"],
             openableTemplates.Select(template => template.Name));
         Assert.All(
             openableTemplates,
@@ -80,13 +80,14 @@ public sealed class RobotCatalogTests
             [
                 RobotViewerKind.CartesianThreeDimensional,
                 RobotViewerKind.XYPlotterTwoDimensional,
-                RobotViewerKind.DifferentialDriveTwoDimensional
+                RobotViewerKind.DifferentialDriveTwoDimensional,
+                RobotViewerKind.ScaraTwoDimensional
             ],
             openableTemplates.Select(template => template.Viewer.Kind));
     }
 
     [Fact]
-    public void Templates_WhenPlanned_ShouldNotBeOpenable()
+    public void Templates_WhenUnavailable_ShouldNotBeOpenable()
     {
         var unavailableTemplates = RobotCatalog.Templates
             .Where(template => template.Status != RobotAvailabilityStatus.Available);
@@ -94,5 +95,17 @@ public sealed class RobotCatalogTests
         Assert.All(
             unavailableTemplates,
             template => Assert.False(RobotCatalog.CanOpen(template)));
+    }
+
+    [Fact]
+    public void Templates_ShouldExposeScaraAsAvailableWithViewer()
+    {
+        var template = Assert.Single(
+            RobotCatalog.Templates,
+            template => template.Name == "SCARA Robot");
+
+        Assert.Equal(RobotAvailabilityStatus.Available, template.Status);
+        Assert.Equal(RobotViewerKind.ScaraTwoDimensional, template.Viewer.Kind);
+        Assert.True(RobotCatalog.CanOpen(template));
     }
 }

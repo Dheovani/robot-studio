@@ -1,0 +1,193 @@
+using RobotStudio.Domain;
+using RobotStudio.Domain.Articulated;
+using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
+
+namespace RobotStudio.Simulation;
+
+public sealed class ScaraSimulator
+{
+    private readonly ScaraMotionPlanner motionPlanner;
+    private readonly ScaraKinematics kinematics;
+
+    public ScaraSimulator()
+        : this(new ScaraMotionPlanner(), new ScaraKinematics())
+    {
+    }
+
+    public ScaraSimulator(
+        ScaraMotionPlanner motionPlanner,
+        ScaraKinematics kinematics)
+    {
+        ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(kinematics);
+
+        this.motionPlanner = motionPlanner;
+        this.kinematics = kinematics;
+    }
+
+    public ScaraSimulationResult Execute(
+        ScaraSimulationContext initialContext,
+        RobotCommandSequence commandSequence)
+    {
+        ArgumentNullException.ThrowIfNull(initialContext);
+        ArgumentNullException.ThrowIfNull(commandSequence);
+
+        var currentContext = initialContext;
+        var timeline = new List<ScaraSimulationStep>
+        {
+            CreateStep(currentContext, "SCARA simulation started.")
+        };
+
+        for (var commandIndex = 0; commandIndex < commandSequence.Commands.Count; commandIndex++)
+        {
+            var command = commandSequence.Commands[commandIndex];
+
+            try
+            {
+                currentContext = ExecuteCommand(currentContext, command, commandIndex, timeline);
+            }
+            catch (InvalidOperationException exception)
+            {
+                currentContext = currentContext with { State = RobotState.Faulted };
+                timeline.Add(CreateStep(currentContext, exception.Message, commandIndex, GetCommandName(command), command.Source));
+
+                return new ScaraSimulationResult(
+                    initialContext,
+                    currentContext,
+                    timeline.AsReadOnly(),
+                    exception);
+            }
+        }
+
+        return new ScaraSimulationResult(
+            initialContext,
+            currentContext,
+            timeline.AsReadOnly(),
+            Failure: null);
+    }
+
+    private ScaraSimulationContext ExecuteCommand(
+        ScaraSimulationContext context,
+        RobotCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        RobotCommandValidator.Validate(command, context.RobotProfile);
+
+        return command switch
+        {
+            HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
+            ScaraMoveJointsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
+            WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
+            _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
+        };
+    }
+
+    private ScaraSimulationContext ExecuteHome(
+        ScaraSimulationContext context,
+        HomeCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        var targetJoints = new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0);
+        var homingContext = TransitionTo(context, RobotState.Homing);
+        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
+
+        var motionPlan = motionPlanner.PlanMove(
+            context.CurrentJoints,
+            targetJoints,
+            context.RobotProfile);
+
+        var completedContext = homingContext with
+        {
+            CurrentJoints = targetJoints,
+            State = RobotState.Completed,
+            ElapsedTime = homingContext.ElapsedTime + motionPlan.TotalDuration
+        };
+
+        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
+
+        return completedContext;
+    }
+
+    private ScaraSimulationContext ExecuteMove(
+        ScaraSimulationContext context,
+        ScaraMoveJointsCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        var movingContext = TransitionTo(context, RobotState.Moving);
+        timeline.Add(CreateStep(movingContext, "SCARA joint move started.", commandIndex, nameof(ScaraMoveJointsCommand), command.Source));
+
+        var motionPlan = motionPlanner.PlanMove(
+            context.CurrentJoints,
+            command.TargetJoints,
+            context.RobotProfile,
+            command.RequestedJointVelocityDegreesPerSecond);
+
+        var completedContext = movingContext with
+        {
+            CurrentJoints = command.TargetJoints,
+            State = RobotState.Completed,
+            ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
+        };
+
+        timeline.Add(CreateStep(completedContext, "SCARA joint move completed.", commandIndex, nameof(ScaraMoveJointsCommand), command.Source));
+
+        return completedContext;
+    }
+
+    private ScaraSimulationContext ExecuteWait(
+        ScaraSimulationContext context,
+        WaitCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        var waitingContext = TransitionTo(context, RobotState.Waiting);
+        timeline.Add(CreateStep(waitingContext, "Wait command started.", commandIndex, nameof(WaitCommand), command.Source));
+
+        var completedContext = waitingContext with
+        {
+            State = RobotState.Completed,
+            ElapsedTime = waitingContext.ElapsedTime + command.Duration
+        };
+
+        timeline.Add(CreateStep(completedContext, "Wait command completed.", commandIndex, nameof(WaitCommand), command.Source));
+
+        return completedContext;
+    }
+
+    private static ScaraSimulationContext TransitionTo(
+        ScaraSimulationContext context,
+        RobotState nextState)
+    {
+        RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
+
+        return context with { State = nextState };
+    }
+
+    private ScaraSimulationStep CreateStep(
+        ScaraSimulationContext context,
+        string description,
+        int? commandIndex = null,
+        string? commandName = null,
+        RobotCommandSource? commandSource = null) =>
+        new(
+            context.ElapsedTime,
+            context.State,
+            context.CurrentJoints,
+            kinematics.Forward(context.RobotProfile, context.CurrentJoints),
+            description,
+            commandIndex,
+            commandName,
+            commandSource);
+
+    private static string GetCommandName(RobotCommand command) => command switch
+    {
+        HomeCommand => nameof(HomeCommand),
+        ScaraMoveJointsCommand => nameof(ScaraMoveJointsCommand),
+        WaitCommand => nameof(WaitCommand),
+        _ => command.GetType().Name
+    };
+}

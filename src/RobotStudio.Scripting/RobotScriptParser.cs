@@ -1,4 +1,5 @@
 using System.Globalization;
+using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
@@ -48,6 +49,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "WAIT" => ParseWait(lineNumber, line, arguments),
             "MOVE" => ParseMove(lineNumber, line, arguments),
             "DRIVE" => ParseDrive(lineNumber, line, arguments),
+            "SCARA" => ParseScara(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
         };
     }
@@ -136,6 +138,30 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             CreateSource(lineNumber, line));
     }
 
+    private static ScaraMoveJointsCommand ParseScara(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["SHOULDER", "ELBOW", "SPEED"]);
+
+        var shoulder = GetRequiredDouble(lineNumber, line, values, "SHOULDER", "SCARA");
+        var elbow = GetRequiredDouble(lineNumber, line, values, "ELBOW", "SCARA");
+
+        double? requestedJointVelocity = values.TryGetValue("SPEED", out var speedText)
+            ? ParseDouble(lineNumber, line, speedText, "SPEED")
+            : null;
+
+        return new ScaraMoveJointsCommand(
+            new ScaraJointPosition(shoulder, elbow),
+            requestedJointVelocity,
+            CreateSource(lineNumber, line));
+    }
+
     private static RobotCommandSource CreateSource(
         int lineNumber,
         string line) =>
@@ -180,7 +206,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
 
             if (!values.TryAdd(key, parts[1]))
             {
-                throw new ScriptParseException(lineNumber, line, $"Duplicate MOVE argument '{parts[0]}'.");
+                throw new ScriptParseException(lineNumber, line, $"Duplicate {line.Split(' ', 2)[0].ToUpperInvariant()} argument '{parts[0]}'.");
             }
         }
 

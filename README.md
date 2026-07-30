@@ -17,6 +17,7 @@ The project is intentionally educational. It is designed to help students unders
 HOME
 MOVE X=120 Y=80 Z=40 SPEED=90
 DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
+SCARA SHOULDER=45 ELBOW=30 SPEED=80
 WAIT 500
 ```
 
@@ -24,6 +25,7 @@ WAIT 500
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
 - Open the first XY Plotter viewer as a beginner two-axis model.
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
+- Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
@@ -47,6 +49,7 @@ Implemented:
 - robot catalog metadata;
 - first XY Plotter domain, motion, and viewer path;
 - Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
+- SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 2D viewer;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
 - future boundaries for G-code and hardware.
@@ -56,7 +59,7 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional robot simulations such as SCARA, articulated arms, delta robots, or drones.
+- additional robot simulations such as simple articulated arms, delta robots, or drones.
 
 ## Run The Desktop App
 
@@ -71,7 +74,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, and `Differential Drive Robot` are available in the current development build.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, and `SCARA Robot` are available in the current development build.
 
 ## Portable CLI And Core
 

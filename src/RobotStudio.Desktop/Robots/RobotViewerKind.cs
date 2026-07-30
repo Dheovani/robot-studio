@@ -5,5 +5,6 @@ public enum RobotViewerKind
     None,
     CartesianThreeDimensional,
     XYPlotterTwoDimensional,
-    DifferentialDriveTwoDimensional
+    DifferentialDriveTwoDimensional,
+    ScaraTwoDimensional
 }

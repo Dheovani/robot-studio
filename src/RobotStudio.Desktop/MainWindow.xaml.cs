@@ -10,6 +10,7 @@ using System.Windows.Threading;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
 using RobotStudio.Domain;
+using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
@@ -79,6 +80,14 @@ public partial class MainWindow : Window
         WAIT 500
         """;
 
+    private const string ScaraExampleScript =
+        """
+        HOME
+        SCARA SHOULDER=45 ELBOW=30 SPEED=80
+        SCARA SHOULDER=80 ELBOW=-40 SPEED=70
+        WAIT 500
+        """;
+
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
@@ -88,8 +97,10 @@ public partial class MainWindow : Window
     private RobotViewerKind activeViewerKind = RobotViewerKind.CartesianThreeDimensional;
     private CartesianPlaybackSnapshot? snapshot;
     private DifferentialDrivePlaybackSnapshot? differentialDriveSnapshot;
+    private ScaraPlaybackSnapshot? scaraSnapshot;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
+    private int scaraFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -157,6 +168,7 @@ public partial class MainWindow : Window
         isPlaying = !isPlaying;
         PlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         DifferentialDrivePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        ScaraPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -194,6 +206,19 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderDifferentialDriveFrame(index: 0);
+    }
+
+    private void ScaraResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (scaraSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderScaraFrame(index: 0);
     }
 
     private void ValidateDifferentialDriveScriptButton_Click(
@@ -239,6 +264,43 @@ public partial class MainWindow : Window
         SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
 
+    private void ValidateScaraScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateScaraSnapshotFromScript(ScaraScriptTextBox.Text, out _, out var message))
+        {
+            SetScaraScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetScaraScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateScaraScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateScaraSnapshotFromScript(ScaraScriptTextBox.Text, out var nextSnapshot, out var message))
+        {
+            SetScaraScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetScaraScriptStatus("Script did not produce a SCARA playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        scaraSnapshot = nextSnapshot;
+        ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimelineSlider.TickFrequency = 1;
+        RenderScaraFrame(index: 0);
+        SetScaraScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
     private void TimelineSlider_ValueChanged(
         object sender,
         RoutedPropertyChangedEventArgs<double> e)
@@ -269,6 +331,23 @@ public partial class MainWindow : Window
             }
 
             RenderDifferentialDriveFrame(nextDifferentialDriveFrame);
+            return;
+        }
+
+        if (activeViewerKind == RobotViewerKind.ScaraTwoDimensional)
+        {
+            if (scaraSnapshot is null)
+            {
+                return;
+            }
+
+            var nextScaraFrame = scaraFrameIndex + 1;
+            if (nextScaraFrame >= scaraSnapshot.FrameCount)
+            {
+                nextScaraFrame = 0;
+            }
+
+            RenderScaraFrame(nextScaraFrame);
             return;
         }
 
@@ -401,6 +480,7 @@ public partial class MainWindow : Window
         StopPlayback();
         CartesianViewerView.Visibility = Visibility.Collapsed;
         DifferentialDriveViewerView.Visibility = Visibility.Collapsed;
+        ScaraViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -616,6 +696,46 @@ public partial class MainWindow : Window
         RenderDifferentialDriveFrame(differentialDriveFrameIndex + 1);
     }
 
+    private void ScaraCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || scaraSnapshot is null)
+        {
+            return;
+        }
+
+        RenderScaraFrame(scaraFrameIndex);
+    }
+
+    private void ScaraTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || scaraSnapshot is null)
+        {
+            return;
+        }
+
+        RenderScaraFrame((int)Math.Round(e.NewValue));
+    }
+
+    private void ScaraPreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderScaraFrame(scaraFrameIndex - 1);
+    }
+
+    private void ScaraNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderScaraFrame(scaraFrameIndex + 1);
+    }
+
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (!IsLoaded || snapshot is null)
@@ -815,6 +935,21 @@ public partial class MainWindow : Window
         var result = new DifferentialDriveSimulator().Execute(context, commands);
 
         return new DifferentialDrivePlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private ScaraPlaybackSnapshot CreateScaraSnapshot(string script)
+    {
+        var profile = CreateScaraProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateScaraCommandSequence(commands, profile);
+
+        var context = ScaraSimulationContext.Create(
+            profile,
+            new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0));
+        var result = new ScaraSimulator().Execute(context, commands);
+
+        return new ScaraPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
@@ -1060,6 +1195,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (template.Viewer.Kind == RobotViewerKind.ScaraTwoDimensional)
+        {
+            ScaraViewerView.Visibility = Visibility.Visible;
+            EnsureScaraSnapshot();
+            RenderScaraFrame(index: 0);
+            return;
+        }
+
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
@@ -1070,14 +1213,20 @@ public partial class MainWindow : Window
         activeViewerKind = viewerKind;
         snapshot = null;
         differentialDriveSnapshot = null;
+        scaraSnapshot = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
+        scaraFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
         {
             case RobotViewerKind.DifferentialDriveTwoDimensional:
                 ConfigureDifferentialDriveViewer();
+                break;
+
+            case RobotViewerKind.ScaraTwoDimensional:
+                ConfigureScaraViewer();
                 break;
 
             case RobotViewerKind.XYPlotterTwoDimensional:
@@ -1130,6 +1279,14 @@ public partial class MainWindow : Window
             Color.FromRgb(148, 163, 184));
     }
 
+    private void ConfigureScaraViewer()
+    {
+        ScaraScriptTextBox.Text = ScaraExampleScript;
+        SetScaraScriptStatus(
+            "Edit SCARA joint commands and simulate the articulated robot.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private void EnsureCartesianSnapshot()
     {
         if (snapshot is not null)
@@ -1151,6 +1308,18 @@ public partial class MainWindow : Window
         differentialDriveSnapshot = CreateDifferentialDriveSnapshot(DifferentialDriveScriptTextBox.Text);
         DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
         DifferentialDriveTimelineSlider.TickFrequency = 1;
+    }
+
+    private void EnsureScaraSnapshot()
+    {
+        if (scaraSnapshot is not null)
+        {
+            return;
+        }
+
+        scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text);
+        ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimelineSlider.TickFrequency = 1;
     }
 
     private void InitializeTimelineForSnapshot()
@@ -1179,6 +1348,7 @@ public partial class MainWindow : Window
         isPlaying = false;
         PlayPauseButton.Content = "Play";
         DifferentialDrivePlayPauseButton.Content = "Play";
+        ScaraPlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -2523,6 +2693,174 @@ public partial class MainWindow : Window
             height - padding - ((yMillimeters - profile.MinimumYMillimeters) * scale));
     }
 
+    private void RenderScaraFrame(int index)
+    {
+        if (scaraSnapshot is null)
+        {
+            return;
+        }
+
+        scaraFrameIndex = Math.Clamp(index, 0, scaraSnapshot.FrameCount - 1);
+        ScaraTimelineSlider.Value = scaraFrameIndex;
+
+        var frame = scaraSnapshot.Frames[scaraFrameIndex];
+        ScaraCanvas.Children.Clear();
+        DrawScaraWorkspace(scaraSnapshot.Profile);
+        DrawScaraPath(scaraSnapshot);
+        DrawScaraRobot(scaraSnapshot.Profile, frame);
+
+        ScaraStateText.Text = frame.State.ToString();
+        ScaraJointsText.Text =
+            $"S={frame.Joints.ShoulderDegrees:0.###}, E={frame.Joints.ElbowDegrees:0.###} deg";
+        ScaraToolText.Text = $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###} mm";
+        ScaraCommandText.Text = frame.CommandName ?? "simulation";
+        ScaraTimeText.Text = $"{frame.Time.TotalSeconds:0.###} / {scaraSnapshot.TotalDuration.TotalSeconds:0.###} s";
+        ScaraStatusText.Text =
+            $"Frame {scaraFrameIndex + 1}/{scaraSnapshot.FrameCount} | " +
+            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
+    }
+
+    private void DrawScaraWorkspace(ScaraRobotProfile profile)
+    {
+        var center = MapScaraPoint(0, 0, profile);
+        var scale = GetScaraScale(profile);
+        var reachRadius = (profile.FirstLinkLengthMillimeters + profile.SecondLinkLengthMillimeters) * scale;
+
+        var reach = new Ellipse
+        {
+            Width = reachRadius * 2,
+            Height = reachRadius * 2,
+            Fill = new SolidColorBrush(Color.FromArgb(18, 59, 130, 246)),
+            Stroke = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
+            StrokeThickness = 2
+        };
+        ScaraCanvas.Children.Add(reach);
+        Canvas.SetLeft(reach, center.X - reachRadius);
+        Canvas.SetTop(reach, center.Y - reachRadius);
+
+        ScaraCanvas.Children.Add(new Line
+        {
+            X1 = 24,
+            Y1 = center.Y,
+            X2 = Math.Max(ScaraCanvas.ActualWidth - 24, 24),
+            Y2 = center.Y,
+            Stroke = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
+            StrokeThickness = 1
+        });
+        ScaraCanvas.Children.Add(new Line
+        {
+            X1 = center.X,
+            Y1 = 24,
+            X2 = center.X,
+            Y2 = Math.Max(ScaraCanvas.ActualHeight - 24, 24),
+            Stroke = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
+            StrokeThickness = 1
+        });
+    }
+
+    private void DrawScaraPath(ScaraPlaybackSnapshot playbackSnapshot)
+    {
+        var pathBrush = new SolidColorBrush(Color.FromRgb(45, 212, 191));
+        for (var index = 1; index <= scaraFrameIndex; index++)
+        {
+            var previous = playbackSnapshot.Frames[index - 1].ToolPose;
+            var current = playbackSnapshot.Frames[index].ToolPose;
+            var start = MapScaraPoint(previous.X, previous.Y, playbackSnapshot.Profile);
+            var end = MapScaraPoint(current.X, current.Y, playbackSnapshot.Profile);
+
+            ScaraCanvas.Children.Add(new Line
+            {
+                X1 = start.X,
+                Y1 = start.Y,
+                X2 = end.X,
+                Y2 = end.Y,
+                Stroke = pathBrush,
+                StrokeThickness = 3
+            });
+        }
+    }
+
+    private void DrawScaraRobot(
+        ScaraRobotProfile profile,
+        ScaraPlaybackFrame frame)
+    {
+        var shoulderRadians = frame.Joints.ShoulderDegrees * Math.PI / 180;
+        var elbowRadians = frame.Joints.ElbowDegrees * Math.PI / 180;
+        var elbowPose = new ScaraToolPose(
+            profile.FirstLinkLengthMillimeters * Math.Cos(shoulderRadians),
+            profile.FirstLinkLengthMillimeters * Math.Sin(shoulderRadians));
+        var basePoint = MapScaraPoint(0, 0, profile);
+        var elbowPoint = MapScaraPoint(elbowPose.X, elbowPose.Y, profile);
+        var toolPoint = MapScaraPoint(frame.ToolPose.X, frame.ToolPose.Y, profile);
+
+        DrawScaraLink(basePoint, elbowPoint, Color.FromRgb(59, 130, 246));
+        DrawScaraLink(elbowPoint, toolPoint, Color.FromRgb(34, 197, 94));
+        DrawScaraJoint(basePoint, 18, Color.FromRgb(147, 197, 253));
+        DrawScaraJoint(elbowPoint, 14, Color.FromRgb(134, 239, 172));
+        DrawScaraJoint(toolPoint, 10, Color.FromRgb(250, 204, 21));
+    }
+
+    private void DrawScaraLink(
+        Point start,
+        Point end,
+        Color color)
+    {
+        ScaraCanvas.Children.Add(new Line
+        {
+            X1 = start.X,
+            Y1 = start.Y,
+            X2 = end.X,
+            Y2 = end.Y,
+            Stroke = new SolidColorBrush(color),
+            StrokeThickness = 12,
+            StrokeStartLineCap = PenLineCap.Round,
+            StrokeEndLineCap = PenLineCap.Round
+        });
+    }
+
+    private void DrawScaraJoint(
+        Point center,
+        double radius,
+        Color color)
+    {
+        var joint = new Ellipse
+        {
+            Width = radius * 2,
+            Height = radius * 2,
+            Fill = new SolidColorBrush(color),
+            Stroke = new SolidColorBrush(Color.FromRgb(15, 23, 42)),
+            StrokeThickness = 2
+        };
+        ScaraCanvas.Children.Add(joint);
+        Canvas.SetLeft(joint, center.X - radius);
+        Canvas.SetTop(joint, center.Y - radius);
+    }
+
+    private Point MapScaraPoint(
+        double xMillimeters,
+        double yMillimeters,
+        ScaraRobotProfile profile)
+    {
+        var center = new Point(
+            Math.Max(ScaraCanvas.ActualWidth, 1) / 2,
+            Math.Max(ScaraCanvas.ActualHeight, 1) / 2);
+        var scale = GetScaraScale(profile);
+
+        return new Point(
+            center.X + (xMillimeters * scale),
+            center.Y - (yMillimeters * scale));
+    }
+
+    private double GetScaraScale(ScaraRobotProfile profile)
+    {
+        const double padding = 52;
+        var reach = profile.FirstLinkLengthMillimeters + profile.SecondLinkLengthMillimeters;
+        var width = Math.Max(ScaraCanvas.ActualWidth - (padding * 2), 1);
+        var height = Math.Max(ScaraCanvas.ActualHeight - (padding * 2), 1);
+
+        return Math.Min(width, height) / (reach * 2);
+    }
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -2544,6 +2882,21 @@ public partial class MainWindow : Window
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
             maximumAngularVelocityDegreesPerSecond: 180);
+
+    private static ScaraRobotProfile CreateScaraProfile() =>
+        new(
+            firstLinkLengthMillimeters: 180,
+            secondLinkLengthMillimeters: 120,
+            shoulderJoint: new ScaraJoint(
+                ScaraJointId.Shoulder,
+                minimumDegrees: -180,
+                maximumDegrees: 180,
+                maximumVelocityDegreesPerSecond: 120),
+            elbowJoint: new ScaraJoint(
+                ScaraJointId.Elbow,
+                minimumDegrees: -150,
+                maximumDegrees: 150,
+                maximumVelocityDegreesPerSecond: 100));
 
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
@@ -2571,6 +2924,16 @@ public partial class MainWindow : Window
     private static void ValidateDifferentialDriveCommandSequence(
         RobotCommandSequence commands,
         DifferentialDriveProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateScaraCommandSequence(
+        RobotCommandSequence commands,
+        ScaraRobotProfile profile)
     {
         foreach (var command in commands.Commands)
         {
@@ -2616,6 +2979,25 @@ public partial class MainWindow : Window
         }
     }
 
+    private bool TryCreateScaraSnapshotFromScript(
+        string script,
+        out ScaraPlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateScaraSnapshot(script);
+            message = $"SCARA script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = exception.Message;
+            return false;
+        }
+    }
+
     private void SetScriptStatus(
         string message,
         Color color)
@@ -2630,6 +3012,14 @@ public partial class MainWindow : Window
     {
         DifferentialDriveScriptStatusText.Text = message;
         DifferentialDriveScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetScaraScriptStatus(
+        string message,
+        Color color)
+    {
+        ScaraScriptStatusText.Text = message;
+        ScaraScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()

@@ -44,7 +44,7 @@ Expected result:
 - the Cartesian robot appears as `Available`;
 - the XY plotter appears as `Available`;
 - the differential drive robot appears as `Available`;
-- the SCARA robot appears as `Planned`;
+- the SCARA robot appears as `Available`;
 - the simple articulated arm appears as `Planned`;
 - the delta robot appears as `Planned`;
 - the drone appears as `Planned`;
@@ -85,6 +85,24 @@ Expected result:
 - the simulator executes `HOME`, differential-drive move commands, and `WAIT`;
 - the desktop viewer shows the workspace, path, robot pose, heading, and frame timeline.
 - the student can edit and simulate mobile DSL commands with `DRIVE X=... Y=... HEADING=... LIN=... ANG=...`.
+
+### Simulate SCARA Joint Movement From Code
+
+Actor: developer or instructor.
+
+Goal: introduce an articulated planar robot where movement is expressed through joints and the tool pose is calculated by kinematics.
+
+Current status: implemented for domain, forward/inverse kinematics, motion planning, deterministic simulation, playback sampling, simple DSL, and the first 2D desktop viewer.
+
+Expected result:
+
+- a SCARA profile defines link lengths and joint limits;
+- joint positions validate shoulder and elbow angles;
+- forward kinematics converts joint angles into tool X/Y pose;
+- inverse kinematics calculates an elbow-down joint solution for reachable tool poses;
+- the simulator executes `HOME`, SCARA joint moves, and `WAIT`;
+- the desktop viewer shows reachable workspace, joint links, current tool pose, planned path, state, command name, and frame timeline;
+- the student can edit and simulate SCARA DSL commands with `SCARA SHOULDER=... ELBOW=... SPEED=...`.
 
 ### Execute A Command Sequence
 

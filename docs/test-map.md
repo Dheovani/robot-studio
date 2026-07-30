@@ -39,6 +39,11 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Differential drive profile rejects poses outside the X/Y workspace.
 - [x] Differential drive pose normalizes headings for one turn.
 - [x] Differential drive pose computes shortest angular distance.
+- [x] SCARA profile validates joint positions.
+- [x] SCARA profile rejects joint positions outside limits.
+- [x] SCARA forward kinematics calculates tool pose.
+- [x] SCARA inverse kinematics calculates reachable elbow-down joint positions.
+- [x] SCARA inverse kinematics rejects unreachable tool poses.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -75,6 +80,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Differential drive planner creates rotation plans.
 - [x] Differential drive planner separates translation and rotation when both are required.
 - [x] Differential drive planner caps requested linear and angular velocities.
+- [x] SCARA planner creates coordinated joint-space plans.
+- [x] SCARA planner caps requested joint velocity by involved joint limits.
+- [x] SCARA planner handles stationary joint movement predictably.
+- [x] SCARA planner rejects target joints outside physical limits.
 
 ### Required Next Coverage
 
@@ -142,6 +151,15 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Differential drive playback sampling returns frames at fixed intervals.
 - [x] Differential drive playback sampling interpolates pose between timeline steps.
 - [x] Differential drive playback sampling preserves command metadata.
+- [x] SCARA simulator executes `HOME`.
+- [x] SCARA simulator executes joint move commands.
+- [x] SCARA simulator executes `WAIT`.
+- [x] SCARA simulator records state transitions in order.
+- [x] SCARA simulator returns `Faulted` when a command fails.
+- [x] SCARA playback sampling returns frames at fixed intervals.
+- [x] SCARA playback sampling interpolates joint position between timeline steps.
+- [x] SCARA playback sampling preserves command metadata.
+- [x] SCARA playback sampling includes tool poses calculated from kinematics.
 
 ### Required Next Coverage
 
@@ -160,6 +178,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `MOVE X=10 Y=20 Z=5 SPEED=100`.
 - [x] Parse `DRIVE X=10 Y=20 HEADING=90`.
 - [x] Parse `DRIVE X=10 Y=20 HEADING=90 LIN=100 ANG=45`.
+- [x] Parse `SCARA SHOULDER=45 ELBOW=30`.
+- [x] Parse `SCARA SHOULDER=45 ELBOW=30 SPEED=80`.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
 - [x] Missing `DRIVE` heading reports a clear parser error.
@@ -171,6 +191,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Duplicate MOVE argument reports a clear parser error.
 - [x] Unknown MOVE argument reports a clear parser error.
 - [x] Unknown DRIVE argument reports a clear parser error.
+- [x] Missing SCARA joint argument reports a clear parser error.
+- [x] Unknown SCARA argument reports a clear parser error.
 - [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage
@@ -270,7 +292,8 @@ Expected current behavior:
 - lists the Cartesian robot as available;
 - lists the XY plotter as available;
 - lists the differential drive robot as available;
-- lists the SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
+- lists the SCARA robot as available;
+- lists the simple articulated arm, delta robot, drone, and 6-DOF industrial arm as planned;
 - opens the Cartesian viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;

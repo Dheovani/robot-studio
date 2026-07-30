@@ -1,3 +1,4 @@
+using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
 using RobotStudio.Domain.Mobile;
@@ -75,6 +76,28 @@ public static class RobotCommandValidator
 
             case DifferentialDriveMoveCommand moveCommand:
                 profile.ValidatePosition(moveCommand.TargetPose);
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
+
+    public static void Validate(RobotCommand command, ScaraRobotProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case ScaraMoveJointsCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetJoints);
                 return;
 
             default:

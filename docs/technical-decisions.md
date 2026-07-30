@@ -118,7 +118,7 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 The first scripting format is a simple educational DSL, not G-code.
 
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
 
 Initial target syntax:
 
@@ -153,11 +153,13 @@ The current didactic order is:
 - Drone.
 - 6-DOF Industrial Arm.
 
-Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, and differential drive robot are available now. All other templates remain planned metadata.
+Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, and SCARA robot are available now. All other templates remain planned metadata.
 
 The XY plotter is modeled as a two-axis robot with its own `XYPlotterPosition`, `XYPlotterProfile`, and `XYPlotterMotionPlanner`. The desktop viewer maps it onto a fixed `Z=0` drawing plane so the current visual playback pipeline can be reused without pretending the domain model has a real Z axis.
 
 The differential drive robot is modeled as a mobile robot with `DifferentialDrivePose`, `DifferentialDriveProfile`, `DifferentialDriveMoveCommand`, `DifferentialDriveMotionPlanner`, `DifferentialDriveSimulator`, and `DifferentialDrivePlaybackSampler`. Its motion plan separates translation from rotation so mobile movement is not forced into the Cartesian linear planner. The first desktop viewer is 2D because heading and planar navigation are the core teaching concepts for this robot family.
+
+The SCARA robot is modeled as an articulated planar robot with `ScaraJointPosition`, `ScaraRobotProfile`, `ScaraKinematics`, `ScaraMoveJointsCommand`, `ScaraMotionPlanner`, `ScaraSimulator`, and `ScaraPlaybackSampler`. It introduces joint-space movement and forward/inverse kinematics without forcing articulated robots through Cartesian or mobile motion contracts. The first desktop viewer is 2D because shoulder angle, elbow angle, planar reach, and tool path are the core teaching concepts for this robot family.
 
 ### Hardware
 

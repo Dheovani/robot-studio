@@ -71,13 +71,15 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, and differential drive robot are available now. Planned templates are shown for the SCARA robot, simple articulated arm, delta robot, drone, and 6-DOF industrial arm.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, and SCARA robot are available now. Planned templates are shown for the simple articulated arm, delta robot, drone, and 6-DOF industrial arm.
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
 
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, and overlay controls.
 
 Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands.
+
+Opening the SCARA robot renders a 2D articulated robot viewer with reachable workspace, base joint, elbow joint, tool point, planned path, current joint angles, current tool pose, command name, and timeline controls. The viewer includes a SCARA DSL editor for `HOME`, `SCARA`, and `WAIT` commands.
 
 ## Build The Windows Installer
 

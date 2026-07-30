@@ -40,7 +40,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.ThreeDimensionalView,
+                RobotCapability.TwoDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.PathPlanning,
@@ -93,12 +93,12 @@ public static class RobotCatalog
                 "Differential Drive 2D Viewer")),
 
         new(
-            Id: "scara-planned",
+            Id: "scara",
             Name: "SCARA Robot",
             Family: Articulated,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Intermediate,
-            Description: "Planned selective-compliance arm for introducing joint motion, planar kinematics, and workspace limits.",
+            Description: "Selective-compliance arm for introducing joint motion, planar kinematics, and workspace limits.",
             Capabilities:
             [
                 RobotCapability.Simulation,
@@ -110,7 +110,9 @@ public static class RobotCatalog
                 RobotCapability.InverseKinematics,
                 RobotCapability.WorkspaceVisualization
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.ScaraTwoDimensional,
+                "SCARA 2D Viewer")),
 
         new(
             Id: "simple-articulated-arm-planned",
