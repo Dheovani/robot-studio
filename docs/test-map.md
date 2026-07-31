@@ -257,6 +257,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
 - [x] Training viewers expose multiple local examples.
+- [x] Shared non-Cartesian frame presenters format state, pose, time, frame counters, and explanations.
+- [x] Desktop script validation messages summarize syntax errors with line numbers.
+- [x] Desktop script validation messages explain physical limit failures.
+- [x] Desktop script validation messages explain invalid command arguments.
 - [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
 - [x] Script editor metadata classifies blank and unknown lines predictably.
 
@@ -360,12 +364,18 @@ Expected current behavior:
 - loads selected local Differential Drive examples from the mobile viewer;
 - loads selected local SCARA examples from the SCARA viewer;
 - loads selected local Simple Articulated Arm examples from the arm viewer;
+- loads local `.robot` or `.txt` script files into desktop script editors;
+- saves desktop script editor contents to local `.robot` or `.txt` files;
+- asks the student to validate or simulate after loading a script file;
+- supports keyboard shortcuts for loading, saving, validating, simulating, playback, frame stepping, zoom, and camera reset;
+- avoids consuming playback/frame/camera shortcuts while focus is inside script editors or example selectors;
+- zooms active 2D and 3D viewers with `Ctrl+mouse wheel`;
 - explains current SCARA and Simple Articulated Arm joint-space movement from the active frame;
 - provides play and reset controls;
 - provides a timeline slider;
 - provides camera orbit, zoom, reset, and predefined view controls;
 - rotates the camera when the user drags inside the 3D viewport;
-- zooms the camera when the user uses the mouse wheel inside the 3D viewport;
+- zooms the active viewer only when the user uses `Ctrl+mouse wheel`;
 - renders workspace limits as a visible boundary instead of an opaque block over the robot;
 - shows a didactic state panel with state, position, command, source line, time, and frame number;
 - updates the displayed frame, time, and state while playing.

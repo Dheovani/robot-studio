@@ -1,4 +1,5 @@
 using System.Globalization;
+using System.IO;
 using System.Text;
 using System.Windows;
 using System.Windows.Controls;
@@ -7,10 +8,12 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Shapes;
 using System.Windows.Threading;
+using Microsoft.Win32;
 using RobotStudio.Desktop.Examples;
 using RobotStudio.Desktop.Rendering;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
+using RobotStudio.Desktop.Viewers;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
@@ -40,6 +43,8 @@ public partial class MainWindow : Window
     private const double RobotCardGap = 18;
     private const double RobotCardMinimumWidth = 280;
     private const int MaximumPathPointCount = 140;
+    private const string ScriptFileDialogFilter = "RobotStudio scripts (*.robot;*.txt)|*.robot;*.txt|All files (*.*)|*.*";
+    private const string ScriptFileDefaultExtension = ".robot";
 
     private static readonly SolidColorBrush RobotCardBackgroundBrush =
         new(Color.FromRgb(15, 23, 42));
@@ -81,6 +86,7 @@ public partial class MainWindow : Window
     private double zoomMultiplier = 1;
     private bool isRotatingCamera;
     private Point lastMousePosition;
+    private double differentialDriveZoomMultiplier = 1;
     private double scaraAzimuthDegrees = -45;
     private double scaraElevationDegrees = 32;
     private double scaraZoomMultiplier = 1.8;
@@ -144,9 +150,122 @@ public partial class MainWindow : Window
         BuildRobotSelectionCards();
     }
 
+    private void MainWindow_PreviewKeyDown(
+        object sender,
+        KeyEventArgs e)
+    {
+        if (RobotSelectionView.Visibility == Visibility.Visible)
+        {
+            return;
+        }
+
+        var isControlPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+
+        if (isControlPressed && e.Key == Key.O)
+        {
+            LoadActiveScript();
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && e.Key == Key.S)
+        {
+            SaveActiveScript();
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && e.Key == Key.Enter)
+        {
+            ValidateActiveScript();
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.F5)
+        {
+            SimulateActiveScript();
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && e.Key == Key.R)
+        {
+            ResetActivePlayback();
+            e.Handled = true;
+            return;
+        }
+
+        if (IsTextInputFocused())
+        {
+            return;
+        }
+
+        if (e.Key == Key.Space)
+        {
+            TogglePlayback();
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.Left)
+        {
+            MoveActiveFrame(delta: -1);
+            e.Handled = true;
+            return;
+        }
+
+        if (e.Key == Key.Right)
+        {
+            MoveActiveFrame(delta: 1);
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && IsZoomInKey(e.Key))
+        {
+            ZoomActiveCamera(delta: -0.12);
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && IsZoomOutKey(e.Key))
+        {
+            ZoomActiveCamera(delta: 0.12);
+            e.Handled = true;
+            return;
+        }
+
+        if (isControlPressed && IsZeroKey(e.Key))
+        {
+            ResetActiveCamera();
+            e.Handled = true;
+        }
+    }
+
+    private void MainWindow_PreviewMouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control) ||
+            RobotSelectionView.Visibility == Visibility.Visible ||
+            !IsPointerOverActiveViewer())
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
+    }
+
     private void PlayPauseButton_Click(
         object sender,
         RoutedEventArgs e)
+    {
+        TogglePlayback();
+    }
+
+    private void TogglePlayback()
     {
         isPlaying = !isPlaying;
         PlayPauseButton.Content = isPlaying ? "Pause" : "Play";
@@ -378,6 +497,251 @@ public partial class MainWindow : Window
         SimpleArmTimelineSlider.TickFrequency = 1;
         RenderSimpleArmFrame(index: 0);
         SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
+    }
+
+    private void LoadCartesianScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            ScriptEditorTextBox,
+            SetScriptStatus,
+            () => snapshot = null);
+
+    private void SaveCartesianScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(ScriptEditorTextBox, SetScriptStatus);
+
+    private void LoadDifferentialDriveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            DifferentialDriveScriptTextBox,
+            SetDifferentialDriveScriptStatus,
+            () => differentialDriveSnapshot = null);
+
+    private void SaveDifferentialDriveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(DifferentialDriveScriptTextBox, SetDifferentialDriveScriptStatus);
+
+    private void LoadScaraScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            ScaraScriptTextBox,
+            SetScaraScriptStatus,
+            () => scaraSnapshot = null);
+
+    private void SaveScaraScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(ScaraScriptTextBox, SetScaraScriptStatus);
+
+    private void LoadSimpleArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            SimpleArmScriptTextBox,
+            SetSimpleArmScriptStatus,
+            () => simpleArmSnapshot = null);
+
+    private void SaveSimpleArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(SimpleArmScriptTextBox, SetSimpleArmScriptStatus);
+
+    private void LoadActiveScript()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                LoadDifferentialDriveScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                LoadScaraScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                LoadSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            default:
+                LoadCartesianScriptButton_Click(this, new RoutedEventArgs());
+                break;
+        }
+    }
+
+    private void SaveActiveScript()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                SaveDifferentialDriveScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                SaveScaraScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                SaveSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            default:
+                SaveCartesianScriptButton_Click(this, new RoutedEventArgs());
+                break;
+        }
+    }
+
+    private void ValidateActiveScript()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                ValidateDifferentialDriveScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                ValidateScaraScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                ValidateSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            default:
+                ValidateScriptButton_Click(this, new RoutedEventArgs());
+                break;
+        }
+    }
+
+    private void SimulateActiveScript()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                SimulateDifferentialDriveScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                SimulateScaraScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                SimulateSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            default:
+                SimulateScriptButton_Click(this, new RoutedEventArgs());
+                break;
+        }
+    }
+
+    private void ResetActivePlayback()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                DifferentialDriveResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                ScaraResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                SimpleArmResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            default:
+                ResetButton_Click(this, new RoutedEventArgs());
+                break;
+        }
+    }
+
+    private void MoveActiveFrame(int delta)
+    {
+        StopPlayback();
+
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                RenderDifferentialDriveFrame(differentialDriveFrameIndex + delta);
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                RenderScaraFrame(scaraFrameIndex + delta);
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                RenderSimpleArmFrame(simpleArmFrameIndex + delta);
+                break;
+
+            default:
+                RenderFrame(currentFrameIndex + delta);
+                break;
+        }
+    }
+
+    private void ZoomActiveCamera(double delta)
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                differentialDriveZoomMultiplier = Math.Clamp(differentialDriveZoomMultiplier + delta, 0.55, 4);
+                RenderDifferentialDriveFrame(differentialDriveFrameIndex);
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier + delta, 0.55, 4);
+                RenderScaraFrame(scaraFrameIndex);
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + delta, 0.55, 4);
+                RenderSimpleArmFrame(simpleArmFrameIndex);
+                break;
+
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                SetCameraControls(
+                    azimuth: azimuthDegrees,
+                    elevation: elevationDegrees,
+                    zoom: Math.Clamp(zoomMultiplier + delta, ZoomSlider.Minimum, ZoomSlider.Maximum));
+                break;
+        }
+    }
+
+    private void ResetActiveCamera()
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                differentialDriveZoomMultiplier = 1;
+                RenderDifferentialDriveFrame(differentialDriveFrameIndex);
+                break;
+
+            case RobotViewerKind.ScaraThreeDimensional:
+                scaraAzimuthDegrees = -45;
+                scaraElevationDegrees = 32;
+                scaraZoomMultiplier = 1.8;
+                RenderScaraFrame(scaraFrameIndex);
+                break;
+
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                simpleArmAzimuthDegrees = -45;
+                simpleArmElevationDegrees = 30;
+                simpleArmZoomMultiplier = 2.15;
+                RenderSimpleArmFrame(simpleArmFrameIndex);
+                break;
+
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                SetCameraControls(azimuth: -45, elevation: 35, zoom: 1);
+                break;
+        }
     }
 
     private void TimelineSlider_ValueChanged(
@@ -765,6 +1129,19 @@ public partial class MainWindow : Window
         RenderDifferentialDriveFrame(differentialDriveFrameIndex);
     }
 
+    private void DifferentialDriveCanvas_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
+    }
+
     private void DifferentialDriveTimelineSlider_ValueChanged(
         object sender,
         RoutedPropertyChangedEventArgs<double> e)
@@ -847,35 +1224,13 @@ public partial class MainWindow : Window
         object sender,
         MouseWheelEventArgs e)
     {
-        var zoomDelta = e.Delta > 0 ? -0.12 : 0.12;
-        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier + zoomDelta, 0.55, 4);
-        RenderScaraFrame(scaraFrameIndex);
-    }
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
 
-    private void ScaraZoomOutButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier + 0.18, 0.55, 4);
-        RenderScaraFrame(scaraFrameIndex);
-    }
-
-    private void ScaraZoomInButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        scaraZoomMultiplier = Math.Clamp(scaraZoomMultiplier - 0.18, 0.55, 4);
-        RenderScaraFrame(scaraFrameIndex);
-    }
-
-    private void ScaraResetCameraButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        scaraAzimuthDegrees = -45;
-        scaraElevationDegrees = 32;
-        scaraZoomMultiplier = 1.8;
-        RenderScaraFrame(scaraFrameIndex);
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
     }
 
     private void ScaraTimelineSlider_ValueChanged(
@@ -960,35 +1315,13 @@ public partial class MainWindow : Window
         object sender,
         MouseWheelEventArgs e)
     {
-        var zoomDelta = e.Delta > 0 ? -0.12 : 0.12;
-        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + zoomDelta, 0.55, 4);
-        RenderSimpleArmFrame(simpleArmFrameIndex);
-    }
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
 
-    private void SimpleArmZoomOutButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + 0.18, 0.55, 4);
-        RenderSimpleArmFrame(simpleArmFrameIndex);
-    }
-
-    private void SimpleArmZoomInButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier - 0.18, 0.55, 4);
-        RenderSimpleArmFrame(simpleArmFrameIndex);
-    }
-
-    private void SimpleArmResetCameraButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        simpleArmAzimuthDegrees = -45;
-        simpleArmElevationDegrees = 30;
-        simpleArmZoomMultiplier = 2.15;
-        RenderSimpleArmFrame(simpleArmFrameIndex);
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
     }
 
     private void SimpleArmTimelineSlider_ValueChanged(
@@ -1117,11 +1450,13 @@ public partial class MainWindow : Window
         object sender,
         MouseWheelEventArgs e)
     {
-        var zoomDelta = e.Delta > 0 ? -0.08 : 0.08;
-        SetCameraControls(
-            azimuth: azimuthDegrees,
-            elevation: elevationDegrees,
-            zoom: Math.Clamp(zoomMultiplier + zoomDelta, ZoomSlider.Minimum, ZoomSlider.Maximum));
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.08 : 0.08);
     }
 
     private void SetCameraControls(
@@ -1633,6 +1968,28 @@ public partial class MainWindow : Window
         comboBox.SelectedItem is RobotExample example
             ? example.Script
             : GetDefaultExampleScript(fallbackViewerKind);
+
+    private static bool IsTextInputFocused() =>
+        Keyboard.FocusedElement is TextBox or ComboBox;
+
+    private static bool IsZoomInKey(Key key) =>
+        key is Key.OemPlus or Key.Add;
+
+    private static bool IsZoomOutKey(Key key) =>
+        key is Key.OemMinus or Key.Subtract;
+
+    private static bool IsZeroKey(Key key) =>
+        key is Key.D0 or Key.NumPad0;
+
+    private bool IsPointerOverActiveViewer() =>
+        activeViewerKind switch
+        {
+            RobotViewerKind.DifferentialDriveTwoDimensional => DifferentialDriveCanvas.IsMouseOver,
+            RobotViewerKind.ScaraThreeDimensional => ScaraViewport.IsMouseOver,
+            RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewport.IsMouseOver,
+            RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewport.IsMouseOver,
+            _ => false
+        };
 
     private void EnsureCartesianSnapshot()
     {
@@ -2870,16 +3227,17 @@ public partial class MainWindow : Window
         DrawDifferentialDrivePath(differentialDriveSnapshot);
         DrawDifferentialDriveRobot(frame.Pose);
 
-        DifferentialDriveStateText.Text = frame.State.ToString();
-        DifferentialDrivePoseText.Text =
-            $"X={frame.Pose.X:0.###}, Y={frame.Pose.Y:0.###}, H={frame.Pose.HeadingDegrees:0.###} deg";
-        DifferentialDriveCommandText.Text = frame.CommandName ?? "simulation";
-        DifferentialDriveTimeText.Text =
-            $"{frame.Time.TotalSeconds:0.###} / {differentialDriveSnapshot.TotalDuration.TotalSeconds:0.###} s";
-        DifferentialDriveFramesText.Text = $"{differentialDriveFrameIndex + 1} / {differentialDriveSnapshot.FrameCount}";
-        DifferentialDriveStatusText.Text =
-            $"Frame {differentialDriveFrameIndex + 1}/{differentialDriveSnapshot.FrameCount} | " +
-            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
+        var status = RobotFramePresenter.Create(
+            frame,
+            differentialDriveFrameIndex,
+            differentialDriveSnapshot.FrameCount,
+            differentialDriveSnapshot.TotalDuration);
+        DifferentialDriveStateText.Text = status.State;
+        DifferentialDrivePoseText.Text = status.PrimaryPose;
+        DifferentialDriveCommandText.Text = status.Command;
+        DifferentialDriveTimeText.Text = status.Time;
+        DifferentialDriveFramesText.Text = status.Frames;
+        DifferentialDriveStatusText.Text = status.Footer;
     }
 
     private void DrawDifferentialDriveWorkspace(DifferentialDriveProfile profile)
@@ -3046,11 +3404,16 @@ public partial class MainWindow : Window
         var workspaceHeight = profile.MaximumYMillimeters - profile.MinimumYMillimeters;
         var scale = Math.Min(
             (width - (padding * 2)) / workspaceWidth,
-            (height - (padding * 2)) / workspaceHeight);
+            (height - (padding * 2)) / workspaceHeight) *
+            differentialDriveZoomMultiplier;
+        var contentWidth = workspaceWidth * scale;
+        var contentHeight = workspaceHeight * scale;
+        var originX = (width - contentWidth) / 2;
+        var originY = (height + contentHeight) / 2;
 
         return new Point(
-            padding + ((xMillimeters - profile.MinimumXMillimeters) * scale),
-            height - padding - ((yMillimeters - profile.MinimumYMillimeters) * scale));
+            originX + ((xMillimeters - profile.MinimumXMillimeters) * scale),
+            originY - ((yMillimeters - profile.MinimumYMillimeters) * scale));
     }
 
     private void RenderScaraFrame(int index)
@@ -3075,16 +3438,18 @@ public partial class MainWindow : Window
         sceneRoot.Children.Add(CreateScaraRobotModel(scaraSnapshot.Profile, frame));
         ScaraViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
 
-        ScaraStateText.Text = frame.State.ToString();
-        ScaraJointsText.Text =
-            $"S={frame.Joints.ShoulderDegrees:0.###}, E={frame.Joints.ElbowDegrees:0.###} deg";
-        ScaraToolText.Text = $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###} mm";
-        ScaraCommandText.Text = frame.CommandName ?? "simulation";
-        ScaraTimeText.Text = $"{frame.Time.TotalSeconds:0.###} / {scaraSnapshot.TotalDuration.TotalSeconds:0.###} s";
-        ScaraStatusText.Text =
-            $"Frame {scaraFrameIndex + 1}/{scaraSnapshot.FrameCount} | " +
-            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
-        ScaraMovementExplanationText.Text = CreateScaraMovementExplanation(frame);
+        var status = RobotFramePresenter.Create(
+            frame,
+            scaraFrameIndex,
+            scaraSnapshot.FrameCount,
+            scaraSnapshot.TotalDuration);
+        ScaraStateText.Text = status.State;
+        ScaraJointsText.Text = status.PrimaryPose;
+        ScaraToolText.Text = RobotFramePresenter.FormatScaraToolPose(frame);
+        ScaraCommandText.Text = status.Command;
+        ScaraTimeText.Text = status.Time;
+        ScaraStatusText.Text = status.Footer;
+        ScaraMovementExplanationText.Text = status.MovementExplanation;
     }
 
     private PerspectiveCamera CreateScaraCamera(ScaraRobotProfile profile)
@@ -3189,37 +3554,18 @@ public partial class MainWindow : Window
         sceneRoot.Children.Add(CreateSimpleArmRobotModel(simpleArmSnapshot.Profile, frame));
         SimpleArmViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
 
-        SimpleArmStateText.Text = frame.State.ToString();
-        SimpleArmJointsText.Text =
-            $"B={frame.Joints.BaseDegrees:0.###}, S={frame.Joints.ShoulderDegrees:0.###}, E={frame.Joints.ElbowDegrees:0.###} deg";
-        SimpleArmToolText.Text =
-            $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###}, O={frame.ToolPose.OrientationDegrees:0.###} deg";
-        SimpleArmCommandText.Text = frame.CommandName ?? "simulation";
-        SimpleArmTimeText.Text = $"{frame.Time.TotalSeconds:0.###} / {simpleArmSnapshot.TotalDuration.TotalSeconds:0.###} s";
-        SimpleArmStatusText.Text =
-            $"Frame {simpleArmFrameIndex + 1}/{simpleArmSnapshot.FrameCount} | " +
-            $"t={frame.Time.TotalSeconds:0.###}s | {frame.State}";
-        SimpleArmMovementExplanationText.Text = CreateSimpleArmMovementExplanation(frame);
-    }
-
-    private static string CreateScaraMovementExplanation(ScaraPlaybackFrame frame)
-    {
-        var commandName = frame.CommandName ?? "simulation";
-        return
-            $"{commandName} is represented as joint-space motion. " +
-            $"The shoulder and elbow angles define the current planar arm shape, " +
-            $"and forward kinematics maps those angles to the tool position " +
-            $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###} mm.";
-    }
-
-    private static string CreateSimpleArmMovementExplanation(SimpleArmPlaybackFrame frame)
-    {
-        var commandName = frame.CommandName ?? "simulation";
-        return
-            $"{commandName} is represented as joint-space motion. " +
-            $"The base angle rotates the arm on the floor plane, while shoulder and elbow angles compose the links. " +
-            $"Forward kinematics maps those joint angles to the tool pose " +
-            $"X={frame.ToolPose.X:0.###}, Y={frame.ToolPose.Y:0.###}, O={frame.ToolPose.OrientationDegrees:0.###} deg.";
+        var status = RobotFramePresenter.Create(
+            frame,
+            simpleArmFrameIndex,
+            simpleArmSnapshot.FrameCount,
+            simpleArmSnapshot.TotalDuration);
+        SimpleArmStateText.Text = status.State;
+        SimpleArmJointsText.Text = status.PrimaryPose;
+        SimpleArmToolText.Text = RobotFramePresenter.FormatSimpleArmToolPose(frame);
+        SimpleArmCommandText.Text = status.Command;
+        SimpleArmTimeText.Text = status.Time;
+        SimpleArmStatusText.Text = status.Footer;
+        SimpleArmMovementExplanationText.Text = status.MovementExplanation;
     }
 
     private PerspectiveCamera CreateSimpleArmCamera(SimpleArmRobotProfile profile)
@@ -3442,7 +3788,7 @@ public partial class MainWindow : Window
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
             nextSnapshot = null;
-            message = exception.Message;
+            message = ScriptValidationMessageFormatter.Format(exception);
             return false;
         }
     }
@@ -3461,7 +3807,7 @@ public partial class MainWindow : Window
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
             nextSnapshot = null;
-            message = exception.Message;
+            message = ScriptValidationMessageFormatter.Format(exception);
             return false;
         }
     }
@@ -3480,7 +3826,7 @@ public partial class MainWindow : Window
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
             nextSnapshot = null;
-            message = exception.Message;
+            message = ScriptValidationMessageFormatter.Format(exception);
             return false;
         }
     }
@@ -3499,8 +3845,68 @@ public partial class MainWindow : Window
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
             nextSnapshot = null;
-            message = exception.Message;
+            message = ScriptValidationMessageFormatter.Format(exception);
             return false;
+        }
+    }
+
+    private void LoadScriptInto(
+        TextBox target,
+        Action<string, Color> setStatus,
+        Action resetSnapshot)
+    {
+        var dialog = new OpenFileDialog
+        {
+            Title = "Load RobotStudio script",
+            DefaultExt = ScriptFileDefaultExtension,
+            Filter = ScriptFileDialogFilter,
+            CheckFileExists = true,
+            Multiselect = false
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            target.Text = File.ReadAllText(dialog.FileName, Encoding.UTF8);
+            resetSnapshot();
+            setStatus("Script loaded. Validate or simulate it before playback.", Color.FromRgb(74, 222, 128));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            setStatus($"Could not load script: {exception.Message}", Color.FromRgb(248, 113, 113));
+        }
+    }
+
+    private void SaveScriptFrom(
+        TextBox source,
+        Action<string, Color> setStatus)
+    {
+        var dialog = new SaveFileDialog
+        {
+            Title = "Save RobotStudio script",
+            DefaultExt = ScriptFileDefaultExtension,
+            Filter = ScriptFileDialogFilter,
+            AddExtension = true,
+            OverwritePrompt = true
+        };
+
+        if (dialog.ShowDialog(this) != true)
+        {
+            return;
+        }
+
+        try
+        {
+            File.WriteAllText(dialog.FileName, source.Text, Encoding.UTF8);
+            setStatus("Script saved.", Color.FromRgb(74, 222, 128));
+        }
+        catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
+        {
+            setStatus($"Could not save script: {exception.Message}", Color.FromRgb(248, 113, 113));
         }
     }
 

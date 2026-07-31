@@ -62,10 +62,11 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add a view cube or compact camera orientation selector.
 - [ ] Add optional beginner, teacher, and debug display modes.
 - [ ] Expand the local example catalog into a multi-example gallery for common scripts.
-- [ ] Extract a common desktop viewer shell for repeated state panels, script panels, timeline controls, and playback controls.
-- [ ] Add import/export for desktop scripts.
-- [ ] Add clearer validation summaries for invalid commands.
-- [ ] Add keyboard shortcuts for playback and camera controls.
+- [ ] Extract a common desktop viewer shell for repeated script panels, timeline controls, and playback controls.
+- [x] Extract shared non-Cartesian frame presentation for state panels and didactic movement explanations.
+- [x] Add import/export for desktop scripts.
+- [x] Add clearer validation summaries for invalid commands.
+- [x] Add keyboard shortcuts for playback, script files, validation, simulation, frame stepping, zoom, and camera controls.
 
 ## 7. Didactic Tools
 

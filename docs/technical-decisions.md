@@ -144,6 +144,10 @@ Reusable viewport infrastructure belongs in `RobotStudio.Desktop.Rendering`. Orb
 
 Local example metadata belongs in `RobotStudio.Desktop.Examples`. Examples are product/UI teaching assets that provide starter scripts for available viewers. They should not be hard-coded inside individual event handlers, and they should remain separate from parser or simulator rules.
 
+Shared viewer presentation logic belongs in `RobotStudio.Desktop.Viewers`. The WPF window may still own concrete control events and drawing calls, but repeated formatting of playback state, frame counters, command names, footer text, and didactic explanations should be moved into small presenter types that can be tested without launching WPF.
+
+Desktop script validation messages are formatted in `RobotStudio.Desktop.Scripting`. The parser and domain still throw explicit technical exceptions, while the desktop layer translates them into concise student-facing summaries with a probable category, the original detail, and a suggested next action.
+
 The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.
 
 The current didactic order is:

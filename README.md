@@ -29,6 +29,9 @@ WAIT 500
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
 - Load local teaching examples from Differential Drive, SCARA, and Simple Articulated Arm viewers.
+- Load and save `.robot` or `.txt` scripts in the desktop app.
+- Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
+- Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
 - Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.

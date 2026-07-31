@@ -8,7 +8,9 @@
         MinWidth="900"
         MinHeight="600"
         Icon="Assets/RobotStudio.ico"
-        Background="{DynamicResource AppBackgroundBrush}">
+        Background="{DynamicResource AppBackgroundBrush}"
+        PreviewKeyDown="MainWindow_PreviewKeyDown"
+        PreviewMouseWheel="MainWindow_PreviewMouseWheel">
     <Window.Resources>
         <SolidColorBrush x:Key="AppBackgroundBrush" Color="#111827" />
         <SolidColorBrush x:Key="PanelBackgroundBrush" Color="#0F172A" />
@@ -310,6 +312,24 @@
                                         Content="Simulate"
                                         ToolTip="Generate a deterministic playback snapshot from the current valid script."
                                         Click="SimulateScriptButton_Click" />
+                            </Grid>
+
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+
+                                <Button Grid.Column="0"
+                                        Margin="0,0,6,0"
+                                        Content="Load Script"
+                                        ToolTip="Load a DSL script from a local text file."
+                                        Click="LoadCartesianScriptButton_Click" />
+                                <Button Grid.Column="1"
+                                        Margin="6,0,0,0"
+                                        Content="Save Script"
+                                        ToolTip="Save the current DSL script to a local text file."
+                                        Click="SaveCartesianScriptButton_Click" />
                             </Grid>
 
                             <TextBlock x:Name="ScriptStatusText"
@@ -887,6 +907,7 @@
                         Background="#0F172A">
                     <Canvas x:Name="DifferentialDriveCanvas"
                             ClipToBounds="True"
+                            MouseWheel="DifferentialDriveCanvas_MouseWheel"
                             SizeChanged="DifferentialDriveCanvas_SizeChanged" />
                 </Border>
 
@@ -981,6 +1002,21 @@
                                 Content="Load Example"
                                 Click="LoadDifferentialDriveExampleButton_Click" />
 
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0"
+                                    Margin="0,0,6,0"
+                                    Content="Load Script"
+                                    Click="LoadDifferentialDriveScriptButton_Click" />
+                            <Button Grid.Column="1"
+                                    Margin="6,0,0,0"
+                                    Content="Save Script"
+                                    Click="SaveDifferentialDriveScriptButton_Click" />
+                        </Grid>
+
                         <TextBlock x:Name="DifferentialDriveScriptStatusText"
                                    Foreground="#94A3B8"
                                    TextWrapping="Wrap"
@@ -1047,9 +1083,6 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="ScaraZoomOutButton_Click" Content="Zoom -" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="ScaraZoomInButton_Click" Content="Zoom +" />
-                    <Button Width="96" Height="34" Margin="8,0,0,0" Click="ScaraResetCameraButton_Click" Content="Reset Cam" />
                     <Button x:Name="ScaraPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
                     <Button Width="80" Height="34" Margin="8,0,0,0" Click="ScaraResetButton_Click" Content="Reset" />
                 </StackPanel>
@@ -1149,6 +1182,21 @@
                                 Content="Load Example"
                                 Click="LoadScaraExampleButton_Click" />
 
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0"
+                                    Margin="0,0,6,0"
+                                    Content="Load Script"
+                                    Click="LoadScaraScriptButton_Click" />
+                            <Button Grid.Column="1"
+                                    Margin="6,0,0,0"
+                                    Content="Save Script"
+                                    Click="SaveScaraScriptButton_Click" />
+                        </Grid>
+
                         <TextBlock x:Name="ScaraScriptStatusText"
                                    Foreground="#94A3B8"
                                    TextWrapping="Wrap"
@@ -1218,9 +1266,6 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="SimpleArmZoomOutButton_Click" Content="Zoom -" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="SimpleArmZoomInButton_Click" Content="Zoom +" />
-                    <Button Width="96" Height="34" Margin="8,0,0,0" Click="SimpleArmResetCameraButton_Click" Content="Reset Cam" />
                     <Button x:Name="SimpleArmPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
                     <Button Width="80" Height="34" Margin="8,0,0,0" Click="SimpleArmResetButton_Click" Content="Reset" />
                 </StackPanel>
@@ -1319,6 +1364,21 @@
                         <Button Margin="0,0,0,10"
                                 Content="Load Example"
                                 Click="LoadSimpleArmExampleButton_Click" />
+
+                        <Grid Margin="0,0,0,10">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <Button Grid.Column="0"
+                                    Margin="0,0,6,0"
+                                    Content="Load Script"
+                                    Click="LoadSimpleArmScriptButton_Click" />
+                            <Button Grid.Column="1"
+                                    Margin="6,0,0,0"
+                                    Content="Save Script"
+                                    Click="SaveSimpleArmScriptButton_Click" />
+                        </Grid>
 
                         <TextBlock x:Name="SimpleArmScriptStatusText"
                                    Foreground="#94A3B8"

@@ -186,7 +186,7 @@ Expected result:
 - visualization consumes simulation output;
 - students can observe mechanical behavior;
 - students can drag inside the viewport to rotate the camera around the robot;
-- students can use the mouse wheel or zoom slider to inspect the robot from closer or farther away;
+- students can use `Ctrl+mouse wheel` or zoom controls to inspect the robot from closer or farther away;
 - students can reset the camera or choose predefined views;
 - workspace limits are visible without covering the robot mechanism;
 - students can inspect current state, position, command, source line, and simulated time;

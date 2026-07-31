@@ -85,6 +85,23 @@ Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reac
 
 The Differential Drive, SCARA, and Simple Articulated Arm viewers include an example selector and a `Load Example` button. Their side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
+Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading a script replaces the editor text and asks the student to validate or simulate before playback. Saving writes the current editor text without changing the simulation.
+
+When validation fails, the desktop app shows a student-facing summary. Syntax errors include the script line number when available, physical limit errors explain that the target is outside the workspace, and command argument errors suggest checking required values such as speed or duration.
+
+Desktop keyboard shortcuts:
+
+- `Ctrl+O`: load a script into the active viewer.
+- `Ctrl+S`: save the active viewer script.
+- `Ctrl+Enter`: validate the active script.
+- `F5`: simulate the active script.
+- `Space`: play or pause playback when focus is not inside an editor.
+- `Left` / `Right`: move one frame backward or forward when focus is not inside an editor.
+- `Ctrl+R`: reset playback to the first frame.
+- `Ctrl++` / `Ctrl+-`: zoom the active viewer when focus is not inside an editor.
+- `Ctrl+0`: reset the active viewer zoom or camera when focus is not inside an editor.
+- `Ctrl+mouse wheel`: zoom the active viewer under the mouse pointer.
+
 ## Build The Windows Installer
 
 Run from the repository root on Windows:
@@ -122,6 +139,7 @@ Current desktop controls:
 - didactic tooltips for robotics concepts such as workspace, TCP, homing, timeline, requested velocity, and effective velocity.
 - `Validate` to parse the current DSL script and check Cartesian limits.
 - `Simulate` to regenerate the visual playback from the current DSL script.
+- validation messages summarize syntax errors, physical limit errors, and invalid command arguments with suggested next steps.
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
 - step size and requested speed fields for manual jog commands.
 - manual actions append DSL commands and regenerate playback.
@@ -144,10 +162,12 @@ Current desktop controls:
 - overlay toggles for grid, global axes, X/Y/Z labels, workspace bounds, planned path, start/end markers, rails, carriages, and TCP/tool visibility.
 - azimuth, elevation, and zoom sliders for camera control.
 - mouse drag inside the 3D viewport for orbit rotation.
-- mouse wheel inside the 3D viewport for zoom.
+- `Ctrl+mouse wheel` zoom for active 2D and 3D viewers.
 - isometric, front, side, top, and reset camera buttons.
 - state panel showing current state, position, command, source line, simulated time, and frame number.
 - local example selector and `Load Example` controls for Differential Drive, SCARA, and Simple Articulated Arm.
+- `Load Script` and `Save Script` controls for desktop script editors.
+- keyboard shortcuts for active viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
 - movement explanation text for SCARA and Simple Articulated Arm joint-space commands.
 
 Print the built-in example script:
@@ -274,7 +294,6 @@ The CLI should later support:
 
 ## Not Available Yet
 
-- Loading script files in the desktop viewer.
 - G-code parsing.
 - Hardware communication.
 - Arduino or ESP32 integration.
