@@ -77,13 +77,13 @@ Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D vi
 
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, and overlay controls.
 
-Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands.
+Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands, plus a local example selector.
 
-Opening the SCARA robot renders a 3D articulated robot viewer with reachable workspace, volumetric base, shoulder joint, elbow joint, tool point, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes a SCARA DSL editor for `HOME`, `SCARA`, and `WAIT` commands.
+Opening the SCARA robot renders a 3D articulated robot viewer with reachable workspace, volumetric base, shoulder joint, elbow joint, tool point, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes a SCARA DSL editor for `HOME`, `SCARA`, and `WAIT` commands, plus a local example selector.
 
-Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes an ARM DSL editor for `HOME`, `ARM`, and `WAIT` commands.
+Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes an ARM DSL editor for `HOME`, `ARM`, and `WAIT` commands, plus a local example selector.
 
-The SCARA and Simple Articulated Arm viewers include a `Load Example` button that restores the default local teaching script for that robot. Their side panels also explain the current joint-space movement in terms of joints, forward kinematics, and tool pose.
+The Differential Drive, SCARA, and Simple Articulated Arm viewers include an example selector and a `Load Example` button. Their side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
 ## Build The Windows Installer
 
@@ -147,7 +147,7 @@ Current desktop controls:
 - mouse wheel inside the 3D viewport for zoom.
 - isometric, front, side, top, and reset camera buttons.
 - state panel showing current state, position, command, source line, simulated time, and frame number.
-- `Load Example` controls for available articulated viewers.
+- local example selector and `Load Example` controls for Differential Drive, SCARA, and Simple Articulated Arm.
 - movement explanation text for SCARA and Simple Articulated Arm joint-space commands.
 
 Print the built-in example script:

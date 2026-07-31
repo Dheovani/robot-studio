@@ -6,4 +6,7 @@ public sealed record RobotExample(
     RobotViewerKind ViewerKind,
     string Name,
     string Description,
-    string Script);
+    string Script)
+{
+    public override string ToString() => Name;
+}

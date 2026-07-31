@@ -941,6 +941,11 @@
                                    Foreground="#F9FAFB"
                                    FontSize="16"
                                    FontWeight="SemiBold" />
+                        <TextBlock Text="Example"
+                                   Margin="0,10,0,4"
+                                   Foreground="#94A3B8" />
+                        <ComboBox x:Name="DifferentialDriveExampleComboBox"
+                                  Margin="0,0,0,8" />
                         <TextBox x:Name="DifferentialDriveScriptTextBox"
                                  Height="132"
                                  Margin="0,10,0,10"
@@ -971,6 +976,10 @@
                                     Content="Simulate"
                                     Click="SimulateDifferentialDriveScriptButton_Click" />
                         </Grid>
+
+                        <Button Margin="0,0,0,10"
+                                Content="Load Example"
+                                Click="LoadDifferentialDriveExampleButton_Click" />
 
                         <TextBlock x:Name="DifferentialDriveScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1106,6 +1115,11 @@
                         </Grid>
 
                         <TextBlock Text="SCARA DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="Example"
+                                   Margin="0,10,0,4"
+                                   Foreground="#94A3B8" />
+                        <ComboBox x:Name="ScaraExampleComboBox"
+                                  Margin="0,0,0,8" />
                         <TextBox x:Name="ScaraScriptTextBox"
                                  Height="132"
                                  Margin="0,10,0,10"
@@ -1272,6 +1286,11 @@
                         </Grid>
 
                         <TextBlock Text="Arm DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <TextBlock Text="Example"
+                                   Margin="0,10,0,4"
+                                   Foreground="#94A3B8" />
+                        <ComboBox x:Name="SimpleArmExampleComboBox"
+                                  Margin="0,0,0,8" />
                         <TextBox x:Name="SimpleArmScriptTextBox"
                                  Height="132"
                                  Margin="0,10,0,10"

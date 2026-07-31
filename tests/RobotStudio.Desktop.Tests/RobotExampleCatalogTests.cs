@@ -6,20 +6,27 @@ namespace RobotStudio.Desktop.Tests;
 public sealed class RobotExampleCatalogTests
 {
     [Fact]
-    public void All_ShouldExposeOneExampleForEachOpenableViewer()
+    public void All_ShouldExposeExamplesForEachOpenableViewer()
     {
         var openableViewerKinds = RobotCatalog.Templates
             .Where(RobotCatalog.CanOpen)
             .Select(template => template.Viewer.Kind)
-            .Order()
             .ToArray();
 
-        var exampleViewerKinds = RobotExampleCatalog.All
-            .Select(example => example.ViewerKind)
-            .Order()
-            .ToArray();
+        Assert.All(
+            openableViewerKinds,
+            viewerKind => Assert.NotEmpty(RobotExampleCatalog.GetFor(viewerKind)));
+    }
 
-        Assert.Equal(openableViewerKinds, exampleViewerKinds);
+    [Fact]
+    public void GetFor_ShouldReturnOnlyExamplesForTheRequestedViewer()
+    {
+        var examples = RobotExampleCatalog.GetFor(RobotViewerKind.DifferentialDriveTwoDimensional);
+
+        Assert.NotEmpty(examples);
+        Assert.All(
+            examples,
+            example => Assert.Equal(RobotViewerKind.DifferentialDriveTwoDimensional, example.ViewerKind));
     }
 
     [Fact]
@@ -42,5 +49,13 @@ public sealed class RobotExampleCatalogTests
 
         Assert.Equal(RobotViewerKind.ScaraThreeDimensional, example.ViewerKind);
         Assert.Contains("SCARA", example.Script);
+    }
+
+    [Fact]
+    public void All_ShouldExposeMultipleExamplesForImplementedTrainingViewers()
+    {
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DifferentialDriveTwoDimensional).Count >= 2);
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.ScaraThreeDimensional).Count >= 2);
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.SimpleArmThreeDimensional).Count >= 2);
     }
 }

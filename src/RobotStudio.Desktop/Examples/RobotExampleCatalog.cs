@@ -17,6 +17,17 @@ public static class RobotExampleCatalog
             """),
 
         new(
+            RobotViewerKind.CartesianThreeDimensional,
+            "Cartesian two-axis move",
+            "Keeps Z steady while moving the TCP through X and Y.",
+            """
+            HOME
+            MOVE X=80 Y=40 Z=0 SPEED=70
+            MOVE X=180 Y=120 Z=0 SPEED=80
+            WAIT 300
+            """),
+
+        new(
             RobotViewerKind.XYPlotterTwoDimensional,
             "Planar plotting path",
             "Moves through two planar points before waiting.",
@@ -28,6 +39,20 @@ public static class RobotExampleCatalog
             """),
 
         new(
+            RobotViewerKind.XYPlotterTwoDimensional,
+            "Rectangular plotter path",
+            "Draws a simple rectangle using only X/Y movement.",
+            """
+            HOME
+            MOVE X=60 Y=40 Z=0 SPEED=80
+            MOVE X=220 Y=40 Z=0 SPEED=80
+            MOVE X=220 Y=140 Z=0 SPEED=80
+            MOVE X=60 Y=140 Z=0 SPEED=80
+            MOVE X=60 Y=40 Z=0 SPEED=80
+            WAIT 300
+            """),
+
+        new(
             RobotViewerKind.DifferentialDriveTwoDimensional,
             "Mobile navigation path",
             "Drives a mobile robot through two poses with different headings.",
@@ -35,6 +60,19 @@ public static class RobotExampleCatalog
             HOME
             DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
             DRIVE X=300 Y=220 HEADING=135 LIN=100 ANG=80
+            WAIT 500
+            """),
+
+        new(
+            RobotViewerKind.DifferentialDriveTwoDimensional,
+            "Mobile square route",
+            "Shows how a differential drive robot changes heading at each corner.",
+            """
+            HOME
+            DRIVE X=120 Y=60 HEADING=0 LIN=110 ANG=90
+            DRIVE X=260 Y=60 HEADING=90 LIN=110 ANG=90
+            DRIVE X=260 Y=200 HEADING=180 LIN=110 ANG=90
+            DRIVE X=120 Y=200 HEADING=-90 LIN=110 ANG=90
             WAIT 500
             """),
 
@@ -50,6 +88,18 @@ public static class RobotExampleCatalog
             """),
 
         new(
+            RobotViewerKind.ScaraThreeDimensional,
+            "SCARA elbow reversal",
+            "Highlights how the elbow joint changes the same planar mechanism shape.",
+            """
+            HOME
+            SCARA SHOULDER=35 ELBOW=80 SPEED=75
+            SCARA SHOULDER=35 ELBOW=-80 SPEED=75
+            SCARA SHOULDER=70 ELBOW=20 SPEED=70
+            WAIT 400
+            """),
+
+        new(
             RobotViewerKind.SimpleArmThreeDimensional,
             "Articulated arm joint motion",
             "Moves base, shoulder, and elbow joints through two poses.",
@@ -58,11 +108,28 @@ public static class RobotExampleCatalog
             ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
             ARM BASE=90 SHOULDER=-40 ELBOW=70 SPEED=70
             WAIT 500
+            """),
+
+        new(
+            RobotViewerKind.SimpleArmThreeDimensional,
+            "Arm reach and fold",
+            "Shows the arm extending forward and then folding back with coordinated joints.",
+            """
+            HOME
+            ARM BASE=20 SHOULDER=20 ELBOW=20 SPEED=70
+            ARM BASE=65 SHOULDER=50 ELBOW=-60 SPEED=80
+            ARM BASE=110 SHOULDER=-20 ELBOW=80 SPEED=65
+            WAIT 400
             """)
     ];
 
     public static IReadOnlyList<RobotExample> All => Examples;
 
+    public static IReadOnlyList<RobotExample> GetFor(RobotViewerKind viewerKind) =>
+        Examples
+            .Where(example => example.ViewerKind == viewerKind)
+            .ToArray();
+
     public static RobotExample GetDefaultFor(RobotViewerKind viewerKind) =>
-        Examples.Single(example => example.ViewerKind == viewerKind);
+        GetFor(viewerKind).First();
 }

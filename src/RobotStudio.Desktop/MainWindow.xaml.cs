@@ -303,12 +303,29 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        ScaraScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.ScaraThreeDimensional);
+        ScaraScriptTextBox.Text = GetSelectedExampleScript(
+            ScaraExampleComboBox,
+            RobotViewerKind.ScaraThreeDimensional);
         scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text);
         ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
         ScaraTimelineSlider.TickFrequency = 1;
         RenderScaraFrame(index: 0);
-        SetScaraScriptStatus("Loaded the default SCARA example.", Color.FromRgb(74, 222, 128));
+        SetScaraScriptStatus("Loaded the selected SCARA example.", Color.FromRgb(74, 222, 128));
+    }
+
+    private void LoadDifferentialDriveExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        DifferentialDriveScriptTextBox.Text = GetSelectedExampleScript(
+            DifferentialDriveExampleComboBox,
+            RobotViewerKind.DifferentialDriveTwoDimensional);
+        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(DifferentialDriveScriptTextBox.Text);
+        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimelineSlider.TickFrequency = 1;
+        RenderDifferentialDriveFrame(index: 0);
+        SetDifferentialDriveScriptStatus("Loaded the selected mobile robot example.", Color.FromRgb(74, 222, 128));
     }
 
     private void ValidateSimpleArmScriptButton_Click(
@@ -353,12 +370,14 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        SimpleArmScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.SimpleArmThreeDimensional);
+        SimpleArmScriptTextBox.Text = GetSelectedExampleScript(
+            SimpleArmExampleComboBox,
+            RobotViewerKind.SimpleArmThreeDimensional);
         simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text);
         SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
         SimpleArmTimelineSlider.TickFrequency = 1;
         RenderSimpleArmFrame(index: 0);
-        SetSimpleArmScriptStatus("Loaded the default articulated arm example.", Color.FromRgb(74, 222, 128));
+        SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
     }
 
     private void TimelineSlider_ValueChanged(
@@ -1566,6 +1585,9 @@ public partial class MainWindow : Window
 
     private void ConfigureDifferentialDriveViewer()
     {
+        ConfigureExampleSelector(
+            DifferentialDriveExampleComboBox,
+            RobotViewerKind.DifferentialDriveTwoDimensional);
         DifferentialDriveScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.DifferentialDriveTwoDimensional);
         SetDifferentialDriveScriptStatus(
             "Edit DRIVE commands and simulate the mobile robot.",
@@ -1574,6 +1596,9 @@ public partial class MainWindow : Window
 
     private void ConfigureScaraViewer()
     {
+        ConfigureExampleSelector(
+            ScaraExampleComboBox,
+            RobotViewerKind.ScaraThreeDimensional);
         ScaraScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.ScaraThreeDimensional);
         SetScaraScriptStatus(
             "Edit SCARA joint commands and simulate the articulated robot.",
@@ -1582,6 +1607,9 @@ public partial class MainWindow : Window
 
     private void ConfigureSimpleArmViewer()
     {
+        ConfigureExampleSelector(
+            SimpleArmExampleComboBox,
+            RobotViewerKind.SimpleArmThreeDimensional);
         SimpleArmScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.SimpleArmThreeDimensional);
         SetSimpleArmScriptStatus(
             "Edit ARM joint commands and simulate the articulated arm.",
@@ -1590,6 +1618,21 @@ public partial class MainWindow : Window
 
     private static string GetDefaultExampleScript(RobotViewerKind viewerKind) =>
         RobotExampleCatalog.GetDefaultFor(viewerKind).Script;
+
+    private static void ConfigureExampleSelector(
+        ComboBox comboBox,
+        RobotViewerKind viewerKind)
+    {
+        comboBox.ItemsSource = RobotExampleCatalog.GetFor(viewerKind);
+        comboBox.SelectedIndex = 0;
+    }
+
+    private static string GetSelectedExampleScript(
+        ComboBox comboBox,
+        RobotViewerKind fallbackViewerKind) =>
+        comboBox.SelectedItem is RobotExample example
+            ? example.Script
+            : GetDefaultExampleScript(fallbackViewerKind);
 
     private void EnsureCartesianSnapshot()
     {
