@@ -90,29 +90,24 @@ public partial class MainWindow : Window
     private double azimuthDegrees = -45;
     private double elevationDegrees = 35;
     private double zoomMultiplier = 1;
-    private bool isRotatingCamera;
-    private Point lastMousePosition;
+    private readonly ViewportOrbitInteractionState cartesianOrbitInteraction = new();
     private double differentialDriveZoomMultiplier = 1;
     private double scaraAzimuthDegrees = -45;
     private double scaraElevationDegrees = 32;
     private double scaraZoomMultiplier = 1.8;
-    private bool isRotatingScaraCamera;
-    private Point lastScaraMousePosition;
+    private readonly ViewportOrbitInteractionState scaraOrbitInteraction = new();
     private double simpleArmAzimuthDegrees = -45;
     private double simpleArmElevationDegrees = 30;
     private double simpleArmZoomMultiplier = 2.15;
-    private bool isRotatingSimpleArmCamera;
-    private Point lastSimpleArmMousePosition;
+    private readonly ViewportOrbitInteractionState simpleArmOrbitInteraction = new();
     private double deltaAzimuthDegrees = -45;
     private double deltaElevationDegrees = 32;
     private double deltaZoomMultiplier = 1.75;
-    private bool isRotatingDeltaCamera;
-    private Point lastDeltaMousePosition;
+    private readonly ViewportOrbitInteractionState deltaOrbitInteraction = new();
     private double droneAzimuthDegrees = -45;
     private double droneElevationDegrees = 34;
     private double droneZoomMultiplier = 1.55;
-    private bool isRotatingDroneCamera;
-    private Point lastDroneMousePosition;
+    private readonly ViewportOrbitInteractionState droneOrbitInteraction = new();
 
     private sealed class TimelineMarker
     {
@@ -1490,36 +1485,24 @@ public partial class MainWindow : Window
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingScaraCamera = true;
-        lastScaraMousePosition = e.GetPosition(ScaraViewport);
-        ScaraViewportHost.CaptureMouse();
-        ScaraViewportHost.Cursor = Cursors.SizeAll;
-        e.Handled = true;
+        scaraOrbitInteraction.BeginDrag(ScaraViewportHost, ScaraViewport, e);
     }
 
     private void ScaraViewport_MouseLeftButtonUp(
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingScaraCamera = false;
-        ScaraViewportHost.ReleaseMouseCapture();
-        ScaraViewportHost.Cursor = Cursors.Hand;
-        e.Handled = true;
+        scaraOrbitInteraction.EndDrag(ScaraViewportHost, e);
     }
 
     private void ScaraViewport_MouseMove(
         object sender,
         MouseEventArgs e)
     {
-        if (!isRotatingScaraCamera)
+        if (!scaraOrbitInteraction.TryGetDragDelta(ScaraViewport, e, out var deltaX, out var deltaY))
         {
             return;
         }
-
-        var currentPosition = e.GetPosition(ScaraViewport);
-        var deltaX = currentPosition.X - lastScaraMousePosition.X;
-        var deltaY = currentPosition.Y - lastScaraMousePosition.Y;
-        lastScaraMousePosition = currentPosition;
 
         scaraAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(scaraAzimuthDegrees - (deltaX * 0.35));
         scaraElevationDegrees = Math.Clamp(scaraElevationDegrees + (deltaY * 0.25), 5, 85);
@@ -1583,36 +1566,24 @@ public partial class MainWindow : Window
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingSimpleArmCamera = true;
-        lastSimpleArmMousePosition = e.GetPosition(SimpleArmViewport);
-        SimpleArmViewportHost.CaptureMouse();
-        SimpleArmViewportHost.Cursor = Cursors.SizeAll;
-        e.Handled = true;
+        simpleArmOrbitInteraction.BeginDrag(SimpleArmViewportHost, SimpleArmViewport, e);
     }
 
     private void SimpleArmViewport_MouseLeftButtonUp(
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingSimpleArmCamera = false;
-        SimpleArmViewportHost.ReleaseMouseCapture();
-        SimpleArmViewportHost.Cursor = Cursors.Hand;
-        e.Handled = true;
+        simpleArmOrbitInteraction.EndDrag(SimpleArmViewportHost, e);
     }
 
     private void SimpleArmViewport_MouseMove(
         object sender,
         MouseEventArgs e)
     {
-        if (!isRotatingSimpleArmCamera)
+        if (!simpleArmOrbitInteraction.TryGetDragDelta(SimpleArmViewport, e, out var deltaX, out var deltaY))
         {
             return;
         }
-
-        var currentPosition = e.GetPosition(SimpleArmViewport);
-        var deltaX = currentPosition.X - lastSimpleArmMousePosition.X;
-        var deltaY = currentPosition.Y - lastSimpleArmMousePosition.Y;
-        lastSimpleArmMousePosition = currentPosition;
 
         simpleArmAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(simpleArmAzimuthDegrees - (deltaX * 0.35));
         simpleArmElevationDegrees = Math.Clamp(simpleArmElevationDegrees + (deltaY * 0.25), 5, 85);
@@ -1676,36 +1647,24 @@ public partial class MainWindow : Window
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingDeltaCamera = true;
-        lastDeltaMousePosition = e.GetPosition(DeltaViewport);
-        DeltaViewportHost.CaptureMouse();
-        DeltaViewportHost.Cursor = Cursors.SizeAll;
-        e.Handled = true;
+        deltaOrbitInteraction.BeginDrag(DeltaViewportHost, DeltaViewport, e);
     }
 
     private void DeltaViewport_MouseLeftButtonUp(
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingDeltaCamera = false;
-        DeltaViewportHost.ReleaseMouseCapture();
-        DeltaViewportHost.Cursor = Cursors.Hand;
-        e.Handled = true;
+        deltaOrbitInteraction.EndDrag(DeltaViewportHost, e);
     }
 
     private void DeltaViewport_MouseMove(
         object sender,
         MouseEventArgs e)
     {
-        if (!isRotatingDeltaCamera)
+        if (!deltaOrbitInteraction.TryGetDragDelta(DeltaViewport, e, out var deltaX, out var deltaY))
         {
             return;
         }
-
-        var currentPosition = e.GetPosition(DeltaViewport);
-        var deltaX = currentPosition.X - lastDeltaMousePosition.X;
-        var deltaY = currentPosition.Y - lastDeltaMousePosition.Y;
-        lastDeltaMousePosition = currentPosition;
 
         deltaAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(deltaAzimuthDegrees - (deltaX * 0.35));
         deltaElevationDegrees = Math.Clamp(deltaElevationDegrees + (deltaY * 0.25), 5, 85);
@@ -1769,36 +1728,24 @@ public partial class MainWindow : Window
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingDroneCamera = true;
-        lastDroneMousePosition = e.GetPosition(DroneViewport);
-        DroneViewportHost.CaptureMouse();
-        DroneViewportHost.Cursor = Cursors.SizeAll;
-        e.Handled = true;
+        droneOrbitInteraction.BeginDrag(DroneViewportHost, DroneViewport, e);
     }
 
     private void DroneViewport_MouseLeftButtonUp(
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingDroneCamera = false;
-        DroneViewportHost.ReleaseMouseCapture();
-        DroneViewportHost.Cursor = Cursors.Hand;
-        e.Handled = true;
+        droneOrbitInteraction.EndDrag(DroneViewportHost, e);
     }
 
     private void DroneViewport_MouseMove(
         object sender,
         MouseEventArgs e)
     {
-        if (!isRotatingDroneCamera)
+        if (!droneOrbitInteraction.TryGetDragDelta(DroneViewport, e, out var deltaX, out var deltaY))
         {
             return;
         }
-
-        var currentPosition = e.GetPosition(DroneViewport);
-        var deltaX = currentPosition.X - lastDroneMousePosition.X;
-        var deltaY = currentPosition.Y - lastDroneMousePosition.Y;
-        lastDroneMousePosition = currentPosition;
 
         droneAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(droneAzimuthDegrees - (deltaX * 0.35));
         droneElevationDegrees = Math.Clamp(droneElevationDegrees + (deltaY * 0.25), 5, 85);
@@ -1905,36 +1852,24 @@ public partial class MainWindow : Window
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingCamera = true;
-        lastMousePosition = e.GetPosition(RobotViewport);
-        RobotViewportHost.CaptureMouse();
-        RobotViewportHost.Cursor = Cursors.SizeAll;
-        e.Handled = true;
+        cartesianOrbitInteraction.BeginDrag(RobotViewportHost, RobotViewport, e);
     }
 
     private void RobotViewport_MouseLeftButtonUp(
         object sender,
         MouseButtonEventArgs e)
     {
-        isRotatingCamera = false;
-        RobotViewportHost.ReleaseMouseCapture();
-        RobotViewportHost.Cursor = Cursors.Hand;
-        e.Handled = true;
+        cartesianOrbitInteraction.EndDrag(RobotViewportHost, e);
     }
 
     private void RobotViewport_MouseMove(
         object sender,
         MouseEventArgs e)
     {
-        if (!isRotatingCamera)
+        if (!cartesianOrbitInteraction.TryGetDragDelta(RobotViewport, e, out var deltaX, out var deltaY))
         {
             return;
         }
-
-        var currentPosition = e.GetPosition(RobotViewport);
-        var deltaX = currentPosition.X - lastMousePosition.X;
-        var deltaY = currentPosition.Y - lastMousePosition.Y;
-        lastMousePosition = currentPosition;
 
         SetCameraControls(
             azimuth: OrbitCameraFactory.NormalizeDegrees(azimuthDegrees - (deltaX * 0.35)),
