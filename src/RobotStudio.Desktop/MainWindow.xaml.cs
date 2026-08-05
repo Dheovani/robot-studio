@@ -1137,9 +1137,7 @@ public partial class MainWindow : Window
         RobotViewport.Children.Clear();
         ApplyCamera();
 
-        var sceneRoot = new Model3DGroup();
-        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(92, 105, 130)));
-        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        var sceneRoot = SceneLightingFactory.CreateDefault(ambientColor: Color.FromRgb(92, 105, 130));
 
         if (ShowGridCheckBox.IsChecked == true)
         {
@@ -3988,9 +3986,7 @@ public partial class MainWindow : Window
         ScaraViewport.Children.Clear();
         ScaraViewport.Camera = CreateScaraCamera(scaraSnapshot.Profile);
 
-        var sceneRoot = new Model3DGroup();
-        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
-        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        var sceneRoot = SceneLightingFactory.CreateDefault();
         sceneRoot.Children.Add(CreateScaraWorkspaceModel(scaraSnapshot.Profile));
         sceneRoot.Children.Add(CreateScaraPathModel(scaraSnapshot));
         sceneRoot.Children.Add(CreateScaraRobotModel(scaraSnapshot.Profile, frame));
@@ -4104,9 +4100,7 @@ public partial class MainWindow : Window
         SimpleArmViewport.Children.Clear();
         SimpleArmViewport.Camera = CreateSimpleArmCamera(simpleArmSnapshot.Profile);
 
-        var sceneRoot = new Model3DGroup();
-        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
-        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        var sceneRoot = SceneLightingFactory.CreateDefault();
         sceneRoot.Children.Add(CreateSimpleArmWorkspaceModel(simpleArmSnapshot.Profile));
         sceneRoot.Children.Add(CreateSimpleArmPathModel(simpleArmSnapshot));
         sceneRoot.Children.Add(CreateSimpleArmRobotModel(simpleArmSnapshot.Profile, frame));
@@ -4235,9 +4229,7 @@ public partial class MainWindow : Window
         DeltaViewport.Children.Clear();
         DeltaViewport.Camera = CreateDeltaCamera(deltaSnapshot.Profile);
 
-        var sceneRoot = new Model3DGroup();
-        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
-        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        var sceneRoot = SceneLightingFactory.CreateDefault();
         sceneRoot.Children.Add(CreateDeltaWorkspaceModel(deltaSnapshot.Profile));
         sceneRoot.Children.Add(CreateDeltaPathModel(deltaSnapshot));
         sceneRoot.Children.Add(CreateDeltaRobotModel(deltaSnapshot.Profile, frame));
@@ -4426,9 +4418,7 @@ public partial class MainWindow : Window
         DroneViewport.Children.Clear();
         DroneViewport.Camera = CreateDroneCamera(droneSnapshot.Profile);
 
-        var sceneRoot = new Model3DGroup();
-        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
-        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        var sceneRoot = SceneLightingFactory.CreateDefault();
         sceneRoot.Children.Add(CreateDroneWorkspaceModel(droneSnapshot.Profile));
         sceneRoot.Children.Add(CreateDronePathModel(droneSnapshot));
         sceneRoot.Children.Add(CreateDroneModel(frame));

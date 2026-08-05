@@ -144,7 +144,7 @@ Cross-family simulation contracts belong in `RobotStudio.Simulation`. `IRobotPla
 
 Visual coordinate and camera decisions must remain outside the domain model.
 
-Reusable viewport infrastructure belongs in `RobotStudio.Desktop.Rendering`. Orbit camera construction, angular normalization, pointer-drag interaction state, and basic mesh generation are desktop rendering concerns, not domain or simulation rules. Robot-specific viewers should decide which conceptual parts to show, while shared rendering helpers should handle repeated WPF `Viewport3D` mechanics such as cameras, mouse capture, drag deltas, boxes, oriented links, planar grids, reachable workspace rings, and simple volumetric markers.
+Reusable viewport infrastructure belongs in `RobotStudio.Desktop.Rendering`. Orbit camera construction, angular normalization, pointer-drag interaction state, scene lighting, and basic mesh generation are desktop rendering concerns, not domain or simulation rules. Robot-specific viewers should decide which conceptual parts to show, while shared rendering helpers should handle repeated WPF `Viewport3D` mechanics such as cameras, lights, mouse capture, drag deltas, boxes, oriented links, planar grids, reachable workspace rings, and simple volumetric markers.
 
 Local example metadata belongs in `RobotStudio.Desktop.Examples`. Examples are product/UI teaching assets that provide starter scripts for available viewers. They should not be hard-coded inside individual event handlers, and they should remain separate from parser or simulator rules.
 
