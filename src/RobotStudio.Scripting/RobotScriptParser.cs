@@ -1,4 +1,5 @@
 using System.Globalization;
+using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
@@ -53,6 +54,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "SCARA" => ParseScara(lineNumber, line, arguments),
             "ARM" => ParseSimpleArm(lineNumber, line, arguments),
             "DELTA" => ParseDelta(lineNumber, line, arguments),
+            "DRONE" => ParseDrone(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
         };
     }
@@ -212,6 +214,36 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         return new DeltaMoveActuatorsCommand(
             new DeltaActuatorPosition(actuatorA, actuatorB, actuatorC),
             requestedActuatorVelocity,
+            CreateSource(lineNumber, line));
+    }
+
+    private static DroneMoveCommand ParseDrone(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["X", "Y", "Z", "YAW", "SPEED", "YAW_SPEED"]);
+
+        var x = GetRequiredDouble(lineNumber, line, values, "X", "DRONE");
+        var y = GetRequiredDouble(lineNumber, line, values, "Y", "DRONE");
+        var z = GetRequiredDouble(lineNumber, line, values, "Z", "DRONE");
+        var yaw = GetRequiredDouble(lineNumber, line, values, "YAW", "DRONE");
+
+        double? requestedLinearVelocity = values.TryGetValue("SPEED", out var speedText)
+            ? ParseDouble(lineNumber, line, speedText, "SPEED")
+            : null;
+        double? requestedYawVelocity = values.TryGetValue("YAW_SPEED", out var yawSpeedText)
+            ? ParseDouble(lineNumber, line, yawSpeedText, "YAW_SPEED")
+            : null;
+
+        return new DroneMoveCommand(
+            new DronePose(x, y, z, yaw),
+            requestedLinearVelocity,
+            requestedYawVelocity,
             CreateSource(lineNumber, line));
     }
 

@@ -20,6 +20,7 @@ DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 SCARA SHOULDER=45 ELBOW=30 SPEED=80
 ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
 DELTA A=30 B=60 C=90 SPEED=80
+DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 WAIT 500
 ```
 
@@ -60,6 +61,7 @@ Implemented:
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- Drone domain, 3D pose model, yaw orientation, coordinated motion planner, deterministic simulator, DSL support, and playback sampler;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
 - shared playback contracts for cross-family simulation summaries;
 - local desktop teaching examples and selectors for available training viewers;
@@ -72,7 +74,8 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional visual simulations such as drones or 6-DOF industrial arms.
+- Drone desktop viewer;
+- additional visual simulations such as 6-DOF industrial arms.
 
 ## Run The Desktop App
 

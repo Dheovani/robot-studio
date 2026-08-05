@@ -1,3 +1,4 @@
+using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
@@ -143,6 +144,28 @@ public static class RobotCommandValidator
 
             case DeltaMoveActuatorsCommand moveCommand:
                 profile.ValidatePosition(moveCommand.TargetActuators);
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
+
+    public static void Validate(RobotCommand command, DroneProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case DroneMoveCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetPose);
                 return;
 
             default:

@@ -155,6 +155,36 @@ public sealed class RobotScriptParserTests
     }
 
     [Fact]
+    public void Parse_WhenDroneIsValid_ShouldReturnDroneMoveCommand()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45");
+
+        var command = Assert.IsType<DroneMoveCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(120, command.TargetPose.XMillimeters);
+        Assert.Equal(80, command.TargetPose.YMillimeters);
+        Assert.Equal(40, command.TargetPose.ZMillimeters);
+        Assert.Equal(90, command.TargetPose.YawDegrees);
+        Assert.Equal(100, command.RequestedLinearVelocityMillimetersPerSecond);
+        Assert.Equal(45, command.RequestedYawVelocityDegreesPerSecond);
+        Assert.Equal(1, command.Source?.LineNumber);
+        Assert.Equal("DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45", command.Source?.Text);
+    }
+
+    [Fact]
+    public void Parse_WhenDroneHasNoSpeeds_ShouldReturnDroneCommandWithoutRequestedVelocities()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DRONE X=120 Y=80 Z=40 YAW=90");
+
+        var command = Assert.IsType<DroneMoveCommand>(Assert.Single(sequence.Commands));
+        Assert.Null(command.RequestedLinearVelocityMillimetersPerSecond);
+        Assert.Null(command.RequestedYawVelocityDegreesPerSecond);
+    }
+
+    [Fact]
     public void Parse_WhenCommandIsUnknown_ShouldThrowWithLineNumber()
     {
         var parser = new RobotScriptParser();
@@ -220,6 +250,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("DELTA requires C", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDroneMissesYaw_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(
+            () => parser.Parse("DRONE X=120 Y=80 Z=40"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("DRONE requires YAW", exception.Message);
     }
 
     [Fact]
@@ -322,6 +364,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("Unknown DELTA argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDroneHasUnknownArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("DRONE X=120 Y=80 Z=40 YAW=90 ROLL=10"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Unknown DRONE argument", exception.Message);
     }
 
     [Fact]

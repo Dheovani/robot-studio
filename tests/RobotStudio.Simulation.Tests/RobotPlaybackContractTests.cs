@@ -1,4 +1,5 @@
 using RobotStudio.Domain;
+using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
@@ -18,7 +19,8 @@ public sealed class RobotPlaybackContractTests
             CreateDifferentialDriveSnapshot(),
             CreateScaraSnapshot(),
             CreateSimpleArmSnapshot(),
-            CreateDeltaSnapshot()
+            CreateDeltaSnapshot(),
+            CreateDroneSnapshot()
         ];
 
         Assert.All(
@@ -41,7 +43,8 @@ public sealed class RobotPlaybackContractTests
             CreateDifferentialDriveSnapshot().LastFrame,
             CreateScaraSnapshot().LastFrame,
             CreateSimpleArmSnapshot().LastFrame,
-            CreateDeltaSnapshot().LastFrame
+            CreateDeltaSnapshot().LastFrame,
+            CreateDroneSnapshot().LastFrame
         ];
 
         Assert.All(
@@ -188,6 +191,33 @@ public sealed class RobotPlaybackContractTests
         var result = new DeltaSimulator().Execute(context, sequence);
 
         return new DeltaPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private static DronePlaybackSnapshot CreateDroneSnapshot()
+    {
+        var profile = new DroneProfile(
+            minimumXMillimeters: 0,
+            maximumXMillimeters: 500,
+            minimumYMillimeters: 0,
+            maximumYMillimeters: 400,
+            minimumZMillimeters: 0,
+            maximumZMillimeters: 250,
+            maximumLinearVelocityMillimetersPerSecond: 180,
+            maximumYawVelocityDegreesPerSecond: 120);
+        var context = DroneSimulationContext.Create(
+            profile,
+            new DronePose(0, 0, 0, 0));
+        var sequence = new RobotCommandSequence(
+        [
+            new DroneMoveCommand(
+                new DronePose(120, 80, 40, 90),
+                requestedLinearVelocityMillimetersPerSecond: 120,
+                requestedYawVelocityDegreesPerSecond: 90)
+        ]);
+        var result = new DroneSimulator().Execute(context, sequence);
+
+        return new DronePlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 }

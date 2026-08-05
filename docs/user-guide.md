@@ -270,6 +270,14 @@ DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 
 `LIN` is requested linear velocity in millimeters per second. `ANG` is requested angular velocity in degrees per second.
 
+Drone movement:
+
+```txt
+DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
+```
+
+`SPEED` is requested 3D linear velocity in millimeters per second. `YAW_SPEED` is requested yaw velocity in degrees per second.
+
 ```txt
 HOME
 MOVE X=10 Y=20 Z=5 SPEED=100
@@ -280,6 +288,7 @@ Current parser behavior:
 
 - `HOME` moves the first Cartesian robot to `(0, 0, 0)`;
 - `MOVE` moves to a Cartesian position;
+- `DRONE` moves to a simplified aerial pose in the core simulator;
 - `WAIT` advances simulated time without moving the robot;
 - `SPEED` requests a movement speed in millimeters per second;
 - physical axis limits still cap the effective movement speed;

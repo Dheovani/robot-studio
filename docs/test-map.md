@@ -52,6 +52,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Delta profile rejects actuator positions outside limits.
 - [x] Delta simplified forward kinematics maps actuator displacement to tool pose.
 - [x] Command validator validates Delta actuator move commands.
+- [x] Drone profile validates 3D flight poses.
+- [x] Drone profile rejects poses outside the X/Y/Z flight volume.
+- [x] Drone pose computes shortest yaw rotation.
+- [x] Command validator validates Drone move commands.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -100,6 +104,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Delta planner caps requested actuator velocity by involved actuator limits.
 - [x] Delta planner handles stationary actuator movement predictably.
 - [x] Delta planner rejects target actuators outside physical limits.
+- [x] Drone planner creates coordinated 3D translation and yaw plans.
+- [x] Drone planner caps requested linear and yaw velocities.
+- [x] Drone planner handles stationary pose movement predictably.
+- [x] Drone planner rejects target poses outside physical limits.
 
 ### Required Next Coverage
 
@@ -190,8 +198,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Delta playback sampling returns frames at fixed intervals.
 - [x] Delta playback sampling interpolates actuator position between timeline steps.
 - [x] Delta playback sampling preserves command metadata.
-- [x] Cartesian, mobile, SCARA, simple arm, and Delta snapshots expose the shared playback snapshot contract.
-- [x] Cartesian, mobile, SCARA, simple arm, and Delta frames expose common timeline metadata.
+- [x] Drone simulator executes `HOME`.
+- [x] Drone simulator executes 3D pose move commands.
+- [x] Drone simulator returns `Faulted` when a command fails.
+- [x] Drone playback sampling returns frames at fixed intervals.
+- [x] Drone playback sampling interpolates pose and yaw between timeline steps.
+- [x] Drone playback sampling preserves command metadata.
+- [x] Cartesian, mobile, SCARA, simple arm, Delta, and Drone snapshots expose the shared playback snapshot contract.
+- [x] Cartesian, mobile, SCARA, simple arm, Delta, and Drone frames expose common timeline metadata.
 - [x] Shared playback summaries can summarize snapshots without knowing the robot family's concrete position type.
 
 ### Required Next Coverage
@@ -217,6 +231,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80`.
 - [x] Parse `DELTA A=30 B=60 C=90`.
 - [x] Parse `DELTA A=30 B=60 C=90 SPEED=80`.
+- [x] Parse `DRONE X=120 Y=80 Z=40 YAW=90`.
+- [x] Parse `DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45`.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
 - [x] Missing `DRIVE` heading reports a clear parser error.
@@ -234,6 +250,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Unknown simple arm argument reports a clear parser error.
 - [x] Missing Delta actuator argument reports a clear parser error.
 - [x] Unknown Delta argument reports a clear parser error.
+- [x] Missing Drone yaw argument reports a clear parser error.
+- [x] Unknown Drone argument reports a clear parser error.
 - [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage

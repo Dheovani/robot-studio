@@ -118,7 +118,7 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 The first scripting format is a simple educational DSL, not G-code.
 
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, Delta actuator commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, Delta actuator commands, Drone pose commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
 
 Initial target syntax:
 
@@ -176,6 +176,8 @@ The SCARA robot is modeled as an articulated planar robot with `ScaraJointPositi
 The Simple Articulated Arm is modeled as a three-joint planar arm with `SimpleArmJointPosition`, `SimpleArmRobotProfile`, `SimpleArmKinematics`, `SimpleArmMoveJointsCommand`, `SimpleArmMotionPlanner`, `SimpleArmSimulator`, and `SimpleArmPlaybackSampler`. It intentionally starts with forward kinematics only so students can first learn how base, shoulder, and elbow angles compose into a tool pose before inverse kinematics is introduced. The first desktop viewer is 3D and renders a volumetric base, three links, joints, reachable workspace, tool path, and tool orientation.
 
 The Delta Robot starts as a simplified parallel robot model with `DeltaActuatorPosition`, `DeltaRobotProfile`, `DeltaKinematics`, `DeltaMoveActuatorsCommand`, `DeltaMotionPlanner`, `DeltaSimulator`, and `DeltaPlaybackSampler`. The initial educational model uses three vertical actuators named A/B/C and maps actuator differences to X/Y tool displacement while the actuator average drives Z. This deliberately teaches parallel coupling before introducing industrial Delta inverse kinematics. The first desktop viewer is 3D and renders a triangular top frame, three vertical actuator rails, moving carriages, parallel links, platform/TCP, reachable workspace, and tool path.
+
+The Drone starts as a simplified aerial robot model with `DronePose`, `DroneProfile`, `DroneMoveCommand`, `DroneMotionPlanner`, `DroneSimulator`, and `DronePlaybackSampler`. The initial model tracks X/Y/Z position in millimeters and yaw in degrees. It deliberately ignores real quadcopter physics, pitch, roll, thrust, PID, and wind so students can first understand 3D position, heading, flight-volume limits, and coordinated translation/yaw movement. The desktop catalog remains planned until a 3D viewer exists.
 
 ### Hardware
 
