@@ -48,6 +48,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm profile rejects joint positions outside limits.
 - [x] Simple arm forward kinematics calculates tool pose and orientation.
 - [x] Command validator validates simple arm joint move commands.
+- [x] Industrial arm profile validates all six joint coordinates and identifies out-of-limit joints.
+- [x] Industrial arm simplified forward kinematics calculates TCP position and orientation.
 - [x] Delta profile validates actuator positions.
 - [x] Delta profile rejects actuator positions outside limits.
 - [x] Delta simplified forward kinematics maps actuator displacement to tool pose.
@@ -100,6 +102,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm planner caps requested joint velocity by involved joint limits.
 - [x] Simple arm planner handles stationary joint movement predictably.
 - [x] Simple arm planner rejects target joints outside physical limits.
+- [x] Industrial arm planner coordinates all involved joints in one segment.
+- [x] Industrial arm planner uses the slowest involved joint limit and handles stationary movement.
+- [x] Industrial arm planner rejects target joints outside physical limits.
 - [x] Delta planner creates coordinated actuator-space plans.
 - [x] Delta planner caps requested actuator velocity by involved actuator limits.
 - [x] Delta planner handles stationary actuator movement predictably.
@@ -192,6 +197,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm playback sampling interpolates joint position between timeline steps.
 - [x] Simple arm playback sampling preserves command metadata.
 - [x] Simple arm playback sampling includes tool poses calculated from kinematics.
+- [x] Industrial arm simulator executes six-joint moves, `WAIT`, and `HOME` in sequence.
+- [x] Industrial arm playback sampling interpolates all six joints and preserves command metadata.
+- [x] Industrial arm playback frames include TCP poses calculated from forward kinematics.
 - [x] Delta simulator executes `HOME`.
 - [x] Delta simulator executes actuator move commands.
 - [x] Delta simulator returns `Faulted` when a command fails.
@@ -204,8 +212,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Drone playback sampling returns frames at fixed intervals.
 - [x] Drone playback sampling interpolates pose and yaw between timeline steps.
 - [x] Drone playback sampling preserves command metadata.
-- [x] Cartesian, mobile, SCARA, simple arm, Delta, and Drone snapshots expose the shared playback snapshot contract.
-- [x] Cartesian, mobile, SCARA, simple arm, Delta, and Drone frames expose common timeline metadata.
+- [x] Cartesian, mobile, SCARA, simple arm, industrial arm, Delta, and Drone snapshots expose the shared playback snapshot contract.
+- [x] Cartesian, mobile, SCARA, simple arm, industrial arm, Delta, and Drone frames expose common timeline metadata.
 - [x] Shared playback summaries can summarize snapshots without knowing the robot family's concrete position type.
 
 ### Required Next Coverage
@@ -229,6 +237,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `SCARA SHOULDER=45 ELBOW=30 SPEED=80`.
 - [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20`.
 - [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80`.
+- [x] Parse `ARM6 J1=45 J2=30 J3=-20 J4=90 J5=15 J6=180 SPEED=80`.
+- [x] Missing industrial arm joint argument reports a clear parser error.
 - [x] Parse `DELTA A=30 B=60 C=90`.
 - [x] Parse `DELTA A=30 B=60 C=90 SPEED=80`.
 - [x] Parse `DRONE X=120 Y=80 Z=40 YAW=90`.

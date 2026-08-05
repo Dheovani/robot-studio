@@ -129,6 +129,26 @@ public static class RobotCommandValidator
         }
     }
 
+    public static void Validate(RobotCommand command, IndustrialArmRobotProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+            case WaitCommand:
+                return;
+
+            case IndustrialArmMoveJointsCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetJoints);
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
+
     public static void Validate(RobotCommand command, DeltaRobotProfile profile)
     {
         ArgumentNullException.ThrowIfNull(command);

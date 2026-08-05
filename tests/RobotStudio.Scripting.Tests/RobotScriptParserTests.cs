@@ -128,6 +128,19 @@ public sealed class RobotScriptParserTests
     }
 
     [Fact]
+    public void Parse_WhenIndustrialArmIsValid_ShouldReturnSixJointCommand()
+    {
+        var sequence = new RobotScriptParser().Parse(
+            "ARM6 J1=45 J2=30 J3=-20 J4=90 J5=15 J6=180 SPEED=80");
+
+        var command = Assert.IsType<IndustrialArmMoveJointsCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(45, command.TargetJoints.J1Degrees);
+        Assert.Equal(180, command.TargetJoints.J6Degrees);
+        Assert.Equal(80, command.RequestedJointVelocityDegreesPerSecond);
+        Assert.Equal(1, command.Source?.LineNumber);
+    }
+
+    [Fact]
     public void Parse_WhenDeltaIsValid_ShouldReturnDeltaMoveActuatorsCommand()
     {
         var parser = new RobotScriptParser();
@@ -238,6 +251,15 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("ARM requires BASE", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenIndustrialArmMissesJoint_ShouldThrow()
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new RobotScriptParser().Parse("ARM6 J1=0 J2=0 J3=0 J4=0 J5=0"));
+
+        Assert.Contains("ARM6 requires J6", exception.Message);
     }
 
     [Fact]

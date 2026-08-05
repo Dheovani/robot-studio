@@ -280,6 +280,14 @@ DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 
 `SPEED` is requested 3D linear velocity in millimeters per second. `YAW_SPEED` is requested yaw velocity in degrees per second.
 
+Six-joint industrial arm movement (core simulation; desktop viewer planned):
+
+```txt
+ARM6 J1=45 J2=30 J3=-20 J4=90 J5=15 J6=180 SPEED=80
+```
+
+`J1` through `J6` are target joint angles in degrees. `SPEED` requests a coordinated joint velocity in degrees per second, capped by the slowest involved joint.
+
 ```txt
 HOME
 MOVE X=10 Y=20 Z=5 SPEED=100
@@ -291,6 +299,7 @@ Current parser behavior:
 - `HOME` moves the first Cartesian robot to `(0, 0, 0)`;
 - `MOVE` moves to a Cartesian position;
 - `DRONE` moves to a simplified aerial pose in the core simulator;
+- `ARM6` coordinates six industrial-arm joints in the core simulator;
 - `WAIT` advances simulated time without moving the robot;
 - `SPEED` requests a movement speed in millimeters per second;
 - physical axis limits still cap the effective movement speed;

@@ -53,6 +53,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "DRIVE" => ParseDrive(lineNumber, line, arguments),
             "SCARA" => ParseScara(lineNumber, line, arguments),
             "ARM" => ParseSimpleArm(lineNumber, line, arguments),
+            "ARM6" => ParseIndustrialArm(lineNumber, line, arguments),
             "DELTA" => ParseDelta(lineNumber, line, arguments),
             "DRONE" => ParseDrone(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
@@ -188,6 +189,34 @@ public sealed class RobotScriptParser : IRobotScriptDialect
 
         return new SimpleArmMoveJointsCommand(
             new SimpleArmJointPosition(baseDegrees, shoulder, elbow),
+            requestedJointVelocity,
+            CreateSource(lineNumber, line));
+    }
+
+    private static IndustrialArmMoveJointsCommand ParseIndustrialArm(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["J1", "J2", "J3", "J4", "J5", "J6", "SPEED"]);
+
+        var target = new IndustrialArmJointPosition(
+            GetRequiredDouble(lineNumber, line, values, "J1", "ARM6"),
+            GetRequiredDouble(lineNumber, line, values, "J2", "ARM6"),
+            GetRequiredDouble(lineNumber, line, values, "J3", "ARM6"),
+            GetRequiredDouble(lineNumber, line, values, "J4", "ARM6"),
+            GetRequiredDouble(lineNumber, line, values, "J5", "ARM6"),
+            GetRequiredDouble(lineNumber, line, values, "J6", "ARM6"));
+        double? requestedJointVelocity = values.TryGetValue("SPEED", out var speedText)
+            ? ParseDouble(lineNumber, line, speedText, "SPEED")
+            : null;
+
+        return new IndustrialArmMoveJointsCommand(
+            target,
             requestedJointVelocity,
             CreateSource(lineNumber, line));
     }

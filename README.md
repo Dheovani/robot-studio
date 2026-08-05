@@ -63,6 +63,7 @@ Implemented:
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Drone domain, 3D pose model, yaw orientation, coordinated motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- 6-DOF Industrial Arm domain, simplified forward kinematics, coordinated joint planner, `ARM6` DSL support, deterministic simulator, and playback sampler;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
 - shared playback contracts for cross-family simulation summaries;
 - local desktop teaching examples and selectors for available training viewers;
@@ -75,7 +76,7 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional visual simulations such as 6-DOF industrial arms.
+- the 6-DOF Industrial Arm desktop viewer and richer industrial-arm visualization.
 
 ## Run The Desktop App
 

@@ -13,6 +13,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added the Simple Articulated Arm as a three-joint arm model, including forward kinematics, DSL commands, playback, and a 3D desktop viewer.
 - Added the Delta Robot as the first parallel robot model, including simplified parallel kinematics, actuator-space commands, playback, and a 3D desktop viewer.
 - Added the Drone as the first aerial robot model, including 3D pose, yaw orientation, coordinated flight planning, DSL commands, playback, and a 3D desktop viewer.
+- Added the 6-DOF Industrial Arm core, including six-joint limits, simplified forward kinematics, coordinated joint planning, the `ARM6` DSL command, deterministic simulation, and playback sampling. Its desktop viewer remains planned.
 - Added shared playback snapshot and frame contracts so desktop and future tooling can consume different robot families without forcing them into one position model.
 - Added reusable desktop rendering helpers for orbit cameras, mesh primitives, reachable workspaces, paths, and volumetric robot parts.
 - Added local desktop teaching examples and selectors for every available robot viewer.
