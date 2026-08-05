@@ -63,11 +63,34 @@ public static class RobotFramePresenter
                 $"X={FormatNumber(frame.ToolPose.X)}, Y={FormatNumber(frame.ToolPose.Y)}, O={FormatNumber(frame.ToolPose.OrientationDegrees)} deg.");
     }
 
+    public static RobotFrameStatus Create(
+        DeltaPlaybackFrame frame,
+        int frameIndex,
+        int frameCount,
+        TimeSpan totalDuration)
+    {
+        var frameNumber = NormalizeFrameNumber(frameIndex, frameCount);
+        return new RobotFrameStatus(
+            State: frame.State.ToString(),
+            PrimaryPose: $"A={FormatNumber(frame.Actuators.AMillimeters)}, B={FormatNumber(frame.Actuators.BMillimeters)}, C={FormatNumber(frame.Actuators.CMillimeters)} mm",
+            Command: frame.CommandName ?? "simulation",
+            Time: FormatTime(frame.Time, totalDuration),
+            Frames: $"{frameNumber} / {frameCount}",
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            MovementExplanation:
+                $"{frame.CommandName ?? "simulation"} is represented as coupled actuator-space motion. " +
+                "The A, B, and C actuator heights move together through a parallel mechanism. " +
+                "In this didactic model, actuator differences shift the tool in X/Y while the actuator average changes Z.");
+    }
+
     public static string FormatScaraToolPose(ScaraPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.X)}, Y={FormatNumber(frame.ToolPose.Y)} mm";
 
     public static string FormatSimpleArmToolPose(SimpleArmPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.X)}, Y={FormatNumber(frame.ToolPose.Y)}, O={FormatNumber(frame.ToolPose.OrientationDegrees)} deg";
+
+    public static string FormatDeltaToolPose(DeltaPlaybackFrame frame) =>
+        $"X={FormatNumber(frame.ToolPose.XMillimeters)}, Y={FormatNumber(frame.ToolPose.YMillimeters)}, Z={FormatNumber(frame.ToolPose.ZMillimeters)} mm";
 
     private static string FormatTime(
         TimeSpan frameTime,

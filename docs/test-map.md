@@ -277,7 +277,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Local desktop examples cover every openable robot viewer.
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
-- [x] Training viewers expose multiple local examples, including Cartesian and XY Plotter.
+- [x] Training viewers expose multiple local examples, including Cartesian, XY Plotter, Differential Drive, SCARA, Simple Arm, and Delta.
 - [x] Shared non-Cartesian frame presenters format state, pose, time, frame counters, and explanations.
 - [x] Desktop script validation messages summarize syntax errors with line numbers.
 - [x] Desktop script validation messages explain physical limit failures.
@@ -350,8 +350,10 @@ Expected current behavior:
 - lists the differential drive robot as available;
 - lists the SCARA robot as available;
 - lists the simple articulated arm as available;
-- lists the delta robot, drone, and 6-DOF industrial arm as planned;
+- lists the delta robot as available;
+- lists the drone and 6-DOF industrial arm as planned;
 - opens the Cartesian viewer from the selection screen;
+- opens the Delta viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
 - groups dense Cartesian viewer controls into collapsible sidebar panels;
@@ -389,11 +391,13 @@ Expected current behavior:
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - renders the SCARA robot as a 3D viewport with volumetric links and joints;
 - renders the Simple Articulated Arm as a 3D viewport with volumetric links and joints;
+- renders the Delta Robot as a 3D viewport with triangular frame, vertical actuator rails, moving carriages, platform, TCP, and path;
 - loads selected local Cartesian examples from the Cartesian viewer;
 - loads selected local XY Plotter examples from the XY Plotter viewer;
 - loads selected local Differential Drive examples from the mobile viewer;
 - loads selected local SCARA examples from the SCARA viewer;
 - loads selected local Simple Articulated Arm examples from the arm viewer;
+- loads selected local Delta examples from the Delta viewer;
 - loads local `.robot` or `.txt` script files into desktop script editors;
 - saves desktop script editor contents to local `.robot` or `.txt` files;
 - asks the student to validate or simulate after loading a script file;
@@ -401,6 +405,7 @@ Expected current behavior:
 - avoids consuming playback/frame/camera shortcuts while focus is inside script editors or example selectors;
 - zooms active 2D and 3D viewers with `Ctrl+mouse wheel`;
 - explains current SCARA and Simple Articulated Arm joint-space movement from the active frame;
+- explains current Delta coupled actuator-space movement from the active frame;
 - provides play and reset controls;
 - provides a timeline slider;
 - provides camera orbit, zoom, reset, and predefined view controls;

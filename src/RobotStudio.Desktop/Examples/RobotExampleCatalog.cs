@@ -120,6 +120,29 @@ public static class RobotExampleCatalog
             ARM BASE=65 SHOULDER=50 ELBOW=-60 SPEED=80
             ARM BASE=110 SHOULDER=-20 ELBOW=80 SPEED=65
             WAIT 400
+            """),
+
+        new(
+            RobotViewerKind.DeltaThreeDimensional,
+            "Delta coupled actuator move",
+            "Moves the three parallel actuators together so the tool moves through a coupled workspace.",
+            """
+            HOME
+            DELTA A=30 B=60 C=90 SPEED=80
+            DELTA A=80 B=40 C=20 SPEED=70
+            WAIT 500
+            """),
+
+        new(
+            RobotViewerKind.DeltaThreeDimensional,
+            "Delta vertical and lateral motion",
+            "Contrasts equal actuator movement with uneven actuator movement.",
+            """
+            HOME
+            DELTA A=50 B=50 C=50 SPEED=90
+            DELTA A=30 B=90 C=50 SPEED=75
+            DELTA A=80 B=35 C=95 SPEED=70
+            WAIT 400
             """)
     ];
 

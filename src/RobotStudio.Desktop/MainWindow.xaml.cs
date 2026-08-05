@@ -19,6 +19,7 @@ using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Domain.Parallel;
 using RobotStudio.Scripting;
 using RobotStudio.Simulation;
 
@@ -75,10 +76,12 @@ public partial class MainWindow : Window
     private DifferentialDrivePlaybackSnapshot? differentialDriveSnapshot;
     private ScaraPlaybackSnapshot? scaraSnapshot;
     private SimpleArmPlaybackSnapshot? simpleArmSnapshot;
+    private DeltaPlaybackSnapshot? deltaSnapshot;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
     private int simpleArmFrameIndex;
+    private int deltaFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -97,6 +100,11 @@ public partial class MainWindow : Window
     private double simpleArmZoomMultiplier = 2.15;
     private bool isRotatingSimpleArmCamera;
     private Point lastSimpleArmMousePosition;
+    private double deltaAzimuthDegrees = -45;
+    private double deltaElevationDegrees = 32;
+    private double deltaZoomMultiplier = 1.75;
+    private bool isRotatingDeltaCamera;
+    private Point lastDeltaMousePosition;
 
     private sealed class TimelineMarker
     {
@@ -272,6 +280,7 @@ public partial class MainWindow : Window
         DifferentialDrivePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         ScaraPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         SimpleArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        DeltaPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -335,6 +344,19 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderSimpleArmFrame(index: 0);
+    }
+
+    private void DeltaResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (deltaSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderDeltaFrame(index: 0);
     }
 
     private void ValidateDifferentialDriveScriptButton_Click(
@@ -499,6 +521,58 @@ public partial class MainWindow : Window
         SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
     }
 
+    private void ValidateDeltaScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateDeltaSnapshotFromScript(DeltaScriptTextBox.Text, out _, out var message))
+        {
+            SetDeltaScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetDeltaScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateDeltaScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateDeltaSnapshotFromScript(DeltaScriptTextBox.Text, out var nextSnapshot, out var message))
+        {
+            SetDeltaScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetDeltaScriptStatus("Script did not produce a Delta playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        deltaSnapshot = nextSnapshot;
+        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimelineSlider.TickFrequency = 1;
+        RenderDeltaFrame(index: 0);
+        SetDeltaScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
+    private void LoadDeltaExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        DeltaScriptTextBox.Text = GetSelectedExampleScript(
+            DeltaExampleComboBox,
+            RobotViewerKind.DeltaThreeDimensional);
+        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text);
+        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimelineSlider.TickFrequency = 1;
+        RenderDeltaFrame(index: 0);
+        SetDeltaScriptStatus("Loaded the selected Delta example.", Color.FromRgb(74, 222, 128));
+    }
+
     private void LoadCartesianExampleButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -573,6 +647,19 @@ public partial class MainWindow : Window
         RoutedEventArgs e) =>
         SaveScriptFrom(SimpleArmScriptTextBox, SetSimpleArmScriptStatus);
 
+    private void LoadDeltaScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            DeltaScriptTextBox,
+            SetDeltaScriptStatus,
+            () => deltaSnapshot = null);
+
+    private void SaveDeltaScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(DeltaScriptTextBox, SetDeltaScriptStatus);
+
     private void LoadActiveScript()
     {
         switch (activeViewerKind)
@@ -587,6 +674,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.SimpleArmThreeDimensional:
                 LoadSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                LoadDeltaScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -611,6 +702,10 @@ public partial class MainWindow : Window
                 SaveSimpleArmScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.DeltaThreeDimensional:
+                SaveDeltaScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SaveCartesianScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -631,6 +726,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.SimpleArmThreeDimensional:
                 ValidateSimpleArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                ValidateDeltaScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -655,6 +754,10 @@ public partial class MainWindow : Window
                 SimulateSimpleArmScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.DeltaThreeDimensional:
+                SimulateDeltaScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SimulateScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -675,6 +778,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.SimpleArmThreeDimensional:
                 SimpleArmResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                DeltaResetButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -701,6 +808,10 @@ public partial class MainWindow : Window
                 RenderSimpleArmFrame(simpleArmFrameIndex + delta);
                 break;
 
+            case RobotViewerKind.DeltaThreeDimensional:
+                RenderDeltaFrame(deltaFrameIndex + delta);
+                break;
+
             default:
                 RenderFrame(currentFrameIndex + delta);
                 break;
@@ -724,6 +835,11 @@ public partial class MainWindow : Window
             case RobotViewerKind.SimpleArmThreeDimensional:
                 simpleArmZoomMultiplier = Math.Clamp(simpleArmZoomMultiplier + delta, 0.55, 4);
                 RenderSimpleArmFrame(simpleArmFrameIndex);
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                deltaZoomMultiplier = Math.Clamp(deltaZoomMultiplier + delta, 0.55, 4);
+                RenderDeltaFrame(deltaFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -757,6 +873,13 @@ public partial class MainWindow : Window
                 simpleArmElevationDegrees = 30;
                 simpleArmZoomMultiplier = 2.15;
                 RenderSimpleArmFrame(simpleArmFrameIndex);
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                deltaAzimuthDegrees = -45;
+                deltaElevationDegrees = 32;
+                deltaZoomMultiplier = 1.75;
+                RenderDeltaFrame(deltaFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -830,6 +953,23 @@ public partial class MainWindow : Window
             }
 
             RenderSimpleArmFrame(nextSimpleArmFrame);
+            return;
+        }
+
+        if (activeViewerKind == RobotViewerKind.DeltaThreeDimensional)
+        {
+            if (deltaSnapshot is null)
+            {
+                return;
+            }
+
+            var nextDeltaFrame = deltaFrameIndex + 1;
+            if (nextDeltaFrame >= deltaSnapshot.FrameCount)
+            {
+                nextDeltaFrame = 0;
+            }
+
+            RenderDeltaFrame(nextDeltaFrame);
             return;
         }
 
@@ -964,6 +1104,7 @@ public partial class MainWindow : Window
         DifferentialDriveViewerView.Visibility = Visibility.Collapsed;
         ScaraViewerView.Visibility = Visibility.Collapsed;
         SimpleArmViewerView.Visibility = Visibility.Collapsed;
+        DeltaViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -1374,6 +1515,97 @@ public partial class MainWindow : Window
         RenderSimpleArmFrame(simpleArmFrameIndex + 1);
     }
 
+    private void DeltaViewport_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || deltaSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDeltaFrame(deltaFrameIndex);
+    }
+
+    private void DeltaViewport_MouseLeftButtonDown(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingDeltaCamera = true;
+        lastDeltaMousePosition = e.GetPosition(DeltaViewport);
+        DeltaViewport.CaptureMouse();
+        DeltaViewport.Cursor = Cursors.SizeAll;
+    }
+
+    private void DeltaViewport_MouseLeftButtonUp(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingDeltaCamera = false;
+        DeltaViewport.ReleaseMouseCapture();
+        DeltaViewport.Cursor = Cursors.Hand;
+    }
+
+    private void DeltaViewport_MouseMove(
+        object sender,
+        MouseEventArgs e)
+    {
+        if (!isRotatingDeltaCamera)
+        {
+            return;
+        }
+
+        var currentPosition = e.GetPosition(DeltaViewport);
+        var deltaX = currentPosition.X - lastDeltaMousePosition.X;
+        var deltaY = currentPosition.Y - lastDeltaMousePosition.Y;
+        lastDeltaMousePosition = currentPosition;
+
+        deltaAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(deltaAzimuthDegrees - (deltaX * 0.35));
+        deltaElevationDegrees = Math.Clamp(deltaElevationDegrees + (deltaY * 0.25), 5, 85);
+        RenderDeltaFrame(deltaFrameIndex);
+    }
+
+    private void DeltaViewport_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
+    }
+
+    private void DeltaTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || deltaSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDeltaFrame((int)Math.Round(e.NewValue));
+    }
+
+    private void DeltaPreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDeltaFrame(deltaFrameIndex - 1);
+    }
+
+    private void DeltaNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDeltaFrame(deltaFrameIndex + 1);
+    }
+
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (!IsLoaded || snapshot is null)
@@ -1605,6 +1837,21 @@ public partial class MainWindow : Window
         var result = new SimpleArmSimulator().Execute(context, commands);
 
         return new SimpleArmPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private DeltaPlaybackSnapshot CreateDeltaSnapshot(string script)
+    {
+        var profile = CreateDeltaProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateDeltaCommandSequence(commands, profile);
+
+        var context = DeltaSimulationContext.Create(
+            profile,
+            new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0));
+        var result = new DeltaSimulator().Execute(context, commands);
+
+        return new DeltaPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
@@ -1866,6 +2113,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (template.Viewer.Kind == RobotViewerKind.DeltaThreeDimensional)
+        {
+            DeltaViewerView.Visibility = Visibility.Visible;
+            EnsureDeltaSnapshot();
+            RenderDeltaFrame(index: 0);
+            return;
+        }
+
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
@@ -1878,10 +2133,12 @@ public partial class MainWindow : Window
         differentialDriveSnapshot = null;
         scaraSnapshot = null;
         simpleArmSnapshot = null;
+        deltaSnapshot = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
         scaraFrameIndex = 0;
         simpleArmFrameIndex = 0;
+        deltaFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
@@ -1896,6 +2153,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.SimpleArmThreeDimensional:
                 ConfigureSimpleArmViewer();
+                break;
+
+            case RobotViewerKind.DeltaThreeDimensional:
+                ConfigureDeltaViewer();
                 break;
 
             case RobotViewerKind.XYPlotterTwoDimensional:
@@ -1979,6 +2240,17 @@ public partial class MainWindow : Window
             Color.FromRgb(148, 163, 184));
     }
 
+    private void ConfigureDeltaViewer()
+    {
+        ConfigureExampleSelector(
+            DeltaExampleComboBox,
+            RobotViewerKind.DeltaThreeDimensional);
+        DeltaScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.DeltaThreeDimensional);
+        SetDeltaScriptStatus(
+            "Edit DELTA actuator commands and simulate the parallel robot.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private static string GetDefaultExampleScript(RobotViewerKind viewerKind) =>
         RobotExampleCatalog.GetDefaultFor(viewerKind).Script;
 
@@ -2024,6 +2296,7 @@ public partial class MainWindow : Window
             RobotViewerKind.DifferentialDriveTwoDimensional => DifferentialDriveCanvas.IsMouseOver,
             RobotViewerKind.ScaraThreeDimensional => ScaraViewport.IsMouseOver,
             RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewport.IsMouseOver,
+            RobotViewerKind.DeltaThreeDimensional => DeltaViewport.IsMouseOver,
             RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewport.IsMouseOver,
             _ => false
         };
@@ -2075,6 +2348,18 @@ public partial class MainWindow : Window
         SimpleArmTimelineSlider.TickFrequency = 1;
     }
 
+    private void EnsureDeltaSnapshot()
+    {
+        if (deltaSnapshot is not null)
+        {
+            return;
+        }
+
+        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text);
+        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimelineSlider.TickFrequency = 1;
+    }
+
     private void InitializeTimelineForSnapshot()
     {
         if (snapshot is null)
@@ -2103,6 +2388,7 @@ public partial class MainWindow : Window
         DifferentialDrivePlayPauseButton.Content = "Play";
         ScaraPlayPauseButton.Content = "Play";
         SimpleArmPlayPauseButton.Content = "Play";
+        DeltaPlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -3700,6 +3986,197 @@ public partial class MainWindow : Window
         profile.SecondLinkLengthMillimeters +
         profile.ThirdLinkLengthMillimeters;
 
+    private void RenderDeltaFrame(int index)
+    {
+        if (deltaSnapshot is null)
+        {
+            return;
+        }
+
+        deltaFrameIndex = Math.Clamp(index, 0, deltaSnapshot.FrameCount - 1);
+        DeltaTimelineSlider.Value = deltaFrameIndex;
+
+        var frame = deltaSnapshot.Frames[deltaFrameIndex];
+        DeltaViewport.Children.Clear();
+        DeltaViewport.Camera = CreateDeltaCamera(deltaSnapshot.Profile);
+
+        var sceneRoot = new Model3DGroup();
+        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
+        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        sceneRoot.Children.Add(CreateDeltaWorkspaceModel(deltaSnapshot.Profile));
+        sceneRoot.Children.Add(CreateDeltaPathModel(deltaSnapshot));
+        sceneRoot.Children.Add(CreateDeltaRobotModel(deltaSnapshot.Profile, frame));
+        DeltaViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+
+        var status = RobotFramePresenter.Create(
+            frame,
+            deltaFrameIndex,
+            deltaSnapshot.FrameCount,
+            deltaSnapshot.TotalDuration);
+        DeltaStateText.Text = status.State;
+        DeltaActuatorsText.Text = status.PrimaryPose;
+        DeltaToolText.Text = RobotFramePresenter.FormatDeltaToolPose(frame);
+        DeltaCommandText.Text = status.Command;
+        DeltaTimeText.Text = status.Time;
+        DeltaStatusText.Text = status.Footer;
+        DeltaMovementExplanationText.Text = status.MovementExplanation;
+    }
+
+    private PerspectiveCamera CreateDeltaCamera(DeltaRobotProfile profile)
+    {
+        var reach = GetDeltaReach(profile);
+        return OrbitCameraFactory.Create(new OrbitCameraSettings(
+            Target: new Point3D(0, 0, -15),
+            AzimuthDegrees: deltaAzimuthDegrees,
+            ElevationDegrees: deltaElevationDegrees,
+            Distance: reach * 3.2 * deltaZoomMultiplier,
+            FieldOfView: 40,
+            NearPlaneDistance: 1,
+            FarPlaneDistance: reach * 10));
+    }
+
+    private static Model3DGroup CreateDeltaWorkspaceModel(DeltaRobotProfile profile)
+    {
+        var reach = GetDeltaReach(profile);
+        return MeshModelFactory.CreatePlanarWorkspace(
+            reach,
+            gridSpacing: 50,
+            floorZ: -115,
+            gridThickness: 1.8,
+            ringThickness: 3,
+            Color.FromArgb(95, 51, 65, 85),
+            Color.FromArgb(170, 34, 197, 94),
+            Color.FromRgb(148, 163, 184));
+    }
+
+    private Model3DGroup CreateDeltaPathModel(DeltaPlaybackSnapshot playbackSnapshot)
+    {
+        var group = new Model3DGroup();
+        var pathColor = Color.FromArgb(220, 45, 212, 191);
+
+        for (var index = 1; index <= deltaFrameIndex; index++)
+        {
+            var previous = ToPoint3D(playbackSnapshot.Frames[index - 1].ToolPose);
+            var current = ToPoint3D(playbackSnapshot.Frames[index].ToolPose);
+
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                previous,
+                current,
+                thickness: 4,
+                pathColor));
+        }
+
+        return group;
+    }
+
+    private static Model3DGroup CreateDeltaRobotModel(
+        DeltaRobotProfile profile,
+        DeltaPlaybackFrame frame)
+    {
+        const double topZ = 105;
+        const double carriageBaseZ = 82;
+        var group = new Model3DGroup();
+        var anchors = profile.Actuators
+            .Select(actuator => GetDeltaActuatorAnchor(profile, actuator.Id, topZ))
+            .ToArray();
+        var carriages = profile.Actuators
+            .Select(actuator => GetDeltaCarriagePoint(profile, actuator.Id, frame.Actuators, carriageBaseZ))
+            .ToArray();
+        var tool = ToPoint3D(frame.ToolPose);
+
+        for (var index = 0; index < anchors.Length; index++)
+        {
+            var next = anchors[(index + 1) % anchors.Length];
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                anchors[index],
+                next,
+                thickness: 8,
+                Color.FromRgb(59, 130, 246)));
+        }
+
+        foreach (var actuator in profile.Actuators)
+        {
+            var anchor = GetDeltaActuatorAnchor(profile, actuator.Id, topZ);
+            var railBottom = new Point3D(anchor.X, anchor.Y, carriageBaseZ - actuator.MaximumMillimeters - 12);
+            var carriage = GetDeltaCarriagePoint(profile, actuator.Id, frame.Actuators, carriageBaseZ);
+
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                anchor,
+                railBottom,
+                thickness: 9,
+                Color.FromRgb(96, 165, 250)));
+            group.Children.Add(MeshModelFactory.CreateCube(
+                carriage,
+                size: 20,
+                Color.FromRgb(34, 197, 94)));
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                carriage,
+                tool,
+                thickness: 5,
+                Color.FromRgb(250, 204, 21)));
+        }
+
+        for (var index = 0; index < carriages.Length; index++)
+        {
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                carriages[index],
+                carriages[(index + 1) % carriages.Length],
+                thickness: 4,
+                Color.FromArgb(180, 34, 197, 94)));
+        }
+
+        group.Children.Add(MeshModelFactory.CreateBox(
+            new VisualVector3(tool.X, tool.Y, tool.Z),
+            new VisualVector3(34, 34, 10),
+            Color.FromRgb(250, 204, 21)));
+        group.Children.Add(MeshModelFactory.CreateBox(
+            new VisualVector3(tool.X, tool.Y, tool.Z - 18),
+            new VisualVector3(12, 12, 32),
+            Color.FromRgb(248, 113, 113)));
+
+        return group;
+    }
+
+    private static Point3D GetDeltaActuatorAnchor(
+        DeltaRobotProfile profile,
+        DeltaActuatorId actuatorId,
+        double z)
+    {
+        var angleDegrees = actuatorId switch
+        {
+            DeltaActuatorId.A => 90,
+            DeltaActuatorId.B => 210,
+            DeltaActuatorId.C => 330,
+            _ => 90
+        };
+        var radians = angleDegrees * Math.PI / 180;
+
+        return new Point3D(
+            Math.Cos(radians) * profile.BaseRadiusMillimeters,
+            Math.Sin(radians) * profile.BaseRadiusMillimeters,
+            z);
+    }
+
+    private static Point3D GetDeltaCarriagePoint(
+        DeltaRobotProfile profile,
+        DeltaActuatorId actuatorId,
+        DeltaActuatorPosition actuators,
+        double carriageBaseZ)
+    {
+        var anchor = GetDeltaActuatorAnchor(profile, actuatorId, z: carriageBaseZ);
+
+        return new Point3D(
+            anchor.X,
+            anchor.Y,
+            carriageBaseZ - actuators.GetCoordinate(actuatorId));
+    }
+
+    private static Point3D ToPoint3D(DeltaToolPose pose) =>
+        new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
+
+    private static double GetDeltaReach(DeltaRobotProfile profile) =>
+        profile.BaseRadiusMillimeters * 1.2;
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -3758,6 +4235,26 @@ public partial class MainWindow : Window
                 maximumDegrees: 150,
                 maximumVelocityDegreesPerSecond: 80));
 
+    private static DeltaRobotProfile CreateDeltaProfile() =>
+        new(
+            baseRadiusMillimeters: 170,
+            toolZOffsetMillimeters: 60,
+            actuatorA: new DeltaActuator(
+                DeltaActuatorId.A,
+                minimumMillimeters: 0,
+                maximumMillimeters: 120,
+                maximumVelocityMillimetersPerSecond: 110),
+            actuatorB: new DeltaActuator(
+                DeltaActuatorId.B,
+                minimumMillimeters: 0,
+                maximumMillimeters: 120,
+                maximumVelocityMillimetersPerSecond: 100),
+            actuatorC: new DeltaActuator(
+                DeltaActuatorId.C,
+                minimumMillimeters: 0,
+                maximumMillimeters: 120,
+                maximumVelocityMillimetersPerSecond: 90));
+
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
         if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
@@ -3804,6 +4301,16 @@ public partial class MainWindow : Window
     private static void ValidateSimpleArmCommandSequence(
         RobotCommandSequence commands,
         SimpleArmRobotProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateDeltaCommandSequence(
+        RobotCommandSequence commands,
+        DeltaRobotProfile profile)
     {
         foreach (var command in commands.Commands)
         {
@@ -3877,6 +4384,25 @@ public partial class MainWindow : Window
         {
             nextSnapshot = CreateSimpleArmSnapshot(script);
             message = $"Simple arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = ScriptValidationMessageFormatter.Format(exception);
+            return false;
+        }
+    }
+
+    private bool TryCreateDeltaSnapshotFromScript(
+        string script,
+        out DeltaPlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateDeltaSnapshot(script);
+            message = $"Delta script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -3977,6 +4503,14 @@ public partial class MainWindow : Window
     {
         SimpleArmScriptStatusText.Text = message;
         SimpleArmScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetDeltaScriptStatus(
+        string message,
+        Color color)
+    {
+        DeltaScriptStatusText.Text = message;
+        DeltaScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()

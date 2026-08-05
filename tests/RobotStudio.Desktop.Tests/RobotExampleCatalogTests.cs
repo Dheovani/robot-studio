@@ -59,5 +59,6 @@ public sealed class RobotExampleCatalogTests
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DifferentialDriveTwoDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.ScaraThreeDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.SimpleArmThreeDimensional).Count >= 2);
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DeltaThreeDimensional).Count >= 2);
     }
 }

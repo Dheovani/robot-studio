@@ -19,6 +19,7 @@ MOVE X=120 Y=80 Z=40 SPEED=90
 DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 SCARA SHOULDER=45 ELBOW=30 SPEED=80
 ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
+DELTA A=30 B=60 C=90 SPEED=80
 WAIT 500
 ```
 
@@ -28,6 +29,7 @@ WAIT 500
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
+- Open the first Delta Robot viewer for simplified parallel-actuator simulation.
 - Load local teaching examples from every available desktop viewer.
 - Load and save `.robot` or `.txt` scripts in the desktop app.
 - Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
@@ -57,7 +59,7 @@ Implemented:
 - Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
-- Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, and playback sampler;
+- Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
 - shared playback contracts for cross-family simulation summaries;
 - local desktop teaching examples and selectors for available training viewers;
@@ -70,7 +72,6 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- Delta Robot desktop viewer;
 - additional visual simulations such as drones or 6-DOF industrial arms.
 
 ## Run The Desktop App
@@ -86,7 +87,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, and `Simple Articulated Arm` are available in the current development build.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, and `Delta Robot` are available in the current development build.
 
 ## Portable CLI And Core
 

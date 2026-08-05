@@ -165,7 +165,7 @@ The current didactic order is:
 - Drone.
 - 6-DOF Industrial Arm.
 
-Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, and Simple Articulated Arm are available now. All other templates remain planned metadata.
+Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, and Delta Robot are available now. All other templates remain planned metadata.
 
 The XY plotter is modeled as a two-axis robot with its own `XYPlotterPosition`, `XYPlotterProfile`, and `XYPlotterMotionPlanner`. The desktop viewer maps it onto a fixed `Z=0` drawing plane so the current visual playback pipeline can be reused without pretending the domain model has a real Z axis.
 
@@ -175,7 +175,7 @@ The SCARA robot is modeled as an articulated planar robot with `ScaraJointPositi
 
 The Simple Articulated Arm is modeled as a three-joint planar arm with `SimpleArmJointPosition`, `SimpleArmRobotProfile`, `SimpleArmKinematics`, `SimpleArmMoveJointsCommand`, `SimpleArmMotionPlanner`, `SimpleArmSimulator`, and `SimpleArmPlaybackSampler`. It intentionally starts with forward kinematics only so students can first learn how base, shoulder, and elbow angles compose into a tool pose before inverse kinematics is introduced. The first desktop viewer is 3D and renders a volumetric base, three links, joints, reachable workspace, tool path, and tool orientation.
 
-The Delta Robot starts as a simplified parallel robot model with `DeltaActuatorPosition`, `DeltaRobotProfile`, `DeltaKinematics`, `DeltaMoveActuatorsCommand`, `DeltaMotionPlanner`, `DeltaSimulator`, and `DeltaPlaybackSampler`. The initial educational model uses three vertical actuators named A/B/C and maps actuator differences to X/Y tool displacement while the actuator average drives Z. This deliberately teaches parallel coupling before introducing industrial Delta inverse kinematics. The desktop viewer is still planned, so the catalog remains non-openable until the 3D visualization exists.
+The Delta Robot starts as a simplified parallel robot model with `DeltaActuatorPosition`, `DeltaRobotProfile`, `DeltaKinematics`, `DeltaMoveActuatorsCommand`, `DeltaMotionPlanner`, `DeltaSimulator`, and `DeltaPlaybackSampler`. The initial educational model uses three vertical actuators named A/B/C and maps actuator differences to X/Y tool displacement while the actuator average drives Z. This deliberately teaches parallel coupling before introducing industrial Delta inverse kinematics. The first desktop viewer is 3D and renders a triangular top frame, three vertical actuator rails, moving carriages, parallel links, platform/TCP, reachable workspace, and tool path.
 
 ### Hardware
 

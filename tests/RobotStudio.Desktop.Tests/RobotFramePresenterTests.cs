@@ -1,7 +1,9 @@
 using RobotStudio.Desktop.Viewers;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Articulated;
+using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Domain.Parallel;
 using RobotStudio.Simulation;
 
 namespace RobotStudio.Desktop.Tests;
@@ -67,5 +69,25 @@ public sealed class RobotFramePresenterTests
         Assert.Equal("X=160, Y=110, O=40 deg", RobotFramePresenter.FormatSimpleArmToolPose(frame));
         Assert.Contains("base angle rotates", status.MovementExplanation);
         Assert.Contains("O=40 deg", status.MovementExplanation);
+    }
+
+    [Fact]
+    public void Create_WhenDeltaFrame_ShouldExplainCoupledActuatorMotion()
+    {
+        var frame = new DeltaPlaybackFrame(
+            TimeSpan.FromSeconds(1),
+            RobotState.Moving,
+            new DeltaActuatorPosition(AMillimeters: 30, BMillimeters: 60, CMillimeters: 90),
+            new DeltaToolPose(XMillimeters: -17.321, YMillimeters: -45, ZMillimeters: -60),
+            CommandIndex: 0,
+            CommandName: nameof(DeltaMoveActuatorsCommand),
+            CommandSource: null);
+
+        var status = RobotFramePresenter.Create(frame, frameIndex: 1, frameCount: 4, TimeSpan.FromSeconds(3));
+
+        Assert.Equal("A=30, B=60, C=90 mm", status.PrimaryPose);
+        Assert.Equal("X=-17.321, Y=-45, Z=-60 mm", RobotFramePresenter.FormatDeltaToolPose(frame));
+        Assert.Contains("coupled actuator-space motion", status.MovementExplanation);
+        Assert.Contains("actuator average changes Z", status.MovementExplanation);
     }
 }

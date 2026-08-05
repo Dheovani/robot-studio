@@ -71,7 +71,7 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, and Simple Articulated Arm are available now. Planned templates are shown for the delta robot, drone, and 6-DOF industrial arm.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, and Delta Robot are available now. Planned templates are shown for the drone and 6-DOF industrial arm.
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
@@ -82,6 +82,8 @@ Opening the differential drive robot renders a 2D mobile robot viewer with works
 Opening the SCARA robot renders a 3D articulated robot viewer with reachable workspace, volumetric base, shoulder joint, elbow joint, tool point, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes a SCARA DSL editor for `HOME`, `SCARA`, and `WAIT` commands, plus a local example selector.
 
 Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes an ARM DSL editor for `HOME`, `ARM`, and `WAIT` commands, plus a local example selector.
+
+Opening the Delta Robot renders a 3D simplified parallel robot viewer with a triangular frame, three vertical actuators, moving carriages, parallel links, platform/TCP, reachable workspace, planned path, current actuator positions, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes a Delta DSL editor for `HOME`, `DELTA`, and `WAIT` commands, plus a local example selector.
 
 Every available desktop viewer includes an example selector and a `Load Example` button. The non-Cartesian side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 

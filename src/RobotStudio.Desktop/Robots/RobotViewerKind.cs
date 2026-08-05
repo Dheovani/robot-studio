@@ -7,5 +7,6 @@ public enum RobotViewerKind
     XYPlotterTwoDimensional,
     DifferentialDriveTwoDimensional,
     ScaraThreeDimensional,
-    SimpleArmThreeDimensional
+    SimpleArmThreeDimensional,
+    DeltaThreeDimensional
 }

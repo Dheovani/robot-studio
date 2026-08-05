@@ -136,12 +136,12 @@ public static class RobotCatalog
                 "Simple Arm 3D Viewer")),
 
         new(
-            Id: "delta-planned",
+            Id: "delta",
             Name: "Delta Robot",
             Family: Parallel,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Advanced,
-            Description: "Planned parallel robot for teaching constrained workspaces, fast end-effector motion, and parallel mechanism architecture.",
+            Description: "Parallel robot for teaching coupled actuator motion, constrained workspaces, fast end-effector movement, and parallel mechanism architecture.",
             Capabilities:
             [
                 RobotCapability.Simulation,
@@ -149,10 +149,11 @@ public static class RobotCatalog
                 RobotCapability.ThreeDimensionalView,
                 RobotCapability.Playback,
                 RobotCapability.ForwardKinematics,
-                RobotCapability.InverseKinematics,
                 RobotCapability.WorkspaceVisualization
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.DeltaThreeDimensional,
+                "Delta 3D Viewer")),
 
         new(
             Id: "drone-planned",
