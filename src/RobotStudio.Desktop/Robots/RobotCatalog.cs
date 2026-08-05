@@ -156,23 +156,24 @@ public static class RobotCatalog
                 "Delta 3D Viewer")),
 
         new(
-            Id: "drone-planned",
+            Id: "drone",
             Name: "Drone",
             Family: Aerial,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Advanced,
-            Description: "Planned aerial robot for teaching 3D position, orientation, attitude control, flight paths, and state-based movement.",
+            Description: "Aerial robot for teaching 3D position, yaw orientation, flight-volume limits, coordinated movement, and state-based simulation.",
             Capabilities:
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
                 RobotCapability.ThreeDimensionalView,
-                RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.PathPlanning,
                 RobotCapability.AttitudeControl
             ],
-            Viewer: PlannedViewer()),
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.DroneThreeDimensional,
+                "Drone 3D Viewer")),
 
         new(
             Id: "six-dof-industrial-arm-planned",

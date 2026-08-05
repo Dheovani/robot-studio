@@ -8,5 +8,6 @@ public enum RobotViewerKind
     DifferentialDriveTwoDimensional,
     ScaraThreeDimensional,
     SimpleArmThreeDimensional,
-    DeltaThreeDimensional
+    DeltaThreeDimensional,
+    DroneThreeDimensional
 }

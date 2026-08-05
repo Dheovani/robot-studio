@@ -165,7 +165,7 @@ The current didactic order is:
 - Drone.
 - 6-DOF Industrial Arm.
 
-Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, and Delta Robot are available now. All other templates remain planned metadata.
+Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, and Drone are available now. All other templates remain planned metadata.
 
 The XY plotter is modeled as a two-axis robot with its own `XYPlotterPosition`, `XYPlotterProfile`, and `XYPlotterMotionPlanner`. The desktop viewer maps it onto a fixed `Z=0` drawing plane so the current visual playback pipeline can be reused without pretending the domain model has a real Z axis.
 
@@ -177,7 +177,7 @@ The Simple Articulated Arm is modeled as a three-joint planar arm with `SimpleAr
 
 The Delta Robot starts as a simplified parallel robot model with `DeltaActuatorPosition`, `DeltaRobotProfile`, `DeltaKinematics`, `DeltaMoveActuatorsCommand`, `DeltaMotionPlanner`, `DeltaSimulator`, and `DeltaPlaybackSampler`. The initial educational model uses three vertical actuators named A/B/C and maps actuator differences to X/Y tool displacement while the actuator average drives Z. This deliberately teaches parallel coupling before introducing industrial Delta inverse kinematics. The first desktop viewer is 3D and renders a triangular top frame, three vertical actuator rails, moving carriages, parallel links, platform/TCP, reachable workspace, and tool path.
 
-The Drone starts as a simplified aerial robot model with `DronePose`, `DroneProfile`, `DroneMoveCommand`, `DroneMotionPlanner`, `DroneSimulator`, and `DronePlaybackSampler`. The initial model tracks X/Y/Z position in millimeters and yaw in degrees. It deliberately ignores real quadcopter physics, pitch, roll, thrust, PID, and wind so students can first understand 3D position, heading, flight-volume limits, and coordinated translation/yaw movement. The desktop catalog remains planned until a 3D viewer exists.
+The Drone starts as a simplified aerial robot model with `DronePose`, `DroneProfile`, `DroneMoveCommand`, `DroneMotionPlanner`, `DroneSimulator`, and `DronePlaybackSampler`. The initial model tracks X/Y/Z position in millimeters and yaw in degrees. It deliberately ignores real quadcopter physics, pitch, roll, thrust, PID, and wind so students can first understand 3D position, heading, flight-volume limits, and coordinated translation/yaw movement. The first desktop viewer is 3D and renders a flight-volume boundary, ground grid, simplified drone body, rotor arms, yaw direction indicator, and flight path.
 
 ### Hardware
 

@@ -143,6 +143,29 @@ public static class RobotExampleCatalog
             DELTA A=30 B=90 C=50 SPEED=75
             DELTA A=80 B=35 C=95 SPEED=70
             WAIT 400
+            """),
+
+        new(
+            RobotViewerKind.DroneThreeDimensional,
+            "Drone waypoint flight",
+            "Moves through two 3D waypoints while changing yaw.",
+            """
+            HOME
+            DRONE X=120 Y=80 Z=80 YAW=45 SPEED=120 YAW_SPEED=90
+            DRONE X=260 Y=180 Z=120 YAW=135 SPEED=110 YAW_SPEED=80
+            WAIT 500
+            """),
+
+        new(
+            RobotViewerKind.DroneThreeDimensional,
+            "Drone climb and turn",
+            "Shows vertical motion, lateral motion, and yaw coordination.",
+            """
+            HOME
+            DRONE X=80 Y=60 Z=140 YAW=0 SPEED=100 YAW_SPEED=90
+            DRONE X=220 Y=60 Z=180 YAW=90 SPEED=120 YAW_SPEED=60
+            DRONE X=220 Y=220 Z=90 YAW=180 SPEED=100 YAW_SPEED=75
+            WAIT 400
             """)
     ];
 

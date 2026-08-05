@@ -83,6 +83,26 @@ public static class RobotFramePresenter
                 "In this didactic model, actuator differences shift the tool in X/Y while the actuator average changes Z.");
     }
 
+    public static RobotFrameStatus Create(
+        DronePlaybackFrame frame,
+        int frameIndex,
+        int frameCount,
+        TimeSpan totalDuration)
+    {
+        var frameNumber = NormalizeFrameNumber(frameIndex, frameCount);
+        return new RobotFrameStatus(
+            State: frame.State.ToString(),
+            PrimaryPose: $"X={FormatNumber(frame.Pose.XMillimeters)}, Y={FormatNumber(frame.Pose.YMillimeters)}, Z={FormatNumber(frame.Pose.ZMillimeters)} mm",
+            Command: frame.CommandName ?? "simulation",
+            Time: FormatTime(frame.Time, totalDuration),
+            Frames: $"{frameNumber} / {frameCount}",
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            MovementExplanation:
+                $"{frame.CommandName ?? "simulation"} is represented as coordinated 3D flight motion. " +
+                "The drone pose combines X/Y/Z position with yaw orientation. " +
+                "This didactic model coordinates translation and yaw without simulating thrust, pitch, roll, or real aerodynamics.");
+    }
+
     public static string FormatScaraToolPose(ScaraPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.X)}, Y={FormatNumber(frame.ToolPose.Y)} mm";
 
@@ -91,6 +111,9 @@ public static class RobotFramePresenter
 
     public static string FormatDeltaToolPose(DeltaPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.XMillimeters)}, Y={FormatNumber(frame.ToolPose.YMillimeters)}, Z={FormatNumber(frame.ToolPose.ZMillimeters)} mm";
+
+    public static string FormatDroneYaw(DronePlaybackFrame frame) =>
+        $"Yaw={FormatNumber(frame.Pose.YawDegrees)} deg";
 
     private static string FormatTime(
         TimeSpan frameTime,

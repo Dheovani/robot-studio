@@ -1,5 +1,6 @@
 using RobotStudio.Desktop.Viewers;
 using RobotStudio.Domain;
+using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
@@ -89,5 +90,28 @@ public sealed class RobotFramePresenterTests
         Assert.Equal("X=-17.321, Y=-45, Z=-60 mm", RobotFramePresenter.FormatDeltaToolPose(frame));
         Assert.Contains("coupled actuator-space motion", status.MovementExplanation);
         Assert.Contains("actuator average changes Z", status.MovementExplanation);
+    }
+
+    [Fact]
+    public void Create_WhenDroneFrame_ShouldExplainCoordinatedFlightMotion()
+    {
+        var frame = new DronePlaybackFrame(
+            TimeSpan.FromSeconds(1.5),
+            RobotState.Moving,
+            new DronePose(
+                XMillimeters: 120,
+                YMillimeters: 80,
+                ZMillimeters: 40,
+                YawDegrees: 90),
+            CommandIndex: 0,
+            CommandName: nameof(DroneMoveCommand),
+            CommandSource: null);
+
+        var status = RobotFramePresenter.Create(frame, frameIndex: 2, frameCount: 5, TimeSpan.FromSeconds(4));
+
+        Assert.Equal("X=120, Y=80, Z=40 mm", status.PrimaryPose);
+        Assert.Equal("Yaw=90 deg", RobotFramePresenter.FormatDroneYaw(frame));
+        Assert.Contains("coordinated 3D flight motion", status.MovementExplanation);
+        Assert.Contains("without simulating thrust", status.MovementExplanation);
     }
 }

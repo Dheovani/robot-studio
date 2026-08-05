@@ -15,6 +15,7 @@ using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
 using RobotStudio.Desktop.Viewers;
 using RobotStudio.Domain;
+using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
@@ -77,11 +78,13 @@ public partial class MainWindow : Window
     private ScaraPlaybackSnapshot? scaraSnapshot;
     private SimpleArmPlaybackSnapshot? simpleArmSnapshot;
     private DeltaPlaybackSnapshot? deltaSnapshot;
+    private DronePlaybackSnapshot? droneSnapshot;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
     private int simpleArmFrameIndex;
     private int deltaFrameIndex;
+    private int droneFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -105,6 +108,11 @@ public partial class MainWindow : Window
     private double deltaZoomMultiplier = 1.75;
     private bool isRotatingDeltaCamera;
     private Point lastDeltaMousePosition;
+    private double droneAzimuthDegrees = -45;
+    private double droneElevationDegrees = 34;
+    private double droneZoomMultiplier = 1.55;
+    private bool isRotatingDroneCamera;
+    private Point lastDroneMousePosition;
 
     private sealed class TimelineMarker
     {
@@ -281,6 +289,7 @@ public partial class MainWindow : Window
         ScaraPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         SimpleArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         DeltaPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        DronePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -357,6 +366,19 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderDeltaFrame(index: 0);
+    }
+
+    private void DroneResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (droneSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderDroneFrame(index: 0);
     }
 
     private void ValidateDifferentialDriveScriptButton_Click(
@@ -573,6 +595,58 @@ public partial class MainWindow : Window
         SetDeltaScriptStatus("Loaded the selected Delta example.", Color.FromRgb(74, 222, 128));
     }
 
+    private void ValidateDroneScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateDroneSnapshotFromScript(DroneScriptTextBox.Text, out _, out var message))
+        {
+            SetDroneScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetDroneScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateDroneScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateDroneSnapshotFromScript(DroneScriptTextBox.Text, out var nextSnapshot, out var message))
+        {
+            SetDroneScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetDroneScriptStatus("Script did not produce a Drone playback snapshot.", Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        droneSnapshot = nextSnapshot;
+        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimelineSlider.TickFrequency = 1;
+        RenderDroneFrame(index: 0);
+        SetDroneScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
+    private void LoadDroneExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        DroneScriptTextBox.Text = GetSelectedExampleScript(
+            DroneExampleComboBox,
+            RobotViewerKind.DroneThreeDimensional);
+        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text);
+        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimelineSlider.TickFrequency = 1;
+        RenderDroneFrame(index: 0);
+        SetDroneScriptStatus("Loaded the selected Drone example.", Color.FromRgb(74, 222, 128));
+    }
+
     private void LoadCartesianExampleButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -660,6 +734,19 @@ public partial class MainWindow : Window
         RoutedEventArgs e) =>
         SaveScriptFrom(DeltaScriptTextBox, SetDeltaScriptStatus);
 
+    private void LoadDroneScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            DroneScriptTextBox,
+            SetDroneScriptStatus,
+            () => droneSnapshot = null);
+
+    private void SaveDroneScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(DroneScriptTextBox, SetDroneScriptStatus);
+
     private void LoadActiveScript()
     {
         switch (activeViewerKind)
@@ -678,6 +765,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DeltaThreeDimensional:
                 LoadDeltaScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                LoadDroneScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -706,6 +797,10 @@ public partial class MainWindow : Window
                 SaveDeltaScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.DroneThreeDimensional:
+                SaveDroneScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SaveCartesianScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -730,6 +825,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DeltaThreeDimensional:
                 ValidateDeltaScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                ValidateDroneScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -758,6 +857,10 @@ public partial class MainWindow : Window
                 SimulateDeltaScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.DroneThreeDimensional:
+                SimulateDroneScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SimulateScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -782,6 +885,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DeltaThreeDimensional:
                 DeltaResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                DroneResetButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -812,6 +919,10 @@ public partial class MainWindow : Window
                 RenderDeltaFrame(deltaFrameIndex + delta);
                 break;
 
+            case RobotViewerKind.DroneThreeDimensional:
+                RenderDroneFrame(droneFrameIndex + delta);
+                break;
+
             default:
                 RenderFrame(currentFrameIndex + delta);
                 break;
@@ -840,6 +951,11 @@ public partial class MainWindow : Window
             case RobotViewerKind.DeltaThreeDimensional:
                 deltaZoomMultiplier = Math.Clamp(deltaZoomMultiplier + delta, 0.55, 4);
                 RenderDeltaFrame(deltaFrameIndex);
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                droneZoomMultiplier = Math.Clamp(droneZoomMultiplier + delta, 0.55, 4);
+                RenderDroneFrame(droneFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -880,6 +996,13 @@ public partial class MainWindow : Window
                 deltaElevationDegrees = 32;
                 deltaZoomMultiplier = 1.75;
                 RenderDeltaFrame(deltaFrameIndex);
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                droneAzimuthDegrees = -45;
+                droneElevationDegrees = 34;
+                droneZoomMultiplier = 1.55;
+                RenderDroneFrame(droneFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -970,6 +1093,23 @@ public partial class MainWindow : Window
             }
 
             RenderDeltaFrame(nextDeltaFrame);
+            return;
+        }
+
+        if (activeViewerKind == RobotViewerKind.DroneThreeDimensional)
+        {
+            if (droneSnapshot is null)
+            {
+                return;
+            }
+
+            var nextDroneFrame = droneFrameIndex + 1;
+            if (nextDroneFrame >= droneSnapshot.FrameCount)
+            {
+                nextDroneFrame = 0;
+            }
+
+            RenderDroneFrame(nextDroneFrame);
             return;
         }
 
@@ -1105,6 +1245,7 @@ public partial class MainWindow : Window
         ScaraViewerView.Visibility = Visibility.Collapsed;
         SimpleArmViewerView.Visibility = Visibility.Collapsed;
         DeltaViewerView.Visibility = Visibility.Collapsed;
+        DroneViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -1606,6 +1747,97 @@ public partial class MainWindow : Window
         RenderDeltaFrame(deltaFrameIndex + 1);
     }
 
+    private void DroneViewport_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || droneSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDroneFrame(droneFrameIndex);
+    }
+
+    private void DroneViewport_MouseLeftButtonDown(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingDroneCamera = true;
+        lastDroneMousePosition = e.GetPosition(DroneViewport);
+        DroneViewport.CaptureMouse();
+        DroneViewport.Cursor = Cursors.SizeAll;
+    }
+
+    private void DroneViewport_MouseLeftButtonUp(
+        object sender,
+        MouseButtonEventArgs e)
+    {
+        isRotatingDroneCamera = false;
+        DroneViewport.ReleaseMouseCapture();
+        DroneViewport.Cursor = Cursors.Hand;
+    }
+
+    private void DroneViewport_MouseMove(
+        object sender,
+        MouseEventArgs e)
+    {
+        if (!isRotatingDroneCamera)
+        {
+            return;
+        }
+
+        var currentPosition = e.GetPosition(DroneViewport);
+        var deltaX = currentPosition.X - lastDroneMousePosition.X;
+        var deltaY = currentPosition.Y - lastDroneMousePosition.Y;
+        lastDroneMousePosition = currentPosition;
+
+        droneAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(droneAzimuthDegrees - (deltaX * 0.35));
+        droneElevationDegrees = Math.Clamp(droneElevationDegrees + (deltaY * 0.25), 5, 85);
+        RenderDroneFrame(droneFrameIndex);
+    }
+
+    private void DroneViewport_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
+    }
+
+    private void DroneTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (!IsLoaded || droneSnapshot is null)
+        {
+            return;
+        }
+
+        RenderDroneFrame((int)Math.Round(e.NewValue));
+    }
+
+    private void DronePreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDroneFrame(droneFrameIndex - 1);
+    }
+
+    private void DroneNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderDroneFrame(droneFrameIndex + 1);
+    }
+
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (!IsLoaded || snapshot is null)
@@ -1852,6 +2084,25 @@ public partial class MainWindow : Window
         var result = new DeltaSimulator().Execute(context, commands);
 
         return new DeltaPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private DronePlaybackSnapshot CreateDroneSnapshot(string script)
+    {
+        var profile = CreateDroneProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateDroneCommandSequence(commands, profile);
+
+        var context = DroneSimulationContext.Create(
+            profile,
+            new DronePose(
+                XMillimeters: 0,
+                YMillimeters: 0,
+                ZMillimeters: 0,
+                YawDegrees: 0));
+        var result = new DroneSimulator().Execute(context, commands);
+
+        return new DronePlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
@@ -2121,6 +2372,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (template.Viewer.Kind == RobotViewerKind.DroneThreeDimensional)
+        {
+            DroneViewerView.Visibility = Visibility.Visible;
+            EnsureDroneSnapshot();
+            RenderDroneFrame(index: 0);
+            return;
+        }
+
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
@@ -2134,11 +2393,13 @@ public partial class MainWindow : Window
         scaraSnapshot = null;
         simpleArmSnapshot = null;
         deltaSnapshot = null;
+        droneSnapshot = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
         scaraFrameIndex = 0;
         simpleArmFrameIndex = 0;
         deltaFrameIndex = 0;
+        droneFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
@@ -2157,6 +2418,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DeltaThreeDimensional:
                 ConfigureDeltaViewer();
+                break;
+
+            case RobotViewerKind.DroneThreeDimensional:
+                ConfigureDroneViewer();
                 break;
 
             case RobotViewerKind.XYPlotterTwoDimensional:
@@ -2251,6 +2516,17 @@ public partial class MainWindow : Window
             Color.FromRgb(148, 163, 184));
     }
 
+    private void ConfigureDroneViewer()
+    {
+        ConfigureExampleSelector(
+            DroneExampleComboBox,
+            RobotViewerKind.DroneThreeDimensional);
+        DroneScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.DroneThreeDimensional);
+        SetDroneScriptStatus(
+            "Edit DRONE pose commands and simulate the aerial robot.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private static string GetDefaultExampleScript(RobotViewerKind viewerKind) =>
         RobotExampleCatalog.GetDefaultFor(viewerKind).Script;
 
@@ -2297,6 +2573,7 @@ public partial class MainWindow : Window
             RobotViewerKind.ScaraThreeDimensional => ScaraViewport.IsMouseOver,
             RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewport.IsMouseOver,
             RobotViewerKind.DeltaThreeDimensional => DeltaViewport.IsMouseOver,
+            RobotViewerKind.DroneThreeDimensional => DroneViewport.IsMouseOver,
             RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewport.IsMouseOver,
             _ => false
         };
@@ -2360,6 +2637,18 @@ public partial class MainWindow : Window
         DeltaTimelineSlider.TickFrequency = 1;
     }
 
+    private void EnsureDroneSnapshot()
+    {
+        if (droneSnapshot is not null)
+        {
+            return;
+        }
+
+        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text);
+        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimelineSlider.TickFrequency = 1;
+    }
+
     private void InitializeTimelineForSnapshot()
     {
         if (snapshot is null)
@@ -2389,6 +2678,7 @@ public partial class MainWindow : Window
         ScaraPlayPauseButton.Content = "Play";
         SimpleArmPlayPauseButton.Content = "Play";
         DeltaPlayPauseButton.Content = "Play";
+        DronePlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -4177,6 +4467,181 @@ public partial class MainWindow : Window
     private static double GetDeltaReach(DeltaRobotProfile profile) =>
         profile.BaseRadiusMillimeters * 1.2;
 
+    private void RenderDroneFrame(int index)
+    {
+        if (droneSnapshot is null)
+        {
+            return;
+        }
+
+        droneFrameIndex = Math.Clamp(index, 0, droneSnapshot.FrameCount - 1);
+        DroneTimelineSlider.Value = droneFrameIndex;
+
+        var frame = droneSnapshot.Frames[droneFrameIndex];
+        DroneViewport.Children.Clear();
+        DroneViewport.Camera = CreateDroneCamera(droneSnapshot.Profile);
+
+        var sceneRoot = new Model3DGroup();
+        sceneRoot.Children.Add(new AmbientLight(Color.FromRgb(82, 94, 116)));
+        sceneRoot.Children.Add(new DirectionalLight(Colors.White, new Vector3D(-1, -1, -2)));
+        sceneRoot.Children.Add(CreateDroneWorkspaceModel(droneSnapshot.Profile));
+        sceneRoot.Children.Add(CreateDronePathModel(droneSnapshot));
+        sceneRoot.Children.Add(CreateDroneModel(frame));
+        DroneViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+
+        var status = RobotFramePresenter.Create(
+            frame,
+            droneFrameIndex,
+            droneSnapshot.FrameCount,
+            droneSnapshot.TotalDuration);
+        DroneStateText.Text = status.State;
+        DronePoseText.Text = status.PrimaryPose;
+        DroneYawText.Text = RobotFramePresenter.FormatDroneYaw(frame);
+        DroneCommandText.Text = status.Command;
+        DroneTimeText.Text = status.Time;
+        DroneStatusText.Text = status.Footer;
+        DroneMovementExplanationText.Text = status.MovementExplanation;
+    }
+
+    private PerspectiveCamera CreateDroneCamera(DroneProfile profile)
+    {
+        var width = profile.MaximumXMillimeters - profile.MinimumXMillimeters;
+        var depth = profile.MaximumYMillimeters - profile.MinimumYMillimeters;
+        var height = profile.MaximumZMillimeters - profile.MinimumZMillimeters;
+        var diagonal = Math.Sqrt((width * width) + (depth * depth) + (height * height));
+
+        return OrbitCameraFactory.Create(new OrbitCameraSettings(
+            Target: new Point3D(width / 2, depth / 2, height / 2),
+            AzimuthDegrees: droneAzimuthDegrees,
+            ElevationDegrees: droneElevationDegrees,
+            Distance: diagonal * 1.85 * droneZoomMultiplier,
+            FieldOfView: 42,
+            NearPlaneDistance: 1,
+            FarPlaneDistance: diagonal * 8));
+    }
+
+    private static Model3DGroup CreateDroneWorkspaceModel(DroneProfile profile)
+    {
+        var group = new Model3DGroup();
+        var min = new Point3D(profile.MinimumXMillimeters, profile.MinimumYMillimeters, profile.MinimumZMillimeters);
+        var max = new Point3D(profile.MaximumXMillimeters, profile.MaximumYMillimeters, profile.MaximumZMillimeters);
+        var gridColor = Color.FromArgb(95, 51, 65, 85);
+        var edgeColor = Color.FromArgb(170, 96, 165, 250);
+
+        for (var x = profile.MinimumXMillimeters; x <= profile.MaximumXMillimeters; x += 50)
+        {
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                new Point3D(x, min.Y, min.Z),
+                new Point3D(x, max.Y, min.Z),
+                thickness: 1.8,
+                gridColor));
+        }
+
+        for (var y = profile.MinimumYMillimeters; y <= profile.MaximumYMillimeters; y += 50)
+        {
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                new Point3D(min.X, y, min.Z),
+                new Point3D(max.X, y, min.Z),
+                thickness: 1.8,
+                gridColor));
+        }
+
+        var corners = new[]
+        {
+            new Point3D(min.X, min.Y, min.Z),
+            new Point3D(max.X, min.Y, min.Z),
+            new Point3D(max.X, max.Y, min.Z),
+            new Point3D(min.X, max.Y, min.Z),
+            new Point3D(min.X, min.Y, max.Z),
+            new Point3D(max.X, min.Y, max.Z),
+            new Point3D(max.X, max.Y, max.Z),
+            new Point3D(min.X, max.Y, max.Z)
+        };
+
+        foreach (var (start, end) in new[]
+        {
+            (0, 1), (1, 2), (2, 3), (3, 0),
+            (4, 5), (5, 6), (6, 7), (7, 4),
+            (0, 4), (1, 5), (2, 6), (3, 7)
+        })
+        {
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                corners[start],
+                corners[end],
+                thickness: 4,
+                edgeColor));
+        }
+
+        return group;
+    }
+
+    private Model3DGroup CreateDronePathModel(DronePlaybackSnapshot playbackSnapshot)
+    {
+        var group = new Model3DGroup();
+        var pathColor = Color.FromArgb(220, 45, 212, 191);
+
+        for (var index = 1; index <= droneFrameIndex; index++)
+        {
+            var previous = ToPoint3D(playbackSnapshot.Frames[index - 1].Pose);
+            var current = ToPoint3D(playbackSnapshot.Frames[index].Pose);
+
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                previous,
+                current,
+                thickness: 4,
+                pathColor));
+        }
+
+        return group;
+    }
+
+    private static Model3DGroup CreateDroneModel(DronePlaybackFrame frame)
+    {
+        var group = new Model3DGroup();
+        var center = ToPoint3D(frame.Pose);
+        var yaw = frame.Pose.YawDegrees * Math.PI / 180;
+        var forward = new Vector3D(Math.Cos(yaw), Math.Sin(yaw), 0);
+        var right = new Vector3D(-Math.Sin(yaw), Math.Cos(yaw), 0);
+        const double armLength = 56;
+        const double rotorOffset = 42;
+
+        var front = center + (forward * armLength);
+        var back = center - (forward * armLength);
+        var left = center - (right * armLength);
+        var rightPoint = center + (right * armLength);
+
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(back, front, thickness: 8, Color.FromRgb(59, 130, 246)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(left, rightPoint, thickness: 8, Color.FromRgb(34, 197, 94)));
+        group.Children.Add(MeshModelFactory.CreateCube(center, size: 26, Color.FromRgb(147, 197, 253)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(center, center + (forward * 74), thickness: 5, Color.FromRgb(250, 204, 21)));
+
+        foreach (var rotor in new[] { front, back, left, rightPoint })
+        {
+            group.Children.Add(MeshModelFactory.CreateBox(
+                new VisualVector3(rotor.X, rotor.Y, rotor.Z),
+                new VisualVector3(30, 30, 5),
+                Color.FromRgb(226, 232, 240)));
+            group.Children.Add(MeshModelFactory.CreateBox(
+                new VisualVector3(rotor.X, rotor.Y, rotor.Z + 6),
+                new VisualVector3(rotorOffset, 7, 4),
+                Color.FromRgb(30, 41, 59)));
+            group.Children.Add(MeshModelFactory.CreateBox(
+                new VisualVector3(rotor.X, rotor.Y, rotor.Z + 6),
+                new VisualVector3(7, rotorOffset, 4),
+                Color.FromRgb(30, 41, 59)));
+        }
+
+        group.Children.Add(MeshModelFactory.CreateBox(
+            new VisualVector3(center.X, center.Y, center.Z - 28),
+            new VisualVector3(8, 8, 40),
+            Color.FromRgb(248, 113, 113)));
+
+        return group;
+    }
+
+    private static Point3D ToPoint3D(DronePose pose) =>
+        new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -4255,6 +4720,17 @@ public partial class MainWindow : Window
                 maximumMillimeters: 120,
                 maximumVelocityMillimetersPerSecond: 90));
 
+    private static DroneProfile CreateDroneProfile() =>
+        new(
+            minimumXMillimeters: 0,
+            maximumXMillimeters: 500,
+            minimumYMillimeters: 0,
+            maximumYMillimeters: 350,
+            minimumZMillimeters: 0,
+            maximumZMillimeters: 240,
+            maximumLinearVelocityMillimetersPerSecond: 180,
+            maximumYawVelocityDegreesPerSecond: 120);
+
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
         if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
@@ -4311,6 +4787,16 @@ public partial class MainWindow : Window
     private static void ValidateDeltaCommandSequence(
         RobotCommandSequence commands,
         DeltaRobotProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateDroneCommandSequence(
+        RobotCommandSequence commands,
+        DroneProfile profile)
     {
         foreach (var command in commands.Commands)
         {
@@ -4403,6 +4889,25 @@ public partial class MainWindow : Window
         {
             nextSnapshot = CreateDeltaSnapshot(script);
             message = $"Delta script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = ScriptValidationMessageFormatter.Format(exception);
+            return false;
+        }
+    }
+
+    private bool TryCreateDroneSnapshotFromScript(
+        string script,
+        out DronePlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateDroneSnapshot(script);
+            message = $"Drone script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -4511,6 +5016,14 @@ public partial class MainWindow : Window
     {
         DeltaScriptStatusText.Text = message;
         DeltaScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetDroneScriptStatus(
+        string message,
+        Color color)
+    {
+        DroneScriptStatusText.Text = message;
+        DroneScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()
