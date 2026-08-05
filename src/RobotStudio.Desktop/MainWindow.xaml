@@ -219,17 +219,19 @@
                     <ColumnDefinition Width="320" MinWidth="280" MaxWidth="540" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0"
+                <Border x:Name="RobotViewportHost"
+                        Grid.Column="0"
                         BorderBrush="#334155"
                         BorderThickness="1"
-                        Background="#0F172A">
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="RobotViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="RobotViewport_MouseLeftButtonUp"
+                        MouseMove="RobotViewport_MouseMove"
+                        MouseWheel="RobotViewport_MouseWheel">
                     <Viewport3D x:Name="RobotViewport"
                                 ClipToBounds="True"
-                                Cursor="Hand"
-                                MouseLeftButtonDown="RobotViewport_MouseLeftButtonDown"
-                                MouseLeftButtonUp="RobotViewport_MouseLeftButtonUp"
-                                MouseMove="RobotViewport_MouseMove"
-                                MouseWheel="RobotViewport_MouseWheel" />
+                                IsHitTestVisible="False" />
                 </Border>
 
                 <GridSplitter Grid.Column="1"
@@ -1111,15 +1113,20 @@
                     <ColumnDefinition Width="320" MinWidth="280" MaxWidth="460" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border x:Name="ScaraViewportHost"
+                        Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="ScaraViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="ScaraViewport_MouseLeftButtonUp"
+                        MouseMove="ScaraViewport_MouseMove"
+                        MouseWheel="ScaraViewport_MouseWheel">
                     <Viewport3D x:Name="ScaraViewport"
                                 ClipToBounds="True"
-                                Cursor="Hand"
                                 SizeChanged="ScaraViewport_SizeChanged"
-                                MouseLeftButtonDown="ScaraViewport_MouseLeftButtonDown"
-                                MouseLeftButtonUp="ScaraViewport_MouseLeftButtonUp"
-                                MouseMove="ScaraViewport_MouseMove"
-                                MouseWheel="ScaraViewport_MouseWheel" />
+                                IsHitTestVisible="False" />
                 </Border>
 
                 <GridSplitter Grid.Column="1"
@@ -1294,15 +1301,20 @@
                     <ColumnDefinition Width="340" MinWidth="300" MaxWidth="480" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border x:Name="SimpleArmViewportHost"
+                        Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="SimpleArmViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="SimpleArmViewport_MouseLeftButtonUp"
+                        MouseMove="SimpleArmViewport_MouseMove"
+                        MouseWheel="SimpleArmViewport_MouseWheel">
                     <Viewport3D x:Name="SimpleArmViewport"
                                 ClipToBounds="True"
-                                Cursor="Hand"
                                 SizeChanged="SimpleArmViewport_SizeChanged"
-                                MouseLeftButtonDown="SimpleArmViewport_MouseLeftButtonDown"
-                                MouseLeftButtonUp="SimpleArmViewport_MouseLeftButtonUp"
-                                MouseMove="SimpleArmViewport_MouseMove"
-                                MouseWheel="SimpleArmViewport_MouseWheel" />
+                                IsHitTestVisible="False" />
                 </Border>
 
                 <GridSplitter Grid.Column="1"
@@ -1477,15 +1489,20 @@
                     <ColumnDefinition Width="340" MinWidth="300" MaxWidth="480" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border x:Name="DeltaViewportHost"
+                        Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="DeltaViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="DeltaViewport_MouseLeftButtonUp"
+                        MouseMove="DeltaViewport_MouseMove"
+                        MouseWheel="DeltaViewport_MouseWheel">
                     <Viewport3D x:Name="DeltaViewport"
                                 ClipToBounds="True"
-                                Cursor="Hand"
                                 SizeChanged="DeltaViewport_SizeChanged"
-                                MouseLeftButtonDown="DeltaViewport_MouseLeftButtonDown"
-                                MouseLeftButtonUp="DeltaViewport_MouseLeftButtonUp"
-                                MouseMove="DeltaViewport_MouseMove"
-                                MouseWheel="DeltaViewport_MouseWheel" />
+                                IsHitTestVisible="False" />
                 </Border>
 
                 <GridSplitter Grid.Column="1"
@@ -1660,15 +1677,20 @@
                     <ColumnDefinition Width="340" MinWidth="300" MaxWidth="480" />
                 </Grid.ColumnDefinitions>
 
-                <Border Grid.Column="0" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border x:Name="DroneViewportHost"
+                        Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="DroneViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="DroneViewport_MouseLeftButtonUp"
+                        MouseMove="DroneViewport_MouseMove"
+                        MouseWheel="DroneViewport_MouseWheel">
                     <Viewport3D x:Name="DroneViewport"
                                 ClipToBounds="True"
-                                Cursor="Hand"
                                 SizeChanged="DroneViewport_SizeChanged"
-                                MouseLeftButtonDown="DroneViewport_MouseLeftButtonDown"
-                                MouseLeftButtonUp="DroneViewport_MouseLeftButtonUp"
-                                MouseMove="DroneViewport_MouseMove"
-                                MouseWheel="DroneViewport_MouseWheel" />
+                                IsHitTestVisible="False" />
                 </Border>
 
                 <GridSplitter Grid.Column="1"

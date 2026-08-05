@@ -433,6 +433,7 @@ Expected current behavior:
 - provides a timeline slider;
 - provides camera orbit, zoom, reset, and predefined view controls;
 - rotates the camera when the user drags inside the 3D viewport;
+- rotates the camera when the user starts dragging from empty viewport space, not only from rendered robot primitives;
 - zooms the active viewer only when the user uses `Ctrl+mouse wheel`;
 - renders workspace limits as a visible boundary instead of an opaque block over the robot;
 - shows a didactic state panel with state, position, command, source line, time, and frame number;

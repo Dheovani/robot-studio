@@ -59,7 +59,7 @@ This file tracks future work after the first stable Cartesian simulation release
 
 - [ ] Improve the visual design of the robot selection screen.
 - [ ] Improve the visual design of the Cartesian simulator workspace.
-- [ ] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
+- [x] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
 - [ ] Add a more polished application logo and brand system if needed.
 - [ ] Add a view cube or compact camera orientation selector.
 - [ ] Add optional beginner, teacher, and debug display modes.

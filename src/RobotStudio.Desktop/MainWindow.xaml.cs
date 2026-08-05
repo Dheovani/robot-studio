@@ -1492,8 +1492,9 @@ public partial class MainWindow : Window
     {
         isRotatingScaraCamera = true;
         lastScaraMousePosition = e.GetPosition(ScaraViewport);
-        ScaraViewport.CaptureMouse();
-        ScaraViewport.Cursor = Cursors.SizeAll;
+        ScaraViewportHost.CaptureMouse();
+        ScaraViewportHost.Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
     private void ScaraViewport_MouseLeftButtonUp(
@@ -1501,8 +1502,9 @@ public partial class MainWindow : Window
         MouseButtonEventArgs e)
     {
         isRotatingScaraCamera = false;
-        ScaraViewport.ReleaseMouseCapture();
-        ScaraViewport.Cursor = Cursors.Hand;
+        ScaraViewportHost.ReleaseMouseCapture();
+        ScaraViewportHost.Cursor = Cursors.Hand;
+        e.Handled = true;
     }
 
     private void ScaraViewport_MouseMove(
@@ -1583,8 +1585,9 @@ public partial class MainWindow : Window
     {
         isRotatingSimpleArmCamera = true;
         lastSimpleArmMousePosition = e.GetPosition(SimpleArmViewport);
-        SimpleArmViewport.CaptureMouse();
-        SimpleArmViewport.Cursor = Cursors.SizeAll;
+        SimpleArmViewportHost.CaptureMouse();
+        SimpleArmViewportHost.Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
     private void SimpleArmViewport_MouseLeftButtonUp(
@@ -1592,8 +1595,9 @@ public partial class MainWindow : Window
         MouseButtonEventArgs e)
     {
         isRotatingSimpleArmCamera = false;
-        SimpleArmViewport.ReleaseMouseCapture();
-        SimpleArmViewport.Cursor = Cursors.Hand;
+        SimpleArmViewportHost.ReleaseMouseCapture();
+        SimpleArmViewportHost.Cursor = Cursors.Hand;
+        e.Handled = true;
     }
 
     private void SimpleArmViewport_MouseMove(
@@ -1674,8 +1678,9 @@ public partial class MainWindow : Window
     {
         isRotatingDeltaCamera = true;
         lastDeltaMousePosition = e.GetPosition(DeltaViewport);
-        DeltaViewport.CaptureMouse();
-        DeltaViewport.Cursor = Cursors.SizeAll;
+        DeltaViewportHost.CaptureMouse();
+        DeltaViewportHost.Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
     private void DeltaViewport_MouseLeftButtonUp(
@@ -1683,8 +1688,9 @@ public partial class MainWindow : Window
         MouseButtonEventArgs e)
     {
         isRotatingDeltaCamera = false;
-        DeltaViewport.ReleaseMouseCapture();
-        DeltaViewport.Cursor = Cursors.Hand;
+        DeltaViewportHost.ReleaseMouseCapture();
+        DeltaViewportHost.Cursor = Cursors.Hand;
+        e.Handled = true;
     }
 
     private void DeltaViewport_MouseMove(
@@ -1765,8 +1771,9 @@ public partial class MainWindow : Window
     {
         isRotatingDroneCamera = true;
         lastDroneMousePosition = e.GetPosition(DroneViewport);
-        DroneViewport.CaptureMouse();
-        DroneViewport.Cursor = Cursors.SizeAll;
+        DroneViewportHost.CaptureMouse();
+        DroneViewportHost.Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
     private void DroneViewport_MouseLeftButtonUp(
@@ -1774,8 +1781,9 @@ public partial class MainWindow : Window
         MouseButtonEventArgs e)
     {
         isRotatingDroneCamera = false;
-        DroneViewport.ReleaseMouseCapture();
-        DroneViewport.Cursor = Cursors.Hand;
+        DroneViewportHost.ReleaseMouseCapture();
+        DroneViewportHost.Cursor = Cursors.Hand;
+        e.Handled = true;
     }
 
     private void DroneViewport_MouseMove(
@@ -1899,8 +1907,9 @@ public partial class MainWindow : Window
     {
         isRotatingCamera = true;
         lastMousePosition = e.GetPosition(RobotViewport);
-        RobotViewport.CaptureMouse();
-        RobotViewport.Cursor = Cursors.SizeAll;
+        RobotViewportHost.CaptureMouse();
+        RobotViewportHost.Cursor = Cursors.SizeAll;
+        e.Handled = true;
     }
 
     private void RobotViewport_MouseLeftButtonUp(
@@ -1908,8 +1917,9 @@ public partial class MainWindow : Window
         MouseButtonEventArgs e)
     {
         isRotatingCamera = false;
-        RobotViewport.ReleaseMouseCapture();
-        RobotViewport.Cursor = Cursors.Hand;
+        RobotViewportHost.ReleaseMouseCapture();
+        RobotViewportHost.Cursor = Cursors.Hand;
+        e.Handled = true;
     }
 
     private void RobotViewport_MouseMove(
@@ -2570,11 +2580,11 @@ public partial class MainWindow : Window
         activeViewerKind switch
         {
             RobotViewerKind.DifferentialDriveTwoDimensional => DifferentialDriveCanvas.IsMouseOver,
-            RobotViewerKind.ScaraThreeDimensional => ScaraViewport.IsMouseOver,
-            RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewport.IsMouseOver,
-            RobotViewerKind.DeltaThreeDimensional => DeltaViewport.IsMouseOver,
-            RobotViewerKind.DroneThreeDimensional => DroneViewport.IsMouseOver,
-            RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewport.IsMouseOver,
+            RobotViewerKind.ScaraThreeDimensional => ScaraViewportHost.IsMouseOver,
+            RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewportHost.IsMouseOver,
+            RobotViewerKind.DeltaThreeDimensional => DeltaViewportHost.IsMouseOver,
+            RobotViewerKind.DroneThreeDimensional => DroneViewportHost.IsMouseOver,
+            RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewportHost.IsMouseOver,
             _ => false
         };
 
