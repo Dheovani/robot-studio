@@ -48,6 +48,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm profile rejects joint positions outside limits.
 - [x] Simple arm forward kinematics calculates tool pose and orientation.
 - [x] Command validator validates simple arm joint move commands.
+- [x] Delta profile validates actuator positions.
+- [x] Delta profile rejects actuator positions outside limits.
+- [x] Delta simplified forward kinematics maps actuator displacement to tool pose.
+- [x] Command validator validates Delta actuator move commands.
 - [x] `WaitCommand` rejects negative duration with `InvalidRobotCommandException`.
 - [x] `MoveToCommand` rejects non-positive requested velocity with `InvalidRobotCommandException`.
 - [x] Domain error messages identify invalid values and expected ranges or states.
@@ -92,6 +96,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm planner caps requested joint velocity by involved joint limits.
 - [x] Simple arm planner handles stationary joint movement predictably.
 - [x] Simple arm planner rejects target joints outside physical limits.
+- [x] Delta planner creates coordinated actuator-space plans.
+- [x] Delta planner caps requested actuator velocity by involved actuator limits.
+- [x] Delta planner handles stationary actuator movement predictably.
+- [x] Delta planner rejects target actuators outside physical limits.
 
 ### Required Next Coverage
 
@@ -176,8 +184,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm playback sampling interpolates joint position between timeline steps.
 - [x] Simple arm playback sampling preserves command metadata.
 - [x] Simple arm playback sampling includes tool poses calculated from kinematics.
-- [x] Cartesian, mobile, SCARA, and simple arm snapshots expose the shared playback snapshot contract.
-- [x] Cartesian, mobile, SCARA, and simple arm frames expose common timeline metadata.
+- [x] Delta simulator executes `HOME`.
+- [x] Delta simulator executes actuator move commands.
+- [x] Delta simulator returns `Faulted` when a command fails.
+- [x] Delta playback sampling returns frames at fixed intervals.
+- [x] Delta playback sampling interpolates actuator position between timeline steps.
+- [x] Delta playback sampling preserves command metadata.
+- [x] Cartesian, mobile, SCARA, simple arm, and Delta snapshots expose the shared playback snapshot contract.
+- [x] Cartesian, mobile, SCARA, simple arm, and Delta frames expose common timeline metadata.
 - [x] Shared playback summaries can summarize snapshots without knowing the robot family's concrete position type.
 
 ### Required Next Coverage
@@ -201,6 +215,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `SCARA SHOULDER=45 ELBOW=30 SPEED=80`.
 - [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20`.
 - [x] Parse `ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80`.
+- [x] Parse `DELTA A=30 B=60 C=90`.
+- [x] Parse `DELTA A=30 B=60 C=90 SPEED=80`.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
 - [x] Missing `DRIVE` heading reports a clear parser error.
@@ -216,6 +232,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Unknown SCARA argument reports a clear parser error.
 - [x] Missing simple arm joint argument reports a clear parser error.
 - [x] Unknown simple arm argument reports a clear parser error.
+- [x] Missing Delta actuator argument reports a clear parser error.
+- [x] Unknown Delta argument reports a clear parser error.
 - [x] HOME with arguments reports a clear parser error.
 
 ### Required Next Coverage

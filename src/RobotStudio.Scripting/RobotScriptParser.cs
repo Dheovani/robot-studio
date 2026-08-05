@@ -3,6 +3,7 @@ using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Domain.Parallel;
 
 namespace RobotStudio.Scripting;
 
@@ -51,6 +52,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             "DRIVE" => ParseDrive(lineNumber, line, arguments),
             "SCARA" => ParseScara(lineNumber, line, arguments),
             "ARM" => ParseSimpleArm(lineNumber, line, arguments),
+            "DELTA" => ParseDelta(lineNumber, line, arguments),
             _ => throw new ScriptParseException(lineNumber, line, $"Unknown command '{tokens[0]}'.")
         };
     }
@@ -185,6 +187,31 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         return new SimpleArmMoveJointsCommand(
             new SimpleArmJointPosition(baseDegrees, shoulder, elbow),
             requestedJointVelocity,
+            CreateSource(lineNumber, line));
+    }
+
+    private static DeltaMoveActuatorsCommand ParseDelta(
+        int lineNumber,
+        string line,
+        IReadOnlyList<string> arguments)
+    {
+        var values = ParseKeyValueArguments(
+            lineNumber,
+            line,
+            arguments,
+            ["A", "B", "C", "SPEED"]);
+
+        var actuatorA = GetRequiredDouble(lineNumber, line, values, "A", "DELTA");
+        var actuatorB = GetRequiredDouble(lineNumber, line, values, "B", "DELTA");
+        var actuatorC = GetRequiredDouble(lineNumber, line, values, "C", "DELTA");
+
+        double? requestedActuatorVelocity = values.TryGetValue("SPEED", out var speedText)
+            ? ParseDouble(lineNumber, line, speedText, "SPEED")
+            : null;
+
+        return new DeltaMoveActuatorsCommand(
+            new DeltaActuatorPosition(actuatorA, actuatorB, actuatorC),
+            requestedActuatorVelocity,
             CreateSource(lineNumber, line));
     }
 

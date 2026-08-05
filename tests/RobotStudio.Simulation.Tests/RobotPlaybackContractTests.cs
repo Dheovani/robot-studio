@@ -3,6 +3,7 @@ using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Domain.Parallel;
 
 namespace RobotStudio.Simulation.Tests;
 
@@ -16,7 +17,8 @@ public sealed class RobotPlaybackContractTests
             CreateCartesianSnapshot(),
             CreateDifferentialDriveSnapshot(),
             CreateScaraSnapshot(),
-            CreateSimpleArmSnapshot()
+            CreateSimpleArmSnapshot(),
+            CreateDeltaSnapshot()
         ];
 
         Assert.All(
@@ -38,7 +40,8 @@ public sealed class RobotPlaybackContractTests
             CreateCartesianSnapshot().LastFrame,
             CreateDifferentialDriveSnapshot().LastFrame,
             CreateScaraSnapshot().LastFrame,
-            CreateSimpleArmSnapshot().LastFrame
+            CreateSimpleArmSnapshot().LastFrame,
+            CreateDeltaSnapshot().LastFrame
         ];
 
         Assert.All(
@@ -162,6 +165,29 @@ public sealed class RobotPlaybackContractTests
         var result = new SimpleArmSimulator().Execute(context, sequence);
 
         return new SimpleArmPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private static DeltaPlaybackSnapshot CreateDeltaSnapshot()
+    {
+        var profile = new DeltaRobotProfile(
+            baseRadiusMillimeters: 140,
+            toolZOffsetMillimeters: 0,
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+        var context = DeltaSimulationContext.Create(
+            profile,
+            new DeltaActuatorPosition(0, 0, 0));
+        var sequence = new RobotCommandSequence(
+        [
+            new DeltaMoveActuatorsCommand(
+                new DeltaActuatorPosition(30, 60, 90),
+                requestedActuatorVelocityMillimetersPerSecond: 80)
+        ]);
+        var result = new DeltaSimulator().Execute(context, sequence);
+
+        return new DeltaPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 }

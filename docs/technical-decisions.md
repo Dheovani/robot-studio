@@ -118,7 +118,7 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 The first scripting format is a simple educational DSL, not G-code.
 
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, Delta actuator commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
 
 Initial target syntax:
 
@@ -174,6 +174,8 @@ The differential drive robot is modeled as a mobile robot with `DifferentialDriv
 The SCARA robot is modeled as an articulated planar robot with `ScaraJointPosition`, `ScaraRobotProfile`, `ScaraKinematics`, `ScaraMoveJointsCommand`, `ScaraMotionPlanner`, `ScaraSimulator`, and `ScaraPlaybackSampler`. It introduces joint-space movement and forward/inverse kinematics without forcing articulated robots through Cartesian or mobile motion contracts. The first desktop viewer is 3D and renders a volumetric base, two horizontal links, joints, reachable workspace, tool path, and tool marker.
 
 The Simple Articulated Arm is modeled as a three-joint planar arm with `SimpleArmJointPosition`, `SimpleArmRobotProfile`, `SimpleArmKinematics`, `SimpleArmMoveJointsCommand`, `SimpleArmMotionPlanner`, `SimpleArmSimulator`, and `SimpleArmPlaybackSampler`. It intentionally starts with forward kinematics only so students can first learn how base, shoulder, and elbow angles compose into a tool pose before inverse kinematics is introduced. The first desktop viewer is 3D and renders a volumetric base, three links, joints, reachable workspace, tool path, and tool orientation.
+
+The Delta Robot starts as a simplified parallel robot model with `DeltaActuatorPosition`, `DeltaRobotProfile`, `DeltaKinematics`, `DeltaMoveActuatorsCommand`, `DeltaMotionPlanner`, `DeltaSimulator`, and `DeltaPlaybackSampler`. The initial educational model uses three vertical actuators named A/B/C and maps actuator differences to X/Y tool displacement while the actuator average drives Z. This deliberately teaches parallel coupling before introducing industrial Delta inverse kinematics. The desktop viewer is still planned, so the catalog remains non-openable until the 3D visualization exists.
 
 ### Hardware
 

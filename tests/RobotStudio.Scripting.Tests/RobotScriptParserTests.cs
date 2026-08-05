@@ -128,6 +128,33 @@ public sealed class RobotScriptParserTests
     }
 
     [Fact]
+    public void Parse_WhenDeltaIsValid_ShouldReturnDeltaMoveActuatorsCommand()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DELTA A=30 B=60 C=90 SPEED=80");
+
+        var command = Assert.IsType<DeltaMoveActuatorsCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(30, command.TargetActuators.AMillimeters);
+        Assert.Equal(60, command.TargetActuators.BMillimeters);
+        Assert.Equal(90, command.TargetActuators.CMillimeters);
+        Assert.Equal(80, command.RequestedActuatorVelocityMillimetersPerSecond);
+        Assert.Equal(1, command.Source?.LineNumber);
+        Assert.Equal("DELTA A=30 B=60 C=90 SPEED=80", command.Source?.Text);
+    }
+
+    [Fact]
+    public void Parse_WhenDeltaHasNoSpeed_ShouldReturnDeltaCommandWithoutRequestedVelocity()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse("DELTA A=30 B=60 C=90");
+
+        var command = Assert.IsType<DeltaMoveActuatorsCommand>(Assert.Single(sequence.Commands));
+        Assert.Null(command.RequestedActuatorVelocityMillimetersPerSecond);
+    }
+
+    [Fact]
     public void Parse_WhenCommandIsUnknown_ShouldThrowWithLineNumber()
     {
         var parser = new RobotScriptParser();
@@ -181,6 +208,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("ARM requires BASE", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDeltaMissesActuatorC_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(
+            () => parser.Parse("DELTA A=30 B=60"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("DELTA requires C", exception.Message);
     }
 
     [Fact]
@@ -271,6 +310,18 @@ public sealed class RobotScriptParserTests
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("Unknown ARM argument", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenDeltaHasUnknownArgument_ShouldThrow()
+    {
+        var parser = new RobotScriptParser();
+
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            parser.Parse("DELTA A=30 B=60 C=90 X=0"));
+
+        Assert.Equal(1, exception.LineNumber);
+        Assert.Contains("Unknown DELTA argument", exception.Message);
     }
 
     [Fact]

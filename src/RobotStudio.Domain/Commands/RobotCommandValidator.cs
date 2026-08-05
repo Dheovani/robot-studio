@@ -2,6 +2,7 @@ using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Exceptions;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Domain.Parallel;
 
 namespace RobotStudio.Domain.Commands;
 
@@ -120,6 +121,28 @@ public static class RobotCommandValidator
 
             case SimpleArmMoveJointsCommand moveCommand:
                 profile.ValidatePosition(moveCommand.TargetJoints);
+                return;
+
+            default:
+                throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
+        }
+    }
+
+    public static void Validate(RobotCommand command, DeltaRobotProfile profile)
+    {
+        ArgumentNullException.ThrowIfNull(command);
+        ArgumentNullException.ThrowIfNull(profile);
+
+        switch (command)
+        {
+            case HomeCommand:
+                return;
+
+            case WaitCommand:
+                return;
+
+            case DeltaMoveActuatorsCommand moveCommand:
+                profile.ValidatePosition(moveCommand.TargetActuators);
                 return;
 
             default:

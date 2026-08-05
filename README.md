@@ -57,6 +57,7 @@ Implemented:
 - Differential Drive domain, motion planner, deterministic simulator, and 2D viewer;
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, and playback sampler;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
 - shared playback contracts for cross-family simulation summaries;
 - local desktop teaching examples and selectors for available training viewers;
@@ -69,7 +70,8 @@ Not implemented yet:
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
-- additional robot visual simulations such as delta robots or drones.
+- Delta Robot desktop viewer;
+- additional visual simulations such as drones or 6-DOF industrial arms.
 
 ## Run The Desktop App
 
