@@ -19,6 +19,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Implement the Drone as the first aerial robot model.
 - [ ] Implement the 6-DOF Industrial Arm as the advanced articulated model.
 - [x] Define shared contracts that can support Cartesian, mobile, articulated, parallel, and aerial robots without forcing one motion model onto all of them.
+- [ ] Expand the catalog by mapping new robots for implementation.
 - [ ] Add tests before each new robot family is considered complete.
 
 ## 3. Motion And Simulation
@@ -58,6 +59,7 @@ This file tracks future work after the first stable Cartesian simulation release
 
 - [ ] Improve the visual design of the robot selection screen.
 - [ ] Improve the visual design of the Cartesian simulator workspace.
+- [ ] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
 - [ ] Add a more polished application logo and brand system if needed.
 - [ ] Add a view cube or compact camera orientation selector.
 - [ ] Add optional beginner, teacher, and debug display modes.
@@ -85,3 +87,9 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add UI smoke tests if the desktop workflow becomes stable enough to automate.
 - [ ] Add snapshot compatibility tests before changing playback JSON contracts.
 - [x] Add architecture tests to guard project dependency rules.
+
+## 9. Future 3D Visualization Quality
+
+- [ ] Replace the current simplified 3D robot graphics with richer didactic visuals for mechanisms, frames, joints, links, tools, rotors, and workspaces.
+- [ ] Add more advanced 3D rendering primitives and scene composition helpers before implementing highly detailed robot models.
+- [ ] Improve visual fidelity while keeping the graphics educational rather than CAD-realistic.

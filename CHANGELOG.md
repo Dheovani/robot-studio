@@ -2,6 +2,32 @@
 
 All notable user-facing changes to RobotStudio are documented in this file.
 
+## Unreleased - Multi-Robot Teaching Platform Expansion
+
+### Added
+
+- Added a didactic robot catalog organized by learning complexity, with available and planned robot templates.
+- Added the XY Plotter as a beginner Cartesian-family model for two-axis drawing and planar command sequencing.
+- Added the Differential Drive Robot as the first mobile robot model, including deterministic motion, DSL commands, playback, and a desktop viewer.
+- Added the SCARA Robot as an articulated robot model, including joint-space motion, kinematics, DSL commands, playback, and a 3D desktop viewer.
+- Added the Simple Articulated Arm as a three-joint arm model, including forward kinematics, DSL commands, playback, and a 3D desktop viewer.
+- Added the Delta Robot as the first parallel robot model, including simplified parallel kinematics, actuator-space commands, playback, and a 3D desktop viewer.
+- Added the Drone as the first aerial robot model, including 3D pose, yaw orientation, coordinated flight planning, DSL commands, playback, and a 3D desktop viewer.
+- Added shared playback snapshot and frame contracts so desktop and future tooling can consume different robot families without forcing them into one position model.
+- Added reusable desktop rendering helpers for orbit cameras, mesh primitives, reachable workspaces, paths, and volumetric robot parts.
+- Added local desktop teaching examples and selectors for every available robot viewer.
+- Added desktop script load/save support for `.robot` and `.txt` files.
+- Added clearer script validation messages for syntax errors, unsupported command arguments, and physical limit violations.
+- Added keyboard shortcuts for active-viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
+- Added architecture tests to guard project dependency rules and keep WPF isolated from portable core projects.
+- Added portable solution validation for non-desktop projects, keeping the CLI and core libraries testable outside the Windows desktop target.
+- Added Windows release artifact and installer generation groundwork for distributing the desktop application.
+
+### Changed
+
+- Expanded the desktop app from a Cartesian-only visual simulator into a multi-robot teaching environment.
+- Kept the 6-DOF Industrial Arm, G-code, hardware execution, real drone physics, collision detection, and richer 3D graphics as planned future work.
+
 ## 1.0.0 - Stable Cartesian Simulation Release
 
 RobotStudio `1.0.0` is the first stable educational release of the project. It provides a complete introductory robotics workflow centered on a Cartesian X/Y/Z robot, while keeping the architecture prepared for future robot families.
