@@ -10,4 +10,4 @@ public sealed record DifferentialDrivePlaybackFrame(
     DifferentialDrivePose Pose,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource) : IRobotPlaybackFrame;

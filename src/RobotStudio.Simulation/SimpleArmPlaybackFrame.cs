@@ -11,4 +11,4 @@ public sealed record SimpleArmPlaybackFrame(
     SimpleArmToolPose ToolPose,
     int? CommandIndex = null,
     string? CommandName = null,
-    RobotCommandSource? CommandSource = null);
+    RobotCommandSource? CommandSource = null) : IRobotPlaybackFrame;

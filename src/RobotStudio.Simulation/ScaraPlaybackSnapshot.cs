@@ -7,7 +7,11 @@ public sealed record ScaraPlaybackSnapshot(
     IReadOnlyList<ScaraPlaybackFrame> Frames,
     TimeSpan TotalDuration,
     bool Succeeded,
-    string? FailureMessage)
+    string? FailureMessage) : IRobotPlaybackSnapshot<ScaraPlaybackFrame>
 {
     public int FrameCount => Frames.Count;
+
+    public IRobotPlaybackFrame FirstFrame => Frames[0];
+
+    public IRobotPlaybackFrame LastFrame => Frames[^1];
 }

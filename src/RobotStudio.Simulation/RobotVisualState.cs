@@ -9,4 +9,4 @@ public sealed record RobotVisualState(
     VisualVector3 Position,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource) : IRobotPlaybackFrame;

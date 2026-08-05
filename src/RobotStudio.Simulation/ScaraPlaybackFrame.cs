@@ -11,4 +11,4 @@ public sealed record ScaraPlaybackFrame(
     ScaraToolPose ToolPose,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource) : IRobotPlaybackFrame;

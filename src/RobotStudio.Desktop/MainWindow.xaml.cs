@@ -499,6 +499,28 @@ public partial class MainWindow : Window
         SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
     }
 
+    private void LoadCartesianExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        ScriptEditorTextBox.Text = GetSelectedExampleScript(
+            CartesianExampleComboBox,
+            activeViewerKind);
+        snapshot = CreateSnapshot(ScriptEditorTextBox.Text);
+        TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
+        TimelineSlider.TickFrequency = 1;
+        RenderFrame(index: 0);
+        SetScriptStatus("Loaded the selected teaching example.", Color.FromRgb(74, 222, 128));
+    }
+
+    private void CartesianExampleComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e) =>
+        UpdateSelectedExampleDescription(
+            CartesianExampleComboBox,
+            CartesianExampleDescriptionText);
+
     private void LoadCartesianScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
@@ -1898,6 +1920,9 @@ public partial class MainWindow : Window
         xyPlotterProfile = null;
         initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
         ViewerSubtitleText.Text = "Cartesian robot simulation";
+        ConfigureExampleSelector(
+            CartesianExampleComboBox,
+            RobotViewerKind.CartesianThreeDimensional);
         ScriptEditorTextBox.Text = GetDefaultExampleScript(RobotViewerKind.CartesianThreeDimensional);
         CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=20 SPEED=80";
         JogNegativeZButton.IsEnabled = true;
@@ -1911,6 +1936,9 @@ public partial class MainWindow : Window
         profile = xyPlotterProfile.ToCartesianProfile();
         initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 0);
         ViewerSubtitleText.Text = "XY plotter simulation";
+        ConfigureExampleSelector(
+            CartesianExampleComboBox,
+            RobotViewerKind.XYPlotterTwoDimensional);
         ScriptEditorTextBox.Text = GetDefaultExampleScript(RobotViewerKind.XYPlotterTwoDimensional);
         CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=0 SPEED=80";
         JogNegativeZButton.IsEnabled = false;
@@ -1960,6 +1988,15 @@ public partial class MainWindow : Window
     {
         comboBox.ItemsSource = RobotExampleCatalog.GetFor(viewerKind);
         comboBox.SelectedIndex = 0;
+    }
+
+    private static void UpdateSelectedExampleDescription(
+        ComboBox comboBox,
+        TextBlock descriptionTextBlock)
+    {
+        descriptionTextBlock.Text = comboBox.SelectedItem is RobotExample example
+            ? example.Description
+            : "Select an example to load a starter script.";
     }
 
     private static string GetSelectedExampleScript(

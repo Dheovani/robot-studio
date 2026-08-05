@@ -7,7 +7,11 @@ public sealed record SimpleArmPlaybackSnapshot(
     IReadOnlyList<SimpleArmPlaybackFrame> Frames,
     TimeSpan TotalDuration,
     bool Succeeded,
-    string? FailureMessage)
+    string? FailureMessage) : IRobotPlaybackSnapshot<SimpleArmPlaybackFrame>
 {
     public int FrameCount => Frames.Count;
+
+    public IRobotPlaybackFrame FirstFrame => Frames[0];
+
+    public IRobotPlaybackFrame LastFrame => Frames[^1];
 }

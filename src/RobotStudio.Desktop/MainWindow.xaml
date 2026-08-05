@@ -255,6 +255,22 @@
                                       IsExpanded="True"
                                       ToolTip="Edit DSL commands before validating or simulating the robot.">
                                 <StackPanel Margin="0,10,0,0">
+                                    <TextBlock Text="Example"
+                                               Foreground="#94A3B8" />
+                                    <ComboBox x:Name="CartesianExampleComboBox"
+                                              Margin="0,4,0,8"
+                                              ToolTip="Choose a local teaching example for the active Cartesian-family viewer."
+                                              SelectionChanged="CartesianExampleComboBox_SelectionChanged" />
+                                    <TextBlock x:Name="CartesianExampleDescriptionText"
+                                               Margin="0,0,0,10"
+                                               Foreground="#CBD5E1"
+                                               TextWrapping="Wrap"
+                                               Text="Select an example to load a starter script." />
+                                    <Button Margin="0,0,0,10"
+                                            Content="Load Example"
+                                            ToolTip="Load the selected example into the script editor and regenerate playback."
+                                            Click="LoadCartesianExampleButton_Click" />
+
                                     <Border Height="190"
                                     Margin="0,10,0,10"
                                     BorderBrush="#334155"

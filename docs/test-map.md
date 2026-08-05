@@ -176,6 +176,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm playback sampling interpolates joint position between timeline steps.
 - [x] Simple arm playback sampling preserves command metadata.
 - [x] Simple arm playback sampling includes tool poses calculated from kinematics.
+- [x] Cartesian, mobile, SCARA, and simple arm snapshots expose the shared playback snapshot contract.
+- [x] Cartesian, mobile, SCARA, and simple arm frames expose common timeline metadata.
+- [x] Shared playback summaries can summarize snapshots without knowing the robot family's concrete position type.
 
 ### Required Next Coverage
 
@@ -256,13 +259,20 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Local desktop examples cover every openable robot viewer.
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
-- [x] Training viewers expose multiple local examples.
+- [x] Training viewers expose multiple local examples, including Cartesian and XY Plotter.
 - [x] Shared non-Cartesian frame presenters format state, pose, time, frame counters, and explanations.
 - [x] Desktop script validation messages summarize syntax errors with line numbers.
 - [x] Desktop script validation messages explain physical limit failures.
 - [x] Desktop script validation messages explain invalid command arguments.
 - [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
 - [x] Script editor metadata classifies blank and unknown lines predictably.
+
+## Architecture Tests
+
+- [x] Source projects follow the allowed project reference map.
+- [x] `RobotStudio.Domain` has no project references, package references, or Windows target.
+- [x] `RobotStudio.Desktop` is the only WPF source project.
+- [x] The portable solution excludes the WPF desktop project while retaining CLI and core projects.
 
 ### Required Next Coverage
 
@@ -361,6 +371,8 @@ Expected current behavior:
 - renders the built-in Cartesian robot scene in a 3D viewport;
 - renders the SCARA robot as a 3D viewport with volumetric links and joints;
 - renders the Simple Articulated Arm as a 3D viewport with volumetric links and joints;
+- loads selected local Cartesian examples from the Cartesian viewer;
+- loads selected local XY Plotter examples from the XY Plotter viewer;
 - loads selected local Differential Drive examples from the mobile viewer;
 - loads selected local SCARA examples from the SCARA viewer;
 - loads selected local Simple Articulated Arm examples from the arm viewer;

@@ -18,7 +18,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Implement the Delta Robot as the first parallel robot model.
 - [ ] Implement the Drone as the first aerial robot model.
 - [ ] Implement the 6-DOF Industrial Arm as the advanced articulated model.
-- [ ] Define shared contracts that can support Cartesian, mobile, articulated, parallel, and aerial robots without forcing one motion model onto all of them.
+- [x] Define shared contracts that can support Cartesian, mobile, articulated, parallel, and aerial robots without forcing one motion model onto all of them.
 - [ ] Add tests before each new robot family is considered complete.
 
 ## 3. Motion And Simulation
@@ -61,7 +61,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add a more polished application logo and brand system if needed.
 - [ ] Add a view cube or compact camera orientation selector.
 - [ ] Add optional beginner, teacher, and debug display modes.
-- [ ] Expand the local example catalog into a multi-example gallery for common scripts.
+- [x] Expand the local example catalog into a multi-example gallery for common scripts.
 - [ ] Extract a common desktop viewer shell for repeated script panels, timeline controls, and playback controls.
 - [x] Extract shared non-Cartesian frame presentation for state panels and didactic movement explanations.
 - [x] Add import/export for desktop scripts.
@@ -84,4 +84,4 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add package vulnerability scanning when external dependencies become more relevant.
 - [ ] Add UI smoke tests if the desktop workflow becomes stable enough to automate.
 - [ ] Add snapshot compatibility tests before changing playback JSON contracts.
-- [ ] Add architecture tests to guard project dependency rules.
+- [x] Add architecture tests to guard project dependency rules.

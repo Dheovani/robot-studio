@@ -136,7 +136,11 @@ The first desktop UI uses WPF and targets Windows. This keeps the first visual i
 
 The core libraries and CLI are validated separately through `build/RobotStudio.Portable.slnx`, which excludes WPF desktop projects and runs in CI on Windows, Linux, and macOS. Cross-platform desktop UI support remains a future product decision.
 
+Architecture tests live in `RobotStudio.Architecture.Tests`. They read project files as XML and guard the allowed project reference map, the purity of `RobotStudio.Domain`, the WPF-only desktop boundary, and the portable solution's exclusion of WPF projects. These tests are intentionally package-free so the architecture rules remain easy to inspect in class.
+
 The desktop viewer must consume simulation output, especially scene frames and viewport data, instead of duplicating simulation, motion, or geometry rules.
+
+Cross-family simulation contracts belong in `RobotStudio.Simulation`. `IRobotPlaybackFrame`, `IRobotPlaybackSnapshot`, and `IRobotPlaybackSnapshot<TFrame>` expose shared timeline metadata such as time, state, command source, duration, frame count, and success/failure without forcing Cartesian positions, mobile poses, or articulated joints into one shape. Family-specific snapshots keep their strongly typed frame lists, while shared tools can use `RobotPlaybackSummary` when only high-level playback information is needed.
 
 Visual coordinate and camera decisions must remain outside the domain model.
 

@@ -28,7 +28,7 @@ WAIT 500
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
-- Load local teaching examples from Differential Drive, SCARA, and Simple Articulated Arm viewers.
+- Load local teaching examples from every available desktop viewer.
 - Load and save `.robot` or `.txt` scripts in the desktop app.
 - Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
 - Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
@@ -58,6 +58,7 @@ Implemented:
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
+- shared playback contracts for cross-family simulation summaries;
 - local desktop teaching examples and selectors for available training viewers;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;

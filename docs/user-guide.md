@@ -73,9 +73,9 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, and Simple Articulated Arm are available now. Planned templates are shown for the delta robot, drone, and 6-DOF industrial arm.
 
-Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback and camera controls.
+Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
-Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, and overlay controls.
+Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, overlay controls, and local example selector.
 
 Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands, plus a local example selector.
 
@@ -83,7 +83,7 @@ Opening the SCARA robot renders a 3D articulated robot viewer with reachable wor
 
 Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes an ARM DSL editor for `HOME`, `ARM`, and `WAIT` commands, plus a local example selector.
 
-The Differential Drive, SCARA, and Simple Articulated Arm viewers include an example selector and a `Load Example` button. Their side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
+Every available desktop viewer includes an example selector and a `Load Example` button. The non-Cartesian side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
 Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading a script replaces the editor text and asks the student to validate or simulate before playback. Saving writes the current editor text without changing the simulation.
 
@@ -165,7 +165,7 @@ Current desktop controls:
 - `Ctrl+mouse wheel` zoom for active 2D and 3D viewers.
 - isometric, front, side, top, and reset camera buttons.
 - state panel showing current state, position, command, source line, simulated time, and frame number.
-- local example selector and `Load Example` controls for Differential Drive, SCARA, and Simple Articulated Arm.
+- local example selector and `Load Example` controls for every available desktop viewer.
 - `Load Script` and `Save Script` controls for desktop script editors.
 - keyboard shortcuts for active viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
 - movement explanation text for SCARA and Simple Articulated Arm joint-space commands.

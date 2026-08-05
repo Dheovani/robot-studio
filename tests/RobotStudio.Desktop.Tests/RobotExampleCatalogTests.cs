@@ -54,6 +54,8 @@ public sealed class RobotExampleCatalogTests
     [Fact]
     public void All_ShouldExposeMultipleExamplesForImplementedTrainingViewers()
     {
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.CartesianThreeDimensional).Count >= 2);
+        Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.XYPlotterTwoDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DifferentialDriveTwoDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.ScaraThreeDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.SimpleArmThreeDimensional).Count >= 2);

@@ -30,7 +30,7 @@ dotnet build build/RobotStudio.Portable.slnx --configuration Release --no-restor
 dotnet test build/RobotStudio.Portable.slnx --configuration Release --no-build
 ```
 
-The portable solution file is `build/RobotStudio.Portable.slnx`. It excludes WPF desktop projects and validates the CLI, domain, motion, simulation, scripting, hardware boundary, and non-desktop tests.
+The portable solution file is `build/RobotStudio.Portable.slnx`. It excludes WPF desktop projects and validates the CLI, domain, motion, simulation, scripting, hardware boundary, architecture rules, and non-desktop tests.
 
 ### Windows Desktop Build And Test
 
@@ -116,6 +116,7 @@ The first CI version checks:
 - portable CLI/core build on Windows, Linux, and macOS;
 - Release build;
 - xUnit tests;
+- architecture dependency rules;
 - formatting rules.
 - Windows installer generation for manual or tagged release builds.
 - CLI release artifacts for manual or tagged release builds.

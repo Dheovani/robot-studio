@@ -8,6 +8,7 @@
     <Project Path="../src/RobotStudio.Simulation/RobotStudio.Simulation.csproj" />
   </Folder>
   <Folder Name="/tests/">
+    <Project Path="../tests/RobotStudio.Architecture.Tests/RobotStudio.Architecture.Tests.csproj" />
     <Project Path="../tests/RobotStudio.Domain.Tests/RobotStudio.Domain.Tests.csproj" />
     <Project Path="../tests/RobotStudio.Hardware.Tests/RobotStudio.Hardware.Tests.csproj" />
     <Project Path="../tests/RobotStudio.Motion.Tests/RobotStudio.Motion.Tests.csproj" />
