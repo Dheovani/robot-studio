@@ -17,7 +17,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Implement the Simple Articulated Arm as the first joint-based arm model.
 - [x] Implement the Delta Robot as the first parallel robot model.
 - [x] Implement the Drone as the first aerial robot model.
-- [ ] Implement the 6-DOF Industrial Arm as the advanced articulated model.
+- [x] Implement the 6-DOF Industrial Arm as the advanced articulated model.
 - [x] Define shared contracts that can support Cartesian, mobile, articulated, parallel, and aerial robots without forcing one motion model onto all of them.
 - [ ] Expand the catalog by mapping new robots for implementation.
 - [ ] Add tests before each new robot family is considered complete.

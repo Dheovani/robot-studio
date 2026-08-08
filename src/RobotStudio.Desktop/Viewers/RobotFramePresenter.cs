@@ -103,6 +103,29 @@ public static class RobotFramePresenter
                 "This didactic model coordinates translation and yaw without simulating thrust, pitch, roll, or real aerodynamics.");
     }
 
+    public static RobotFrameStatus Create(
+        IndustrialArmPlaybackFrame frame,
+        int frameIndex,
+        int frameCount,
+        TimeSpan totalDuration)
+    {
+        var frameNumber = NormalizeFrameNumber(frameIndex, frameCount);
+        return new RobotFrameStatus(
+            State: frame.State.ToString(),
+            PrimaryPose:
+                $"J1={FormatNumber(frame.Joints.J1Degrees)}, J2={FormatNumber(frame.Joints.J2Degrees)}, " +
+                $"J3={FormatNumber(frame.Joints.J3Degrees)}, J4={FormatNumber(frame.Joints.J4Degrees)}, " +
+                $"J5={FormatNumber(frame.Joints.J5Degrees)}, J6={FormatNumber(frame.Joints.J6Degrees)} deg",
+            Command: frame.CommandName ?? "simulation",
+            Time: FormatTime(frame.Time, totalDuration),
+            Frames: $"{frameNumber} / {frameCount}",
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            MovementExplanation:
+                $"{frame.CommandName ?? "simulation"} is represented as coordinated six-joint motion. " +
+                "J1 rotates the base, J2/J3 position the main links, and J4/J5/J6 orient the wrist and tool. " +
+                "The slowest involved joint limits the shared movement speed.");
+    }
+
     public static string FormatScaraToolPose(ScaraPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.X)}, Y={FormatNumber(frame.ToolPose.Y)} mm";
 
@@ -114,6 +137,11 @@ public static class RobotFramePresenter
 
     public static string FormatDroneYaw(DronePlaybackFrame frame) =>
         $"Yaw={FormatNumber(frame.Pose.YawDegrees)} deg";
+
+    public static string FormatIndustrialArmToolPose(IndustrialArmPlaybackFrame frame) =>
+        $"X={FormatNumber(frame.ToolPose.XMillimeters)}, Y={FormatNumber(frame.ToolPose.YMillimeters)}, " +
+        $"Z={FormatNumber(frame.ToolPose.ZMillimeters)} mm | R={FormatNumber(frame.ToolPose.RollDegrees)}, " +
+        $"P={FormatNumber(frame.ToolPose.PitchDegrees)}, Y={FormatNumber(frame.ToolPose.YawDegrees)} deg";
 
     private static string FormatTime(
         TimeSpan frameTime,

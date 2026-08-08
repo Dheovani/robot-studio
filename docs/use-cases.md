@@ -46,11 +46,11 @@ Expected result:
 - the differential drive robot appears as `Available`;
 - the SCARA robot appears as `Available`;
 - the simple articulated arm appears as `Available`;
-- the delta robot appears as `Planned`;
-- the drone appears as `Planned`;
-- the 6-DOF industrial arm appears as `Planned`;
+- the delta robot appears as `Available`;
+- the drone appears as `Available`;
+- the 6-DOF industrial arm appears as `Available`;
 - each robot card shows family, status, complexity, description, and capabilities;
-- planned robot entries cannot be opened yet;
+- future planned robot entries cannot be opened until they have a concrete viewer;
 - the selection screen remains a simulator entry point, not a lesson manager.
 
 ### Open The XY Plotter
@@ -121,6 +121,22 @@ Expected result:
 - the simulator executes `HOME`, simple arm joint moves, and `WAIT`;
 - the desktop viewer shows reachable workspace, volumetric base, three links, current tool pose, tool orientation, planned path, state, command name, camera controls, and frame timeline;
 - the student can edit and simulate simple arm DSL commands with `ARM BASE=... SHOULDER=... ELBOW=... SPEED=...`.
+
+### Simulate 6-DOF Industrial Arm Movement
+
+Actor: student or instructor.
+
+Goal: study how six revolute joints coordinate the position and orientation of an industrial-arm TCP.
+
+Current status: implemented for domain limits, simplified forward kinematics, coordinated joint planning, deterministic simulation, playback sampling, simple DSL, and a 3D desktop viewer.
+
+Expected result:
+
+- an industrial-arm profile defines four physical dimensions and individual limits for `J1` through `J6`;
+- the planner coordinates involved joints and caps movement by the slowest joint limit;
+- the simulator executes `HOME`, `ARM6`, and `WAIT`;
+- the viewer shows the serial links, six joint markers, TCP orientation, reachable area, planned path, state, command, camera orbit, zoom, and timeline;
+- the student can load examples or edit `ARM6 J1=... J2=... J3=... J4=... J5=... J6=... SPEED=...` commands.
 
 ### Execute A Command Sequence
 

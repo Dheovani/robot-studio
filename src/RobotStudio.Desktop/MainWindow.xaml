@@ -1830,5 +1830,152 @@
                            TextAlignment="Right" />
             </Grid>
         </Grid>
+
+        <Grid x:Name="IndustrialArmViewerView" Visibility="Collapsed">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto" />
+                <RowDefinition Height="*" />
+                <RowDefinition Height="Auto" />
+            </Grid.RowDefinitions>
+
+            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+                <StackPanel DockPanel.Dock="Left">
+                    <TextBlock Text="RobotStudio" Foreground="#F9FAFB" FontSize="24" FontWeight="SemiBold" />
+                    <TextBlock Text="6-DOF industrial arm simulation" Foreground="#CBD5E1" FontSize="13" />
+                </StackPanel>
+                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
+                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button x:Name="IndustrialArmPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
+                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="IndustrialArmResetButton_Click" Content="Reset" />
+                </StackPanel>
+            </DockPanel>
+
+            <Grid Grid.Row="1" Margin="16,0,16,12">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*" MinWidth="420" />
+                    <ColumnDefinition Width="8" />
+                    <ColumnDefinition Width="360" MinWidth="310" MaxWidth="500" />
+                </Grid.ColumnDefinitions>
+
+                <Border x:Name="IndustrialArmViewportHost"
+                        Grid.Column="0"
+                        BorderBrush="#334155"
+                        BorderThickness="1"
+                        Background="#0F172A"
+                        Cursor="Hand"
+                        MouseLeftButtonDown="IndustrialArmViewport_MouseLeftButtonDown"
+                        MouseLeftButtonUp="IndustrialArmViewport_MouseLeftButtonUp"
+                        MouseMove="IndustrialArmViewport_MouseMove"
+                        MouseWheel="IndustrialArmViewport_MouseWheel">
+                    <Viewport3D x:Name="IndustrialArmViewport"
+                                ClipToBounds="True"
+                                SizeChanged="IndustrialArmViewport_SizeChanged"
+                                IsHitTestVisible="False" />
+                </Border>
+
+                <GridSplitter Grid.Column="1"
+                              Width="8"
+                              Margin="6,0,0,0"
+                              HorizontalAlignment="Stretch"
+                              VerticalAlignment="Stretch"
+                              Background="#1E293B"
+                              ResizeBehavior="PreviousAndNext"
+                              ResizeDirection="Columns"
+                              ShowsPreview="True" />
+
+                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                    <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
+                        <StackPanel Margin="0,0,10,0">
+                            <TextBlock Text="Industrial Arm State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                            <Grid Margin="0,18,0,18">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="92" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                </Grid.RowDefinitions>
+                                <TextBlock Grid.Row="0" Foreground="#94A3B8" Text="State" />
+                                <TextBlock x:Name="IndustrialArmStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="1" Margin="0,8,0,0" Foreground="#94A3B8" Text="Joints" />
+                                <TextBlock x:Name="IndustrialArmJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="2" Margin="0,8,0,0" Foreground="#94A3B8" Text="TCP" />
+                                <TextBlock x:Name="IndustrialArmToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="3" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
+                                <TextBlock x:Name="IndustrialArmCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
+                                <TextBlock Grid.Row="4" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
+                                <TextBlock x:Name="IndustrialArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            </Grid>
+
+                            <TextBlock Text="ARM6 DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                            <TextBlock Text="Example" Margin="0,10,0,4" Foreground="#94A3B8" />
+                            <ComboBox x:Name="IndustrialArmExampleComboBox" Margin="0,0,0,8" />
+                            <TextBox x:Name="IndustrialArmScriptTextBox"
+                                     Height="150"
+                                     Margin="0,10,0,10"
+                                     Padding="10"
+                                     AcceptsReturn="True"
+                                     AcceptsTab="True"
+                                     FontFamily="Consolas"
+                                     FontSize="12"
+                                     TextWrapping="NoWrap"
+                                     VerticalScrollBarVisibility="Auto"
+                                     HorizontalScrollBarVisibility="Auto" />
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateIndustrialArmScriptButton_Click" />
+                                <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateIndustrialArmScriptButton_Click" />
+                            </Grid>
+                            <Button Margin="0,0,0,10" Content="Load Example" Click="LoadIndustrialArmExampleButton_Click" />
+                            <Grid Margin="0,0,0,10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*" />
+                                    <ColumnDefinition Width="*" />
+                                </Grid.ColumnDefinitions>
+                                <Button Grid.Column="0" Margin="0,0,6,0" Content="Load Script" Click="LoadIndustrialArmScriptButton_Click" />
+                                <Button Grid.Column="1" Margin="6,0,0,0" Content="Save Script" Click="SaveIndustrialArmScriptButton_Click" />
+                            </Grid>
+                            <TextBlock x:Name="IndustrialArmScriptStatusText"
+                                       Foreground="#94A3B8"
+                                       TextWrapping="Wrap"
+                                       Text="Edit ARM6 joint commands and simulate the industrial arm." />
+                            <TextBlock Text="Movement Explanation" Margin="0,18,0,8" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                            <TextBlock x:Name="IndustrialArmMovementExplanationText" Foreground="#CBD5E1" LineHeight="18" TextWrapping="Wrap" />
+                        </StackPanel>
+                    </ScrollViewer>
+                </Border>
+            </Grid>
+
+            <Grid Grid.Row="2" Margin="16,0,16,16">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="Auto" />
+                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="280" />
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
+                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="IndustrialArmPreviousFrameButton_Click" />
+                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="IndustrialArmNextFrameButton_Click" />
+                </StackPanel>
+                <Slider x:Name="IndustrialArmTimelineSlider"
+                        Grid.Column="1"
+                        Margin="12,0,0,0"
+                        Minimum="0"
+                        IsSnapToTickEnabled="True"
+                        ValueChanged="IndustrialArmTimelineSlider_ValueChanged" />
+                <TextBlock x:Name="IndustrialArmStatusText"
+                           Grid.Column="2"
+                           Margin="16,0,0,0"
+                           VerticalAlignment="Center"
+                           Foreground="#E5E7EB"
+                           TextAlignment="Right" />
+            </Grid>
+        </Grid>
     </Grid>
 </Window>

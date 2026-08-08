@@ -114,4 +114,25 @@ public sealed class RobotFramePresenterTests
         Assert.Contains("coordinated 3D flight motion", status.MovementExplanation);
         Assert.Contains("without simulating thrust", status.MovementExplanation);
     }
+
+    [Fact]
+    public void Create_WhenIndustrialArmFrame_ShouldExplainSixJointCoordination()
+    {
+        var frame = new IndustrialArmPlaybackFrame(
+            TimeSpan.FromSeconds(1.5),
+            RobotState.Moving,
+            new IndustrialArmJointPosition(30, 25, -40, 60, 15, 90),
+            new IndustrialArmToolPose(260, 150, 210, 150, 0, 30),
+            CommandIndex: 0,
+            CommandName: nameof(IndustrialArmMoveJointsCommand),
+            CommandSource: null);
+
+        var status = RobotFramePresenter.Create(frame, frameIndex: 2, frameCount: 5, TimeSpan.FromSeconds(4));
+
+        Assert.Contains("J1=30", status.PrimaryPose);
+        Assert.Contains("J6=90 deg", status.PrimaryPose);
+        Assert.Contains("X=260, Y=150, Z=210 mm", RobotFramePresenter.FormatIndustrialArmToolPose(frame));
+        Assert.Contains("coordinated six-joint motion", status.MovementExplanation);
+        Assert.Contains("slowest involved joint", status.MovementExplanation);
+    }
 }

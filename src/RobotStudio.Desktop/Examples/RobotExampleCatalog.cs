@@ -166,6 +166,31 @@ public static class RobotExampleCatalog
             DRONE X=220 Y=60 Z=180 YAW=90 SPEED=120 YAW_SPEED=60
             DRONE X=220 Y=220 Z=90 YAW=180 SPEED=100 YAW_SPEED=75
             WAIT 400
+            """),
+
+        new(
+            RobotViewerKind.IndustrialArmThreeDimensional,
+            "Industrial pick pose",
+            "Coordinates all six joints and pauses at a didactic tooling pose.",
+            """
+            HOME
+            ARM6 J1=35 J2=30 J3=-45 J4=60 J5=20 J6=90 SPEED=80
+            WAIT 500
+            ARM6 J1=-25 J2=45 J3=-30 J4=-45 J5=15 J6=180 SPEED=70
+            WAIT 500
+            HOME
+            """),
+
+        new(
+            RobotViewerKind.IndustrialArmThreeDimensional,
+            "Wrist orientation study",
+            "Keeps the main arm near one region while changing wrist and tool orientation.",
+            """
+            HOME
+            ARM6 J1=20 J2=35 J3=-55 J4=0 J5=30 J6=0 SPEED=75
+            ARM6 J1=20 J2=35 J3=-55 J4=90 J5=-20 J6=120 SPEED=65
+            ARM6 J1=20 J2=35 J3=-55 J4=-90 J5=20 J6=-120 SPEED=65
+            WAIT 400
             """)
     ];
 

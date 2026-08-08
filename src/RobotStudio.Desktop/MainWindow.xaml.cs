@@ -79,12 +79,14 @@ public partial class MainWindow : Window
     private SimpleArmPlaybackSnapshot? simpleArmSnapshot;
     private DeltaPlaybackSnapshot? deltaSnapshot;
     private DronePlaybackSnapshot? droneSnapshot;
+    private IndustrialArmPlaybackSnapshot? industrialArmSnapshot;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
     private int simpleArmFrameIndex;
     private int deltaFrameIndex;
     private int droneFrameIndex;
+    private int industrialArmFrameIndex;
     private bool isPlaying;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -108,6 +110,10 @@ public partial class MainWindow : Window
     private double droneElevationDegrees = 34;
     private double droneZoomMultiplier = 1.55;
     private readonly ViewportOrbitInteractionState droneOrbitInteraction = new();
+    private double industrialArmAzimuthDegrees = -45;
+    private double industrialArmElevationDegrees = 28;
+    private double industrialArmZoomMultiplier = 1;
+    private readonly ViewportOrbitInteractionState industrialArmOrbitInteraction = new();
 
     private sealed class TimelineMarker
     {
@@ -285,6 +291,7 @@ public partial class MainWindow : Window
         SimpleArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         DeltaPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
         DronePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        IndustrialArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
 
         if (isPlaying)
         {
@@ -374,6 +381,19 @@ public partial class MainWindow : Window
 
         StopPlayback();
         RenderDroneFrame(index: 0);
+    }
+
+    private void IndustrialArmResetButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (industrialArmSnapshot is null)
+        {
+            return;
+        }
+
+        StopPlayback();
+        RenderIndustrialArmFrame(index: 0);
     }
 
     private void ValidateDifferentialDriveScriptButton_Click(
@@ -642,6 +662,56 @@ public partial class MainWindow : Window
         SetDroneScriptStatus("Loaded the selected Drone example.", Color.FromRgb(74, 222, 128));
     }
 
+    private void ValidateIndustrialArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (TryCreateIndustrialArmSnapshotFromScript(IndustrialArmScriptTextBox.Text, out _, out var message))
+        {
+            SetIndustrialArmScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetIndustrialArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+    }
+
+    private void SimulateIndustrialArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (!TryCreateIndustrialArmSnapshotFromScript(
+                IndustrialArmScriptTextBox.Text,
+                out var nextSnapshot,
+                out var message) ||
+            nextSnapshot is null)
+        {
+            SetIndustrialArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        industrialArmSnapshot = nextSnapshot;
+        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimelineSlider.TickFrequency = 1;
+        RenderIndustrialArmFrame(index: 0);
+        SetIndustrialArmScriptStatus(message, Color.FromRgb(74, 222, 128));
+    }
+
+    private void LoadIndustrialArmExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        IndustrialArmScriptTextBox.Text = GetSelectedExampleScript(
+            IndustrialArmExampleComboBox,
+            RobotViewerKind.IndustrialArmThreeDimensional);
+        industrialArmSnapshot = CreateIndustrialArmSnapshot(IndustrialArmScriptTextBox.Text);
+        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimelineSlider.TickFrequency = 1;
+        RenderIndustrialArmFrame(index: 0);
+        SetIndustrialArmScriptStatus("Loaded the selected industrial arm example.", Color.FromRgb(74, 222, 128));
+    }
+
     private void LoadCartesianExampleButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -742,6 +812,19 @@ public partial class MainWindow : Window
         RoutedEventArgs e) =>
         SaveScriptFrom(DroneScriptTextBox, SetDroneScriptStatus);
 
+    private void LoadIndustrialArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadScriptInto(
+            IndustrialArmScriptTextBox,
+            SetIndustrialArmScriptStatus,
+            () => industrialArmSnapshot = null);
+
+    private void SaveIndustrialArmScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveScriptFrom(IndustrialArmScriptTextBox, SetIndustrialArmScriptStatus);
+
     private void LoadActiveScript()
     {
         switch (activeViewerKind)
@@ -764,6 +847,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DroneThreeDimensional:
                 LoadDroneScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                LoadIndustrialArmScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -796,6 +883,10 @@ public partial class MainWindow : Window
                 SaveDroneScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                SaveIndustrialArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SaveCartesianScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -824,6 +915,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DroneThreeDimensional:
                 ValidateDroneScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                ValidateIndustrialArmScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -856,6 +951,10 @@ public partial class MainWindow : Window
                 SimulateDroneScriptButton_Click(this, new RoutedEventArgs());
                 break;
 
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                SimulateIndustrialArmScriptButton_Click(this, new RoutedEventArgs());
+                break;
+
             default:
                 SimulateScriptButton_Click(this, new RoutedEventArgs());
                 break;
@@ -884,6 +983,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DroneThreeDimensional:
                 DroneResetButton_Click(this, new RoutedEventArgs());
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                IndustrialArmResetButton_Click(this, new RoutedEventArgs());
                 break;
 
             default:
@@ -916,6 +1019,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DroneThreeDimensional:
                 RenderDroneFrame(droneFrameIndex + delta);
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                RenderIndustrialArmFrame(industrialArmFrameIndex + delta);
                 break;
 
             default:
@@ -951,6 +1058,11 @@ public partial class MainWindow : Window
             case RobotViewerKind.DroneThreeDimensional:
                 droneZoomMultiplier = Math.Clamp(droneZoomMultiplier + delta, 0.55, 4);
                 RenderDroneFrame(droneFrameIndex);
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                industrialArmZoomMultiplier = Math.Clamp(industrialArmZoomMultiplier + delta, 0.55, 4);
+                RenderIndustrialArmFrame(industrialArmFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -998,6 +1110,13 @@ public partial class MainWindow : Window
                 droneElevationDegrees = 34;
                 droneZoomMultiplier = 1.55;
                 RenderDroneFrame(droneFrameIndex);
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                industrialArmAzimuthDegrees = -45;
+                industrialArmElevationDegrees = 28;
+                industrialArmZoomMultiplier = 1;
+                RenderIndustrialArmFrame(industrialArmFrameIndex);
                 break;
 
             case RobotViewerKind.CartesianThreeDimensional:
@@ -1105,6 +1224,23 @@ public partial class MainWindow : Window
             }
 
             RenderDroneFrame(nextDroneFrame);
+            return;
+        }
+
+        if (activeViewerKind == RobotViewerKind.IndustrialArmThreeDimensional)
+        {
+            if (industrialArmSnapshot is null)
+            {
+                return;
+            }
+
+            var nextIndustrialArmFrame = industrialArmFrameIndex + 1;
+            if (nextIndustrialArmFrame >= industrialArmSnapshot.FrameCount)
+            {
+                nextIndustrialArmFrame = 0;
+            }
+
+            RenderIndustrialArmFrame(nextIndustrialArmFrame);
             return;
         }
 
@@ -1239,6 +1375,7 @@ public partial class MainWindow : Window
         SimpleArmViewerView.Visibility = Visibility.Collapsed;
         DeltaViewerView.Visibility = Visibility.Collapsed;
         DroneViewerView.Visibility = Visibility.Collapsed;
+        IndustrialArmViewerView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -1791,6 +1928,84 @@ public partial class MainWindow : Window
         RenderDroneFrame(droneFrameIndex + 1);
     }
 
+    private void IndustrialArmViewport_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (IsLoaded && industrialArmSnapshot is not null)
+        {
+            RenderIndustrialArmFrame(industrialArmFrameIndex);
+        }
+    }
+
+    private void IndustrialArmViewport_MouseLeftButtonDown(
+        object sender,
+        MouseButtonEventArgs e) =>
+        industrialArmOrbitInteraction.BeginDrag(IndustrialArmViewportHost, IndustrialArmViewport, e);
+
+    private void IndustrialArmViewport_MouseLeftButtonUp(
+        object sender,
+        MouseButtonEventArgs e) =>
+        industrialArmOrbitInteraction.EndDrag(IndustrialArmViewportHost, e);
+
+    private void IndustrialArmViewport_MouseMove(
+        object sender,
+        MouseEventArgs e)
+    {
+        if (!industrialArmOrbitInteraction.TryGetDragDelta(
+                IndustrialArmViewport,
+                e,
+                out var deltaX,
+                out var deltaY))
+        {
+            return;
+        }
+
+        industrialArmAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(
+            industrialArmAzimuthDegrees - (deltaX * 0.35));
+        industrialArmElevationDegrees = Math.Clamp(industrialArmElevationDegrees + (deltaY * 0.25), 5, 85);
+        RenderIndustrialArmFrame(industrialArmFrameIndex);
+    }
+
+    private void IndustrialArmViewport_MouseWheel(
+        object sender,
+        MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        e.Handled = true;
+        ZoomActiveCamera(e.Delta > 0 ? -0.12 : 0.12);
+    }
+
+    private void IndustrialArmTimelineSlider_ValueChanged(
+        object sender,
+        RoutedPropertyChangedEventArgs<double> e)
+    {
+        if (IsLoaded && industrialArmSnapshot is not null)
+        {
+            RenderIndustrialArmFrame((int)Math.Round(e.NewValue));
+        }
+    }
+
+    private void IndustrialArmPreviousFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderIndustrialArmFrame(industrialArmFrameIndex - 1);
+    }
+
+    private void IndustrialArmNextFrameButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        StopPlayback();
+        RenderIndustrialArmFrame(industrialArmFrameIndex + 1);
+    }
+
     private void StateChartCanvas_SizeChanged(object sender, SizeChangedEventArgs e)
     {
         if (!IsLoaded || snapshot is null)
@@ -2046,6 +2261,18 @@ public partial class MainWindow : Window
         var result = new DroneSimulator().Execute(context, commands);
 
         return new DronePlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private IndustrialArmPlaybackSnapshot CreateIndustrialArmSnapshot(string script)
+    {
+        var profile = CreateIndustrialArmProfile();
+        var commands = scriptDialect.Parse(script);
+        ValidateIndustrialArmCommandSequence(commands, profile);
+        var context = IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home);
+        var result = new IndustrialArmSimulator().Execute(context, commands);
+
+        return new IndustrialArmPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
@@ -2323,6 +2550,14 @@ public partial class MainWindow : Window
             return;
         }
 
+        if (template.Viewer.Kind == RobotViewerKind.IndustrialArmThreeDimensional)
+        {
+            IndustrialArmViewerView.Visibility = Visibility.Visible;
+            EnsureIndustrialArmSnapshot();
+            RenderIndustrialArmFrame(index: 0);
+            return;
+        }
+
         CartesianViewerView.Visibility = Visibility.Visible;
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
@@ -2337,12 +2572,14 @@ public partial class MainWindow : Window
         simpleArmSnapshot = null;
         deltaSnapshot = null;
         droneSnapshot = null;
+        industrialArmSnapshot = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
         scaraFrameIndex = 0;
         simpleArmFrameIndex = 0;
         deltaFrameIndex = 0;
         droneFrameIndex = 0;
+        industrialArmFrameIndex = 0;
         CommandHistoryListBox.Items.Clear();
 
         switch (viewerKind)
@@ -2365,6 +2602,10 @@ public partial class MainWindow : Window
 
             case RobotViewerKind.DroneThreeDimensional:
                 ConfigureDroneViewer();
+                break;
+
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                ConfigureIndustrialArmViewer();
                 break;
 
             case RobotViewerKind.XYPlotterTwoDimensional:
@@ -2470,6 +2711,17 @@ public partial class MainWindow : Window
             Color.FromRgb(148, 163, 184));
     }
 
+    private void ConfigureIndustrialArmViewer()
+    {
+        ConfigureExampleSelector(
+            IndustrialArmExampleComboBox,
+            RobotViewerKind.IndustrialArmThreeDimensional);
+        IndustrialArmScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.IndustrialArmThreeDimensional);
+        SetIndustrialArmScriptStatus(
+            "Edit ARM6 joint commands and simulate the industrial arm.",
+            Color.FromRgb(148, 163, 184));
+    }
+
     private static string GetDefaultExampleScript(RobotViewerKind viewerKind) =>
         RobotExampleCatalog.GetDefaultFor(viewerKind).Script;
 
@@ -2517,6 +2769,7 @@ public partial class MainWindow : Window
             RobotViewerKind.SimpleArmThreeDimensional => SimpleArmViewportHost.IsMouseOver,
             RobotViewerKind.DeltaThreeDimensional => DeltaViewportHost.IsMouseOver,
             RobotViewerKind.DroneThreeDimensional => DroneViewportHost.IsMouseOver,
+            RobotViewerKind.IndustrialArmThreeDimensional => IndustrialArmViewportHost.IsMouseOver,
             RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => RobotViewportHost.IsMouseOver,
             _ => false
         };
@@ -2592,6 +2845,18 @@ public partial class MainWindow : Window
         DroneTimelineSlider.TickFrequency = 1;
     }
 
+    private void EnsureIndustrialArmSnapshot()
+    {
+        if (industrialArmSnapshot is not null)
+        {
+            return;
+        }
+
+        industrialArmSnapshot = CreateIndustrialArmSnapshot(IndustrialArmScriptTextBox.Text);
+        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimelineSlider.TickFrequency = 1;
+    }
+
     private void InitializeTimelineForSnapshot()
     {
         if (snapshot is null)
@@ -2622,6 +2887,7 @@ public partial class MainWindow : Window
         SimpleArmPlayPauseButton.Content = "Play";
         DeltaPlayPauseButton.Content = "Play";
         DronePlayPauseButton.Content = "Play";
+        IndustrialArmPlayPauseButton.Content = "Play";
     }
 
     private void ApplyPlaybackSpeed()
@@ -4577,6 +4843,145 @@ public partial class MainWindow : Window
     private static Point3D ToPoint3D(DronePose pose) =>
         new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
 
+    private void RenderIndustrialArmFrame(int index)
+    {
+        if (industrialArmSnapshot is null)
+        {
+            return;
+        }
+
+        industrialArmFrameIndex = Math.Clamp(index, 0, industrialArmSnapshot.FrameCount - 1);
+        IndustrialArmTimelineSlider.Value = industrialArmFrameIndex;
+        var frame = industrialArmSnapshot.Frames[industrialArmFrameIndex];
+
+        IndustrialArmViewport.Children.Clear();
+        IndustrialArmViewport.Camera = CreateIndustrialArmCamera(industrialArmSnapshot.Profile);
+        var sceneRoot = SceneLightingFactory.CreateDefault(ambientColor: Color.FromRgb(96, 106, 128));
+        sceneRoot.Children.Add(CreateIndustrialArmWorkspaceModel(industrialArmSnapshot.Profile));
+        sceneRoot.Children.Add(CreateIndustrialArmPathModel(industrialArmSnapshot));
+        sceneRoot.Children.Add(CreateIndustrialArmRobotModel(industrialArmSnapshot.Profile, frame));
+        IndustrialArmViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+
+        var status = RobotFramePresenter.Create(
+            frame,
+            industrialArmFrameIndex,
+            industrialArmSnapshot.FrameCount,
+            industrialArmSnapshot.TotalDuration);
+        IndustrialArmStateText.Text = status.State;
+        IndustrialArmJointsText.Text = status.PrimaryPose;
+        IndustrialArmToolText.Text = RobotFramePresenter.FormatIndustrialArmToolPose(frame);
+        IndustrialArmCommandText.Text = status.Command;
+        IndustrialArmTimeText.Text = status.Time;
+        IndustrialArmStatusText.Text = status.Footer;
+        IndustrialArmMovementExplanationText.Text = status.MovementExplanation;
+    }
+
+    private PerspectiveCamera CreateIndustrialArmCamera(IndustrialArmRobotProfile profile)
+    {
+        var reach = GetIndustrialArmReach(profile);
+        return OrbitCameraFactory.Create(new OrbitCameraSettings(
+            Target: new Point3D(0, 0, profile.BaseHeightMillimeters * 0.8),
+            AzimuthDegrees: industrialArmAzimuthDegrees,
+            ElevationDegrees: industrialArmElevationDegrees,
+            Distance: reach * 2.3 * industrialArmZoomMultiplier,
+            FieldOfView: 42,
+            NearPlaneDistance: 1,
+            FarPlaneDistance: reach * 10));
+    }
+
+    private static Model3DGroup CreateIndustrialArmWorkspaceModel(IndustrialArmRobotProfile profile)
+    {
+        var reach = GetIndustrialArmReach(profile);
+        return MeshModelFactory.CreatePlanarWorkspace(
+            reach,
+            gridSpacing: 80,
+            floorZ: -12,
+            gridThickness: 1.8,
+            ringThickness: 3.5,
+            Color.FromArgb(90, 51, 65, 85),
+            Color.FromArgb(175, 96, 165, 250),
+            Color.FromRgb(148, 163, 184));
+    }
+
+    private Model3DGroup CreateIndustrialArmPathModel(IndustrialArmPlaybackSnapshot snapshot)
+    {
+        var group = new Model3DGroup();
+        for (var index = 1; index <= industrialArmFrameIndex; index++)
+        {
+            group.Children.Add(MeshModelFactory.CreateOrientedBox(
+                ToPoint3D(snapshot.Frames[index - 1].ToolPose),
+                ToPoint3D(snapshot.Frames[index].ToolPose),
+                thickness: 5,
+                Color.FromArgb(220, 45, 212, 191)));
+        }
+
+        return group;
+    }
+
+    private static Model3DGroup CreateIndustrialArmRobotModel(
+        IndustrialArmRobotProfile profile,
+        IndustrialArmPlaybackFrame frame)
+    {
+        var yaw = DegreesToRadians(frame.Joints.J1Degrees);
+        var shoulderAngle = DegreesToRadians(frame.Joints.J2Degrees);
+        var elbowAngle = shoulderAngle + DegreesToRadians(frame.Joints.J3Degrees);
+        var wristAngle = elbowAngle + DegreesToRadians(frame.Joints.J5Degrees);
+        var shoulder = new Point3D(0, 0, profile.BaseHeightMillimeters);
+        var elbow = CreateIndustrialArmPoint(shoulder, profile.UpperArmLengthMillimeters, yaw, shoulderAngle);
+        var wristRoll = CreateIndustrialArmPoint(elbow, profile.ForearmLengthMillimeters, yaw, elbowAngle);
+        var tool = CreateIndustrialArmPoint(wristRoll, profile.WristLengthMillimeters, yaw, wristAngle);
+        var wristPitch = new Point3D(
+            wristRoll.X + ((tool.X - wristRoll.X) * 0.45),
+            wristRoll.Y + ((tool.Y - wristRoll.Y) * 0.45),
+            wristRoll.Z + ((tool.Z - wristRoll.Z) * 0.45));
+        var group = new Model3DGroup();
+
+        group.Children.Add(MeshModelFactory.CreateBox(
+            new VisualVector3(0, 0, profile.BaseHeightMillimeters * 0.36),
+            new VisualVector3(92, 92, profile.BaseHeightMillimeters * 0.72),
+            Color.FromRgb(30, 64, 175)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(shoulder, elbow, 32, Color.FromRgb(59, 130, 246)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(elbow, wristRoll, 26, Color.FromRgb(34, 197, 94)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(wristRoll, tool, 20, Color.FromRgb(250, 204, 21)));
+
+        group.Children.Add(MeshModelFactory.CreateCube(new Point3D(0, 0, 14), 54, Color.FromRgb(37, 99, 235)));
+        group.Children.Add(MeshModelFactory.CreateCube(shoulder, 42, Color.FromRgb(147, 197, 253)));
+        group.Children.Add(MeshModelFactory.CreateCube(elbow, 36, Color.FromRgb(134, 239, 172)));
+        group.Children.Add(MeshModelFactory.CreateCube(wristRoll, 30, Color.FromRgb(253, 224, 71)));
+        group.Children.Add(MeshModelFactory.CreateCube(wristPitch, 24, Color.FromRgb(251, 146, 60)));
+        group.Children.Add(MeshModelFactory.CreateCube(tool, 22, Color.FromRgb(248, 113, 113)));
+
+        var roll = DegreesToRadians(frame.ToolPose.RollDegrees);
+        var toolAxis = new Vector3D(
+            Math.Cos(yaw) * Math.Cos(wristAngle),
+            Math.Sin(yaw) * Math.Cos(wristAngle),
+            Math.Sin(wristAngle));
+        var sideAxis = new Vector3D(-Math.Sin(yaw) * Math.Cos(roll), Math.Cos(yaw) * Math.Cos(roll), Math.Sin(roll));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(tool, tool + (toolAxis * 58), 6, Color.FromRgb(248, 113, 113)));
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(tool - (sideAxis * 24), tool + (sideAxis * 24), 5, Color.FromRgb(192, 132, 252)));
+
+        return group;
+    }
+
+    private static Point3D CreateIndustrialArmPoint(
+        Point3D start,
+        double length,
+        double yaw,
+        double pitch) =>
+        new(
+            start.X + (length * Math.Cos(pitch) * Math.Cos(yaw)),
+            start.Y + (length * Math.Cos(pitch) * Math.Sin(yaw)),
+            start.Z + (length * Math.Sin(pitch)));
+
+    private static Point3D ToPoint3D(IndustrialArmToolPose pose) =>
+        new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
+
+    private static double GetIndustrialArmReach(IndustrialArmRobotProfile profile) =>
+        profile.BaseHeightMillimeters +
+        profile.UpperArmLengthMillimeters +
+        profile.ForearmLengthMillimeters +
+        profile.WristLengthMillimeters;
+
     private static CartesianRobotProfile CreateCartesianProfile() =>
         CartesianRobotProfile.CreateCartesian(
             new Axis(AxisId.X, 0, 300, 120, 240),
@@ -4666,6 +5071,22 @@ public partial class MainWindow : Window
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120);
 
+    private static IndustrialArmRobotProfile CreateIndustrialArmProfile() =>
+        new(
+            baseHeightMillimeters: 110,
+            upperArmLengthMillimeters: 180,
+            forearmLengthMillimeters: 140,
+            wristLengthMillimeters: 80,
+            joints:
+            [
+                new(IndustrialArmJointId.J1Base, -180, 180, 120),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+            ]);
+
     private void ValidateCommandSequence(RobotCommandSequence commands)
     {
         if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
@@ -4732,6 +5153,16 @@ public partial class MainWindow : Window
     private static void ValidateDroneCommandSequence(
         RobotCommandSequence commands,
         DroneProfile profile)
+    {
+        foreach (var command in commands.Commands)
+        {
+            RobotCommandValidator.Validate(command, profile);
+        }
+    }
+
+    private static void ValidateIndustrialArmCommandSequence(
+        RobotCommandSequence commands,
+        IndustrialArmRobotProfile profile)
     {
         foreach (var command in commands.Commands)
         {
@@ -4853,6 +5284,25 @@ public partial class MainWindow : Window
         }
     }
 
+    private bool TryCreateIndustrialArmSnapshotFromScript(
+        string script,
+        out IndustrialArmPlaybackSnapshot? nextSnapshot,
+        out string message)
+    {
+        try
+        {
+            nextSnapshot = CreateIndustrialArmSnapshot(script);
+            message = $"Industrial arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            return true;
+        }
+        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
+        {
+            nextSnapshot = null;
+            message = ScriptValidationMessageFormatter.Format(exception);
+            return false;
+        }
+    }
+
     private void LoadScriptInto(
         TextBox target,
         Action<string, Color> setStatus,
@@ -4959,6 +5409,14 @@ public partial class MainWindow : Window
     {
         DroneScriptStatusText.Text = message;
         DroneScriptStatusText.Foreground = new SolidColorBrush(color);
+    }
+
+    private void SetIndustrialArmScriptStatus(
+        string message,
+        Color color)
+    {
+        IndustrialArmScriptStatusText.Text = message;
+        IndustrialArmScriptStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void RefreshScriptEditorGutter()

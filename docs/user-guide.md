@@ -71,7 +71,7 @@ Run from the repository root on Windows:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, and Drone are available now. Planned templates are shown for the 6-DOF industrial arm.
+The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, Drone, and 6-DOF Industrial Arm are available now.
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
@@ -86,6 +86,8 @@ Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reac
 Opening the Delta Robot renders a 3D simplified parallel robot viewer with a triangular frame, three vertical actuators, moving carriages, parallel links, platform/TCP, reachable workspace, planned path, current actuator positions, current tool pose, command name, camera orbit, zoom, and timeline controls. The viewer includes a Delta DSL editor for `HOME`, `DELTA`, and `WAIT` commands, plus a local example selector.
 
 Opening the Drone renders a 3D aerial robot viewer with flight-volume boundaries, ground grid, drone body, rotor arms, yaw direction indicator, planned path, current X/Y/Z position, current yaw, command name, camera orbit, zoom, and timeline controls. The viewer includes a Drone DSL editor for `HOME`, `DRONE`, and `WAIT` commands, plus a local example selector.
+
+Opening the 6-DOF Industrial Arm renders a 3D serial arm viewer with a raised base, six joint markers, volumetric links, wrist/tool orientation, reachable floor area, TCP path, joint state, command name, camera orbit, zoom, and timeline controls. The viewer includes an industrial-arm DSL editor for `HOME`, `ARM6`, and `WAIT` commands, plus local examples.
 
 Every available desktop viewer includes an example selector and a `Load Example` button. The non-Cartesian side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
@@ -280,7 +282,7 @@ DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 
 `SPEED` is requested 3D linear velocity in millimeters per second. `YAW_SPEED` is requested yaw velocity in degrees per second.
 
-Six-joint industrial arm movement (core simulation; desktop viewer planned):
+Six-joint industrial arm movement:
 
 ```txt
 ARM6 J1=45 J2=30 J3=-20 J4=90 J5=15 J6=180 SPEED=80

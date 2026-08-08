@@ -9,5 +9,6 @@ public enum RobotViewerKind
     ScaraThreeDimensional,
     SimpleArmThreeDimensional,
     DeltaThreeDimensional,
-    DroneThreeDimensional
+    DroneThreeDimensional,
+    IndustrialArmThreeDimensional
 }

@@ -176,26 +176,24 @@ public static class RobotCatalog
                 "Drone 3D Viewer")),
 
         new(
-            Id: "six-dof-industrial-arm-planned",
+            Id: "six-dof-industrial-arm",
             Name: "6-DOF Industrial Arm",
             Family: Articulated,
-            Status: RobotAvailabilityStatus.Planned,
+            Status: RobotAvailabilityStatus.Available,
             Complexity: RobotComplexityLevel.Expert,
-            Description: "Planned industrial arm for advanced lessons about six-degree-of-freedom motion, tooling, kinematics, and production-style robot architecture.",
+            Description: "Six-joint industrial arm for advanced lessons about coordinated motion, tooling, forward kinematics, and production-style robot architecture.",
             Capabilities:
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
                 RobotCapability.ThreeDimensionalView,
-                RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.ForwardKinematics,
-                RobotCapability.InverseKinematics,
-                RobotCapability.WorkspaceVisualization,
-                RobotCapability.FutureGCode,
-                RobotCapability.HardwareCommunication
+                RobotCapability.WorkspaceVisualization
             ],
-            Viewer: PlannedViewer())
+            Viewer: new RobotViewerDescriptor(
+                RobotViewerKind.IndustrialArmThreeDimensional,
+                "6-DOF Industrial Arm 3D Viewer"))
     ];
 
     public static bool CanOpen(RobotTemplate template)

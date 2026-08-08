@@ -306,6 +306,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
 - [x] Training viewers expose multiple local examples, including Cartesian, XY Plotter, Differential Drive, SCARA, Simple Arm, and Delta.
+- [x] The 6-DOF Industrial Arm is available with a concrete 3D viewer descriptor.
+- [x] The industrial arm viewer exposes multiple local `ARM6` examples.
+- [x] Industrial arm frame presentation formats six joints, TCP pose, state, time, and movement explanation.
 - [x] Shared non-Cartesian frame presenters format state, pose, time, frame counters, and explanations.
 - [x] Desktop script validation messages summarize syntax errors with line numbers.
 - [x] Desktop script validation messages explain physical limit failures.
@@ -380,10 +383,11 @@ Expected current behavior:
 - lists the simple articulated arm as available;
 - lists the delta robot as available;
 - lists the drone as available;
-- lists the 6-DOF industrial arm as planned;
+- lists the 6-DOF industrial arm as available;
 - opens the Cartesian viewer from the selection screen;
 - opens the Delta viewer from the selection screen;
 - opens the Drone viewer from the selection screen;
+- opens the 6-DOF Industrial Arm viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
 - groups dense Cartesian viewer controls into collapsible sidebar panels;
