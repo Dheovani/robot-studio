@@ -15,6 +15,13 @@ public enum RobotCapability
     InverseKinematics,
     WorkspaceVisualization,
     AttitudeControl,
+    MixedJointMotion,
+    SteeringKinematics,
+    HolonomicMotion,
+    FeedbackControl,
+    SensorSimulation,
+    PoseControl,
+    SubsystemCoordination,
     FutureGCode,
     HardwareCommunication
 }

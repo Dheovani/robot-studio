@@ -27,6 +27,16 @@ public static class RobotCatalog
         Name: "Aerial",
         Description: "Flying robots that combine position, orientation, and attitude control.");
 
+    public static readonly RobotFamilyDescriptor Cylindrical = new(
+        Id: "cylindrical",
+        Name: "Cylindrical",
+        Description: "Robots that combine rotary and linear joints in a cylindrical workspace.");
+
+    public static readonly RobotFamilyDescriptor Hybrid = new(
+        Id: "hybrid",
+        Name: "Hybrid",
+        Description: "Robots that coordinate multiple mechanisms or locomotion systems.");
+
     public static IReadOnlyList<RobotTemplate> Templates { get; } =
     [
         new(
@@ -93,6 +103,46 @@ public static class RobotCatalog
                 "Differential Drive 2D Viewer")),
 
         new(
+            Id: "cylindrical-robot-planned",
+            Name: "Cylindrical Robot",
+            Family: Cylindrical,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Intermediate,
+            Description: "Planned mixed-joint robot for teaching cylindrical coordinates, rotary motion, linear extension, vertical travel, and workspaces derived from revolute and prismatic joints.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.ManualControl,
+                RobotCapability.Playback,
+                RobotCapability.ForwardKinematics,
+                RobotCapability.MixedJointMotion,
+                RobotCapability.WorkspaceVisualization
+            ],
+            Viewer: PlannedViewer()),
+
+        new(
+            Id: "ackermann-steering-planned",
+            Name: "Ackermann Steering Robot",
+            Family: Mobile,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Intermediate,
+            Description: "Planned car-like robot for teaching steering geometry, wheelbase, turning radius, non-holonomic constraints, and odometry.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.ManualControl,
+                RobotCapability.Playback,
+                RobotCapability.PathPlanning,
+                RobotCapability.Odometry,
+                RobotCapability.SteeringKinematics
+            ],
+            Viewer: PlannedViewer()),
+
+        new(
             Id: "scara",
             Name: "SCARA Robot",
             Family: Articulated,
@@ -136,6 +186,26 @@ public static class RobotCatalog
                 "Simple Arm 3D Viewer")),
 
         new(
+            Id: "omnidirectional-robot-planned",
+            Name: "Omnidirectional Robot",
+            Family: Mobile,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Advanced,
+            Description: "Planned holonomic mobile robot for teaching lateral translation, body-frame velocity, wheel-speed decomposition, and omnidirectional odometry.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.ManualControl,
+                RobotCapability.Playback,
+                RobotCapability.PathPlanning,
+                RobotCapability.Odometry,
+                RobotCapability.HolonomicMotion
+            ],
+            Viewer: PlannedViewer()),
+
+        new(
             Id: "delta",
             Name: "Delta Robot",
             Family: Parallel,
@@ -176,6 +246,25 @@ public static class RobotCatalog
                 "Drone 3D Viewer")),
 
         new(
+            Id: "self-balancing-robot-planned",
+            Name: "Self-Balancing Robot",
+            Family: Mobile,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Advanced,
+            Description: "Planned two-wheel balancing robot for teaching measured state, feedback loops, IMU concepts, PID control, stability, and disturbance response.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.ManualControl,
+                RobotCapability.Playback,
+                RobotCapability.FeedbackControl,
+                RobotCapability.SensorSimulation
+            ],
+            Viewer: PlannedViewer()),
+
+        new(
             Id: "six-dof-industrial-arm",
             Name: "6-DOF Industrial Arm",
             Family: Articulated,
@@ -193,7 +282,49 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.IndustrialArmThreeDimensional,
-                "6-DOF Industrial Arm 3D Viewer"))
+                "6-DOF Industrial Arm 3D Viewer")),
+
+        new(
+            Id: "stewart-platform-planned",
+            Name: "Stewart Platform",
+            Family: Parallel,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Expert,
+            Description: "Planned six-actuator parallel platform for teaching 6-DOF pose control, actuator coupling, inverse kinematics, workspace limits, and singularities.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.Playback,
+                RobotCapability.ForwardKinematics,
+                RobotCapability.InverseKinematics,
+                RobotCapability.PoseControl,
+                RobotCapability.WorkspaceVisualization
+            ],
+            Viewer: PlannedViewer()),
+
+        new(
+            Id: "mobile-manipulator-planned",
+            Name: "Mobile Manipulator",
+            Family: Hybrid,
+            Status: RobotAvailabilityStatus.Planned,
+            Complexity: RobotComplexityLevel.Expert,
+            Description: "Planned capstone robot combining a mobile base and articulated arm to teach coordinate frames, subsystem coordination, composed planning, and shared execution state.",
+            Capabilities:
+            [
+                RobotCapability.Simulation,
+                RobotCapability.Dsl,
+                RobotCapability.ThreeDimensionalView,
+                RobotCapability.ManualControl,
+                RobotCapability.Playback,
+                RobotCapability.PathPlanning,
+                RobotCapability.Odometry,
+                RobotCapability.ForwardKinematics,
+                RobotCapability.InverseKinematics,
+                RobotCapability.SubsystemCoordination
+            ],
+            Viewer: PlannedViewer())
     ];
 
     public static bool CanOpen(RobotTemplate template)

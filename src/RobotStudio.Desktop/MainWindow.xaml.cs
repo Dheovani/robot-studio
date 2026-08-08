@@ -5540,6 +5540,13 @@ public partial class MainWindow : Window
         RobotCapability.InverseKinematics => "inverse kinematics",
         RobotCapability.WorkspaceVisualization => "workspace",
         RobotCapability.AttitudeControl => "attitude control",
+        RobotCapability.MixedJointMotion => "mixed joint motion",
+        RobotCapability.SteeringKinematics => "steering kinematics",
+        RobotCapability.HolonomicMotion => "holonomic motion",
+        RobotCapability.FeedbackControl => "feedback control",
+        RobotCapability.SensorSimulation => "sensor simulation",
+        RobotCapability.PoseControl => "pose control",
+        RobotCapability.SubsystemCoordination => "subsystem coordination",
         RobotCapability.FutureGCode => "future G-code",
         RobotCapability.HardwareCommunication => "hardware",
         _ => capability.ToString()

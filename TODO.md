@@ -18,6 +18,12 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Implement the Delta Robot as the first parallel robot model.
 - [x] Implement the Drone as the first aerial robot model.
 - [x] Implement the 6-DOF Industrial Arm as the advanced articulated model.
+- [ ] Implement the Cylindrical Robot as the first mixed revolute/prismatic teaching model.
+- [ ] Implement the Ackermann Steering Robot for car-like steering geometry and non-holonomic motion.
+- [ ] Implement the Omnidirectional Robot for holonomic movement and wheel-speed decomposition.
+- [ ] Implement the Self-Balancing Robot after dynamic simulation, sensors, and feedback-control infrastructure exist.
+- [ ] Implement the Stewart Platform as the advanced six-actuator parallel mechanism.
+- [ ] Implement the Mobile Manipulator as a capstone that coordinates a mobile base and articulated arm.
 - [x] Define shared contracts that can support Cartesian, mobile, articulated, parallel, and aerial robots without forcing one motion model onto all of them.
 - [ ] Expand the catalog by mapping new robots for implementation.
 - [ ] Add tests before each new robot family is considered complete.

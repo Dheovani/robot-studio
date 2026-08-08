@@ -20,11 +20,17 @@ public sealed class RobotCatalogTests
             "Cartesian Robot",
             "XY Plotter",
             "Differential Drive Robot",
+            "Cylindrical Robot",
+            "Ackermann Steering Robot",
             "SCARA Robot",
             "Simple Articulated Arm",
+            "Omnidirectional Robot",
             "Delta Robot",
             "Drone",
-            "6-DOF Industrial Arm"
+            "Self-Balancing Robot",
+            "6-DOF Industrial Arm",
+            "Stewart Platform",
+            "Mobile Manipulator"
         ];
 
         Assert.Equal(expectedOrder, RobotCatalog.Templates.Select(template => template.Name));
@@ -38,11 +44,17 @@ public sealed class RobotCatalogTests
             ["Cartesian Robot"] = RobotComplexityLevel.Introductory,
             ["XY Plotter"] = RobotComplexityLevel.Beginner,
             ["Differential Drive Robot"] = RobotComplexityLevel.Intermediate,
+            ["Cylindrical Robot"] = RobotComplexityLevel.Intermediate,
+            ["Ackermann Steering Robot"] = RobotComplexityLevel.Intermediate,
             ["SCARA Robot"] = RobotComplexityLevel.Intermediate,
             ["Simple Articulated Arm"] = RobotComplexityLevel.Advanced,
+            ["Omnidirectional Robot"] = RobotComplexityLevel.Advanced,
             ["Delta Robot"] = RobotComplexityLevel.Advanced,
             ["Drone"] = RobotComplexityLevel.Advanced,
-            ["6-DOF Industrial Arm"] = RobotComplexityLevel.Expert
+            ["Self-Balancing Robot"] = RobotComplexityLevel.Advanced,
+            ["6-DOF Industrial Arm"] = RobotComplexityLevel.Expert,
+            ["Stewart Platform"] = RobotComplexityLevel.Expert,
+            ["Mobile Manipulator"] = RobotComplexityLevel.Expert
         };
 
         foreach (var template in RobotCatalog.Templates)
@@ -99,6 +111,27 @@ public sealed class RobotCatalogTests
         Assert.All(
             unavailableTemplates,
             template => Assert.False(RobotCatalog.CanOpen(template)));
+    }
+
+    [Fact]
+    public void Templates_ShouldExposeNextTeachingModelsAsPlanned()
+    {
+        string[] expectedPlannedModels =
+        [
+            "Cylindrical Robot",
+            "Ackermann Steering Robot",
+            "Omnidirectional Robot",
+            "Self-Balancing Robot",
+            "Stewart Platform",
+            "Mobile Manipulator"
+        ];
+        var plannedTemplates = RobotCatalog.Templates
+            .Where(template => template.Status == RobotAvailabilityStatus.Planned)
+            .ToArray();
+
+        Assert.Equal(expectedPlannedModels, plannedTemplates.Select(template => template.Name));
+        Assert.All(plannedTemplates, template => Assert.Equal(RobotViewerKind.None, template.Viewer.Kind));
+        Assert.All(plannedTemplates, template => Assert.False(RobotCatalog.CanOpen(template)));
     }
 
     [Fact]

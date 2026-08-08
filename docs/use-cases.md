@@ -49,6 +49,7 @@ Expected result:
 - the delta robot appears as `Available`;
 - the drone appears as `Available`;
 - the 6-DOF industrial arm appears as `Available`;
+- the cylindrical, Ackermann steering, omnidirectional, self-balancing, Stewart platform, and mobile manipulator models appear as `Planned`;
 - each robot card shows family, status, complexity, description, and capabilities;
 - future planned robot entries cannot be opened until they have a concrete viewer;
 - the selection screen remains a simulator entry point, not a lesson manager.

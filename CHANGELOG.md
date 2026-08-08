@@ -7,6 +7,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 ### Added
 
 - Added a didactic robot catalog organized by learning complexity, with available and planned robot templates.
+- Added planned catalog descriptors for the Cylindrical Robot, Ackermann Steering Robot, Omnidirectional Robot, Self-Balancing Robot, Stewart Platform, and Mobile Manipulator.
 - Added the XY Plotter as a beginner Cartesian-family model for two-axis drawing and planar command sequencing.
 - Added the Differential Drive Robot as the first mobile robot model, including deterministic motion, DSL commands, playback, and a desktop viewer.
 - Added the SCARA Robot as an articulated robot model, including joint-space motion, kinematics, DSL commands, playback, and a 3D desktop viewer.

@@ -77,6 +77,7 @@ Not implemented yet:
 - Arduino or ESP32 firmware/protocols;
 - G-code parser;
 - richer industrial-arm graphics, inverse kinematics, singularity analysis, and collision visualization.
+- planned Cylindrical, Ackermann Steering, Omnidirectional, Self-Balancing, Stewart Platform, and Mobile Manipulator simulations.
 
 ## Run The Desktop App
 

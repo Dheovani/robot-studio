@@ -159,13 +159,21 @@ The current didactic order is:
 - Cartesian Robot.
 - XY Plotter.
 - Differential Drive Robot.
+- Cylindrical Robot.
+- Ackermann Steering Robot.
 - SCARA Robot.
 - Simple Articulated Arm.
+- Omnidirectional Robot.
 - Delta Robot.
 - Drone.
+- Self-Balancing Robot.
 - 6-DOF Industrial Arm.
+- Stewart Platform.
+- Mobile Manipulator.
 
 Only templates marked as `Available` and backed by a concrete viewer are openable. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, Drone, and 6-DOF Industrial Arm are available now. Future templates must remain planned metadata until they have a concrete viewer.
+
+The planned roadmap adds two catalog families only where they represent a distinct architectural model: `Cylindrical` for mechanisms that mix rotary and linear joints in a cylindrical workspace, and `Hybrid` for robots composed from independently meaningful subsystems. Ackermann Steering, Omnidirectional, and Self-Balancing robots remain in the `Mobile` family; the Stewart Platform remains `Parallel`. Planned capability metadata describes the intended teaching scope but does not imply implemented simulation behavior.
 
 The XY plotter is modeled as a two-axis robot with its own `XYPlotterPosition`, `XYPlotterProfile`, and `XYPlotterMotionPlanner`. The desktop viewer maps it onto a fixed `Z=0` drawing plane so the current visual playback pipeline can be reused without pretending the domain model has a real Z axis.
 

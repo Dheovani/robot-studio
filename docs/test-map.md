@@ -302,6 +302,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every robot template has at least one capability.
 - [x] Implemented robot templates are openable.
 - [x] Planned robot templates are not openable.
+- [x] The next six teaching models are present in the expected planned order.
+- [x] Planned models use `RobotViewerKind.None` and remain non-openable.
 - [x] Local desktop examples cover every openable robot viewer.
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
