@@ -42,6 +42,34 @@ public sealed class IndustrialArmMotionPlannerTests
                 CreateProfile()));
     }
 
+    [Fact]
+    public void PlanMove_WhenOnlyWristJointsMove_ShouldListOnlyThoseJoints()
+    {
+        var plan = new IndustrialArmMotionPlanner().PlanMove(
+            IndustrialArmJointPosition.Home,
+            new IndustrialArmJointPosition(0, 0, 0, 45, -30, 90),
+            CreateProfile(),
+            requestedJointVelocityDegreesPerSecond: 70);
+
+        var segment = Assert.Single(plan.Segments);
+        Assert.Equal(
+            ["J4WristRoll", "J5WristPitch", "J6ToolRoll"],
+            segment.InvolvedJoints.Select(component => component.Name));
+        Assert.Equal(70, segment.EffectiveJointVelocityDegreesPerSecond);
+        Assert.Equal(TimeSpan.FromSeconds(90d / 70d), segment.Duration);
+    }
+
+    [Fact]
+    public void PlanMove_WhenRequestedVelocityIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new IndustrialArmMotionPlanner().PlanMove(
+                IndustrialArmJointPosition.Home,
+                new IndustrialArmJointPosition(10, 0, 0, 0, 0, 0),
+                CreateProfile(),
+                requestedJointVelocityDegreesPerSecond: 0));
+    }
+
     private static IndustrialArmRobotProfile CreateProfile() =>
         new(
             100,

@@ -45,6 +45,37 @@ public sealed class IndustrialArmSimulatorTests
         Assert.Contains(snapshot.Frames, frame => frame.CommandSource?.LineNumber == 2);
     }
 
+    [Fact]
+    public void Execute_WhenSecondMoveExceedsJointLimit_ShouldFaultAndPreserveLastValidJoints()
+    {
+        var validTarget = new IndustrialArmJointPosition(30, 20, -15, 40, 10, 60);
+        var sequence = new RobotCommandSequence(
+        [
+            new IndustrialArmMoveJointsCommand(validTarget),
+            new IndustrialArmMoveJointsCommand(new IndustrialArmJointPosition(181, 0, 0, 0, 0, 0))
+        ]);
+
+        var result = new IndustrialArmSimulator().Execute(
+            IndustrialArmSimulationContext.Create(CreateProfile(), IndustrialArmJointPosition.Home),
+            sequence);
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RobotState.Faulted, result.FinalContext.State);
+        Assert.Equal(validTarget, result.FinalContext.CurrentJoints);
+        Assert.NotNull(result.Failure);
+    }
+
+    [Fact]
+    public void Sample_WhenIntervalIsNotPositive_ShouldThrow()
+    {
+        var result = new IndustrialArmSimulator().Execute(
+            IndustrialArmSimulationContext.Create(CreateProfile(), IndustrialArmJointPosition.Home),
+            new RobotCommandSequence([new HomeCommand()]));
+
+        Assert.Throws<ArgumentOutOfRangeException>(() =>
+            new IndustrialArmPlaybackSampler().Sample(result, TimeSpan.Zero));
+    }
+
     private static IndustrialArmRobotProfile CreateProfile() =>
         new(
             100,

@@ -33,6 +33,39 @@ public sealed class IndustrialArmRobotProfileTests
         Assert.Equal(0, pose.YawDegrees, precision: 6);
     }
 
+    [Fact]
+    public void Constructor_WhenJointDefinitionIsMissing_ShouldThrow()
+    {
+        var joints = CreateProfile().Joints
+            .Where(joint => joint.Id != IndustrialArmJointId.J6ToolRoll)
+            .ToArray();
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new IndustrialArmRobotProfile(100, 180, 140, 80, joints));
+
+        Assert.Contains("each joint J1 through J6 exactly once", exception.Message);
+    }
+
+    [Fact]
+    public void Constructor_WhenJointDefinitionIsDuplicated_ShouldThrow()
+    {
+        var joints = CreateProfile().Joints.ToArray();
+        joints[^1] = new IndustrialArmJoint(IndustrialArmJointId.J5WristPitch, -120, 120, 110);
+
+        Assert.Throws<ArgumentException>(() =>
+            new IndustrialArmRobotProfile(100, 180, 140, 80, joints));
+    }
+
+    [Fact]
+    public void MaximumJointDeltaTo_ShouldConsiderEveryIndustrialArmJoint()
+    {
+        var target = new IndustrialArmJointPosition(10, -20, 30, -40, 50, -120);
+
+        var maximumDelta = IndustrialArmJointPosition.Home.MaximumJointDeltaTo(target);
+
+        Assert.Equal(120, maximumDelta);
+    }
+
     internal static IndustrialArmRobotProfile CreateProfile() =>
         new(
             baseHeightMillimeters: 100,

@@ -49,6 +49,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm forward kinematics calculates tool pose and orientation.
 - [x] Command validator validates simple arm joint move commands.
 - [x] Industrial arm profile validates all six joint coordinates and identifies out-of-limit joints.
+- [x] Industrial arm profile rejects missing or duplicated joint definitions.
+- [x] Industrial arm joint displacement considers all six joints.
 - [x] Industrial arm simplified forward kinematics calculates TCP position and orientation.
 - [x] Delta profile validates actuator positions.
 - [x] Delta profile rejects actuator positions outside limits.
@@ -104,6 +106,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm planner rejects target joints outside physical limits.
 - [x] Industrial arm planner coordinates all involved joints in one segment.
 - [x] Industrial arm planner uses the slowest involved joint limit and handles stationary movement.
+- [x] Industrial arm planner reports only the joints involved in a partial wrist movement.
+- [x] Industrial arm planner rejects non-positive requested joint velocity.
 - [x] Industrial arm planner rejects target joints outside physical limits.
 - [x] Delta planner creates coordinated actuator-space plans.
 - [x] Delta planner caps requested actuator velocity by involved actuator limits.
@@ -198,7 +202,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Simple arm playback sampling preserves command metadata.
 - [x] Simple arm playback sampling includes tool poses calculated from kinematics.
 - [x] Industrial arm simulator executes six-joint moves, `WAIT`, and `HOME` in sequence.
+- [x] Industrial arm simulator faults on an invalid command and preserves the last valid joint position.
 - [x] Industrial arm playback sampling interpolates all six joints and preserves command metadata.
+- [x] Industrial arm playback sampling rejects non-positive sample intervals.
 - [x] Industrial arm playback frames include TCP poses calculated from forward kinematics.
 - [x] Delta simulator executes `HOME`.
 - [x] Delta simulator executes actuator move commands.

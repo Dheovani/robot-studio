@@ -19,6 +19,7 @@ public sealed class RobotPlaybackContractTests
             CreateDifferentialDriveSnapshot(),
             CreateScaraSnapshot(),
             CreateSimpleArmSnapshot(),
+            CreateIndustrialArmSnapshot(),
             CreateDeltaSnapshot(),
             CreateDroneSnapshot()
         ];
@@ -43,6 +44,7 @@ public sealed class RobotPlaybackContractTests
             CreateDifferentialDriveSnapshot().LastFrame,
             CreateScaraSnapshot().LastFrame,
             CreateSimpleArmSnapshot().LastFrame,
+            CreateIndustrialArmSnapshot().LastFrame,
             CreateDeltaSnapshot().LastFrame,
             CreateDroneSnapshot().LastFrame
         ];
@@ -191,6 +193,36 @@ public sealed class RobotPlaybackContractTests
         var result = new DeltaSimulator().Execute(context, sequence);
 
         return new DeltaPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private static IndustrialArmPlaybackSnapshot CreateIndustrialArmSnapshot()
+    {
+        var profile = new IndustrialArmRobotProfile(
+            100,
+            180,
+            140,
+            80,
+            [
+                new(IndustrialArmJointId.J1Base, -180, 180, 120),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+            ]);
+        var context = IndustrialArmSimulationContext.Create(
+            profile,
+            IndustrialArmJointPosition.Home);
+        var sequence = new RobotCommandSequence(
+        [
+            new IndustrialArmMoveJointsCommand(
+                new IndustrialArmJointPosition(45, 30, -20, 60, 10, 90),
+                requestedJointVelocityDegreesPerSecond: 80)
+        ]);
+        var result = new IndustrialArmSimulator().Execute(context, sequence);
+
+        return new IndustrialArmPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
