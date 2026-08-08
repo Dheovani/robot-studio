@@ -6,6 +6,14 @@ public sealed record MotionSegment<TPosition>(
     TPosition Start,
     TPosition End,
     IReadOnlyList<MotionComponent> InvolvedComponents,
-    TimeSpan Duration,
-    double VelocityMillimetersPerSecond)
-    where TPosition : IRobotPosition;
+    TrapezoidalMotionProfile Profile)
+    where TPosition : IRobotPosition
+{
+    public TimeSpan Duration => Profile.TotalDuration;
+
+    public double VelocityMillimetersPerSecond => Profile.PeakVelocity;
+
+    public double VelocityLimitMillimetersPerSecond => Profile.MaximumVelocity;
+
+    public double AccelerationMillimetersPerSecondSquared => Profile.Acceleration;
+}

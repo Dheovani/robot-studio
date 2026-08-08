@@ -10,12 +10,15 @@ public sealed class CartesianVisualStateSamplerTests
     {
         var result = CreateMoveSimulation();
         var visualSampler = new CartesianVisualStateSampler();
+        var sampleTime = result.FinalContext.ElapsedTime / 2;
 
-        var visualState = visualSampler.SampleAt(result, TimeSpan.FromSeconds(1));
+        var visualState = visualSampler.SampleAt(result, sampleTime);
 
-        Assert.Equal(TimeSpan.FromSeconds(1), visualState.Time);
+        Assert.Equal(sampleTime, visualState.Time);
         Assert.Equal(RobotState.Moving, visualState.State);
-        Assert.Equal(new VisualVector3(50, 0, 0), visualState.Position);
+        Assert.Equal(50, visualState.Position.XMillimeters, precision: 4);
+        Assert.Equal(0, visualState.Position.YMillimeters);
+        Assert.Equal(0, visualState.Position.ZMillimeters);
         Assert.Equal(0, visualState.CommandIndex);
         Assert.Equal(nameof(MoveToCommand), visualState.CommandName);
     }

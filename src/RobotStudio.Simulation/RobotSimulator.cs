@@ -87,12 +87,19 @@ public sealed class RobotSimulator
     {
         var targetPosition = new CartesianPosition(X: 0, Y: 0, Z: 0);
         var movingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(movingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
             targetPosition,
             context.RobotProfile);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+
+        timeline.Add(CreateStep(
+            movingContext,
+            "Home command started.",
+            commandIndex,
+            nameof(HomeCommand),
+            command.Source,
+            motionProfile));
 
         var completedContext = movingContext with
         {
@@ -113,13 +120,20 @@ public sealed class RobotSimulator
         List<SimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Move command started.", commandIndex, nameof(MoveToCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
             command.TargetPosition,
             context.RobotProfile,
             command.RequestedVelocityMillimetersPerSecond);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+
+        timeline.Add(CreateStep(
+            movingContext,
+            "Move command started.",
+            commandIndex,
+            nameof(MoveToCommand),
+            command.Source,
+            motionProfile));
 
         var completedContext = movingContext with
         {
@@ -167,7 +181,8 @@ public sealed class RobotSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        TrapezoidalMotionProfile? motionProfile = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -175,7 +190,10 @@ public sealed class RobotSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            MotionProfile = motionProfile
+        };
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

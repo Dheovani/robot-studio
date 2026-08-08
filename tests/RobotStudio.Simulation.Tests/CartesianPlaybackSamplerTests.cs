@@ -16,9 +16,9 @@ public sealed class CartesianPlaybackSamplerTests
         Assert.Collection(
             frames,
             frame => AssertFrame(frame, TimeSpan.Zero, RobotState.Moving, new VisualVector3(0, 0, 0)),
-            frame => AssertFrame(frame, TimeSpan.FromMilliseconds(750), RobotState.Moving, new VisualVector3(37.5, 0, 0)),
-            frame => AssertFrame(frame, TimeSpan.FromMilliseconds(1500), RobotState.Moving, new VisualVector3(75, 0, 0)),
-            frame => AssertFrame(frame, TimeSpan.FromSeconds(2), RobotState.Completed, new VisualVector3(100, 0, 0)));
+            frame => AssertFrame(frame, TimeSpan.FromMilliseconds(750), RobotState.Moving, new VisualVector3(32.2916667, 0, 0)),
+            frame => AssertFrame(frame, TimeSpan.FromMilliseconds(1500), RobotState.Moving, new VisualVector3(69.7916667, 0, 0)),
+            frame => AssertFrame(frame, result.FinalContext.ElapsedTime, RobotState.Completed, new VisualVector3(100, 0, 0)));
     }
 
     [Fact]
@@ -27,10 +27,10 @@ public sealed class CartesianPlaybackSamplerTests
         var result = CreateMoveSimulation();
         var playbackSampler = new CartesianPlaybackSampler();
 
-        var frames = playbackSampler.Sample(result, TimeSpan.FromSeconds(1));
+        var frames = playbackSampler.Sample(result, result.FinalContext.ElapsedTime);
 
         Assert.Equal(
-            [TimeSpan.Zero, TimeSpan.FromSeconds(1), TimeSpan.FromSeconds(2)],
+            [TimeSpan.Zero, result.FinalContext.ElapsedTime],
             frames.Select(frame => frame.Time));
     }
 
@@ -101,7 +101,9 @@ public sealed class CartesianPlaybackSamplerTests
     {
         Assert.Equal(expectedTime, frame.Time);
         Assert.Equal(expectedState, frame.State);
-        Assert.Equal(expectedPosition, frame.Position);
+        Assert.Equal(expectedPosition.XMillimeters, frame.Position.XMillimeters, precision: 6);
+        Assert.Equal(expectedPosition.YMillimeters, frame.Position.YMillimeters, precision: 6);
+        Assert.Equal(expectedPosition.ZMillimeters, frame.Position.ZMillimeters, precision: 6);
     }
 
     private static CartesianRobotProfile CreateProfile() =>

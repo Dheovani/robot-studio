@@ -58,6 +58,22 @@ public sealed class XYPlotterMotionPlannerTests
     }
 
     [Fact]
+    public void PlanMove_WhenMovementHasDisplacement_ShouldCreateAccelerationAwareProfile()
+    {
+        var planner = new XYPlotterMotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanMove(
+            new XYPlotterPosition(X: 0, Y: 0),
+            new XYPlotterPosition(X: 100, Y: 100),
+            profile);
+
+        var segment = Assert.Single(plan.Segments);
+        Assert.True(segment.AccelerationMillimetersPerSecondSquared > 0);
+        Assert.Equal(segment.Duration, segment.Profile.TotalDuration);
+    }
+
+    [Fact]
     public void PlanMove_ReturnsStationaryPlan_WhenStartEqualsEnd()
     {
         var planner = new XYPlotterMotionPlanner();

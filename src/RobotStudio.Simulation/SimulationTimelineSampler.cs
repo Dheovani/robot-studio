@@ -36,7 +36,7 @@ public sealed class SimulationTimelineSampler
             return CreateSample(time, previousStep);
         }
 
-        var progress = CalculateProgress(previousStep.Time, nextStep.Time, time);
+        var progress = CalculateProgress(previousStep, nextStep, time);
         var position = Interpolate(previousStep.Position, nextStep.Position, progress);
 
         return new SimulationSample(
@@ -78,10 +78,20 @@ public sealed class SimulationTimelineSampler
     }
 
     private static double CalculateProgress(
-        TimeSpan start,
-        TimeSpan end,
-        TimeSpan current) =>
-        (current - start).TotalSeconds / (end - start).TotalSeconds;
+        SimulationStep previousStep,
+        SimulationStep nextStep,
+        TimeSpan current)
+    {
+        if (previousStep.MotionProfile is not null)
+        {
+            return previousStep.MotionProfile
+                .SampleAt(current - previousStep.Time)
+                .Progress;
+        }
+
+        return (current - previousStep.Time).TotalSeconds /
+            (nextStep.Time - previousStep.Time).TotalSeconds;
+    }
 
     private static CartesianPosition Interpolate(
         CartesianPosition start,

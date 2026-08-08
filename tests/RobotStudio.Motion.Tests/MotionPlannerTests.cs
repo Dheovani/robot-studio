@@ -138,11 +138,59 @@ public sealed class MotionPlannerTests
 
         var plan = planner.PlanLinearMove(
             new CartesianPosition(X: 0, Y: 0, Z: 0),
-            new CartesianPosition(X: 50, Y: 0, Z: 0),
+            new CartesianPosition(X: 100, Y: 0, Z: 0),
             profile,
             requestedVelocityMillimetersPerSecond: 999);
 
         Assert.Equal(120, plan.Segments[0].VelocityMillimetersPerSecond);
+        Assert.Equal(120, plan.Segments[0].VelocityLimitMillimetersPerSecond);
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenMovementIsShort_ShouldUseTriangularProfile()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanLinearMove(
+            new CartesianPosition(X: 0, Y: 0, Z: 0),
+            new CartesianPosition(X: 10, Y: 0, Z: 0),
+            profile);
+
+        var segment = Assert.Single(plan.Segments);
+        Assert.True(segment.Profile.IsTriangular);
+        Assert.Equal(120, segment.VelocityLimitMillimetersPerSecond);
+        Assert.True(segment.VelocityMillimetersPerSecond < segment.VelocityLimitMillimetersPerSecond);
+        Assert.Equal(240, segment.AccelerationMillimetersPerSecondSquared);
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenMultipleAxesMove_ShouldUseLowestAccelerationLimit()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanLinearMove(
+            new CartesianPosition(X: 0, Y: 0, Z: 0),
+            new CartesianPosition(X: 100, Y: 100, Z: 100),
+            profile);
+
+        Assert.Equal(160, plan.Segments[0].AccelerationMillimetersPerSecondSquared);
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenAccelerationIsApplied_ShouldTakeLongerThanConstantVelocityEstimate()
+    {
+        var planner = new MotionPlanner();
+        var profile = CreateProfile();
+
+        var plan = planner.PlanLinearMove(
+            new CartesianPosition(X: 0, Y: 0, Z: 0),
+            new CartesianPosition(X: 100, Y: 0, Z: 0),
+            profile,
+            requestedVelocityMillimetersPerSecond: 50);
+
+        Assert.True(plan.TotalDuration > TimeSpan.FromSeconds(2));
     }
 
     [Fact]

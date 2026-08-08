@@ -20,14 +20,14 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.Equal(1000, snapshot.Metadata.SampleIntervalMilliseconds);
         Assert.Equal(CartesianWorkspaceBounds.FromProfile(profile), snapshot.WorkspaceBounds);
         Assert.Equal(snapshot.WorkspaceBounds.Center, snapshot.Viewport.Target);
-        Assert.Equal(TimeSpan.FromSeconds(2), snapshot.TotalDuration);
+        Assert.InRange(snapshot.TotalDuration.TotalSeconds, 2.2083, 2.2084);
         Assert.True(snapshot.Succeeded);
         Assert.Null(snapshot.FailureMessage);
-        Assert.Equal(3, snapshot.FrameCount);
-        Assert.Equal(3, snapshot.PoseCount);
-        Assert.Equal(3, snapshot.SceneFrameCount);
+        Assert.Equal(4, snapshot.FrameCount);
+        Assert.Equal(4, snapshot.PoseCount);
+        Assert.Equal(4, snapshot.SceneFrameCount);
         Assert.Equal(TimeSpan.Zero, snapshot.Frames[0].Time);
-        Assert.Equal(TimeSpan.FromSeconds(2), snapshot.Frames[^1].Time);
+        Assert.Equal(snapshot.TotalDuration, snapshot.Frames[^1].Time);
         Assert.Equal(snapshot.Frames[^1].Position, snapshot.Poses[^1].ToolCenterPoint);
         Assert.Equal(snapshot.Poses[^1].ToolCenterPoint, GetPrimitive(snapshot.SceneFrames[^1], "tool").Center);
     }

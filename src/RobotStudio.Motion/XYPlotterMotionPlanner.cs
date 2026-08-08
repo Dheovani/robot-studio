@@ -46,13 +46,17 @@ public sealed class XYPlotterMotionPlanner : IMotionPlanner<XYPlotterPosition, X
         var velocityMillimetersPerSecond = GetEffectiveVelocity(
             involvedAxes,
             requestedVelocityMillimetersPerSecond);
-        var duration = TimeSpan.FromSeconds(distanceMillimeters / velocityMillimetersPerSecond);
+        var accelerationMillimetersPerSecondSquared =
+            involvedAxes.Min(axis => axis.MaximumAccelerationMillimetersPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(
+            distanceMillimeters,
+            velocityMillimetersPerSecond,
+            accelerationMillimetersPerSecondSquared);
         var segment = new MotionSegment<XYPlotterPosition>(
             start,
             end,
             involvedAxes.Select(axis => new MotionComponent(axis.Id.ToString())).ToArray(),
-            duration,
-            velocityMillimetersPerSecond);
+            profile);
 
         return new MotionPlan<XYPlotterPosition>(start, end, distanceMillimeters, new[] { segment });
     }

@@ -26,12 +26,26 @@ public sealed class SimulationTimelineSamplerTests
         var result = CreateMoveSimulation();
         var sampler = new SimulationTimelineSampler();
 
-        var sample = sampler.SampleAt(result, TimeSpan.FromSeconds(1));
+        var sample = sampler.SampleAt(result, result.FinalContext.ElapsedTime / 2);
 
         Assert.Equal(RobotState.Moving, sample.State);
-        Assert.Equal(new CartesianPosition(X: 50, Y: 0, Z: 0), sample.Position);
+        Assert.Equal(50, sample.Position.X, precision: 4);
+        Assert.Equal(0, sample.Position.Y);
+        Assert.Equal(0, sample.Position.Z);
         Assert.Equal(0, sample.CommandIndex);
         Assert.Equal(nameof(MoveToCommand), sample.CommandName);
+    }
+
+    [Fact]
+    public void SampleAt_WhenTimeIsEarlyInMovement_ShouldUseAccelerationAwareProgress()
+    {
+        var result = CreateMoveSimulation();
+        var sampler = new SimulationTimelineSampler();
+
+        var sample = sampler.SampleAt(result, TimeSpan.FromMilliseconds(100));
+
+        Assert.InRange(sample.Position.X, 1.19, 1.21);
+        Assert.True(sample.Position.X < 5);
     }
 
     [Fact]

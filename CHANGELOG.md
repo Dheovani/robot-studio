@@ -24,10 +24,12 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added architecture tests to guard project dependency rules and keep WPF isolated from portable core projects.
 - Added portable solution validation for non-desktop projects, keeping the CLI and core libraries testable outside the Windows desktop target.
 - Added Windows release artifact and installer generation groundwork for distributing the desktop application.
+- Added reusable trapezoidal and triangular motion profiles with deterministic acceleration, constant-velocity, and deceleration sampling.
 
 ### Changed
 
 - Expanded the desktop app from a Cartesian-only visual simulator into a multi-robot teaching environment.
+- Updated Cartesian and XY plotter planning to respect acceleration limits, producing acceleration-aware durations and Cartesian playback interpolation.
 - Kept G-code, hardware execution, real drone physics, collision detection, inverse kinematics, and richer 3D graphics as planned future work.
 
 ## 1.0.0 - Stable Cartesian Simulation Release

@@ -40,13 +40,17 @@ Motion planning may use `ImpossibleMovementException` when positions and profile
 
 ### Motion Planning
 
-The first motion planner is intentionally simple. It plans a linear movement, validates positions, estimates duration, and uses the lowest maximum velocity among involved axes.
+The Cartesian and XY plotter planners validate positions, plan linear movement, and use the lowest maximum velocity and acceleration limits among involved axes.
 
 When a movement command provides a requested speed, the planner uses the lower value between the requested speed and the involved axis limits. This keeps scripts expressive without allowing them to bypass physical constraints.
 
-Motion plans expose total movement distance, and motion segments expose the involved axes. These values are useful for CLI output, tests, future visualization, and classroom explanations.
+Motion plans expose total movement distance, and motion segments expose the involved axes. These values are useful for CLI output, tests, visualization, and classroom explanations.
 
-Axis acceleration limits are part of the robot profile but are not used by the first linear planner yet. They are present so the physical profile is complete before acceleration-aware planning is introduced.
+`TrapezoidalMotionProfile` is a reusable scalar profile that operates on any consistent distance, velocity, and acceleration units. It calculates acceleration, optional constant-velocity, and deceleration phases. Short movements become triangular profiles because they must decelerate before reaching the configured velocity limit. Cartesian and XY plotter planners currently use millimeters, millimeters per second, and millimeters per second squared.
+
+The profile remains independent of robot topology. Each family-specific planner is responsible for selecting meaningful limits and units before creating a profile. This allows future articulated planners to use angular units without pretending that joints move in millimeters.
+
+Cartesian simulation steps may carry the planned scalar profile as internal timeline metadata. `SimulationTimelineSampler` uses its normalized distance progress to interpolate position, so rendered playback visibly accelerates and decelerates. Playback snapshot DTOs remain unchanged in this iteration; exact phase, velocity, and acceleration fields require a deliberate versioned contract change later.
 
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.
 

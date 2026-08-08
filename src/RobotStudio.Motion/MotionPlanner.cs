@@ -46,13 +46,17 @@ public sealed class MotionPlanner : IMotionPlanner<CartesianPosition, CartesianR
         var velocityMillimetersPerSecond = GetEffectiveVelocity(
             involvedAxes,
             requestedVelocityMillimetersPerSecond);
-        var duration = TimeSpan.FromSeconds(distanceMillimeters / velocityMillimetersPerSecond);
+        var accelerationMillimetersPerSecondSquared =
+            involvedAxes.Min(axis => axis.MaximumAccelerationMillimetersPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(
+            distanceMillimeters,
+            velocityMillimetersPerSecond,
+            accelerationMillimetersPerSecondSquared);
         var segment = new MotionSegment<CartesianPosition>(
             start,
             end,
             involvedAxes.Select(axis => new MotionComponent(axis.Id.ToString())).ToArray(),
-            duration,
-            velocityMillimetersPerSecond);
+            profile);
 
         return new MotionPlan<CartesianPosition>(start, end, distanceMillimeters, new[] { segment });
     }

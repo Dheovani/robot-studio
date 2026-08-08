@@ -88,6 +88,13 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Requested velocity above the axis limit is capped by the axis limit.
 - [x] Motion plan exposes total distance.
 - [x] Motion segment exposes involved axes.
+- [x] Scalar profile creates trapezoidal motion when the configured velocity can be reached.
+- [x] Scalar profile creates triangular motion when the movement is too short to reach the configured velocity.
+- [x] Scalar profile samples acceleration, constant-velocity, deceleration, and completed phases deterministically.
+- [x] Scalar profile clamps sampling outside its time range and rejects invalid inputs.
+- [x] Cartesian planner uses the lowest acceleration limit among involved axes.
+- [x] Cartesian acceleration-aware duration exceeds the constant-velocity estimate.
+- [x] XY plotter movement exposes an acceleration-aware profile.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
@@ -120,7 +127,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add acceleration-aware planning tests when acceleration is introduced into motion planning.
+- [ ] Add family-specific acceleration profile tests when mobile, articulated, parallel, and aerial planners adopt acceleration-aware planning.
 
 ## `RobotStudio.Simulation.Tests`
 
@@ -129,7 +136,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] New simulation context starts in `Idle`.
 - [x] `HOME` moves the robot to origin and ends in `Completed`.
 - [x] `MOVE` updates final position and ends in `Completed`.
-- [x] `MOVE` with requested velocity uses that velocity for duration.
+- [x] `MOVE` with requested velocity includes acceleration and deceleration in its duration.
 - [x] Zero-distance `MOVE` completes without advancing simulated time.
 - [x] `WAIT` advances simulated time without moving.
 - [x] A sequence containing `HOME`, `MOVE`, and `WAIT` executes in order.
@@ -144,6 +151,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline sampling preserves command source metadata.
 - [x] Timeline sampling before the first step returns the initial position.
 - [x] Timeline sampling during movement returns an interpolated position.
+- [x] Timeline sampling during Cartesian movement follows acceleration-aware profile progress.
 - [x] Timeline sampling during wait keeps the same position.
 - [x] Timeline sampling after the final step returns the final position.
 - [x] Cartesian visual-state mapping preserves position in millimeters.

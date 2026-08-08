@@ -42,7 +42,7 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
-    public void Execute_WhenMoveHasRequestedVelocity_ShouldUseRequestedVelocityInDuration()
+    public void Execute_WhenMoveHasRequestedVelocity_ShouldIncludeAccelerationInDuration()
     {
         var simulator = new RobotSimulator();
         var context = SimulationContext.Create(
@@ -54,7 +54,8 @@ public sealed class RobotSimulatorTests
         var result = simulator.Execute(context, sequence);
 
         Assert.True(result.Succeeded);
-        Assert.Equal(TimeSpan.FromSeconds(2), result.FinalContext.ElapsedTime);
+        Assert.InRange(result.FinalContext.ElapsedTime.TotalSeconds, 2.2083, 2.2084);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
     }
 
     [Fact]

@@ -23,8 +23,10 @@ This file tracks future work after the first stable Cartesian simulation release
 
 ## 3. Motion And Simulation
 
-- [ ] Add acceleration-aware motion planning.
-- [ ] Add optional trapezoidal velocity profiles.
+- [x] Add a reusable scalar trapezoidal/triangular motion profile with deterministic phase sampling.
+- [x] Apply acceleration-aware duration and interpolation to Cartesian and XY plotter movements.
+- [ ] Extend acceleration-aware profiles to mobile, articulated, parallel, and aerial planners according to each family's units and constraints.
+- [ ] Expose exact profile phase, velocity, and acceleration through versioned playback contracts and desktop charts.
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
 - [x] Add joint-space simulation for articulated robots.
 - [ ] Add odometry simulation for mobile robots.
