@@ -57,7 +57,7 @@ This file tracks future work after the first stable Cartesian simulation release
 ## 6. Desktop User Experience
 
 - [ ] Improve the visual design of the robot selection screen.
-- [ ] Improve the visual design of the Cartesian simulator workspace.
+- [ ] Improve the visual design of each simulation workspace.
 - [x] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
 - [ ] Add a more polished application logo and brand system if needed.
 - [ ] Add a view cube or compact camera orientation selector.
@@ -87,11 +87,22 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add snapshot compatibility tests before changing playback JSON contracts.
 - [x] Add architecture tests to guard project dependency rules.
 
-## 9. Future 3D Visualization Quality
+## 9. Advanced 3D Visualization And Realistic Robot Rendering
 
-- [ ] Replace the current simplified 3D robot graphics with richer didactic visuals for mechanisms, frames, joints, links, tools, rotors, and workspaces.
-- [ ] Add more advanced 3D rendering primitives and scene composition helpers before implementing highly detailed robot models.
-- [ ] Improve visual fidelity while keeping the graphics educational rather than CAD-realistic.
+Milestone 9 is future work. Its architecture and implementation constraints are specified in [Advanced 3D Visualization](docs/advanced-3d-visualization.md). Do not add a rendering dependency before this milestone begins and its library evaluation is revalidated.
+
+- [ ] Revalidate renderer capabilities, maintenance status, platform support, and licenses; investigate the appropriate HelixToolkit integration first if WPF remains the desktop framework.
+- [ ] Define renderer-neutral visual-state, component-pose, semantic part identifier, and robot visual-model contracts without adding graphics-library types to Domain, Motion, or Simulation.
+- [ ] Extract robot-specific schematic scene composition and viewport lifecycle code from `MainWindow.xaml.cs` behind desktop rendering interfaces.
+- [ ] Define a versioned asset manifest direction that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without locking the project into a premature schema.
+- [ ] Implement model loading, asset validation, caching, mesh and material reuse, and deterministic failure reporting for missing or incompatible assets.
+- [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
+- [ ] Add visualization mode selection for schematic, realistic, and realistic with educational overlays.
+- [ ] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
+- [ ] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
+- [ ] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
+- [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
+- [ ] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
 
 ## 10. Future robot family expansion
 - [ ] Implement the Cylindrical Robot as the first mixed revolute/prismatic teaching model.
@@ -101,3 +112,4 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Implement the Stewart Platform as the advanced six-actuator parallel mechanism.
 - [ ] Implement the Mobile Manipulator as a capstone that coordinates a mobile base and articulated arm.
 - [ ] Expand the catalog by mapping new robots for implementation.
+- [ ] Add tests before each new robot family is considered complete.

@@ -246,6 +246,7 @@ When a version tag such as `v1.0.0` is pushed to GitHub, CI builds the Windows i
 - [Changelog](CHANGELOG.md)
 - [Documentation Index](docs/README.md)
 - [Technical Decisions](docs/technical-decisions.md)
+- [Advanced 3D Visualization](docs/advanced-3d-visualization.md)
 - [Use Cases](docs/use-cases.md)
 - [Test Map](docs/test-map.md)
 - [User Guide](docs/user-guide.md)
