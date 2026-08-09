@@ -110,7 +110,9 @@ public sealed class RobotPlaybackContractTests
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 500,
+            maximumAngularAccelerationDegreesPerSecondSquared: 360);
         var context = DifferentialDriveSimulationContext.Create(
             profile,
             new DifferentialDrivePose(0, 0, 0));

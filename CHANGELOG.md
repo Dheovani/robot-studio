@@ -28,12 +28,14 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added Cartesian playback snapshot format 2 with exact motion phase, velocity, and acceleration metrics while retaining format 1 validation compatibility.
 - Added Cartesian profile phase, velocity, and acceleration state values plus an acceleration/deceleration chart in the desktop viewer.
 - Added explicit angular acceleration limits and synchronized motion profiles for the SCARA, Simple Articulated Arm, and 6-DOF Industrial Arm.
+- Added independent linear and angular acceleration limits and motion profiles for the Differential Drive Robot.
 
 ### Changed
 
 - Expanded the desktop app from a Cartesian-only visual simulator into a multi-robot teaching environment.
 - Updated Cartesian and XY plotter planning to respect acceleration limits, producing acceleration-aware durations and Cartesian playback interpolation.
 - Updated articulated playback to follow acceleration-aware profile progress instead of constant-speed joint interpolation.
+- Updated differential-drive playback to complete its planned translation before rotation and to follow each segment's acceleration-aware progress.
 - Kept G-code, hardware execution, real drone physics, collision detection, inverse kinematics, and richer 3D graphics as planned future work.
 
 ## 1.0.0 - Stable Cartesian Simulation Release

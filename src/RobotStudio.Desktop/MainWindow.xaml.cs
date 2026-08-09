@@ -5137,7 +5137,9 @@ public partial class MainWindow : Window
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 500,
+            maximumAngularAccelerationDegreesPerSecondSquared: 360);
 
     private static ScaraRobotProfile CreateScaraProfile() =>
         new(

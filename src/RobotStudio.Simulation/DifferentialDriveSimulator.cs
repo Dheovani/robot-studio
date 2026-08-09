@@ -87,23 +87,18 @@ public sealed class DifferentialDriveSimulator
     {
         var targetPose = new DifferentialDrivePose(X: 0, Y: 0, HeadingDegrees: 0);
         var homingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
             targetPose,
             context.RobotProfile);
 
-        var completedContext = homingContext with
-        {
-            CurrentPose = targetPose,
-            State = RobotState.Completed,
-            ElapsedTime = homingContext.ElapsedTime + motionPlan.TotalDuration
-        };
-
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
-
-        return completedContext;
+        return ExecuteMotionPlan(
+            homingContext,
+            motionPlan,
+            commandIndex,
+            nameof(HomeCommand),
+            command.Source,
+            timeline);
     }
 
     private DifferentialDriveSimulationContext ExecuteMove(
@@ -113,8 +108,6 @@ public sealed class DifferentialDriveSimulator
         List<DifferentialDriveSimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Differential drive move started.", commandIndex, nameof(DifferentialDriveMoveCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
             command.TargetPose,
@@ -122,14 +115,59 @@ public sealed class DifferentialDriveSimulator
             command.RequestedLinearVelocityMillimetersPerSecond,
             command.RequestedAngularVelocityDegreesPerSecond);
 
-        var completedContext = movingContext with
-        {
-            CurrentPose = command.TargetPose,
-            State = RobotState.Completed,
-            ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
-        };
+        return ExecuteMotionPlan(
+            movingContext,
+            motionPlan,
+            commandIndex,
+            nameof(DifferentialDriveMoveCommand),
+            command.Source,
+            timeline);
+    }
 
-        timeline.Add(CreateStep(completedContext, "Differential drive move completed.", commandIndex, nameof(DifferentialDriveMoveCommand), command.Source));
+    private static DifferentialDriveSimulationContext ExecuteMotionPlan(
+        DifferentialDriveSimulationContext activeContext,
+        DifferentialDriveMotionPlan motionPlan,
+        int commandIndex,
+        string commandName,
+        RobotCommandSource? commandSource,
+        List<DifferentialDriveSimulationStep> timeline)
+    {
+        var segmentContext = activeContext;
+
+        if (motionPlan.IsStationary)
+        {
+            timeline.Add(CreateStep(
+                segmentContext,
+                $"{commandName} started.",
+                commandIndex,
+                commandName,
+                commandSource));
+        }
+
+        foreach (var segment in motionPlan.Segments)
+        {
+            timeline.Add(CreateStep(
+                segmentContext,
+                $"Differential drive {segment.Kind.ToString().ToLowerInvariant()} started.",
+                commandIndex,
+                commandName,
+                commandSource,
+                segment.Profile));
+
+            segmentContext = segmentContext with
+            {
+                CurrentPose = segment.End,
+                ElapsedTime = segmentContext.ElapsedTime + segment.Duration
+            };
+        }
+
+        var completedContext = segmentContext with { State = RobotState.Completed };
+        timeline.Add(CreateStep(
+            completedContext,
+            $"{commandName} completed.",
+            commandIndex,
+            commandName,
+            commandSource));
 
         return completedContext;
     }
@@ -168,7 +206,8 @@ public sealed class DifferentialDriveSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        TrapezoidalMotionProfile? motionProfile = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -176,7 +215,10 @@ public sealed class DifferentialDriveSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            MotionProfile = motionProfile
+        };
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

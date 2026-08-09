@@ -63,7 +63,21 @@ public sealed class DifferentialDriveProfileTests
         Assert.Equal(20, distance);
     }
 
-    private static DifferentialDriveProfile CreateProfile() =>
+    [Fact]
+    public void Constructor_WhenLinearAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(linearAcceleration: 0));
+    }
+
+    [Fact]
+    public void Constructor_WhenAngularAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(angularAcceleration: 0));
+    }
+
+    private static DifferentialDriveProfile CreateProfile(
+        double linearAcceleration = 500,
+        double angularAcceleration = 360) =>
         new(
             minimumXMillimeters: 0,
             maximumXMillimeters: 500,
@@ -72,5 +86,7 @@ public sealed class DifferentialDriveProfileTests
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: linearAcceleration,
+            maximumAngularAccelerationDegreesPerSecondSquared: angularAcceleration);
 }

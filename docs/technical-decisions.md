@@ -54,6 +54,8 @@ Cartesian simulation steps may carry the planned scalar profile as timeline meta
 
 Articulated simulation steps may also carry their planned scalar profile as timeline metadata. Their playback samplers use normalized angular progress to interpolate every joint consistently. This keeps acceleration behavior in motion and simulation layers while the desktop viewer remains a consumer of deterministic frames.
 
+Differential-drive planning keeps translation and rotation as sequential segments with independent scalar profiles. Translation uses millimeters, millimeters per second, and millimeters per second squared; rotation uses degrees, degrees per second, and degrees per second squared. The simulator records the pose at the boundary between segments, and playback completes translation before changing heading. This preserves the planner's intended mobile motion instead of blending incompatible linear and angular units into one profile.
+
 Cartesian playback snapshot format version 2 adds these motion metrics to each visual frame. The validator accepts both versions 1 and 2 so existing exported lessons remain usable; missing version 1 metrics deserialize to zero and no profile phase. New version 2 snapshots validate finite acceleration and finite, non-negative velocity. Future additions must follow the same explicit versioning and compatibility-test process.
 
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.

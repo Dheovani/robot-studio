@@ -1,6 +1,7 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Mobile;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -11,4 +12,7 @@ public sealed record DifferentialDriveSimulationStep(
     string Description,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource)
+{
+    public TrapezoidalMotionProfile? MotionProfile { get; init; }
+}

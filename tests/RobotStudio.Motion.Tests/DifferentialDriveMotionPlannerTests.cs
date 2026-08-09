@@ -34,6 +34,7 @@ public sealed class DifferentialDriveMotionPlannerTests
         Assert.Equal(DifferentialDriveMotionKind.Translation, segment.Kind);
         Assert.Equal(500, plan.TranslationDistanceMillimeters);
         Assert.Equal(250, segment.LinearVelocityMillimetersPerSecond);
+        Assert.Equal(500, segment.Profile.Acceleration);
         Assert.True(plan.TotalDuration > TimeSpan.Zero);
     }
 
@@ -51,7 +52,10 @@ public sealed class DifferentialDriveMotionPlannerTests
         var segment = Assert.Single(plan.Segments);
         Assert.Equal(DifferentialDriveMotionKind.Rotation, segment.Kind);
         Assert.Equal(20, plan.RotationDegrees);
-        Assert.Equal(180, segment.AngularVelocityDegreesPerSecond);
+        Assert.Equal(180, segment.Profile.MaximumVelocity);
+        Assert.Equal(360, segment.Profile.Acceleration);
+        Assert.True(segment.Profile.IsTriangular);
+        Assert.True(segment.AngularVelocityDegreesPerSecond < 180);
     }
 
     [Fact]
@@ -122,5 +126,7 @@ public sealed class DifferentialDriveMotionPlannerTests
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 500,
+            maximumAngularAccelerationDegreesPerSecondSquared: 360);
 }

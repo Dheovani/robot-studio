@@ -98,6 +98,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] SCARA planning uses the lowest angular acceleration limit among involved joints.
 - [x] Simple articulated arm planning exposes an acceleration-aware angular profile.
 - [x] 6-DOF industrial arm planning synchronizes all involved joints with one constrained angular profile.
+- [x] Differential-drive planning uses independent linear and angular acceleration profiles.
+- [x] Differential-drive playback completes translation before rotation and follows each segment profile.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
@@ -130,7 +132,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add family-specific acceleration profile tests when mobile, parallel, and aerial planners adopt acceleration-aware planning.
+- [ ] Add family-specific acceleration profile tests when parallel and aerial planners adopt acceleration-aware planning.
 
 ## `RobotStudio.Simulation.Tests`
 

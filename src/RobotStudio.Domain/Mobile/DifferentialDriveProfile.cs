@@ -12,7 +12,9 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
         double wheelBaseMillimeters,
         double wheelRadiusMillimeters,
         double maximumLinearVelocityMillimetersPerSecond,
-        double maximumAngularVelocityDegreesPerSecond)
+        double maximumAngularVelocityDegreesPerSecond,
+        double maximumLinearAccelerationMillimetersPerSecondSquared,
+        double maximumAngularAccelerationDegreesPerSecondSquared)
     {
         if (maximumXMillimeters <= minimumXMillimeters)
         {
@@ -44,6 +46,16 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
             throw new ArgumentException("Maximum angular velocity must be greater than zero.");
         }
 
+        if (maximumLinearAccelerationMillimetersPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Maximum linear acceleration must be greater than zero.");
+        }
+
+        if (maximumAngularAccelerationDegreesPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Maximum angular acceleration must be greater than zero.");
+        }
+
         MinimumXMillimeters = minimumXMillimeters;
         MaximumXMillimeters = maximumXMillimeters;
         MinimumYMillimeters = minimumYMillimeters;
@@ -52,6 +64,8 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
         WheelRadiusMillimeters = wheelRadiusMillimeters;
         MaximumLinearVelocityMillimetersPerSecond = maximumLinearVelocityMillimetersPerSecond;
         MaximumAngularVelocityDegreesPerSecond = maximumAngularVelocityDegreesPerSecond;
+        MaximumLinearAccelerationMillimetersPerSecondSquared = maximumLinearAccelerationMillimetersPerSecondSquared;
+        MaximumAngularAccelerationDegreesPerSecondSquared = maximumAngularAccelerationDegreesPerSecondSquared;
     }
 
     public double MinimumXMillimeters { get; }
@@ -69,6 +83,10 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
     public double MaximumLinearVelocityMillimetersPerSecond { get; }
 
     public double MaximumAngularVelocityDegreesPerSecond { get; }
+
+    public double MaximumLinearAccelerationMillimetersPerSecondSquared { get; }
+
+    public double MaximumAngularAccelerationDegreesPerSecondSquared { get; }
 
     public void ValidatePosition(DifferentialDrivePose position)
     {

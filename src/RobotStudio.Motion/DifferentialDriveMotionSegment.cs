@@ -6,6 +6,13 @@ public sealed record DifferentialDriveMotionSegment(
     DifferentialDriveMotionKind Kind,
     DifferentialDrivePose Start,
     DifferentialDrivePose End,
-    TimeSpan Duration,
-    double LinearVelocityMillimetersPerSecond,
-    double AngularVelocityDegreesPerSecond);
+    TrapezoidalMotionProfile Profile)
+{
+    public TimeSpan Duration => Profile.TotalDuration;
+
+    public double LinearVelocityMillimetersPerSecond =>
+        Kind == DifferentialDriveMotionKind.Translation ? Profile.PeakVelocity : 0;
+
+    public double AngularVelocityDegreesPerSecond =>
+        Kind == DifferentialDriveMotionKind.Rotation ? Profile.PeakVelocity : 0;
+}

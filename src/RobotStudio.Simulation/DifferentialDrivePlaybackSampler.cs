@@ -34,7 +34,11 @@ public sealed class DifferentialDrivePlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = (time - current.Time).TotalSeconds / (next.Time - current.Time).TotalSeconds;
+                var progress = MotionProfileTimelineSampler.CalculateProgress(
+                    current.MotionProfile,
+                    current.Time,
+                    next.Time,
+                    time);
                 frames.Add(new DifferentialDrivePlaybackFrame(
                     time,
                     current.State,

@@ -61,7 +61,7 @@ public sealed class DifferentialDriveSimulatorTests
         var result = simulator.Execute(context, sequence);
 
         Assert.True(result.Succeeded);
-        Assert.Equal(TimeSpan.FromSeconds(4), result.FinalContext.ElapsedTime);
+        Assert.Equal(TimeSpan.FromMilliseconds(4225), result.FinalContext.ElapsedTime);
     }
 
     [Fact]
@@ -102,11 +102,34 @@ public sealed class DifferentialDriveSimulatorTests
                 RobotState.Homing,
                 RobotState.Completed,
                 RobotState.Moving,
+                RobotState.Moving,
                 RobotState.Completed,
                 RobotState.Waiting,
                 RobotState.Completed
             ],
             result.Timeline.Select(step => step.State));
+    }
+
+    [Fact]
+    public void Execute_WhenMoveTranslatesAndRotates_ShouldRecordSequentialSegments()
+    {
+        var context = DifferentialDriveSimulationContext.Create(
+            CreateProfile(),
+            new DifferentialDrivePose(X: 0, Y: 0, HeadingDegrees: 0));
+        var sequence = new RobotCommandSequence(
+        [
+            new DifferentialDriveMoveCommand(
+                new DifferentialDrivePose(X: 100, Y: 0, HeadingDegrees: 90),
+                requestedLinearVelocityMillimetersPerSecond: 100,
+                requestedAngularVelocityDegreesPerSecond: 90)
+        ]);
+
+        var result = new DifferentialDriveSimulator().Execute(context, sequence);
+
+        Assert.Equal(new DifferentialDrivePose(100, 0, 0), result.Timeline[2].Pose);
+        Assert.Equal(RobotState.Moving, result.Timeline[2].State);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        Assert.NotNull(result.Timeline[2].MotionProfile);
     }
 
     [Fact]
@@ -154,5 +177,7 @@ public sealed class DifferentialDriveSimulatorTests
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 500,
+            maximumAngularAccelerationDegreesPerSecondSquared: 360);
 }

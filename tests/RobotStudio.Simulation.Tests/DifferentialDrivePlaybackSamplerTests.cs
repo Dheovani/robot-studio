@@ -30,6 +30,37 @@ public sealed class DifferentialDrivePlaybackSamplerTests
     }
 
     [Fact]
+    public void Sample_DuringLinearAcceleration_ShouldUseTranslationProfile()
+    {
+        var snapshot = new DifferentialDrivePlaybackSampler().Sample(
+            CreateMoveResult(),
+            TimeSpan.FromMilliseconds(100));
+        var acceleratingFrame = Assert.Single(
+            snapshot.Frames,
+            frame => frame.Time == TimeSpan.FromMilliseconds(100));
+
+        Assert.Equal(2.5, acceleratingFrame.Pose.X, precision: 6);
+        Assert.Equal(0, acceleratingFrame.Pose.HeadingDegrees, precision: 6);
+    }
+
+    [Fact]
+    public void Sample_WhenTranslationCompletes_ShouldRotateWithoutChangingPosition()
+    {
+        var result = CreateMoveResult();
+        var snapshot = new DifferentialDrivePlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(100));
+        var rotationStart = result.Timeline[2];
+
+        Assert.Equal(new DifferentialDrivePose(100, 0, 0), rotationStart.Pose);
+        Assert.Contains(
+            snapshot.Frames,
+            frame => frame.Time > rotationStart.Time &&
+                     frame.Pose.X == 100 &&
+                     frame.Pose.HeadingDegrees is > 0 and < 90);
+    }
+
+    [Fact]
     public void Sample_ShouldPreserveMetadata()
     {
         var result = CreateMoveResult();
@@ -63,7 +94,9 @@ public sealed class DifferentialDrivePlaybackSamplerTests
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
             maximumLinearVelocityMillimetersPerSecond: 250,
-            maximumAngularVelocityDegreesPerSecond: 180);
+            maximumAngularVelocityDegreesPerSecond: 180,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 500,
+            maximumAngularAccelerationDegreesPerSecondSquared: 360);
         var context = DifferentialDriveSimulationContext.Create(
             profile,
             new DifferentialDrivePose(X: 0, Y: 0, HeadingDegrees: 0));

@@ -42,16 +42,17 @@ public sealed class DifferentialDriveMotionPlanner
             var linearVelocity = GetEffectiveLinearVelocity(
                 robotProfile,
                 requestedLinearVelocityMillimetersPerSecond);
-            var translationDuration = TimeSpan.FromSeconds(translationDistanceMillimeters / linearVelocity);
+            var translationProfile = new TrapezoidalMotionProfile(
+                translationDistanceMillimeters,
+                linearVelocity,
+                robotProfile.MaximumLinearAccelerationMillimetersPerSecondSquared);
             var translationEnd = end with { HeadingDegrees = start.HeadingDegrees };
 
             segments.Add(new DifferentialDriveMotionSegment(
                 DifferentialDriveMotionKind.Translation,
                 start,
                 translationEnd,
-                translationDuration,
-                linearVelocity,
-                AngularVelocityDegreesPerSecond: 0));
+                translationProfile));
         }
 
         if (rotationDegrees > RotationToleranceDegrees)
@@ -59,7 +60,10 @@ public sealed class DifferentialDriveMotionPlanner
             var angularVelocity = GetEffectiveAngularVelocity(
                 robotProfile,
                 requestedAngularVelocityDegreesPerSecond);
-            var rotationDuration = TimeSpan.FromSeconds(rotationDegrees / angularVelocity);
+            var rotationProfile = new TrapezoidalMotionProfile(
+                rotationDegrees,
+                angularVelocity,
+                robotProfile.MaximumAngularAccelerationDegreesPerSecondSquared);
             var rotationStart = translationDistanceMillimeters > MovementToleranceMillimeters
                 ? end with { HeadingDegrees = start.HeadingDegrees }
                 : start;
@@ -68,9 +72,7 @@ public sealed class DifferentialDriveMotionPlanner
                 DifferentialDriveMotionKind.Rotation,
                 rotationStart,
                 end,
-                rotationDuration,
-                LinearVelocityMillimetersPerSecond: 0,
-                angularVelocity));
+                rotationProfile));
         }
 
         return new DifferentialDriveMotionPlan(
