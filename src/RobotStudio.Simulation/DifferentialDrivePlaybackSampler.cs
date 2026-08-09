@@ -39,10 +39,16 @@ public sealed class DifferentialDrivePlaybackSampler
                     current.Time,
                     next.Time,
                     time);
+                var pose = Interpolate(current.Pose, next.Pose, progress);
                 frames.Add(new DifferentialDrivePlaybackFrame(
                     time,
                     current.State,
-                    Interpolate(current.Pose, next.Pose, progress),
+                    pose,
+                    DifferentialDriveOdometryCalculator.Advance(
+                        current.Odometry,
+                        result.InitialContext.RobotProfile,
+                        current.Pose,
+                        pose),
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -64,6 +70,7 @@ public sealed class DifferentialDrivePlaybackSampler
             step.Time,
             step.State,
             step.Pose,
+            step.Odometry,
             step.CommandIndex,
             step.CommandName,
             step.CommandSource);

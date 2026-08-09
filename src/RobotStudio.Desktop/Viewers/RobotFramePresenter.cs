@@ -18,7 +18,13 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State));
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            MovementExplanation:
+                $"Differential-drive odometry estimates motion from wheel travel. " +
+                $"Left wheel: {FormatNumber(frame.Odometry.LeftWheelTravelMillimeters)} mm " +
+                $"({FormatNumber(frame.Odometry.LeftWheelRotationDegrees)} deg). " +
+                $"Right wheel: {FormatNumber(frame.Odometry.RightWheelTravelMillimeters)} mm " +
+                $"({FormatNumber(frame.Odometry.RightWheelRotationDegrees)} deg).");
     }
 
     public static RobotFrameStatus Create(

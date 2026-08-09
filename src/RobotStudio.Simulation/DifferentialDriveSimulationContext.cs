@@ -6,6 +6,7 @@ namespace RobotStudio.Simulation;
 public sealed record DifferentialDriveSimulationContext(
     DifferentialDriveProfile RobotProfile,
     DifferentialDrivePose CurrentPose,
+    DifferentialDriveOdometry Odometry,
     RobotState State,
     TimeSpan ElapsedTime)
 {
@@ -19,6 +20,7 @@ public sealed record DifferentialDriveSimulationContext(
         return new DifferentialDriveSimulationContext(
             robotProfile,
             currentPose,
+            DifferentialDriveOdometry.Zero,
             RobotStateTransitions.InitialState,
             TimeSpan.Zero);
     }

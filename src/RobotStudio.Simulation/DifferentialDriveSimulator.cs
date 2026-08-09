@@ -157,6 +157,11 @@ public sealed class DifferentialDriveSimulator
             segmentContext = segmentContext with
             {
                 CurrentPose = segment.End,
+                Odometry = DifferentialDriveOdometryCalculator.Advance(
+                    segmentContext.Odometry,
+                    segmentContext.RobotProfile,
+                    segment.Start,
+                    segment.End),
                 ElapsedTime = segmentContext.ElapsedTime + segment.Duration
             };
         }
@@ -212,6 +217,7 @@ public sealed class DifferentialDriveSimulator
             context.ElapsedTime,
             context.State,
             context.CurrentPose,
+            context.Odometry,
             description,
             commandIndex,
             commandName,

@@ -41,6 +41,8 @@ public sealed class DifferentialDrivePlaybackSamplerTests
 
         Assert.Equal(2.5, acceleratingFrame.Pose.X, precision: 6);
         Assert.Equal(0, acceleratingFrame.Pose.HeadingDegrees, precision: 6);
+        Assert.Equal(2.5, acceleratingFrame.Odometry.LeftWheelTravelMillimeters, precision: 6);
+        Assert.Equal(2.5, acceleratingFrame.Odometry.RightWheelTravelMillimeters, precision: 6);
     }
 
     [Fact]

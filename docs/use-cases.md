@@ -207,6 +207,7 @@ Expected result:
 - students can reset the camera or choose predefined views;
 - workspace limits are visible without covering the robot mechanism;
 - students can inspect current state, position, command, source line, and simulated time;
+- students can inspect ideal left/right wheel odometry while a Differential Drive command is playing;
 - visual controls do not change domain rules.
 
 ### Edit And Simulate A DSL Script In The Desktop App

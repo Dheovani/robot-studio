@@ -29,6 +29,7 @@ WAIT 500
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
 - Open the first XY Plotter viewer as a beginner two-axis model.
 - Open the first Differential Drive viewer for a beginner mobile-robot simulation.
+- Inspect ideal differential-drive odometry with accumulated wheel travel and rotation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
 - Open the first Delta Robot viewer for simplified parallel-actuator simulation.

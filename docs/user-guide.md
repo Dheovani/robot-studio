@@ -77,7 +77,7 @@ Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D vi
 
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, overlay controls, and local example selector.
 
-Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. Translation and rotation execute sequentially with independent velocity and acceleration limits. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands, plus a local example selector.
+Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. Translation and rotation execute sequentially with independent velocity and acceleration limits. The movement explanation shows ideal accumulated travel and rotation for the left and right wheels. This odometry is deterministic and does not yet model encoder noise or wheel slip. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands, plus a local example selector.
 
 Opening the SCARA robot renders a 3D articulated robot viewer with reachable workspace, volumetric base, shoulder joint, elbow joint, tool point, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. Its coordinated joint playback respects angular velocity and acceleration limits. The viewer includes a SCARA DSL editor for `HOME`, `SCARA`, and `WAIT` commands, plus a local example selector.
 

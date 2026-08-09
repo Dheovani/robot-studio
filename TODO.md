@@ -31,7 +31,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Expose exact Cartesian profile phase, velocity, and acceleration through versioned playback contracts, state presentation, and desktop charts.
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
 - [x] Add joint-space simulation for articulated robots.
-- [ ] Add odometry simulation for mobile robots.
+- [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
 - [ ] Add attitude/orientation simulation for aerial robots.
 - [ ] Add a clearer recovery workflow for faulted simulations.
 - [ ] Add deterministic simulation fixtures for every future robot family.
@@ -109,6 +109,7 @@ Milestone 9 is future work. Its architecture and implementation constraints are 
 - [ ] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
 
 ## 10. Future robot family expansion
+
 - [ ] Implement the Cylindrical Robot as the first mixed revolute/prismatic teaching model.
 - [ ] Implement the Ackermann Steering Robot for car-like steering geometry and non-holonomic motion.
 - [ ] Implement the Omnidirectional Robot for holonomic movement and wheel-speed decomposition.

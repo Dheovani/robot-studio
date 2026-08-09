@@ -130,6 +130,8 @@ public sealed class DifferentialDriveSimulatorTests
         Assert.Equal(RobotState.Moving, result.Timeline[2].State);
         Assert.NotNull(result.Timeline[1].MotionProfile);
         Assert.NotNull(result.Timeline[2].MotionProfile);
+        Assert.Equal(100 - (30 * Math.PI), result.FinalContext.Odometry.LeftWheelTravelMillimeters, precision: 6);
+        Assert.Equal(100 + (30 * Math.PI), result.FinalContext.Odometry.RightWheelTravelMillimeters, precision: 6);
     }
 
     [Fact]

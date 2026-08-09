@@ -9,6 +9,7 @@ public sealed record DifferentialDriveSimulationStep(
     TimeSpan Time,
     RobotState State,
     DifferentialDrivePose Pose,
+    DifferentialDriveOdometry Odometry,
     string Description,
     int? CommandIndex,
     string? CommandName,

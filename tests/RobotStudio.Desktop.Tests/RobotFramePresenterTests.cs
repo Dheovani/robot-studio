@@ -18,6 +18,11 @@ public sealed class RobotFramePresenterTests
             TimeSpan.FromMilliseconds(750),
             RobotState.Moving,
             new DifferentialDrivePose(X: 120, Y: 80, HeadingDegrees: 45),
+            new DifferentialDriveOdometry(
+                LeftWheelTravelMillimeters: 100,
+                RightWheelTravelMillimeters: 140,
+                LeftWheelRotationDegrees: 190.986,
+                RightWheelRotationDegrees: 267.38),
             CommandIndex: 0,
             CommandName: "DifferentialDriveMoveCommand",
             CommandSource: null);
@@ -30,6 +35,8 @@ public sealed class RobotFramePresenterTests
         Assert.Equal("0.75 / 2 s", status.Time);
         Assert.Equal("2 / 4", status.Frames);
         Assert.Equal("Frame 2/4 | t=0.75s | Moving", status.Footer);
+        Assert.Contains("Left wheel: 100 mm", status.MovementExplanation);
+        Assert.Contains("Right wheel: 140 mm", status.MovementExplanation);
     }
 
     [Fact]

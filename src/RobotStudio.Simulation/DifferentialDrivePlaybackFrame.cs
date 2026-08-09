@@ -8,6 +8,7 @@ public sealed record DifferentialDrivePlaybackFrame(
     TimeSpan Time,
     RobotState State,
     DifferentialDrivePose Pose,
+    DifferentialDriveOdometry Odometry,
     int? CommandIndex,
     string? CommandName,
     RobotCommandSource? CommandSource) : IRobotPlaybackFrame;
