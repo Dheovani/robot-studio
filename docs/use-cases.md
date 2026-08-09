@@ -186,6 +186,23 @@ Expected result:
 - the robot remains at its last valid position and no simulated movement time is added;
 - paths that avoid every obstacle execute normally.
 
+### Reject An Obstructed Differential Drive Path
+
+Actor: student or simulation host.
+
+Goal: demonstrate why a mobile robot's center path can be clear while its physical body still hits an obstacle.
+
+Current status: implemented in the Differential Drive simulation core; obstacle editing and rendering remain future desktop work.
+
+Expected result:
+
+- the robot profile defines an explicit circular collision radius;
+- the host defines rectangular obstacles in a `PlanarSimulationEnvironment`;
+- `DRIVE` and `HOME` test the swept circular footprint, including exact side and rounded-corner contact;
+- a collision reports the obstacle, robot-center pose, physical contact point, and trajectory fraction;
+- blocked commands preserve pose, ideal wheel odometry, and elapsed simulated time;
+- clear paths continue through normal translation and rotation playback.
+
 ### Simulate A Simple DSL Script
 
 Actor: student.

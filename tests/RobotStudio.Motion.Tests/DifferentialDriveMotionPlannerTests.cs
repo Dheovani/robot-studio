@@ -125,6 +125,7 @@ public sealed class DifferentialDriveMotionPlannerTests
             maximumYMillimeters: 400,
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
+            collisionRadiusMillimeters: 70,
             maximumLinearVelocityMillimetersPerSecond: 250,
             maximumAngularVelocityDegreesPerSecond: 180,
             maximumLinearAccelerationMillimetersPerSecondSquared: 500,

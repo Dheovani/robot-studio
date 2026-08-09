@@ -315,6 +315,8 @@ Core fault recovery currently requires the caller to start a new simulation exec
 
 The Cartesian simulation API can also receive a `CartesianSimulationEnvironment` containing axis-aligned obstacle volumes. Cartesian `MOVE` and `HOME` commands reject paths that touch or cross an obstacle and report the obstacle ID and first collision position. The current desktop app does not yet provide obstacle editing or visualization.
 
+The Differential Drive API accepts a `PlanarSimulationEnvironment` and uses the profile's explicit circular collision radius. This means collision checks include the robot body, not only its center point. Blocked `DRIVE` and `HOME` commands preserve pose, odometry, and simulated time. Planar obstacle controls and overlays are not yet exposed in the desktop viewer.
+
 ## Planned CLI Learning Flow
 
 The CLI should later support:

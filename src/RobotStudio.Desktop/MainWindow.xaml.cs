@@ -5141,6 +5141,7 @@ public partial class MainWindow : Window
             maximumYMillimeters: 350,
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
+            collisionRadiusMillimeters: 70,
             maximumLinearVelocityMillimetersPerSecond: 250,
             maximumAngularVelocityDegreesPerSecond: 180,
             maximumLinearAccelerationMillimetersPerSecondSquared: 500,

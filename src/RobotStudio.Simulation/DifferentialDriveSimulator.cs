@@ -8,17 +8,32 @@ namespace RobotStudio.Simulation;
 public sealed class DifferentialDriveSimulator
 {
     private readonly DifferentialDriveMotionPlanner motionPlanner;
+    private readonly PlanarSimulationEnvironment environment;
 
     public DifferentialDriveSimulator()
-        : this(new DifferentialDriveMotionPlanner())
+        : this(new DifferentialDriveMotionPlanner(), PlanarSimulationEnvironment.Empty)
     {
     }
 
     public DifferentialDriveSimulator(DifferentialDriveMotionPlanner motionPlanner)
+        : this(motionPlanner, PlanarSimulationEnvironment.Empty)
+    {
+    }
+
+    public DifferentialDriveSimulator(PlanarSimulationEnvironment environment)
+        : this(new DifferentialDriveMotionPlanner(), environment)
+    {
+    }
+
+    public DifferentialDriveSimulator(
+        DifferentialDriveMotionPlanner motionPlanner,
+        PlanarSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
+        this.environment = environment;
     }
 
     public DifferentialDriveSimulationResult Execute(
@@ -99,6 +114,7 @@ public sealed class DifferentialDriveSimulator
         List<DifferentialDriveSimulationStep> timeline)
     {
         var targetPose = new DifferentialDrivePose(X: 0, Y: 0, HeadingDegrees: 0);
+        EnsurePathIsClear(context, targetPose);
         var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
@@ -120,6 +136,7 @@ public sealed class DifferentialDriveSimulator
         int commandIndex,
         List<DifferentialDriveSimulationStep> timeline)
     {
+        EnsurePathIsClear(context, command.TargetPose);
         var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
@@ -217,6 +234,22 @@ public sealed class DifferentialDriveSimulator
         RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
 
         return context with { State = nextState };
+    }
+
+    private void EnsurePathIsClear(
+        DifferentialDriveSimulationContext context,
+        DifferentialDrivePose targetPose)
+    {
+        var collision = CircularFootprintCollisionDetector.FindFirstCollision(
+            context.CurrentPose,
+            targetPose,
+            context.RobotProfile.CollisionRadiusMillimeters,
+            environment);
+
+        if (collision is not null)
+        {
+            throw new PlanarPathObstructedException(collision);
+        }
     }
 
     private static DifferentialDriveSimulationStep CreateStep(

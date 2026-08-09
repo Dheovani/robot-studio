@@ -80,6 +80,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian segment/AABB collision detection reports the nearest obstacle, entry point, and trajectory fraction.
 - [x] Cartesian collision detection handles clear paths, boundary contact, stationary occupied positions, and duplicate obstacle IDs deterministically.
 - [x] Cartesian `MOVE` and `HOME` reject obstructed paths while preserving the last valid position.
+- [x] Differential Drive collision checks use an explicit finite positive body radius.
+- [x] Swept circular-footprint tests cover obstacle sides, rounded-corner tangency, clear corner paths, and initially overlapping poses.
+- [x] Differential Drive `DRIVE` and `HOME` reject obstructed paths without changing pose, odometry, or elapsed time.
 
 ## `RobotStudio.Motion.Tests`
 

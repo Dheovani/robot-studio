@@ -8,6 +8,60 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DifferentialDriveSimulatorTests
 {
     [Fact]
+    public void Execute_WhenFootprintCrossesObstacle_ShouldFaultWithoutMovingOrAddingOdometry()
+    {
+        var environment = new PlanarSimulationEnvironment(
+            [new PlanarObstacle("wall", 180, 220, 80, 120)]);
+        var start = new DifferentialDrivePose(0, 100, 0);
+        var result = new DifferentialDriveSimulator(environment).Execute(
+            DifferentialDriveSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence(
+                [new DifferentialDriveMoveCommand(new DifferentialDrivePose(300, 100, 0))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RobotState.Faulted, result.FinalContext.State);
+        Assert.Equal(start, result.FinalContext.CurrentPose);
+        Assert.Equal(DifferentialDriveOdometry.Zero, result.FinalContext.Odometry);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        var exception = Assert.IsType<PlanarPathObstructedException>(result.Failure);
+        Assert.Equal("wall", exception.ObstacleId);
+        Assert.Equal(110, exception.RobotPose.X, precision: 10);
+        Assert.Equal(180, exception.ContactXMillimeters);
+    }
+
+    [Fact]
+    public void Execute_WhenHomePathCrossesObstacle_ShouldFaultAtCurrentPose()
+    {
+        var environment = new PlanarSimulationEnvironment(
+            [new PlanarObstacle("home-barrier", 180, 220, 80, 120)]);
+        var start = new DifferentialDrivePose(300, 100, 90);
+        var result = new DifferentialDriveSimulator(environment).Execute(
+            DifferentialDriveSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence([new HomeCommand()]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(start, result.FinalContext.CurrentPose);
+        Assert.IsType<PlanarPathObstructedException>(result.Failure);
+    }
+
+    [Fact]
+    public void Execute_WhenFootprintAvoidsObstacle_ShouldCompleteNormally()
+    {
+        var environment = new PlanarSimulationEnvironment(
+            [new PlanarObstacle("clear-wall", 180, 220, 250, 300)]);
+        var target = new DifferentialDrivePose(300, 100, 90);
+        var result = new DifferentialDriveSimulator(environment).Execute(
+            DifferentialDriveSimulationContext.Create(
+                CreateProfile(),
+                new DifferentialDrivePose(0, 100, 0)),
+            new RobotCommandSequence([new DifferentialDriveMoveCommand(target)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(target, result.FinalContext.CurrentPose);
+        Assert.NotEqual(DifferentialDriveOdometry.Zero, result.FinalContext.Odometry);
+    }
+
+    [Fact]
     public void Execute_WhenResettingFault_ShouldPreservePoseOdometryAndElapsedTime()
     {
         var pose = new DifferentialDrivePose(100, 80, 30);
@@ -200,6 +254,7 @@ public sealed class DifferentialDriveSimulatorTests
             maximumYMillimeters: 400,
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
+            collisionRadiusMillimeters: 70,
             maximumLinearVelocityMillimetersPerSecond: 250,
             maximumAngularVelocityDegreesPerSecond: 180,
             maximumLinearAccelerationMillimetersPerSecondSquared: 500,

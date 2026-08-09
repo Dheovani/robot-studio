@@ -11,6 +11,7 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
         double maximumYMillimeters,
         double wheelBaseMillimeters,
         double wheelRadiusMillimeters,
+        double collisionRadiusMillimeters,
         double maximumLinearVelocityMillimetersPerSecond,
         double maximumAngularVelocityDegreesPerSecond,
         double maximumLinearAccelerationMillimetersPerSecondSquared,
@@ -34,6 +35,11 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
         if (wheelRadiusMillimeters <= 0)
         {
             throw new ArgumentException("Wheel radius must be greater than zero.");
+        }
+
+        if (!double.IsFinite(collisionRadiusMillimeters) || collisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("Collision radius must be greater than zero.");
         }
 
         if (maximumLinearVelocityMillimetersPerSecond <= 0)
@@ -62,6 +68,7 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
         MaximumYMillimeters = maximumYMillimeters;
         WheelBaseMillimeters = wheelBaseMillimeters;
         WheelRadiusMillimeters = wheelRadiusMillimeters;
+        CollisionRadiusMillimeters = collisionRadiusMillimeters;
         MaximumLinearVelocityMillimetersPerSecond = maximumLinearVelocityMillimetersPerSecond;
         MaximumAngularVelocityDegreesPerSecond = maximumAngularVelocityDegreesPerSecond;
         MaximumLinearAccelerationMillimetersPerSecondSquared = maximumLinearAccelerationMillimetersPerSecondSquared;
@@ -79,6 +86,8 @@ public sealed record DifferentialDriveProfile : IRobotProfile<DifferentialDriveP
     public double WheelBaseMillimeters { get; }
 
     public double WheelRadiusMillimeters { get; }
+
+    public double CollisionRadiusMillimeters { get; }
 
     public double MaximumLinearVelocityMillimetersPerSecond { get; }
 

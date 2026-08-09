@@ -75,9 +75,20 @@ public sealed class DifferentialDriveProfileTests
         Assert.Throws<ArgumentException>(() => CreateProfile(angularAcceleration: 0));
     }
 
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    public void Constructor_WhenCollisionRadiusIsInvalid_ShouldThrow(double collisionRadius)
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(collisionRadius: collisionRadius));
+    }
+
     private static DifferentialDriveProfile CreateProfile(
         double linearAcceleration = 500,
-        double angularAcceleration = 360) =>
+        double angularAcceleration = 360,
+        double collisionRadius = 70) =>
         new(
             minimumXMillimeters: 0,
             maximumXMillimeters: 500,
@@ -85,6 +96,7 @@ public sealed class DifferentialDriveProfileTests
             maximumYMillimeters: 400,
             wheelBaseMillimeters: 120,
             wheelRadiusMillimeters: 30,
+            collisionRadiusMillimeters: collisionRadius,
             maximumLinearVelocityMillimetersPerSecond: 250,
             maximumAngularVelocityDegreesPerSecond: 180,
             maximumLinearAccelerationMillimetersPerSecondSquared: linearAcceleration,
