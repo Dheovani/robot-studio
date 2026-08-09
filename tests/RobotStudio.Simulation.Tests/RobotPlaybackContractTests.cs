@@ -135,6 +135,7 @@ public sealed class RobotPlaybackContractTests
         var profile = new ScaraRobotProfile(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
+            linkCollisionRadiusMillimeters: 12,
             shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
             elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
         var context = ScaraSimulationContext.Create(

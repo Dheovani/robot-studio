@@ -36,6 +36,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added the cross-family `RESET` command for recovering faulted simulations without changing robot pose, joint/actuator state, odometry, or simulated time.
 - Added deterministic Cartesian workspace obstacles and segment/AABB collision detection, including didactic collision metadata and obstruction-aware `MOVE` and `HOME` execution.
 - Added planar obstacles and exact swept circular-footprint collision detection for Differential Drive movement, with explicit body radius, contact metadata, and obstruction-aware `DRIVE` and `HOME` execution.
+- Added deterministic SCARA link collision sampling with explicit link thickness, semantic first/second-link identification, and obstruction-aware joint movement and homing.
 
 ### Changed
 

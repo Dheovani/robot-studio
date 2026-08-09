@@ -317,6 +317,8 @@ The Cartesian simulation API can also receive a `CartesianSimulationEnvironment`
 
 The Differential Drive API accepts a `PlanarSimulationEnvironment` and uses the profile's explicit circular collision radius. This means collision checks include the robot body, not only its center point. Blocked `DRIVE` and `HOME` commands preserve pose, odometry, and simulated time. Planar obstacle controls and overlays are not yet exposed in the desktop viewer.
 
+The SCARA API reuses planar obstacles while modeling each robot link as a capsule with an explicit profile radius. Joint movements and homing inspect deterministic intermediate configurations, identifying whether the first or second link would collide. The default maximum joint-space sampling step is one degree. SCARA obstacle controls and collision overlays are not yet exposed in the desktop viewer.
+
 ## Planned CLI Learning Flow
 
 The CLI should later support:

@@ -5,6 +5,7 @@ public sealed record ScaraRobotProfile : IRobotProfile<ScaraJointPosition>
     public ScaraRobotProfile(
         double firstLinkLengthMillimeters,
         double secondLinkLengthMillimeters,
+        double linkCollisionRadiusMillimeters,
         ScaraJoint shoulderJoint,
         ScaraJoint elbowJoint)
     {
@@ -21,6 +22,11 @@ public sealed record ScaraRobotProfile : IRobotProfile<ScaraJointPosition>
             throw new ArgumentException("Second SCARA link length must be greater than zero.");
         }
 
+        if (!double.IsFinite(linkCollisionRadiusMillimeters) || linkCollisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("SCARA link collision radius must be a finite number greater than zero.");
+        }
+
         if (shoulderJoint.Id != ScaraJointId.Shoulder)
         {
             throw new ArgumentException("The shoulder joint descriptor must use the Shoulder id.");
@@ -33,6 +39,7 @@ public sealed record ScaraRobotProfile : IRobotProfile<ScaraJointPosition>
 
         FirstLinkLengthMillimeters = firstLinkLengthMillimeters;
         SecondLinkLengthMillimeters = secondLinkLengthMillimeters;
+        LinkCollisionRadiusMillimeters = linkCollisionRadiusMillimeters;
         ShoulderJoint = shoulderJoint;
         ElbowJoint = elbowJoint;
         Joints = [ShoulderJoint, ElbowJoint];
@@ -41,6 +48,8 @@ public sealed record ScaraRobotProfile : IRobotProfile<ScaraJointPosition>
     public double FirstLinkLengthMillimeters { get; }
 
     public double SecondLinkLengthMillimeters { get; }
+
+    public double LinkCollisionRadiusMillimeters { get; }
 
     public ScaraJoint ShoulderJoint { get; }
 

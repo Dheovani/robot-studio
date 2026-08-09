@@ -8,6 +8,56 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class ScaraSimulatorTests
 {
     [Fact]
+    public void Execute_WhenLinkPathCrossesObstacle_ShouldFaultWithoutMoving()
+    {
+        var environment = new PlanarSimulationEnvironment(
+            [new PlanarObstacle("teaching-fixture", 80, 100, 20, 30)]);
+        var start = new ScaraJointPosition(0, 0);
+        var result = new ScaraSimulator(environment).Execute(
+            ScaraSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence(
+                [new ScaraMoveJointsCommand(new ScaraJointPosition(30, 0))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RobotState.Faulted, result.FinalContext.State);
+        Assert.Equal(start, result.FinalContext.CurrentJoints);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        var exception = Assert.IsType<ScaraPathObstructedException>(result.Failure);
+        Assert.Equal("teaching-fixture", exception.ObstacleId);
+        Assert.Equal(ScaraLinkId.FirstLink, exception.Link);
+        Assert.InRange(exception.TrajectoryFraction, 0.01, 0.99);
+    }
+
+    [Fact]
+    public void Execute_WhenHomePathCrossesObstacle_ShouldFaultAtCurrentJoints()
+    {
+        var environment = new PlanarSimulationEnvironment(
+            [new PlanarObstacle("home-fixture", 80, 100, 20, 30)]);
+        var start = new ScaraJointPosition(30, 0);
+        var result = new ScaraSimulator(environment).Execute(
+            ScaraSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence([new HomeCommand()]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(start, result.FinalContext.CurrentJoints);
+        Assert.IsType<ScaraPathObstructedException>(result.Failure);
+    }
+
+    [Fact]
+    public void Execute_WhenLinkPathAvoidsObstacle_ShouldCompleteNormally()
+    {
+        var target = new ScaraJointPosition(30, 20);
+        var result = new ScaraSimulator(
+            new PlanarSimulationEnvironment([new PlanarObstacle("clear", -300, -250, -300, -250)]))
+            .Execute(
+                ScaraSimulationContext.Create(CreateProfile(), new ScaraJointPosition(0, 0)),
+                new RobotCommandSequence([new ScaraMoveJointsCommand(target)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(target, result.FinalContext.CurrentJoints);
+    }
+
+    [Fact]
     public void Execute_WhenResettingFault_ShouldPreserveJointsAndElapsedTime()
     {
         var context = ScaraSimulationContext.Create(CreateProfile(), new ScaraJointPosition(45, 30)) with
@@ -129,6 +179,7 @@ public sealed class ScaraSimulatorTests
         new(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
+            linkCollisionRadiusMillimeters: 12,
             shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
             elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
 }

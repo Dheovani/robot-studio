@@ -83,6 +83,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Differential Drive collision checks use an explicit finite positive body radius.
 - [x] Swept circular-footprint tests cover obstacle sides, rounded-corner tangency, clear corner paths, and initially overlapping poses.
 - [x] Differential Drive `DRIVE` and `HOME` reject obstructed paths without changing pose, odometry, or elapsed time.
+- [x] SCARA collision tests identify first-link and second-link occupancy independently.
+- [x] SCARA joint-path sampling detects intermediate collisions while accepting clear articulated paths.
+- [x] SCARA move and home commands preserve joints and elapsed time when a link path is obstructed.
+- [x] SCARA profiles reject non-finite or non-positive link collision radii.
 
 ## `RobotStudio.Motion.Tests`
 

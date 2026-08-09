@@ -9,21 +9,59 @@ public sealed class ScaraSimulator
 {
     private readonly ScaraMotionPlanner motionPlanner;
     private readonly ScaraKinematics kinematics;
+    private readonly PlanarSimulationEnvironment environment;
+    private readonly double maximumCollisionJointStepDegrees;
 
     public ScaraSimulator()
-        : this(new ScaraMotionPlanner(), new ScaraKinematics())
+        : this(
+            new ScaraMotionPlanner(),
+            new ScaraKinematics(),
+            PlanarSimulationEnvironment.Empty,
+            ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
+    {
+    }
+
+    public ScaraSimulator(PlanarSimulationEnvironment environment)
+        : this(
+            new ScaraMotionPlanner(),
+            new ScaraKinematics(),
+            environment,
+            ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
     {
     }
 
     public ScaraSimulator(
         ScaraMotionPlanner motionPlanner,
         ScaraKinematics kinematics)
+        : this(
+            motionPlanner,
+            kinematics,
+            PlanarSimulationEnvironment.Empty,
+            ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
+    {
+    }
+
+    public ScaraSimulator(
+        ScaraMotionPlanner motionPlanner,
+        ScaraKinematics kinematics,
+        PlanarSimulationEnvironment environment,
+        double maximumCollisionJointStepDegrees)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
+        ArgumentNullException.ThrowIfNull(environment);
+
+        if (!double.IsFinite(maximumCollisionJointStepDegrees) || maximumCollisionJointStepDegrees <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(maximumCollisionJointStepDegrees),
+                "Maximum collision sampling step must be a finite number greater than zero.");
+        }
 
         this.motionPlanner = motionPlanner;
         this.kinematics = kinematics;
+        this.environment = environment;
+        this.maximumCollisionJointStepDegrees = maximumCollisionJointStepDegrees;
     }
 
     public ScaraSimulationResult Execute(
@@ -104,11 +142,12 @@ public sealed class ScaraSimulator
         List<ScaraSimulationStep> timeline)
     {
         var targetJoints = new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0);
-        var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
             targetJoints,
             context.RobotProfile);
+        EnsurePathIsClear(context, targetJoints);
+        var homingContext = TransitionTo(context, RobotState.Homing);
         var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
         timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source, motionProfile));
 
@@ -130,12 +169,13 @@ public sealed class ScaraSimulator
         int commandIndex,
         List<ScaraSimulationStep> timeline)
     {
-        var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
             command.TargetJoints,
             context.RobotProfile,
             command.RequestedJointVelocityDegreesPerSecond);
+        EnsurePathIsClear(context, command.TargetJoints);
+        var movingContext = TransitionTo(context, RobotState.Moving);
         var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
         timeline.Add(CreateStep(movingContext, "SCARA joint move started.", commandIndex, nameof(ScaraMoveJointsCommand), command.Source, motionProfile));
 
@@ -178,6 +218,23 @@ public sealed class ScaraSimulator
         RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
 
         return context with { State = nextState };
+    }
+
+    private void EnsurePathIsClear(
+        ScaraSimulationContext context,
+        ScaraJointPosition targetJoints)
+    {
+        var collision = ScaraLinkCollisionDetector.FindFirstCollision(
+            context.CurrentJoints,
+            targetJoints,
+            context.RobotProfile,
+            environment,
+            maximumCollisionJointStepDegrees);
+
+        if (collision is not null)
+        {
+            throw new ScaraPathObstructedException(collision);
+        }
     }
 
     private ScaraSimulationStep CreateStep(

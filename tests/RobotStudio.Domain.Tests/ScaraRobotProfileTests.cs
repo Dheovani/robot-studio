@@ -5,6 +5,16 @@ namespace RobotStudio.Domain.Tests;
 
 public sealed class ScaraRobotProfileTests
 {
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    [InlineData(double.NaN)]
+    [InlineData(double.PositiveInfinity)]
+    public void Constructor_WhenLinkCollisionRadiusIsInvalid_ShouldThrow(double radius)
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(radius));
+    }
+
     [Fact]
     public void ValidatePosition_DoesNotThrow_WhenJointsAreInsideLimits()
     {
@@ -71,10 +81,11 @@ public sealed class ScaraRobotProfileTests
         Assert.Contains("outside the reachable workspace", exception.Message, StringComparison.Ordinal);
     }
 
-    private static ScaraRobotProfile CreateProfile() =>
+    private static ScaraRobotProfile CreateProfile(double linkCollisionRadius = 12) =>
         new(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
+            linkCollisionRadiusMillimeters: linkCollisionRadius,
             shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
             elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
 }

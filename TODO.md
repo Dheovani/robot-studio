@@ -31,7 +31,8 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Expose exact Cartesian profile phase, velocity, and acceleration through versioned playback contracts, state presentation, and desktop charts.
 - [x] Add deterministic Cartesian workspace obstacles and line-path collision detection.
 - [x] Add planar obstacles and swept circular-footprint collision detection for the Differential Drive Robot.
-- [ ] Define family-appropriate collision models for articulated links, parallel mechanisms, and aerial bodies.
+- [x] Add deterministic capsule-link collision sampling for the planar SCARA Robot.
+- [ ] Define family-appropriate collision models for spatial articulated links, parallel mechanisms, and aerial bodies.
 - [x] Add joint-space simulation for articulated robots.
 - [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
 - [x] Add roll, pitch, and yaw attitude simulation for the Drone.

@@ -5151,6 +5151,7 @@ public partial class MainWindow : Window
         new(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
+            linkCollisionRadiusMillimeters: 12,
             shoulderJoint: new ScaraJoint(
                 ScaraJointId.Shoulder,
                 minimumDegrees: -180,

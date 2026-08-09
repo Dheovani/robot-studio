@@ -52,7 +52,7 @@ public sealed class ScaraPlaybackSampler
                     current.Time,
                     next.Time,
                     time);
-                var joints = Interpolate(current.Joints, next.Joints, progress);
+                var joints = ScaraJointInterpolation.Interpolate(current.Joints, next.Joints, progress);
                 frames.Add(new ScaraPlaybackFrame(
                     time,
                     current.State,
@@ -96,14 +96,4 @@ public sealed class ScaraPlaybackSampler
         }
     }
 
-    private static ScaraJointPosition Interpolate(
-        ScaraJointPosition start,
-        ScaraJointPosition end,
-        double progress)
-    {
-        var clampedProgress = Math.Clamp(progress, 0, 1);
-        return new ScaraJointPosition(
-            start.ShoulderDegrees + ((end.ShoulderDegrees - start.ShoulderDegrees) * clampedProgress),
-            start.ElbowDegrees + ((end.ElbowDegrees - start.ElbowDegrees) * clampedProgress));
-    }
 }

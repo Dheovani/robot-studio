@@ -203,6 +203,23 @@ Expected result:
 - blocked commands preserve pose, ideal wheel odometry, and elapsed simulated time;
 - clear paths continue through normal translation and rotation playback.
 
+### Reject An Obstructed SCARA Joint Path
+
+Actor: student or simulation host.
+
+Goal: show that articulated-robot safety depends on every moving link, not only the destination of the tool.
+
+Current status: implemented in the SCARA simulation core using deterministic joint-space sampling; obstacle editing and rendering remain future desktop work.
+
+Expected result:
+
+- the SCARA profile defines a physical radius for both links;
+- each sampled configuration treats the first and second links as capsules;
+- `SCARA` and `HOME` inspect intermediate joint configurations against planar obstacles;
+- a blocked movement identifies the obstacle, colliding link, sampled joints, and trajectory fraction;
+- the command faults before execution and preserves the last valid joints and simulated time;
+- changing the configurable maximum angular sample step changes resolution without changing simulation determinism.
+
 ### Simulate A Simple DSL Script
 
 Actor: student.
