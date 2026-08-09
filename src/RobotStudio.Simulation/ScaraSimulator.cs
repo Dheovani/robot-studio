@@ -78,10 +78,23 @@ public sealed class ScaraSimulator
         return command switch
         {
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
+            ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             ScaraMoveJointsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private ScaraSimulationContext ExecuteResetFault(
+        ScaraSimulationContext context,
+        ResetFaultCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        RobotStateTransitions.EnsureCanResetFault(context.State);
+        var recoveredContext = context with { State = RobotState.Idle };
+        timeline.Add(CreateStep(recoveredContext, "Fault reset. Joint positions and elapsed time were preserved.", commandIndex, nameof(ResetFaultCommand), command.Source));
+        return recoveredContext;
     }
 
     private ScaraSimulationContext ExecuteHome(
@@ -190,6 +203,7 @@ public sealed class ScaraSimulator
     private static string GetCommandName(RobotCommand command) => command switch
     {
         HomeCommand => nameof(HomeCommand),
+        ResetFaultCommand => nameof(ResetFaultCommand),
         ScaraMoveJointsCommand => nameof(ScaraMoveJointsCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name

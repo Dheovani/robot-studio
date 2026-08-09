@@ -6,6 +6,24 @@ namespace RobotStudio.Domain.Tests;
 public sealed class RobotStateTransitionsTests
 {
     [Fact]
+    public void EnsureCanResetFault_WhenStateIsFaulted_ShouldNotThrow()
+    {
+        var exception = Record.Exception(() =>
+            RobotStateTransitions.EnsureCanResetFault(RobotState.Faulted));
+
+        Assert.Null(exception);
+    }
+
+    [Theory]
+    [InlineData(RobotState.Idle)]
+    [InlineData(RobotState.Completed)]
+    public void EnsureCanResetFault_WhenStateIsNotFaulted_ShouldThrow(RobotState state)
+    {
+        Assert.Throws<RobotStudio.Domain.Exceptions.InvalidRobotStateTransitionException>(() =>
+            RobotStateTransitions.EnsureCanResetFault(state));
+    }
+
+    [Fact]
     public void InitialState_ShouldBeIdle()
     {
         Assert.Equal(RobotState.Idle, RobotStateTransitions.InitialState);

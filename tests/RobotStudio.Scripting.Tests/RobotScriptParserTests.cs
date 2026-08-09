@@ -5,6 +5,25 @@ namespace RobotStudio.Scripting.Tests;
 public sealed class RobotScriptParserTests
 {
     [Fact]
+    public void Parse_WhenResetIsValid_ShouldReturnResetFaultCommandWithSource()
+    {
+        var command = Assert.IsType<ResetFaultCommand>(
+            Assert.Single(new RobotScriptParser().Parse("RESET").Commands));
+
+        Assert.Equal(1, command.Source?.LineNumber);
+        Assert.Equal("RESET", command.Source?.Text);
+    }
+
+    [Fact]
+    public void Parse_WhenResetHasArguments_ShouldThrow()
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new RobotScriptParser().Parse("RESET NOW"));
+
+        Assert.Contains("RESET does not accept arguments", exception.Message);
+    }
+
+    [Fact]
     public void Parse_WhenScriptIsValid_ShouldReturnCommandSequence()
     {
         var parser = new RobotScriptParser();

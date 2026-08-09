@@ -17,6 +17,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -39,6 +40,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -71,6 +73,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -93,6 +96,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -115,6 +119,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -137,6 +142,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
             case WaitCommand:
                 return;
 
@@ -157,6 +163,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:
@@ -179,6 +186,7 @@ public static class RobotCommandValidator
         switch (command)
         {
             case HomeCommand:
+            case ResetFaultCommand:
                 return;
 
             case WaitCommand:

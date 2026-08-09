@@ -48,6 +48,7 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         return commandName switch
         {
             "HOME" => ParseHome(lineNumber, line, arguments),
+            "RESET" => ParseResetFault(lineNumber, line, arguments),
             "WAIT" => ParseWait(lineNumber, line, arguments),
             "MOVE" => ParseMove(lineNumber, line, arguments),
             "DRIVE" => ParseDrive(lineNumber, line, arguments),
@@ -71,6 +72,19 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         }
 
         return new HomeCommand(CreateSource(lineNumber, line));
+    }
+
+    private static ResetFaultCommand ParseResetFault(
+        int lineNumber,
+        string line,
+        IReadOnlyCollection<string> arguments)
+    {
+        if (arguments.Count > 0)
+        {
+            throw new ScriptParseException(lineNumber, line, "RESET does not accept arguments.");
+        }
+
+        return new ResetFaultCommand(CreateSource(lineNumber, line));
     }
 
     private static WaitCommand ParseWait(

@@ -73,7 +73,10 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add recovery workflow tests after the user-facing `Faulted` recovery command is defined.
+- [x] `RESET` is accepted only from `Faulted` and returns the logical state to `Idle`.
+- [x] Every implemented simulator preserves its family-specific physical state and elapsed time during fault reset.
+- [x] Differential Drive fault reset also preserves accumulated ideal odometry.
+- [x] Simple DSL `RESET` parsing preserves source metadata and rejects arguments.
 
 ## `RobotStudio.Motion.Tests`
 

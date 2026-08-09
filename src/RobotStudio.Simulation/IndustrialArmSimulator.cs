@@ -52,10 +52,23 @@ public sealed class IndustrialArmSimulator
         return command switch
         {
             HomeCommand => ExecuteMove(context, IndustrialArmJointPosition.Home, null, RobotState.Homing, command, commandIndex, timeline),
+            ResetFaultCommand reset => ExecuteResetFault(context, reset, commandIndex, timeline),
             IndustrialArmMoveJointsCommand move => ExecuteMove(context, move.TargetJoints, move.RequestedJointVelocityDegreesPerSecond, RobotState.Moving, command, commandIndex, timeline),
             WaitCommand wait => ExecuteWait(context, wait, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private IndustrialArmSimulationContext ExecuteResetFault(
+        IndustrialArmSimulationContext context,
+        ResetFaultCommand command,
+        int commandIndex,
+        List<IndustrialArmSimulationStep> timeline)
+    {
+        RobotStateTransitions.EnsureCanResetFault(context.State);
+        var recoveredContext = context with { State = RobotState.Idle };
+        timeline.Add(CreateStep(recoveredContext, "Fault reset. Joint positions and elapsed time were preserved.", commandIndex, nameof(ResetFaultCommand), command.Source));
+        return recoveredContext;
     }
 
     private IndustrialArmSimulationContext ExecuteMove(

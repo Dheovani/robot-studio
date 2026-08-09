@@ -78,10 +78,23 @@ public sealed class SimpleArmSimulator
         return command switch
         {
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
+            ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             SimpleArmMoveJointsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private SimpleArmSimulationContext ExecuteResetFault(
+        SimpleArmSimulationContext context,
+        ResetFaultCommand command,
+        int commandIndex,
+        List<SimpleArmSimulationStep> timeline)
+    {
+        RobotStateTransitions.EnsureCanResetFault(context.State);
+        var recoveredContext = context with { State = RobotState.Idle };
+        timeline.Add(CreateStep(recoveredContext, "Fault reset. Joint positions and elapsed time were preserved.", commandIndex, nameof(ResetFaultCommand), command.Source));
+        return recoveredContext;
     }
 
     private SimpleArmSimulationContext ExecuteHome(
@@ -190,6 +203,7 @@ public sealed class SimpleArmSimulator
     private static string GetCommandName(RobotCommand command) => command switch
     {
         HomeCommand => nameof(HomeCommand),
+        ResetFaultCommand => nameof(ResetFaultCommand),
         SimpleArmMoveJointsCommand => nameof(SimpleArmMoveJointsCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name

@@ -8,6 +8,22 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class ScaraSimulatorTests
 {
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreserveJointsAndElapsedTime()
+    {
+        var context = ScaraSimulationContext.Create(CreateProfile(), new ScaraJointPosition(45, 30)) with
+        {
+            State = RobotState.Faulted,
+            ElapsedTime = TimeSpan.FromSeconds(2)
+        };
+        var result = new ScaraSimulator().Execute(context, new RobotCommandSequence([new ResetFaultCommand()]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(context.CurrentJoints, result.FinalContext.CurrentJoints);
+        Assert.Equal(context.ElapsedTime, result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsHome_ShouldMoveToZeroJoints()
     {
         var simulator = new ScaraSimulator();

@@ -8,6 +8,28 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DifferentialDriveSimulatorTests
 {
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreservePoseOdometryAndElapsedTime()
+    {
+        var pose = new DifferentialDrivePose(100, 80, 30);
+        var context = DifferentialDriveSimulationContext.Create(CreateProfile(), pose) with
+        {
+            State = RobotState.Faulted,
+            ElapsedTime = TimeSpan.FromSeconds(2),
+            Odometry = new DifferentialDriveOdometry(120, 120, 80, 80)
+        };
+
+        var result = new DifferentialDriveSimulator().Execute(
+            context,
+            new RobotCommandSequence([new ResetFaultCommand()]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(context.CurrentPose, result.FinalContext.CurrentPose);
+        Assert.Equal(context.Odometry, result.FinalContext.Odometry);
+        Assert.Equal(context.ElapsedTime, result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsHome_ShouldMoveToOriginPose()
     {
         var simulator = new DifferentialDriveSimulator();

@@ -73,10 +73,23 @@ public sealed class DroneSimulator
         return command switch
         {
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
+            ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             DroneMoveCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private static DroneSimulationContext ExecuteResetFault(
+        DroneSimulationContext context,
+        ResetFaultCommand command,
+        int commandIndex,
+        List<DroneSimulationStep> timeline)
+    {
+        RobotStateTransitions.EnsureCanResetFault(context.State);
+        var recoveredContext = context with { State = RobotState.Idle };
+        timeline.Add(CreateStep(recoveredContext, "Fault reset. Pose and elapsed time were preserved.", commandIndex, nameof(ResetFaultCommand), command.Source));
+        return recoveredContext;
     }
 
     private DroneSimulationContext ExecuteHome(
@@ -221,6 +234,7 @@ public sealed class DroneSimulator
     private static string GetCommandName(RobotCommand command) => command switch
     {
         HomeCommand => nameof(HomeCommand),
+        ResetFaultCommand => nameof(ResetFaultCommand),
         DroneMoveCommand => nameof(DroneMoveCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name

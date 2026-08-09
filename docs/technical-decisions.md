@@ -87,7 +87,9 @@ The simulator must eventually model both position and robot state. State names a
 - `Completed`
 - `Faulted`
 
-`HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable, initially through either `Idle` or `Homing`, while the exact recovery command remains open. Invalid state transitions must be explicit and use `InvalidRobotStateTransitionException`.
+`HOME` may move the robot into `Homing` from any state. `Completed` is not a terminal state; the robot may keep receiving commands after a completed command sequence. `Faulted` is recoverable through `RESET` or `HOME`. Invalid state transitions must be explicit and use `InvalidRobotStateTransitionException`.
+
+`RESET` is represented by `ResetFaultCommand` and is valid only while the simulation is `Faulted`. A caller resumes execution from the failed result's `FinalContext`; resetting changes only the logical state to `Idle`, preserving Cartesian pose, mobile pose and odometry, articulated joints, parallel actuators, aerial attitude, and elapsed simulated time. `HOME` is intentionally different because it performs a planned physical movement to the robot family's origin. The failed result and its timeline remain available as the immutable history of the previous execution.
 
 The initial simulation state is `Idle`. Normal commands may start from `Idle` or `Completed`. The active execution states are `Moving`, `Homing`, and `Waiting`. A command ends in either `Completed` or `Faulted`.
 
@@ -134,7 +136,7 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 The first scripting format is a simple educational DSL, not G-code.
 
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, six-joint industrial arm commands, Delta actuator commands, Drone pose commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, fault recovery `RESET`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, six-joint industrial arm commands, Delta actuator commands, Drone pose commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
 
 Initial target syntax:
 
@@ -218,5 +220,3 @@ Hardware communication is not part of the first implementation. Future hardware 
 The first planned educational hardware target is an Arduino-compatible controller using stepper motors for the introductory Cartesian prototype. This is metadata only: no serial adapter, firmware protocol, board detection, pin mapping, or motor driver implementation exists yet.
 
 ## Open Decisions
-
-- Exact user-facing recovery command for `Faulted`.

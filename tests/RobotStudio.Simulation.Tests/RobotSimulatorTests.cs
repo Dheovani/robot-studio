@@ -240,6 +240,30 @@ public sealed class RobotSimulatorTests
     }
 
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreservePositionAndElapsedTime()
+    {
+        var position = new CartesianPosition(X: 100, Y: 50, Z: 20);
+        var failedResult = new RobotSimulator().Execute(
+            SimulationContext.Create(CreateProfile(), new CartesianPosition(0, 0, 0)),
+            new RobotCommandSequence(
+            [
+                new MoveToCommand(position),
+                new MoveToCommand(new CartesianPosition(301, 0, 0))
+            ]));
+        var source = new RobotCommandSource(4, "RESET");
+
+        var result = new RobotSimulator().Execute(
+            failedResult.FinalContext,
+            new RobotCommandSequence([new ResetFaultCommand(source)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(position, result.FinalContext.CurrentPosition);
+        Assert.Equal(failedResult.FinalContext.ElapsedTime, result.FinalContext.ElapsedTime);
+        Assert.Equal(source, result.Timeline[^1].CommandSource);
+    }
+
+    [Fact]
     public void Create_WhenInitialPositionIsOutsideCartesianRobotProfile_ShouldThrow()
     {
         var profile = CreateProfile();

@@ -7,6 +7,23 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class IndustrialArmSimulatorTests
 {
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreserveJointsAndElapsedTime()
+    {
+        var joints = new IndustrialArmJointPosition(30, 20, -15, 40, 10, 60);
+        var context = IndustrialArmSimulationContext.Create(CreateProfile(), joints) with
+        {
+            State = RobotState.Faulted,
+            ElapsedTime = TimeSpan.FromSeconds(2)
+        };
+        var result = new IndustrialArmSimulator().Execute(context, new RobotCommandSequence([new ResetFaultCommand()]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(context.CurrentJoints, result.FinalContext.CurrentJoints);
+        Assert.Equal(context.ElapsedTime, result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenSequenceContainsMoveWaitAndHome_ShouldCompleteAtHome()
     {
         var context = IndustrialArmSimulationContext.Create(CreateProfile(), IndustrialArmJointPosition.Home);

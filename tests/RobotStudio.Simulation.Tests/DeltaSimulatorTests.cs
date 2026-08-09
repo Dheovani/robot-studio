@@ -7,6 +7,22 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DeltaSimulatorTests
 {
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreserveActuatorsAndElapsedTime()
+    {
+        var context = DeltaSimulationContext.Create(CreateProfile(), new DeltaActuatorPosition(30, 60, 90)) with
+        {
+            State = RobotState.Faulted,
+            ElapsedTime = TimeSpan.FromSeconds(2)
+        };
+        var result = new DeltaSimulator().Execute(context, new RobotCommandSequence([new ResetFaultCommand()]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(context.CurrentActuators, result.FinalContext.CurrentActuators);
+        Assert.Equal(context.ElapsedTime, result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsHome_ShouldReturnToZeroActuators()
     {
         var simulator = new DeltaSimulator();

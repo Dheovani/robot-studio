@@ -73,10 +73,23 @@ public sealed class RobotSimulator
         return command switch
         {
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
+            ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             MoveToCommand moveToCommand => ExecuteMove(context, moveToCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private static SimulationContext ExecuteResetFault(
+        SimulationContext context,
+        ResetFaultCommand command,
+        int commandIndex,
+        List<SimulationStep> timeline)
+    {
+        RobotStateTransitions.EnsureCanResetFault(context.State);
+        var recoveredContext = context with { State = RobotState.Idle };
+        timeline.Add(CreateStep(recoveredContext, "Fault reset. Position and elapsed time were preserved.", commandIndex, nameof(ResetFaultCommand), command.Source));
+        return recoveredContext;
     }
 
     private SimulationContext ExecuteHome(
@@ -210,6 +223,7 @@ public sealed class RobotSimulator
     private static string GetCommandName(RobotCommand command) => command switch
     {
         HomeCommand => nameof(HomeCommand),
+        ResetFaultCommand => nameof(ResetFaultCommand),
         MoveToCommand => nameof(MoveToCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name

@@ -34,6 +34,14 @@ public static class RobotStateTransitions
     public static bool IsRecoverable(RobotState state) =>
         state is RobotState.Faulted;
 
+    public static void EnsureCanResetFault(RobotState state)
+    {
+        if (!IsRecoverable(state))
+        {
+            throw new InvalidRobotStateTransitionException(state, RobotState.Idle);
+        }
+    }
+
     public static bool IsReadyForCommand(RobotState state) =>
         state is RobotState.Idle or RobotState.Completed;
 

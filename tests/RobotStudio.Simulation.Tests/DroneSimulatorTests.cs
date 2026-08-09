@@ -8,6 +8,22 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DroneSimulatorTests
 {
     [Fact]
+    public void Execute_WhenResettingFault_ShouldPreservePoseAndElapsedTime()
+    {
+        var context = DroneSimulationContext.Create(CreateProfile(), new DronePose(100, 80, 40, 30, 10, -5)) with
+        {
+            State = RobotState.Faulted,
+            ElapsedTime = TimeSpan.FromSeconds(2)
+        };
+        var result = new DroneSimulator().Execute(context, new RobotCommandSequence([new ResetFaultCommand()]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Idle, result.FinalContext.State);
+        Assert.Equal(context.CurrentPose, result.FinalContext.CurrentPose);
+        Assert.Equal(context.ElapsedTime, result.FinalContext.ElapsedTime);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsHome_ShouldReturnToOrigin()
     {
         var simulator = new DroneSimulator();

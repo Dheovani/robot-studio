@@ -301,6 +301,7 @@ WAIT 500
 Current parser behavior:
 
 - `HOME` moves the first Cartesian robot to `(0, 0, 0)`;
+- `RESET` acknowledges a fault and returns a resumed simulation context to `Idle` without moving the robot or changing simulated time;
 - `MOVE` moves to a Cartesian position;
 - `DRONE` moves to a simplified aerial pose in the core simulator;
 - `ARM6` coordinates six industrial-arm joints in the core simulator;
@@ -309,6 +310,8 @@ Current parser behavior:
 - physical axis limits still cap the effective movement speed;
 - parser errors include the script line number.
 - G-code is tracked as a planned future dialect, not as an executable parser.
+
+Core fault recovery currently requires the caller to start a new simulation execution with the failed result's `FinalContext`. The desktop app does not yet preserve that session boundary for a user-facing `RESET` action. Use `HOME` when recovery should include real simulated movement back to the family-specific origin.
 
 ## Planned CLI Learning Flow
 

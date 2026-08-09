@@ -11,7 +11,7 @@ The project is intentionally educational. It is designed to help students unders
 - Simulate a generic Cartesian robot with X/Y/Z axes.
 - Validate physical axis limits for position, velocity, and acceleration.
 - Observe acceleration-aware movement across every available robot family using triangular or trapezoidal velocity profiles.
-- Run `HOME`, `MOVE`, and `WAIT` commands.
+- Run movement commands plus `HOME`, `WAIT`, and the fault recovery command `RESET`.
 - Write simple DSL scripts such as:
 
 ```txt
@@ -24,6 +24,8 @@ DELTA A=30 B=60 C=90 SPEED=80
 DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 WAIT 500
 ```
+
+`RESET` acknowledges a fault when execution resumes from a failed simulation context. It returns the logical state to `Idle` while preserving the robot's physical state and elapsed simulation time; `HOME` remains the recovery option that physically returns the robot to its family-specific origin.
 
 - Run the CLI to inspect commands, timeline steps, final state, and final position.
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.

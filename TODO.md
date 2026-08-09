@@ -33,7 +33,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Add joint-space simulation for articulated robots.
 - [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
 - [x] Add roll, pitch, and yaw attitude simulation for the Drone.
-- [ ] Add a clearer recovery workflow for faulted simulations.
+- [x] Add an explicit cross-family fault recovery command that preserves physical state and simulated time.
 - [ ] Add deterministic simulation fixtures for every future robot family.
 
 ## 4. Scripting And G-Code
@@ -72,6 +72,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Add import/export for desktop scripts.
 - [x] Add clearer validation summaries for invalid commands.
 - [x] Add keyboard shortcuts for playback, script files, validation, simulation, frame stepping, zoom, and camera controls.
+- [ ] Expose `HOME` and `RESET` recovery actions in desktop sessions without rebuilding a clean simulation context.
 
 ## 7. Didactic Tools
 

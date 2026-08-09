@@ -153,6 +153,22 @@ Expected result:
 - the simulator records position and state changes;
 - invalid commands produce a `Faulted` simulation result.
 
+### Recover A Faulted Simulation
+
+Actor: application service, CLI, or future desktop session controller.
+
+Goal: acknowledge a simulation fault without pretending that the robot physically returned home.
+
+Current status: implemented in the domain, Simple DSL, and every available family simulator; desktop session controls remain future work.
+
+Expected result:
+
+- the failed execution retains its timeline and exposes the last valid state through `FinalContext`;
+- executing `RESET` from that context changes `Faulted` to `Idle`;
+- robot pose, joints, actuators, odometry, and elapsed simulated time remain unchanged;
+- executing `HOME` from the faulted context instead performs the family's planned homing movement;
+- `RESET` from a non-faulted state is rejected with an explicit state-transition error.
+
 ### Simulate A Simple DSL Script
 
 Actor: student.
