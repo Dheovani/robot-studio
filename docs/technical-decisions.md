@@ -50,7 +50,9 @@ Motion plans expose total movement distance, and motion segments expose the invo
 
 The profile remains independent of robot topology. Each family-specific planner is responsible for selecting meaningful limits and units before creating a profile. This allows future articulated planners to use angular units without pretending that joints move in millimeters.
 
-Cartesian simulation steps may carry the planned scalar profile as internal timeline metadata. `SimulationTimelineSampler` uses its normalized distance progress to interpolate position, so rendered playback visibly accelerates and decelerates. Playback snapshot DTOs remain unchanged in this iteration; exact phase, velocity, and acceleration fields require a deliberate versioned contract change later.
+Cartesian simulation steps may carry the planned scalar profile as timeline metadata. `SimulationTimelineSampler` uses its normalized distance progress to interpolate position, so rendered playback visibly accelerates and decelerates. Cartesian visual states expose exact profile phase, scalar velocity, and scalar acceleration in millimeter-based units.
+
+Cartesian playback snapshot format version 2 adds these motion metrics to each visual frame. The validator accepts both versions 1 and 2 so existing exported lessons remain usable; missing version 1 metrics deserialize to zero and no profile phase. New version 2 snapshots validate finite acceleration and finite, non-negative velocity. Future additions must follow the same explicit versioning and compatibility-test process.
 
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.
 
@@ -116,7 +118,7 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately.
 
-`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks metadata compatibility, required sections, frame/pose/scene-frame count consistency, and non-negative duration.
+`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks supported metadata versions, required sections, frame/pose/scene-frame count consistency, non-negative duration, and version 2 motion metrics.
 
 ### Scripting
 

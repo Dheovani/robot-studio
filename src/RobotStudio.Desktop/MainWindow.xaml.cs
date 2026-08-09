@@ -1320,6 +1320,7 @@ public partial class MainWindow : Window
         UpdatePositionChart();
         UpdateVelocityChart();
         UpdateVelocityComparisonChart();
+        UpdateAccelerationChart();
         UpdateDistanceChart();
         UpdateStateChart();
     }
@@ -1537,6 +1538,18 @@ public partial class MainWindow : Window
         }
 
         UpdateVelocityComparisonChart();
+    }
+
+    private void AccelerationChartCanvas_SizeChanged(
+        object sender,
+        SizeChangedEventArgs e)
+    {
+        if (!IsLoaded || snapshot is null)
+        {
+            return;
+        }
+
+        UpdateAccelerationChart();
     }
 
     private void DistanceChartCanvas_SizeChanged(
@@ -2144,6 +2157,7 @@ public partial class MainWindow : Window
         }
 
         var pose = snapshot.Poses[currentFrameIndex];
+        var frame = snapshot.Frames[currentFrameIndex];
         StateValueText.Text = sceneFrame.State.ToString();
         PositionValueText.Text =
             $"X={pose.ToolCenterPoint.XMillimeters:0.###}, " +
@@ -2155,6 +2169,9 @@ public partial class MainWindow : Window
             : $"line {sceneFrame.CommandSource.LineNumber}";
         TimeValueText.Text = $"{sceneFrame.Time.TotalSeconds:0.###} / {snapshot.TotalDuration.TotalSeconds:0.###} s";
         FramesValueText.Text = $"{currentFrameIndex + 1} / {snapshot.SceneFrameCount}";
+        ProfilePhaseValueText.Text = frame.MotionProfilePhase?.ToString() ?? "-";
+        VelocityValueText.Text = $"{frame.VelocityMillimetersPerSecond:0.###} mm/s";
+        AccelerationValueText.Text = $"{frame.AccelerationMillimetersPerSecondSquared:0.###} mm/s^2";
     }
 
     private void UpdateScriptLineIndicator(CartesianSceneFrame sceneFrame)
@@ -3318,26 +3335,11 @@ public partial class MainWindow : Window
     }
 
     private static IReadOnlyList<VelocitySample> CreateVelocitySamples(CartesianPlaybackSnapshot snapshot)
-    {
-        var samples = new List<VelocitySample>();
-        for (var index = 1; index < snapshot.Poses.Count; index++)
-        {
-            var previous = snapshot.Poses[index - 1];
-            var current = snapshot.Poses[index];
-            var elapsedSeconds = (current.Time - previous.Time).TotalSeconds;
-            if (elapsedSeconds <= 0)
-            {
-                continue;
-            }
-
-            var distance = CalculateDistance(previous.ToolCenterPoint, current.ToolCenterPoint);
-            samples.Add(new VelocitySample(
-                current.Time,
-                distance / elapsedSeconds));
-        }
-
-        return samples;
-    }
+        => snapshot.Frames
+            .Select(frame => new VelocitySample(
+                frame.Time,
+                frame.VelocityMillimetersPerSecond))
+            .ToArray();
 
     private void DrawVelocityChartGrid(
         double width,
@@ -3501,6 +3503,139 @@ public partial class MainWindow : Window
             width,
             height);
         DrawScalarChartCursor(VelocityComparisonChartCanvas, width, height);
+    }
+
+    private void UpdateAccelerationChart()
+    {
+        AccelerationChartCanvas.Children.Clear();
+
+        if (snapshot is null || snapshot.Frames.Count == 0)
+        {
+            return;
+        }
+
+        var width = AccelerationChartCanvas.ActualWidth;
+        var height = AccelerationChartCanvas.ActualHeight;
+        if (width <= ChartPaddingLeft + ChartPaddingRight ||
+            height <= ChartPaddingTop + ChartPaddingBottom)
+        {
+            return;
+        }
+
+        var samples = snapshot.Frames
+            .Select(frame => new ScalarSample(
+                frame.Time,
+                frame.AccelerationMillimetersPerSecondSquared))
+            .ToArray();
+        var maximumMagnitude = Math.Max(
+            1,
+            samples.Max(sample => Math.Abs(sample.Value)));
+
+        DrawSignedScalarChartGrid(
+            AccelerationChartCanvas,
+            width,
+            height,
+            maximumMagnitude,
+            "mm/s^2");
+        DrawSignedScalarSeries(
+            AccelerationChartCanvas,
+            samples,
+            maximumMagnitude,
+            width,
+            height);
+        DrawScalarChartCursor(AccelerationChartCanvas, width, height);
+    }
+
+    private static void DrawSignedScalarChartGrid(
+        Canvas canvas,
+        double width,
+        double height,
+        double maximumMagnitude,
+        string unit)
+    {
+        var plotLeft = ChartPaddingLeft;
+        var plotTop = ChartPaddingTop;
+        var plotRight = width - ChartPaddingRight;
+        var plotBottom = height - ChartPaddingBottom;
+        var plotCenter = (plotTop + plotBottom) / 2;
+        var gridBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85));
+
+        foreach (var y in new[] { plotTop, plotCenter, plotBottom })
+        {
+            canvas.Children.Add(new Line
+            {
+                X1 = plotLeft,
+                X2 = plotRight,
+                Y1 = y,
+                Y2 = y,
+                Stroke = gridBrush,
+                StrokeThickness = 1
+            });
+        }
+
+        AddChartLabel(canvas, $"+{maximumMagnitude:0.#} {unit}", left: 4, top: 2);
+        AddChartLabel(canvas, "0", left: 12, top: plotCenter - 8);
+        AddChartLabel(canvas, $"-{maximumMagnitude:0.#}", left: 4, top: plotBottom - 12);
+        AddChartLabel(canvas, "time", left: plotRight - 28, top: plotBottom + 4);
+    }
+
+    private static void AddChartLabel(
+        Canvas canvas,
+        string text,
+        double left,
+        double top)
+    {
+        var label = new TextBlock
+        {
+            Text = text,
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 11
+        };
+
+        canvas.Children.Add(label);
+        Canvas.SetLeft(label, left);
+        Canvas.SetTop(label, top);
+    }
+
+    private void DrawSignedScalarSeries(
+        Canvas canvas,
+        IReadOnlyList<ScalarSample> samples,
+        double maximumMagnitude,
+        double width,
+        double height)
+    {
+        for (var index = 1; index < samples.Count; index++)
+        {
+            var previous = samples[index - 1];
+            var current = samples[index];
+            var color = current.Value < 0
+                ? Color.FromRgb(248, 113, 113)
+                : Color.FromRgb(34, 197, 94);
+
+            canvas.Children.Add(new Line
+            {
+                X1 = ToChartX(previous.Time, width),
+                Y1 = ToSignedScalarChartY(previous.Value, maximumMagnitude, height),
+                X2 = ToChartX(current.Time, width),
+                Y2 = ToSignedScalarChartY(current.Value, maximumMagnitude, height),
+                Stroke = new SolidColorBrush(color),
+                StrokeThickness = 2
+            });
+        }
+    }
+
+    private static double ToSignedScalarChartY(
+        double value,
+        double maximumMagnitude,
+        double height)
+    {
+        var normalizedValue = Math.Clamp(value / maximumMagnitude, -1, 1);
+        var plotTop = ChartPaddingTop;
+        var plotBottom = height - ChartPaddingBottom;
+        var plotCenter = (plotTop + plotBottom) / 2;
+        var halfHeight = (plotBottom - plotTop) / 2;
+
+        return plotCenter - (normalizedValue * halfHeight);
     }
 
     private IReadOnlyList<ScalarSample> CreateRequestedVelocitySamples(CartesianPlaybackSnapshot snapshot)

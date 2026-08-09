@@ -7,6 +7,8 @@ public sealed record PlaybackSnapshotMetadata(
     string TimeUnit,
     double SampleIntervalMilliseconds)
 {
+    public const int CurrentCartesianFormatVersion = 2;
+
     public static PlaybackSnapshotMetadata CreateCartesian(TimeSpan sampleInterval)
     {
         if (sampleInterval <= TimeSpan.Zero)
@@ -17,7 +19,7 @@ public sealed record PlaybackSnapshotMetadata(
         }
 
         return new PlaybackSnapshotMetadata(
-            FormatVersion: 1,
+            FormatVersion: CurrentCartesianFormatVersion,
             RobotFamily: "Cartesian",
             DistanceUnit: "Millimeters",
             TimeUnit: "Seconds",

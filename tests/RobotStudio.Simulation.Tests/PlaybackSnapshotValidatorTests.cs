@@ -34,7 +34,7 @@ public sealed class PlaybackSnapshotValidatorTests
         var snapshot = CreateSnapshot() with
         {
             Metadata = new PlaybackSnapshotMetadata(
-                FormatVersion: 2,
+                FormatVersion: 3,
                 RobotFamily: "Drone",
                 DistanceUnit: "Meters",
                 TimeUnit: "Milliseconds",
@@ -44,7 +44,7 @@ public sealed class PlaybackSnapshotValidatorTests
         var result = validator.Validate(snapshot);
 
         Assert.False(result.IsValid);
-        Assert.Contains("Unsupported snapshot format version: 2.", result.Errors);
+        Assert.Contains("Unsupported snapshot format version: 3.", result.Errors);
         Assert.Contains("Unsupported robot family: Drone.", result.Errors);
         Assert.Contains("Unsupported distance unit: Meters.", result.Errors);
         Assert.Contains("Unsupported time unit: Milliseconds.", result.Errors);
@@ -118,6 +118,38 @@ public sealed class PlaybackSnapshotValidatorTests
 
         Assert.False(result.IsValid);
         Assert.Contains("Snapshot total duration cannot be negative.", result.Errors);
+    }
+
+    [Fact]
+    public void Validate_WhenSnapshotUsesVersionOne_ShouldRemainCompatible()
+    {
+        var validator = new PlaybackSnapshotValidator();
+        var snapshot = CreateSnapshot() with
+        {
+            Metadata = CreateSnapshot().Metadata with { FormatVersion = 1 }
+        };
+
+        var result = validator.Validate(snapshot);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_WhenVersionTwoContainsInvalidMotionMetrics_ShouldReturnErrors()
+    {
+        var validator = new PlaybackSnapshotValidator();
+        var snapshot = CreateSnapshot();
+        var invalidFrame = snapshot.Frames[0] with
+        {
+            VelocityMillimetersPerSecond = -1,
+            AccelerationMillimetersPerSecondSquared = double.NaN
+        };
+
+        var result = validator.Validate(snapshot with { Frames = [invalidFrame] });
+
+        Assert.False(result.IsValid);
+        Assert.Contains("Snapshot frame velocities must be finite and non-negative.", result.Errors);
+        Assert.Contains("Snapshot frame accelerations must be finite.", result.Errors);
     }
 
     private static CartesianPlaybackSnapshot CreateSnapshot()

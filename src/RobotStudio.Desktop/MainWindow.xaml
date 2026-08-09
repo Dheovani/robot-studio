@@ -496,6 +496,9 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
+                                    <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
                                 <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
@@ -515,6 +518,15 @@
 
                                 <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Frames" />
                                 <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+
+                                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Profile phase" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
+                                <TextBlock x:Name="ProfilePhaseValueText" Grid.Row="6" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
+
+                                <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Velocity" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+                                <TextBlock x:Name="VelocityValueText" Grid.Row="7" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+
+                                <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Acceleration" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
+                                <TextBlock x:Name="AccelerationValueText" Grid.Row="8" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
                             </Grid>
                             </Expander>
 
@@ -560,7 +572,7 @@
 
                             <TextBlock Margin="0,0,0,20"
                                        Foreground="#94A3B8"
-                                       Text="Effective velocity in mm/s from playback samples."
+                                       Text="Exact effective velocity in mm/s from the planned motion profile."
                                        ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}"
                                        TextWrapping="Wrap" />
 
@@ -583,6 +595,27 @@
                             <UniformGrid Columns="2" Margin="0,0,0,20">
                                 <TextBlock Foreground="#38BDF8" Text="Requested" ToolTip="{x:Static didactics:DidacticTooltipCatalog.RequestedVelocity}" />
                                 <TextBlock Foreground="#FACC15" Text="Effective" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+                            </UniformGrid>
+
+                                    <TextBlock Text="Acceleration Chart"
+                                       Foreground="#F9FAFB"
+                                       FontSize="14"
+                                       FontWeight="SemiBold"
+                                       ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
+
+                            <Border Height="128"
+                                    Margin="0,10,0,8"
+                                    BorderBrush="#334155"
+                                    BorderThickness="1"
+                                    Background="#111827">
+                                <Canvas x:Name="AccelerationChartCanvas"
+                                        ClipToBounds="True"
+                                        SizeChanged="AccelerationChartCanvas_SizeChanged" />
+                            </Border>
+
+                            <UniformGrid Columns="2" Margin="0,0,0,20">
+                                <TextBlock Foreground="#22C55E" Text="Acceleration" />
+                                <TextBlock Foreground="#F87171" Text="Deceleration" />
                             </UniformGrid>
 
                                     <TextBlock Text="Distance Chart"

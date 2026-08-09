@@ -1,5 +1,6 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation.Tests;
 
@@ -46,6 +47,22 @@ public sealed class SimulationTimelineSamplerTests
 
         Assert.InRange(sample.Position.X, 1.19, 1.21);
         Assert.True(sample.Position.X < 5);
+        Assert.InRange(sample.VelocityMillimetersPerSecond, 23.99, 24.01);
+        Assert.Equal(240, sample.AccelerationMillimetersPerSecondSquared);
+        Assert.Equal(MotionProfilePhase.Acceleration, sample.MotionProfilePhase);
+    }
+
+    [Fact]
+    public void SampleAt_WhenMovementCompletes_ShouldExposeCompletedProfileMetrics()
+    {
+        var result = CreateMoveSimulation();
+        var sampler = new SimulationTimelineSampler();
+
+        var sample = sampler.SampleAt(result, result.FinalContext.ElapsedTime);
+
+        Assert.Equal(0, sample.VelocityMillimetersPerSecond);
+        Assert.Equal(0, sample.AccelerationMillimetersPerSecondSquared);
+        Assert.Equal(MotionProfilePhase.Completed, sample.MotionProfilePhase);
     }
 
     [Fact]

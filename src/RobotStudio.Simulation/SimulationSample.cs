@@ -1,6 +1,7 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -10,4 +11,7 @@ public sealed record SimulationSample(
     CartesianPosition Position,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource,
+    double VelocityMillimetersPerSecond = 0,
+    double AccelerationMillimetersPerSecondSquared = 0,
+    MotionProfilePhase? MotionProfilePhase = null);

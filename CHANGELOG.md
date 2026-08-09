@@ -25,6 +25,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added portable solution validation for non-desktop projects, keeping the CLI and core libraries testable outside the Windows desktop target.
 - Added Windows release artifact and installer generation groundwork for distributing the desktop application.
 - Added reusable trapezoidal and triangular motion profiles with deterministic acceleration, constant-velocity, and deceleration sampling.
+- Added Cartesian playback snapshot format 2 with exact motion phase, velocity, and acceleration metrics while retaining format 1 validation compatibility.
+- Added Cartesian profile phase, velocity, and acceleration state values plus an acceleration/deceleration chart in the desktop viewer.
 
 ### Changed
 

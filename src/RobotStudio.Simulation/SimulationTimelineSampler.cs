@@ -1,5 +1,6 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Cartesian;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -36,7 +37,8 @@ public sealed class SimulationTimelineSampler
             return CreateSample(time, previousStep);
         }
 
-        var progress = CalculateProgress(previousStep, nextStep, time);
+        var profileSample = SampleMotionProfile(previousStep, time);
+        var progress = profileSample?.Progress ?? CalculateLinearProgress(previousStep, nextStep, time);
         var position = Interpolate(previousStep.Position, nextStep.Position, progress);
 
         return new SimulationSample(
@@ -45,7 +47,10 @@ public sealed class SimulationTimelineSampler
             position,
             previousStep.CommandIndex,
             previousStep.CommandName,
-            previousStep.CommandSource);
+            previousStep.CommandSource,
+            profileSample?.Velocity ?? 0,
+            profileSample?.Acceleration ?? 0,
+            profileSample?.Phase);
     }
 
     private static int? FindFirstStepAfter(
@@ -77,21 +82,17 @@ public sealed class SimulationTimelineSampler
             RobotStateTransitions.IsActive(previousStep.State);
     }
 
-    private static double CalculateProgress(
+    private static MotionProfileSample? SampleMotionProfile(
+        SimulationStep step,
+        TimeSpan current) =>
+        step.MotionProfile?.SampleAt(current - step.Time);
+
+    private static double CalculateLinearProgress(
         SimulationStep previousStep,
         SimulationStep nextStep,
-        TimeSpan current)
-    {
-        if (previousStep.MotionProfile is not null)
-        {
-            return previousStep.MotionProfile
-                .SampleAt(current - previousStep.Time)
-                .Progress;
-        }
-
-        return (current - previousStep.Time).TotalSeconds /
-            (nextStep.Time - previousStep.Time).TotalSeconds;
-    }
+        TimeSpan current) =>
+        (current - previousStep.Time).TotalSeconds /
+        (nextStep.Time - previousStep.Time).TotalSeconds;
 
     private static CartesianPosition Interpolate(
         CartesianPosition start,
@@ -110,12 +111,22 @@ public sealed class SimulationTimelineSampler
 
     private static SimulationSample CreateSample(
         TimeSpan time,
-        SimulationStep step) =>
-        new(
+        SimulationStep step)
+    {
+        var profileSample = step.MotionProfile?.SampleAt(
+            RobotStateTransitions.IsActive(step.State)
+                ? TimeSpan.Zero
+                : step.MotionProfile.TotalDuration);
+
+        return new(
             time,
             step.State,
             step.Position,
             step.CommandIndex,
             step.CommandName,
-            step.CommandSource);
+            step.CommandSource,
+            profileSample?.Velocity ?? 0,
+            profileSample?.Acceleration ?? 0,
+            profileSample?.Phase);
+    }
 }

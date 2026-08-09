@@ -1,4 +1,5 @@
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation.Tests;
 
@@ -13,7 +14,7 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
 
         var snapshot = builder.Build(profile, result, TimeSpan.FromSeconds(1));
 
-        Assert.Equal(1, snapshot.Metadata.FormatVersion);
+        Assert.Equal(2, snapshot.Metadata.FormatVersion);
         Assert.Equal("Cartesian", snapshot.Metadata.RobotFamily);
         Assert.Equal("Millimeters", snapshot.Metadata.DistanceUnit);
         Assert.Equal("Seconds", snapshot.Metadata.TimeUnit);
@@ -30,6 +31,11 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.Equal(snapshot.TotalDuration, snapshot.Frames[^1].Time);
         Assert.Equal(snapshot.Frames[^1].Position, snapshot.Poses[^1].ToolCenterPoint);
         Assert.Equal(snapshot.Poses[^1].ToolCenterPoint, GetPrimitive(snapshot.SceneFrames[^1], "tool").Center);
+        Assert.Equal(MotionProfilePhase.Acceleration, snapshot.Frames[0].MotionProfilePhase);
+        Assert.True(snapshot.Frames[1].VelocityMillimetersPerSecond > 0);
+        Assert.Equal(MotionProfilePhase.Completed, snapshot.Frames[^1].MotionProfilePhase);
+        Assert.Equal(0, snapshot.Frames[^1].VelocityMillimetersPerSecond);
+        Assert.Equal(0, snapshot.Frames[^1].AccelerationMillimetersPerSecondSquared);
     }
 
     [Fact]

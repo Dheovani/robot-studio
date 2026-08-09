@@ -15,6 +15,9 @@ public sealed class CartesianVisualStateMapper
                 sample.Position.Z),
             sample.CommandIndex,
             sample.CommandName,
-            sample.CommandSource);
+            sample.CommandSource,
+            sample.VelocityMillimetersPerSecond,
+            sample.AccelerationMillimetersPerSecondSquared,
+            sample.MotionProfilePhase);
     }
 }

@@ -1,5 +1,6 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation.Tests;
 
@@ -32,6 +33,8 @@ public sealed class CartesianPlaybackSamplerTests
         Assert.Equal(
             [TimeSpan.Zero, result.FinalContext.ElapsedTime],
             frames.Select(frame => frame.Time));
+        Assert.Equal(MotionProfilePhase.Acceleration, frames[0].MotionProfilePhase);
+        Assert.Equal(MotionProfilePhase.Completed, frames[^1].MotionProfilePhase);
     }
 
     [Fact]

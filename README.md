@@ -39,7 +39,7 @@ WAIT 500
 - Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
-- Inspect playback frames, state, position, charts, planned path, workspace, TCP, and didactic tooltips.
+- Inspect playback frames, state, position, exact velocity and acceleration charts, planned path, workspace, TCP, and didactic tooltips.
 - Export and validate playback snapshots as JSON.
 
 ## Current Release

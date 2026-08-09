@@ -108,7 +108,13 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
+        timeline.Add(CreateStep(
+            completedContext,
+            "Home command completed.",
+            commandIndex,
+            nameof(HomeCommand),
+            command.Source,
+            motionProfile));
 
         return completedContext;
     }
@@ -142,7 +148,13 @@ public sealed class RobotSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Move command completed.", commandIndex, nameof(MoveToCommand), command.Source));
+        timeline.Add(CreateStep(
+            completedContext,
+            "Move command completed.",
+            commandIndex,
+            nameof(MoveToCommand),
+            command.Source,
+            motionProfile));
 
         return completedContext;
     }

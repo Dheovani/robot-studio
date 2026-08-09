@@ -4,7 +4,7 @@ public sealed class TrapezoidalMotionProfile
 {
     private readonly double accelerationDurationSeconds;
     private readonly double constantVelocityDurationSeconds;
-    private readonly double totalDurationSeconds;
+    private readonly TimeSpan totalDuration;
     private readonly double accelerationDistance;
     private readonly double constantVelocityDistance;
 
@@ -41,8 +41,8 @@ public sealed class TrapezoidalMotionProfile
 
         accelerationDistance = 0.5 * acceleration * accelerationDurationSeconds * accelerationDurationSeconds;
         constantVelocityDistance = PeakVelocity * constantVelocityDurationSeconds;
-        totalDurationSeconds =
-            (2 * accelerationDurationSeconds) + constantVelocityDurationSeconds;
+        totalDuration = TimeSpan.FromSeconds(
+            (2 * accelerationDurationSeconds) + constantVelocityDurationSeconds);
     }
 
     public double Distance { get; }
@@ -61,10 +61,11 @@ public sealed class TrapezoidalMotionProfile
 
     public TimeSpan DecelerationDuration => AccelerationDuration;
 
-    public TimeSpan TotalDuration => TimeSpan.FromSeconds(totalDurationSeconds);
+    public TimeSpan TotalDuration => totalDuration;
 
     public MotionProfileSample SampleAt(TimeSpan time)
     {
+        var totalDurationSeconds = totalDuration.TotalSeconds;
         var elapsedSeconds = Math.Clamp(time.TotalSeconds, 0, totalDurationSeconds);
 
         if (elapsedSeconds >= totalDurationSeconds)

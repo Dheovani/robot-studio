@@ -152,10 +152,13 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline sampling before the first step returns the initial position.
 - [x] Timeline sampling during movement returns an interpolated position.
 - [x] Timeline sampling during Cartesian movement follows acceleration-aware profile progress.
+- [x] Timeline sampling exposes exact profile phase, velocity, and acceleration.
+- [x] A completed movement exposes zero velocity, zero acceleration, and the completed phase.
 - [x] Timeline sampling during wait keeps the same position.
 - [x] Timeline sampling after the final step returns the final position.
 - [x] Cartesian visual-state mapping preserves position in millimeters.
 - [x] Cartesian visual-state mapping preserves state and command metadata.
+- [x] Cartesian visual-state mapping preserves motion-profile metrics.
 - [x] Cartesian visual-state mapping rejects null samples.
 - [x] Cartesian visual-state sampling returns visual state for sampled simulation time.
 - [x] Cartesian visual-state sampling preserves command source metadata.
@@ -183,6 +186,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Playback snapshot validation accepts compatible snapshots.
 - [x] Playback snapshot validation reports incompatible metadata.
 - [x] Playback snapshot validation reports missing sections and inconsistent counts.
+- [x] Playback snapshot version 2 validates frame velocity and acceleration values.
+- [x] Playback snapshot validation remains compatible with version 1 metadata.
+- [x] Version 1 frames without motion metrics deserialize with compatible defaults.
 - [x] Differential drive simulator executes `HOME`.
 - [x] Differential drive simulator executes differential-drive move commands.
 - [x] Differential drive simulator executes `WAIT`.

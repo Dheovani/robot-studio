@@ -26,7 +26,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Add a reusable scalar trapezoidal/triangular motion profile with deterministic phase sampling.
 - [x] Apply acceleration-aware duration and interpolation to Cartesian and XY plotter movements.
 - [ ] Extend acceleration-aware profiles to mobile, articulated, parallel, and aerial planners according to each family's units and constraints.
-- [ ] Expose exact profile phase, velocity, and acceleration through versioned playback contracts and desktop charts.
+- [x] Expose exact Cartesian profile phase, velocity, and acceleration through versioned playback contracts, state presentation, and desktop charts.
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
 - [x] Add joint-space simulation for articulated robots.
 - [ ] Add odometry simulation for mobile robots.
@@ -86,7 +86,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add stricter analyzers when the coding standard becomes more mature.
 - [ ] Add package vulnerability scanning when external dependencies become more relevant.
 - [ ] Add UI smoke tests if the desktop workflow becomes stable enough to automate.
-- [ ] Add snapshot compatibility tests before changing playback JSON contracts.
+- [x] Add snapshot compatibility tests before changing playback JSON contracts.
 - [x] Add architecture tests to guard project dependency rules.
 
 ## 9. Advanced 3D Visualization And Realistic Robot Rendering

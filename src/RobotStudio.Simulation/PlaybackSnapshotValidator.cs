@@ -15,6 +15,7 @@ public sealed class PlaybackSnapshotValidator
         ValidateMetadata(snapshot.Metadata, errors);
         ValidateRequiredSections(snapshot, errors);
         ValidateCounts(snapshot, errors);
+        ValidateMotionMetrics(snapshot, errors);
 
         if (snapshot.TotalDuration < TimeSpan.Zero)
         {
@@ -36,7 +37,7 @@ public sealed class PlaybackSnapshotValidator
             return;
         }
 
-        if (metadata.FormatVersion != 1)
+        if (metadata.FormatVersion is < 1 or > PlaybackSnapshotMetadata.CurrentCartesianFormatVersion)
         {
             errors.Add($"Unsupported snapshot format version: {metadata.FormatVersion}.");
         }
@@ -114,6 +115,29 @@ public sealed class PlaybackSnapshotValidator
         if (snapshot.Frames.Count != snapshot.SceneFrames.Count)
         {
             errors.Add("Snapshot frame count must match scene frame count.");
+        }
+    }
+
+    private static void ValidateMotionMetrics(
+        CartesianPlaybackSnapshot snapshot,
+        List<string> errors)
+    {
+        if (snapshot.Metadata?.FormatVersion < 2 || snapshot.Frames is null)
+        {
+            return;
+        }
+
+        if (snapshot.Frames.Any(frame =>
+            !double.IsFinite(frame.VelocityMillimetersPerSecond) ||
+            frame.VelocityMillimetersPerSecond < 0))
+        {
+            errors.Add("Snapshot frame velocities must be finite and non-negative.");
+        }
+
+        if (snapshot.Frames.Any(frame =>
+            !double.IsFinite(frame.AccelerationMillimetersPerSecondSquared)))
+        {
+            errors.Add("Snapshot frame accelerations must be finite.");
         }
     }
 }
