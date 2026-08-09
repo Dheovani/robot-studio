@@ -95,6 +95,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian planner uses the lowest acceleration limit among involved axes.
 - [x] Cartesian acceleration-aware duration exceeds the constant-velocity estimate.
 - [x] XY plotter movement exposes an acceleration-aware profile.
+- [x] SCARA planning uses the lowest angular acceleration limit among involved joints.
+- [x] Simple articulated arm planning exposes an acceleration-aware angular profile.
+- [x] 6-DOF industrial arm planning synchronizes all involved joints with one constrained angular profile.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
@@ -127,7 +130,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add family-specific acceleration profile tests when mobile, articulated, parallel, and aerial planners adopt acceleration-aware planning.
+- [ ] Add family-specific acceleration profile tests when mobile, parallel, and aerial planners adopt acceleration-aware planning.
 
 ## `RobotStudio.Simulation.Tests`
 
@@ -152,6 +155,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Timeline sampling before the first step returns the initial position.
 - [x] Timeline sampling during movement returns an interpolated position.
 - [x] Timeline sampling during Cartesian movement follows acceleration-aware profile progress.
+- [x] SCARA, Simple Articulated Arm, and 6-DOF Industrial Arm playback follows acceleration-aware angular progress.
 - [x] Timeline sampling exposes exact profile phase, velocity, and acceleration.
 - [x] A completed movement exposes zero velocity, zero acceleration, and the completed phase.
 - [x] Timeline sampling during wait keeps the same position.

@@ -21,6 +21,13 @@ public sealed class IndustrialArmRobotProfileTests
     }
 
     [Fact]
+    public void JointConstructor_WhenMaximumAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new IndustrialArmJoint(IndustrialArmJointId.J1Base, -180, 180, 120, 0));
+    }
+
+    [Fact]
     public void Forward_WhenJointsAreAtHome_ShouldPlaceToolAtHorizontalReach()
     {
         var pose = new IndustrialArmKinematics().Forward(CreateProfile(), IndustrialArmJointPosition.Home);
@@ -50,7 +57,7 @@ public sealed class IndustrialArmRobotProfileTests
     public void Constructor_WhenJointDefinitionIsDuplicated_ShouldThrow()
     {
         var joints = CreateProfile().Joints.ToArray();
-        joints[^1] = new IndustrialArmJoint(IndustrialArmJointId.J5WristPitch, -120, 120, 110);
+        joints[^1] = new IndustrialArmJoint(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220);
 
         Assert.Throws<ArgumentException>(() =>
             new IndustrialArmRobotProfile(100, 180, 140, 80, joints));
@@ -74,11 +81,11 @@ public sealed class IndustrialArmRobotProfileTests
             wristLengthMillimeters: 80,
             joints:
             [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
 }

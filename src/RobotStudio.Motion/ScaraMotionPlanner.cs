@@ -44,13 +44,13 @@ public sealed class ScaraMotionPlanner
         }
 
         var jointVelocity = GetEffectiveJointVelocity(involvedJoints, requestedJointVelocityDegreesPerSecond);
-        var duration = TimeSpan.FromSeconds(maximumJointTravel / jointVelocity);
+        var jointAcceleration = involvedJoints.Min(joint => joint.MaximumAccelerationDegreesPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(maximumJointTravel, jointVelocity, jointAcceleration);
         var segment = new ScaraMotionSegment(
             start,
             end,
             involvedJoints.Select(joint => new MotionComponent(joint.Id.ToString())).ToArray(),
-            duration,
-            jointVelocity);
+            profile);
 
         return new ScaraMotionPlan(start, end, maximumJointTravel, new[] { segment });
     }

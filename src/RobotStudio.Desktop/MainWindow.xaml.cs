@@ -5147,12 +5147,14 @@ public partial class MainWindow : Window
                 ScaraJointId.Shoulder,
                 minimumDegrees: -180,
                 maximumDegrees: 180,
-                maximumVelocityDegreesPerSecond: 120),
+                maximumVelocityDegreesPerSecond: 120,
+                maximumAccelerationDegreesPerSecondSquared: 240),
             elbowJoint: new ScaraJoint(
                 ScaraJointId.Elbow,
                 minimumDegrees: -150,
                 maximumDegrees: 150,
-                maximumVelocityDegreesPerSecond: 100));
+                maximumVelocityDegreesPerSecond: 100,
+                maximumAccelerationDegreesPerSecondSquared: 200));
 
     private static SimpleArmRobotProfile CreateSimpleArmProfile() =>
         new(
@@ -5163,17 +5165,20 @@ public partial class MainWindow : Window
                 SimpleArmJointId.Base,
                 minimumDegrees: -180,
                 maximumDegrees: 180,
-                maximumVelocityDegreesPerSecond: 100),
+                maximumVelocityDegreesPerSecond: 100,
+                maximumAccelerationDegreesPerSecondSquared: 200),
             shoulderJoint: new SimpleArmJoint(
                 SimpleArmJointId.Shoulder,
                 minimumDegrees: -120,
                 maximumDegrees: 120,
-                maximumVelocityDegreesPerSecond: 90),
+                maximumVelocityDegreesPerSecond: 90,
+                maximumAccelerationDegreesPerSecondSquared: 180),
             elbowJoint: new SimpleArmJoint(
                 SimpleArmJointId.Elbow,
                 minimumDegrees: -150,
                 maximumDegrees: 150,
-                maximumVelocityDegreesPerSecond: 80));
+                maximumVelocityDegreesPerSecond: 80,
+                maximumAccelerationDegreesPerSecondSquared: 160));
 
     private static DeltaRobotProfile CreateDeltaProfile() =>
         new(
@@ -5214,12 +5219,12 @@ public partial class MainWindow : Window
             wristLengthMillimeters: 80,
             joints:
             [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
 
     private void ValidateCommandSequence(RobotCommandSequence commands)

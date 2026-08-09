@@ -1,6 +1,7 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -12,4 +13,7 @@ public sealed record ScaraSimulationStep(
     string Description,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource)
+{
+    public TrapezoidalMotionProfile? MotionProfile { get; init; }
+}

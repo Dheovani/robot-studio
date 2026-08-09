@@ -32,6 +32,19 @@ public sealed class ScaraPlaybackSamplerTests
     }
 
     [Fact]
+    public void Sample_DuringAcceleration_ShouldUseMotionProfileProgress()
+    {
+        var snapshot = new ScaraPlaybackSampler().Sample(
+            CreateMoveResult(),
+            TimeSpan.FromMilliseconds(100));
+
+        var acceleratingFrame = Assert.Single(snapshot.Frames, frame => frame.Time == TimeSpan.FromMilliseconds(100));
+
+        Assert.Equal(1, acceleratingFrame.Joints.ShoulderDegrees, precision: 6);
+        Assert.Equal(0.5, acceleratingFrame.Joints.ElbowDegrees, precision: 6);
+    }
+
+    [Fact]
     public void Sample_ShouldPreserveCommandMetadata()
     {
         var result = CreateMoveResult();
@@ -60,8 +73,8 @@ public sealed class ScaraPlaybackSamplerTests
         var profile = new ScaraRobotProfile(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
-            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120),
-            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100));
+            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
+            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
         var context = ScaraSimulationContext.Create(
             profile,
             new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0));

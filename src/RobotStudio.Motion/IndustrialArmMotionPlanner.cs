@@ -48,13 +48,13 @@ public sealed class IndustrialArmMotionPlanner
         var effectiveVelocity = requestedJointVelocityDegreesPerSecond.HasValue
             ? Math.Min(jointLimitedVelocity, requestedJointVelocityDegreesPerSecond.Value)
             : jointLimitedVelocity;
-        var duration = TimeSpan.FromSeconds(maximumJointTravel / effectiveVelocity);
+        var effectiveAcceleration = involvedJoints.Min(joint => joint.MaximumAccelerationDegreesPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(maximumJointTravel, effectiveVelocity, effectiveAcceleration);
         var segment = new IndustrialArmMotionSegment(
             start,
             end,
             involvedJoints.Select(joint => new MotionComponent(joint.Id.ToString())).ToArray(),
-            duration,
-            effectiveVelocity);
+            profile);
 
         return new IndustrialArmMotionPlan(start, end, maximumJointTravel, [segment]);
     }

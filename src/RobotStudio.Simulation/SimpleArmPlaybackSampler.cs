@@ -47,7 +47,11 @@ public sealed class SimpleArmPlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = (time - current.Time).TotalSeconds / (next.Time - current.Time).TotalSeconds;
+                var progress = MotionProfileTimelineSampler.CalculateProgress(
+                    current.MotionProfile,
+                    current.Time,
+                    next.Time,
+                    time);
                 var joints = Interpolate(current.Joints, next.Joints, progress);
                 frames.Add(new SimpleArmPlaybackFrame(
                     time,

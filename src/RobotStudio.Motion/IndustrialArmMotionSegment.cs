@@ -6,5 +6,13 @@ public sealed record IndustrialArmMotionSegment(
     IndustrialArmJointPosition Start,
     IndustrialArmJointPosition End,
     IReadOnlyList<MotionComponent> InvolvedJoints,
-    TimeSpan Duration,
-    double EffectiveJointVelocityDegreesPerSecond);
+    TrapezoidalMotionProfile Profile)
+{
+    public TimeSpan Duration => Profile.TotalDuration;
+
+    public double EffectiveJointVelocityDegreesPerSecond => Profile.PeakVelocity;
+
+    public double JointVelocityLimitDegreesPerSecond => Profile.MaximumVelocity;
+
+    public double JointAccelerationDegreesPerSecondSquared => Profile.Acceleration;
+}

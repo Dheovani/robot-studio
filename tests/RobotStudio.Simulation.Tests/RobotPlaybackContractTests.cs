@@ -132,8 +132,8 @@ public sealed class RobotPlaybackContractTests
         var profile = new ScaraRobotProfile(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
-            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120),
-            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100));
+            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
+            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
         var context = ScaraSimulationContext.Create(
             profile,
             new ScaraJointPosition(0, 0));
@@ -155,9 +155,9 @@ public sealed class RobotPlaybackContractTests
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
-            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100),
-            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90),
-            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80));
+            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
+            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
+            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
         var context = SimpleArmSimulationContext.Create(
             profile,
             new SimpleArmJointPosition(0, 0, 0));
@@ -204,12 +204,12 @@ public sealed class RobotPlaybackContractTests
             140,
             80,
             [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
         var context = IndustrialArmSimulationContext.Create(
             profile,

@@ -25,6 +25,13 @@ public sealed class SimpleArmRobotProfileTests
     }
 
     [Fact]
+    public void JointConstructor_WhenMaximumAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 0));
+    }
+
+    [Fact]
     public void Forward_WhenAllJointsAreZero_ShouldPlaceToolAtTotalReach()
     {
         var profile = CreateProfile();
@@ -65,7 +72,7 @@ public sealed class SimpleArmRobotProfileTests
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
-            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100),
-            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90),
-            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80));
+            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
+            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
+            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
 }

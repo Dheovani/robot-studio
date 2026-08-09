@@ -6,5 +6,13 @@ public sealed record ScaraMotionSegment(
     ScaraJointPosition Start,
     ScaraJointPosition End,
     IReadOnlyList<MotionComponent> InvolvedComponents,
-    TimeSpan Duration,
-    double JointVelocityDegreesPerSecond);
+    TrapezoidalMotionProfile Profile)
+{
+    public TimeSpan Duration => Profile.TotalDuration;
+
+    public double JointVelocityDegreesPerSecond => Profile.PeakVelocity;
+
+    public double JointVelocityLimitDegreesPerSecond => Profile.MaximumVelocity;
+
+    public double JointAccelerationDegreesPerSecondSquared => Profile.Acceleration;
+}

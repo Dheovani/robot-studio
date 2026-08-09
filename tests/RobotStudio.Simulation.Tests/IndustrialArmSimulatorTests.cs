@@ -43,6 +43,11 @@ public sealed class IndustrialArmSimulatorTests
         Assert.True(snapshot.FrameCount > 2);
         Assert.Contains(snapshot.Frames, frame => frame.Joints.J6Degrees is > 0 and < 90);
         Assert.Contains(snapshot.Frames, frame => frame.CommandSource?.LineNumber == 2);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        var acceleratingFrame = Assert.Single(snapshot.Frames, frame => frame.Time == TimeSpan.FromMilliseconds(100));
+        Assert.True(
+            acceleratingFrame.Joints.J6Degrees <
+            90 * (acceleratingFrame.Time.TotalSeconds / result.FinalContext.ElapsedTime.TotalSeconds));
     }
 
     [Fact]
@@ -83,11 +88,11 @@ public sealed class IndustrialArmSimulatorTests
             140,
             80,
             [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
 }

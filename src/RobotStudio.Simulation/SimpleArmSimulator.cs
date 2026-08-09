@@ -92,12 +92,12 @@ public sealed class SimpleArmSimulator
     {
         var targetJoints = new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0);
         var homingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
             targetJoints,
             context.RobotProfile);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source, motionProfile));
 
         var completedContext = homingContext with
         {
@@ -106,7 +106,7 @@ public sealed class SimpleArmSimulator
             ElapsedTime = homingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
+        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source, motionProfile));
 
         return completedContext;
     }
@@ -118,13 +118,13 @@ public sealed class SimpleArmSimulator
         List<SimpleArmSimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Simple arm joint move started.", commandIndex, nameof(SimpleArmMoveJointsCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
             command.TargetJoints,
             context.RobotProfile,
             command.RequestedJointVelocityDegreesPerSecond);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+        timeline.Add(CreateStep(movingContext, "Simple arm joint move started.", commandIndex, nameof(SimpleArmMoveJointsCommand), command.Source, motionProfile));
 
         var completedContext = movingContext with
         {
@@ -133,7 +133,7 @@ public sealed class SimpleArmSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Simple arm joint move completed.", commandIndex, nameof(SimpleArmMoveJointsCommand), command.Source));
+        timeline.Add(CreateStep(completedContext, "Simple arm joint move completed.", commandIndex, nameof(SimpleArmMoveJointsCommand), command.Source, motionProfile));
 
         return completedContext;
     }
@@ -172,7 +172,8 @@ public sealed class SimpleArmSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        TrapezoidalMotionProfile? motionProfile = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -181,7 +182,10 @@ public sealed class SimpleArmSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            MotionProfile = motionProfile
+        };
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

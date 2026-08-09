@@ -8,7 +8,8 @@ public sealed record SimpleArmJoint
         SimpleArmJointId id,
         double minimumDegrees,
         double maximumDegrees,
-        double maximumVelocityDegreesPerSecond)
+        double maximumVelocityDegreesPerSecond,
+        double maximumAccelerationDegreesPerSecondSquared)
     {
         if (maximumDegrees <= minimumDegrees)
         {
@@ -20,10 +21,16 @@ public sealed record SimpleArmJoint
             throw new ArgumentException("Joint maximum velocity must be greater than zero.");
         }
 
+        if (maximumAccelerationDegreesPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Joint maximum acceleration must be greater than zero.");
+        }
+
         Id = id;
         MinimumDegrees = minimumDegrees;
         MaximumDegrees = maximumDegrees;
         MaximumVelocityDegreesPerSecond = maximumVelocityDegreesPerSecond;
+        MaximumAccelerationDegreesPerSecondSquared = maximumAccelerationDegreesPerSecondSquared;
     }
 
     public SimpleArmJointId Id { get; }
@@ -33,6 +40,8 @@ public sealed record SimpleArmJoint
     public double MaximumDegrees { get; }
 
     public double MaximumVelocityDegreesPerSecond { get; }
+
+    public double MaximumAccelerationDegreesPerSecondSquared { get; }
 
     public void ValidateCoordinate(double coordinateDegrees)
     {

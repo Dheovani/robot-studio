@@ -29,6 +29,19 @@ public sealed class SimpleArmPlaybackSamplerTests
     }
 
     [Fact]
+    public void Sample_DuringAcceleration_ShouldUseMotionProfileProgress()
+    {
+        var snapshot = new SimpleArmPlaybackSampler().Sample(
+            CreateMoveResult(),
+            TimeSpan.FromMilliseconds(100));
+
+        var acceleratingFrame = Assert.Single(snapshot.Frames, frame => frame.Time == TimeSpan.FromMilliseconds(100));
+
+        Assert.Equal(0.8, acceleratingFrame.Joints.BaseDegrees, precision: 6);
+        Assert.Equal(0.4, acceleratingFrame.Joints.ShoulderDegrees, precision: 6);
+    }
+
+    [Fact]
     public void Sample_ShouldPreserveCommandMetadata()
     {
         var sampler = new SimpleArmPlaybackSampler();
@@ -47,9 +60,9 @@ public sealed class SimpleArmPlaybackSamplerTests
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
-            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100),
-            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90),
-            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80));
+            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
+            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
+            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
         var context = SimpleArmSimulationContext.Create(
             profile,
             new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0));

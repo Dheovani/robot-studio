@@ -68,15 +68,16 @@ public sealed class IndustrialArmSimulator
         List<IndustrialArmSimulationStep> timeline)
     {
         var activeContext = TransitionTo(context, activeState);
-        timeline.Add(CreateStep(activeContext, $"{command.GetType().Name} started.", commandIndex, command.GetType().Name, command.Source));
         var plan = motionPlanner.PlanMove(context.CurrentJoints, target, context.RobotProfile, requestedVelocity);
+        var motionProfile = plan.Segments.SingleOrDefault()?.Profile;
+        timeline.Add(CreateStep(activeContext, $"{command.GetType().Name} started.", commandIndex, command.GetType().Name, command.Source, motionProfile));
         var completed = activeContext with
         {
             CurrentJoints = target,
             State = RobotState.Completed,
             ElapsedTime = activeContext.ElapsedTime + plan.TotalDuration
         };
-        timeline.Add(CreateStep(completed, $"{command.GetType().Name} completed.", commandIndex, command.GetType().Name, command.Source));
+        timeline.Add(CreateStep(completed, $"{command.GetType().Name} completed.", commandIndex, command.GetType().Name, command.Source, motionProfile));
         return completed;
     }
 
@@ -110,7 +111,8 @@ public sealed class IndustrialArmSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        TrapezoidalMotionProfile? motionProfile = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -119,5 +121,8 @@ public sealed class IndustrialArmSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            MotionProfile = motionProfile
+        };
 }

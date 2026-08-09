@@ -17,7 +17,8 @@ public sealed class IndustrialArmMotionPlannerTests
         var segment = Assert.Single(plan.Segments);
         Assert.Equal(6, segment.InvolvedJoints.Count);
         Assert.Equal(90, segment.EffectiveJointVelocityDegreesPerSecond);
-        Assert.Equal(TimeSpan.FromSeconds(120d / 90d), plan.TotalDuration);
+        Assert.Equal(180, segment.Profile.Acceleration);
+        Assert.Equal(TimeSpan.FromSeconds(11d / 6d), plan.TotalDuration);
     }
 
     [Fact]
@@ -56,7 +57,8 @@ public sealed class IndustrialArmMotionPlannerTests
             ["J4WristRoll", "J5WristPitch", "J6ToolRoll"],
             segment.InvolvedJoints.Select(component => component.Name));
         Assert.Equal(70, segment.EffectiveJointVelocityDegreesPerSecond);
-        Assert.Equal(TimeSpan.FromSeconds(90d / 70d), segment.Duration);
+        Assert.Equal(220, segment.Profile.Acceleration);
+        Assert.True(segment.Duration > TimeSpan.FromSeconds(90d / 70d));
     }
 
     [Fact]
@@ -77,11 +79,11 @@ public sealed class IndustrialArmMotionPlannerTests
             140,
             80,
             [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200)
+                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
+                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
+                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
+                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
+                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
+                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
 }

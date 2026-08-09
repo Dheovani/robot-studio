@@ -10,7 +10,7 @@ The project is intentionally educational. It is designed to help students unders
 
 - Simulate a generic Cartesian robot with X/Y/Z axes.
 - Validate physical axis limits for position, velocity, and acceleration.
-- Observe acceleration-aware Cartesian and XY plotter movement using triangular or trapezoidal velocity profiles.
+- Observe acceleration-aware Cartesian, XY plotter, SCARA, Simple Articulated Arm, and 6-DOF Industrial Arm movement using triangular or trapezoidal velocity profiles.
 - Run `HOME`, `MOVE`, and `WAIT` commands.
 - Write simple DSL scripts such as:
 

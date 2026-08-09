@@ -44,13 +44,13 @@ public sealed class SimpleArmMotionPlanner
         }
 
         var jointVelocity = GetEffectiveJointVelocity(involvedJoints, requestedJointVelocityDegreesPerSecond);
-        var duration = TimeSpan.FromSeconds(maximumJointTravel / jointVelocity);
+        var jointAcceleration = involvedJoints.Min(joint => joint.MaximumAccelerationDegreesPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(maximumJointTravel, jointVelocity, jointAcceleration);
         var segment = new SimpleArmMotionSegment(
             start,
             end,
             involvedJoints.Select(joint => new MotionComponent(joint.Id.ToString())).ToArray(),
-            duration,
-            jointVelocity);
+            profile);
 
         return new SimpleArmMotionPlan(start, end, maximumJointTravel, new[] { segment });
     }

@@ -25,7 +25,8 @@ This file tracks future work after the first stable Cartesian simulation release
 
 - [x] Add a reusable scalar trapezoidal/triangular motion profile with deterministic phase sampling.
 - [x] Apply acceleration-aware duration and interpolation to Cartesian and XY plotter movements.
-- [ ] Extend acceleration-aware profiles to mobile, articulated, parallel, and aerial planners according to each family's units and constraints.
+- [x] Extend acceleration-aware angular profiles to SCARA, Simple Articulated Arm, and 6-DOF Industrial Arm planning and playback.
+- [ ] Extend acceleration-aware profiles to mobile, parallel, and aerial planners according to each family's units and constraints.
 - [x] Expose exact Cartesian profile phase, velocity, and acceleration through versioned playback contracts, state presentation, and desktop charts.
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
 - [x] Add joint-space simulation for articulated robots.

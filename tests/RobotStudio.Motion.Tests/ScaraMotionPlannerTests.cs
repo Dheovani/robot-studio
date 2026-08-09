@@ -21,6 +21,8 @@ public sealed class ScaraMotionPlannerTests
         Assert.Equal(60, plan.MaximumJointTravelDegrees);
         Assert.Equal(["Shoulder", "Elbow"], plan.Segments[0].InvolvedComponents.Select(component => component.Name));
         Assert.Equal(100, plan.Segments[0].JointVelocityDegreesPerSecond);
+        Assert.Equal(200, plan.Segments[0].Profile.Acceleration);
+        Assert.True(plan.TotalDuration > TimeSpan.FromSeconds(60d / 100d));
     }
 
     [Fact]
@@ -69,6 +71,6 @@ public sealed class ScaraMotionPlannerTests
         new(
             firstLinkLengthMillimeters: 180,
             secondLinkLengthMillimeters: 120,
-            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120),
-            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100));
+            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
+            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
 }
