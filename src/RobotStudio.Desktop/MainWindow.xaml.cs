@@ -2317,7 +2317,7 @@ public partial class MainWindow : Window
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch,
             FocusVisualStyle = null,
-            Focusable = true,
+            Focusable = canOpen,
             Cursor = canOpen ? Cursors.Hand : Cursors.Arrow,
             BorderBrush = canOpen
                 ? RobotCardAvailableBorderBrush
@@ -2326,23 +2326,32 @@ public partial class MainWindow : Window
             Background = RobotCardBackgroundBrush,
             CornerRadius = new CornerRadius(8)
         };
-        card.MouseEnter += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
-        card.MouseLeave += (_, _) => ApplyRobotCardVisualState(
-            card,
-            template,
-            isHighlighted: card.IsKeyboardFocusWithin);
-        card.GotKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
-        card.LostKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: false);
-        card.KeyDown += (_, e) =>
-        {
-            if (!canOpen || e.Key is not (Key.Enter or Key.Space))
-            {
-                return;
-            }
 
-            e.Handled = true;
-            OpenRobot(template);
-        };
+        if (canOpen)
+        {
+            card.MouseEnter += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
+            card.MouseLeave += (_, _) => ApplyRobotCardVisualState(
+                card,
+                template,
+                isHighlighted: card.IsKeyboardFocusWithin);
+            card.GotKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: true);
+            card.LostKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: false);
+            card.PreviewMouseLeftButtonUp += (_, e) =>
+            {
+                e.Handled = true;
+                OpenRobot(template);
+            };
+            card.KeyDown += (_, e) =>
+            {
+                if (e.OriginalSource is Button || e.Key is not (Key.Enter or Key.Space))
+                {
+                    return;
+                }
+
+                e.Handled = true;
+                OpenRobot(template);
+            };
+        }
 
         var content = new Grid();
         content.RowDefinitions.Add(new RowDefinition { Height = GridLength.Auto });
@@ -2370,8 +2379,13 @@ public partial class MainWindow : Window
             FontSize = 13
         });
 
-        topContent.Children.Add(CreateStatusBadge(template.Status));
-        topContent.Children.Add(CreateComplexityBadge(template.Complexity));
+        var metadataTags = new WrapPanel
+        {
+            Margin = new Thickness(0, 14, 0, 0)
+        };
+        metadataTags.Children.Add(CreateStatusBadge(template.Status));
+        metadataTags.Children.Add(CreateComplexityBadge(template.Complexity));
+        topContent.Children.Add(metadataTags);
 
         var middleContent = new StackPanel
         {
@@ -2399,21 +2413,45 @@ public partial class MainWindow : Window
 
         middleContent.Children.Add(CreateCapabilityTags(template.Capabilities));
 
-        var button = new Button
-        {
-            Height = 36,
-            Margin = new Thickness(0, 12, 0, 0),
-            Content = canOpen
-                ? "Open Robot"
-                : template.Status.ToString(),
-            IsEnabled = canOpen,
-            Tag = template
-        };
-        button.Click += OpenRobotButton_Click;
-        Grid.SetRow(button, 2);
-        content.Children.Add(button);
+        var footer = CreateRobotCardFooter(template, canOpen);
+        Grid.SetRow(footer, 2);
+        content.Children.Add(footer);
 
         return card;
+    }
+
+    private FrameworkElement CreateRobotCardFooter(RobotTemplate template, bool canOpen)
+    {
+        if (canOpen)
+        {
+            var button = new Button
+            {
+                Height = 36,
+                Margin = new Thickness(0, 12, 0, 0),
+                Content = "Open Robot",
+                Tag = template
+            };
+            button.Click += OpenRobotButton_Click;
+            return button;
+        }
+
+        var status = new TextBlock
+        {
+            VerticalAlignment = VerticalAlignment.Center,
+            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
+            FontSize = 12,
+            FontWeight = FontWeights.SemiBold,
+            Text = "Availability: Planned for a future release"
+        };
+
+        return new Border
+        {
+            Margin = new Thickness(0, 12, 0, 0),
+            Padding = new Thickness(0, 12, 0, 0),
+            BorderBrush = RobotCardPlannedBorderBrush,
+            BorderThickness = new Thickness(0, 1, 0, 0),
+            Child = status
+        };
     }
 
     private static void ApplyRobotCardVisualState(
@@ -2456,13 +2494,13 @@ public partial class MainWindow : Window
     private static Border CreateStatusBadge(RobotAvailabilityStatus status) =>
         new()
         {
-            Margin = new Thickness(0, 14, 0, 0),
-            Padding = new Thickness(9, 4, 9, 4),
+            Margin = new Thickness(0, 0, 8, 0),
+            Padding = new Thickness(8, 3, 8, 3),
             HorizontalAlignment = HorizontalAlignment.Left,
             Background = GetStatusBackgroundBrush(status),
             BorderBrush = GetStatusBorderBrush(status),
             BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(999),
+            CornerRadius = new CornerRadius(4),
             Child = new TextBlock
             {
                 Text = status.ToString(),
@@ -2475,13 +2513,13 @@ public partial class MainWindow : Window
     private static Border CreateComplexityBadge(RobotComplexityLevel complexity) =>
         new()
         {
-            Margin = new Thickness(0, 8, 0, 0),
-            Padding = new Thickness(9, 4, 9, 4),
+            Margin = new Thickness(0, 0, 8, 0),
+            Padding = new Thickness(8, 3, 8, 3),
             HorizontalAlignment = HorizontalAlignment.Left,
             Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
             BorderBrush = new SolidColorBrush(Color.FromRgb(71, 85, 105)),
             BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(999),
+            CornerRadius = new CornerRadius(4),
             Child = new TextBlock
             {
                 Text = complexity.ToString(),
@@ -2504,7 +2542,7 @@ public partial class MainWindow : Window
                 Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
                 BorderBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
                 BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(999),
+                CornerRadius = new CornerRadius(4),
                 Child = new TextBlock
                 {
                     Text = FormatCapability(capability),

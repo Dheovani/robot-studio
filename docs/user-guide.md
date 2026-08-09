@@ -132,11 +132,10 @@ For official releases, push a version tag such as `v1.0.0`. GitHub Actions will 
 
 Current desktop controls:
 
-- robot cards showing name, family, status badge, complexity badge, description, and capability tags.
+- robot cards showing name, family, compact status and complexity tags, description, and capability tags.
 - robot selection cards arrange responsively across one, two, or three columns depending on window width.
-- robot selection cards show hover and keyboard focus feedback.
-- `Open Robot` on the Cartesian robot card.
-- disabled planned robot entries ordered by didactic complexity.
+- available robot selection cards can be opened from the card body, the `Open Robot` button, or the keyboard and show hover and focus feedback.
+- non-interactive planned-release labels on future robot entries ordered by didactic complexity.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
 - DSL editor inside the Cartesian viewer.
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.

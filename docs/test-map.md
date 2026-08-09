@@ -425,11 +425,13 @@ Expected current behavior:
 
 - opens a WPF desktop window;
 - shows a robot selection screen on startup;
-- presents robot status and complexity as badges and capabilities as tags;
-- keeps robot card badges visible above the footer button without clipping;
-- keeps robot card footer buttons aligned across cards;
+- presents robot status, complexity, and capabilities as compact rectangular tags;
+- keeps robot card metadata visible above the footer without clipping;
+- keeps available actions and planned-release footers aligned across cards;
 - adjusts robot selection cards responsively across one, two, and three columns;
-- shows hover and keyboard focus feedback on robot selection cards;
+- shows hover and keyboard focus feedback only on openable robot selection cards;
+- opens an available robot from its card body, action button, or keyboard;
+- represents planned models with static release status instead of disabled buttons;
 - lists robot templates in the expected didactic complexity order;
 - lists the Cartesian robot as available;
 - lists the XY plotter as available;

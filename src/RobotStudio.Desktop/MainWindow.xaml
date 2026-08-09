@@ -137,7 +137,7 @@
                                    Foreground="{StaticResource SecondaryTextBrush}"
                                    FontSize="14"
                                    TextWrapping="Wrap"
-                                   Text="Choose a robot model to inspect, simulate, and control. The Cartesian robot is available now; future families are shown as planned learning paths." />
+                                   Text="Choose a robot model to inspect, simulate, and control. Available models open directly; planned models show the future learning path." />
                     </StackPanel>
 
                     <Border Grid.Column="1"
@@ -148,11 +148,11 @@
                             Background="{StaticResource SubtlePanelBackgroundBrush}"
                             BorderBrush="{StaticResource BorderBrush}"
                             BorderThickness="1"
-                            CornerRadius="6">
+                            CornerRadius="4">
                         <TextBlock VerticalAlignment="Center"
                                    Foreground="#93C5FD"
                                    FontWeight="SemiBold"
-                                   Text="Desktop Preview" />
+                                   Text="Robot Catalog" />
                     </Border>
                 </Grid>
             </Border>

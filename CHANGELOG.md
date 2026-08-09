@@ -42,6 +42,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 ### Changed
 
 - Expanded the desktop app from a Cartesian-only visual simulator into a multi-robot teaching environment.
+- Refined robot catalog cards with compact rectangular metadata tags, clickable available cards, non-interactive planned-release footers, accurate catalog copy, and interaction feedback reserved for openable models.
 - Updated Cartesian and XY plotter planning to respect acceleration limits, producing acceleration-aware durations and Cartesian playback interpolation.
 - Updated articulated playback to follow acceleration-aware profile progress instead of constant-speed joint interpolation.
 - Updated differential-drive playback to complete its planned translation before rotation and to follow each segment's acceleration-aware progress.
