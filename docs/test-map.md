@@ -77,6 +77,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every implemented simulator preserves its family-specific physical state and elapsed time during fault reset.
 - [x] Differential Drive fault reset also preserves accumulated ideal odometry.
 - [x] Simple DSL `RESET` parsing preserves source metadata and rejects arguments.
+- [x] Cartesian segment/AABB collision detection reports the nearest obstacle, entry point, and trajectory fraction.
+- [x] Cartesian collision detection handles clear paths, boundary contact, stationary occupied positions, and duplicate obstacle IDs deterministically.
+- [x] Cartesian `MOVE` and `HOME` reject obstructed paths while preserving the last valid position.
 
 ## `RobotStudio.Motion.Tests`
 

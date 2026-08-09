@@ -29,7 +29,8 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Add separate acceleration-aware translation and rotation profiles to Differential Drive planning and playback.
 - [x] Extend acceleration-aware profiles to Delta and Drone planners according to each family's units and constraints.
 - [x] Expose exact Cartesian profile phase, velocity, and acceleration through versioned playback contracts, state presentation, and desktop charts.
-- [ ] Add collision or workspace obstruction concepts when the lessons need them.
+- [x] Add deterministic Cartesian workspace obstacles and line-path collision detection.
+- [ ] Define family-appropriate collision models for mobile footprints, articulated links, parallel mechanisms, and aerial bodies.
 - [x] Add joint-space simulation for articulated robots.
 - [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
 - [x] Add roll, pitch, and yaw attitude simulation for the Drone.

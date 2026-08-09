@@ -169,6 +169,23 @@ Expected result:
 - executing `HOME` from the faulted context instead performs the family's planned homing movement;
 - `RESET` from a non-faulted state is rejected with an explicit state-transition error.
 
+### Reject An Obstructed Cartesian Path
+
+Actor: student or simulation host.
+
+Goal: demonstrate that a target can be inside the robot limits while the straight path to it is unsafe.
+
+Current status: implemented in the Cartesian simulation core; obstacle editing and rendering remain future desktop work.
+
+Expected result:
+
+- the host defines one or more immutable axis-aligned obstacle volumes in a `CartesianSimulationEnvironment`;
+- `MOVE` and `HOME` test their complete linear paths before movement begins;
+- touching or crossing an obstacle produces a `Faulted` result;
+- the failure identifies the obstacle, first collision point, and fraction of the requested trajectory;
+- the robot remains at its last valid position and no simulated movement time is added;
+- paths that avoid every obstacle execute normally.
+
 ### Simulate A Simple DSL Script
 
 Actor: student.

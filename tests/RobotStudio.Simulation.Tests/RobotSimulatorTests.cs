@@ -7,6 +7,70 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class RobotSimulatorTests
 {
     [Fact]
+    public void Execute_WhenMovePathCrossesObstacle_ShouldFaultAtLastValidPosition()
+    {
+        var environment = new CartesianSimulationEnvironment(
+        [
+            new CartesianObstacle(
+                "training-block",
+                new CartesianPosition(40, 40, 10),
+                new CartesianPosition(60, 60, 30))
+        ]);
+        var start = new CartesianPosition(0, 0, 0);
+        var result = new RobotSimulator(environment).Execute(
+            SimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence(
+                [new MoveToCommand(new CartesianPosition(100, 100, 40))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(RobotState.Faulted, result.FinalContext.State);
+        Assert.Equal(start, result.FinalContext.CurrentPosition);
+        var exception = Assert.IsType<CartesianPathObstructedException>(result.Failure);
+        Assert.Equal("training-block", exception.ObstacleId);
+        Assert.Equal(new CartesianPosition(40, 40, 16), exception.CollisionPosition);
+        Assert.Contains("training-block", result.Timeline[^1].Description);
+    }
+
+    [Fact]
+    public void Execute_WhenHomePathCrossesObstacle_ShouldFaultWithoutMoving()
+    {
+        var environment = new CartesianSimulationEnvironment(
+        [
+            new CartesianObstacle(
+                "home-barrier",
+                new CartesianPosition(40, 0, 0),
+                new CartesianPosition(60, 20, 20))
+        ]);
+        var start = new CartesianPosition(100, 10, 10);
+        var result = new RobotSimulator(environment).Execute(
+            SimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence([new HomeCommand()]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(start, result.FinalContext.CurrentPosition);
+        Assert.IsType<CartesianPathObstructedException>(result.Failure);
+    }
+
+    [Fact]
+    public void Execute_WhenMovePathAvoidsObstacle_ShouldCompleteNormally()
+    {
+        var environment = new CartesianSimulationEnvironment(
+        [
+            new CartesianObstacle(
+                "clear-fixture",
+                new CartesianPosition(40, 100, 10),
+                new CartesianPosition(60, 120, 30))
+        ]);
+        var target = new CartesianPosition(100, 50, 20);
+        var result = new RobotSimulator(environment).Execute(
+            SimulationContext.Create(CreateProfile(), new CartesianPosition(0, 0, 0)),
+            new RobotCommandSequence([new MoveToCommand(target)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(target, result.FinalContext.CurrentPosition);
+    }
+
+    [Fact]
     public void Execute_WhenCommandIsHome_ShouldMoveToOrigin()
     {
         var simulator = new RobotSimulator();

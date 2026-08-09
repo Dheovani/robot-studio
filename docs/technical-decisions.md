@@ -110,6 +110,10 @@ Simulation sampling is handled by `SimulationTimelineSampler`. Sampling clamps t
 
 Zero-distance `MOVE` commands still produce normal command timeline steps and complete without advancing simulated time. If a command fails, the simulator keeps the last valid position and records the failure at that position.
 
+Cartesian workspace obstacles are simulation-environment concepts, not robot-profile limits and not rendering primitives. `CartesianSimulationEnvironment` stores immutable axis-aligned obstacle volumes, while `CartesianPathCollisionDetector` performs deterministic segment/AABB intersection and reports the first collision point and trajectory fraction. `RobotSimulator` checks both `MOVE` and `HOME` paths before changing physical state. An obstruction produces `CartesianPathObstructedException`, transitions the simulation to `Faulted`, and preserves the last valid position and elapsed time.
+
+This first collision model intentionally represents the Cartesian TCP as a point moving along a linear segment. It does not yet model tool volume, rail/carriage self-collision, moving robot links, or swept volumes. Other robot families must receive topology-appropriate collision models rather than reusing Cartesian point-path assumptions.
+
 Robot commands may carry optional source metadata through `RobotCommandSource`. The simple DSL uses this metadata to preserve the source line number and original command text. Simulation timeline steps and timeline samples propagate this metadata so CLI output and future visual tools can explain where a command came from.
 
 Future visual layers should consume `RobotVisualState` instead of reading low-level simulation internals directly. The first mapper, `CartesianVisualStateMapper`, converts Cartesian simulation samples into a visual position expressed in millimeters. Visual pose mapping stays in `RobotStudio.Simulation`; it must not be added to `RobotStudio.Domain` or `RobotStudio.Motion`.

@@ -11,6 +11,7 @@ The project is intentionally educational. It is designed to help students unders
 - Simulate a generic Cartesian robot with X/Y/Z axes.
 - Validate physical axis limits for position, velocity, and acceleration.
 - Observe acceleration-aware movement across every available robot family using triangular or trapezoidal velocity profiles.
+- Model Cartesian workspace obstacles and reject linear paths that intersect them before simulated movement begins.
 - Run movement commands plus `HOME`, `WAIT`, and the fault recovery command `RESET`.
 - Write simple DSL scripts such as:
 

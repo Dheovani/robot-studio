@@ -34,6 +34,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added ideal Differential Drive odometry with accumulated left/right wheel travel and rotation in playback and didactic state presentation.
 - Added Drone roll and pitch limits, commands, synchronized attitude planning, playback, 3D model inclination, and DSL support alongside yaw.
 - Added the cross-family `RESET` command for recovering faulted simulations without changing robot pose, joint/actuator state, odometry, or simulated time.
+- Added deterministic Cartesian workspace obstacles and segment/AABB collision detection, including didactic collision metadata and obstruction-aware `MOVE` and `HOME` execution.
 
 ### Changed
 

@@ -313,6 +313,8 @@ Current parser behavior:
 
 Core fault recovery currently requires the caller to start a new simulation execution with the failed result's `FinalContext`. The desktop app does not yet preserve that session boundary for a user-facing `RESET` action. Use `HOME` when recovery should include real simulated movement back to the family-specific origin.
 
+The Cartesian simulation API can also receive a `CartesianSimulationEnvironment` containing axis-aligned obstacle volumes. Cartesian `MOVE` and `HOME` commands reject paths that touch or cross an obstacle and report the obstacle ID and first collision position. The current desktop app does not yet provide obstacle editing or visualization.
+
 ## Planned CLI Learning Flow
 
 The CLI should later support:

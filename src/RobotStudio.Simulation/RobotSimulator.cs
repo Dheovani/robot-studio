@@ -8,17 +8,32 @@ namespace RobotStudio.Simulation;
 public sealed class RobotSimulator
 {
     private readonly MotionPlanner motionPlanner;
+    private readonly CartesianSimulationEnvironment environment;
 
     public RobotSimulator()
-        : this(new MotionPlanner())
+        : this(new MotionPlanner(), CartesianSimulationEnvironment.Empty)
     {
     }
 
     public RobotSimulator(MotionPlanner motionPlanner)
+        : this(motionPlanner, CartesianSimulationEnvironment.Empty)
+    {
+    }
+
+    public RobotSimulator(CartesianSimulationEnvironment environment)
+        : this(new MotionPlanner(), environment)
+    {
+    }
+
+    public RobotSimulator(
+        MotionPlanner motionPlanner,
+        CartesianSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
+        this.environment = environment;
     }
 
     public SimulationResult Execute(
@@ -99,6 +114,7 @@ public sealed class RobotSimulator
         List<SimulationStep> timeline)
     {
         var targetPosition = new CartesianPosition(X: 0, Y: 0, Z: 0);
+        EnsurePathIsClear(context.CurrentPosition, targetPosition);
         var movingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -138,6 +154,7 @@ public sealed class RobotSimulator
         int commandIndex,
         List<SimulationStep> timeline)
     {
+        EnsurePathIsClear(context.CurrentPosition, command.TargetPosition);
         var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanLinearMove(
             context.CurrentPosition,
@@ -199,6 +216,17 @@ public sealed class RobotSimulator
         RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
 
         return context with { State = nextState };
+    }
+
+    private void EnsurePathIsClear(
+        CartesianPosition start,
+        CartesianPosition end)
+    {
+        var collision = CartesianPathCollisionDetector.FindFirstCollision(start, end, environment);
+        if (collision is not null)
+        {
+            throw new CartesianPathObstructedException(collision);
+        }
     }
 
     private static SimulationStep CreateStep(
