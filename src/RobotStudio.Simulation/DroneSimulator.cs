@@ -91,12 +91,18 @@ public sealed class DroneSimulator
             ZMillimeters: 0,
             YawDegrees: 0);
         var homingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
             targetPose,
             context.RobotProfile);
+        var motionSegment = motionPlan.Segments.SingleOrDefault();
+        timeline.Add(CreateStep(
+            homingContext,
+            "Home command started.",
+            commandIndex,
+            nameof(HomeCommand),
+            command.Source,
+            motionSegment));
 
         var completedContext = homingContext with
         {
@@ -105,7 +111,13 @@ public sealed class DroneSimulator
             ElapsedTime = homingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
+        timeline.Add(CreateStep(
+            completedContext,
+            "Home command completed.",
+            commandIndex,
+            nameof(HomeCommand),
+            command.Source,
+            motionSegment));
 
         return completedContext;
     }
@@ -117,14 +129,20 @@ public sealed class DroneSimulator
         List<DroneSimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Drone move started.", commandIndex, nameof(DroneMoveCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
             command.TargetPose,
             context.RobotProfile,
             command.RequestedLinearVelocityMillimetersPerSecond,
             command.RequestedYawVelocityDegreesPerSecond);
+        var motionSegment = motionPlan.Segments.SingleOrDefault();
+        timeline.Add(CreateStep(
+            movingContext,
+            "Drone move started.",
+            commandIndex,
+            nameof(DroneMoveCommand),
+            command.Source,
+            motionSegment));
 
         var completedContext = movingContext with
         {
@@ -136,7 +154,13 @@ public sealed class DroneSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Drone move completed.", commandIndex, nameof(DroneMoveCommand), command.Source));
+        timeline.Add(CreateStep(
+            completedContext,
+            "Drone move completed.",
+            commandIndex,
+            nameof(DroneMoveCommand),
+            command.Source,
+            motionSegment));
 
         return completedContext;
     }
@@ -175,7 +199,8 @@ public sealed class DroneSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        DroneMotionSegment? motionSegment = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -183,7 +208,11 @@ public sealed class DroneSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            TranslationProfile = motionSegment?.TranslationProfile,
+            YawProfile = motionSegment?.YawProfile
+        };
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

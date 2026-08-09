@@ -180,9 +180,9 @@ public sealed class RobotPlaybackContractTests
         var profile = new DeltaRobotProfile(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
-            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
-            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
-            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
         var context = DeltaSimulationContext.Create(
             profile,
             new DeltaActuatorPosition(0, 0, 0));
@@ -238,7 +238,9 @@ public sealed class RobotPlaybackContractTests
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 360,
+            maximumYawAccelerationDegreesPerSecondSquared: 240);
         var context = DroneSimulationContext.Create(
             profile,
             new DronePose(0, 0, 0, 0));

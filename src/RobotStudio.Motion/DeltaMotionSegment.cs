@@ -6,5 +6,9 @@ public sealed record DeltaMotionSegment(
     DeltaActuatorPosition Start,
     DeltaActuatorPosition End,
     IReadOnlyList<MotionComponent> InvolvedActuators,
-    TimeSpan Duration,
-    double EffectiveActuatorVelocityMillimetersPerSecond);
+    TrapezoidalMotionProfile Profile)
+{
+    public TimeSpan Duration => Profile.TotalDuration;
+
+    public double EffectiveActuatorVelocityMillimetersPerSecond => Profile.PeakVelocity;
+}

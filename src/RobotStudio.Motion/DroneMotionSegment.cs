@@ -5,6 +5,22 @@ namespace RobotStudio.Motion;
 public sealed record DroneMotionSegment(
     DronePose Start,
     DronePose End,
-    TimeSpan Duration,
-    double LinearVelocityMillimetersPerSecond,
-    double YawVelocityDegreesPerSecond);
+    TrapezoidalMotionProfile? TranslationProfile,
+    TrapezoidalMotionProfile? YawProfile)
+{
+    public TimeSpan Duration
+    {
+        get
+        {
+            var translationDuration = TranslationProfile?.TotalDuration ?? TimeSpan.Zero;
+            var yawDuration = YawProfile?.TotalDuration ?? TimeSpan.Zero;
+            return translationDuration >= yawDuration ? translationDuration : yawDuration;
+        }
+    }
+
+    public double LinearVelocityMillimetersPerSecond =>
+        TranslationProfile is null ? 0 : TranslationProfile.Distance / Duration.TotalSeconds;
+
+    public double YawVelocityDegreesPerSecond =>
+        YawProfile is null ? 0 : YawProfile.Distance / Duration.TotalSeconds;
+}

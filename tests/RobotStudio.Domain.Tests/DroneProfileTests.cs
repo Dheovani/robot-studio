@@ -56,7 +56,21 @@ public sealed class DroneProfileTests
         Assert.Throws<PositionOutOfRangeException>(() => RobotCommandValidator.Validate(command, profile));
     }
 
-    private static DroneProfile CreateProfile() =>
+    [Fact]
+    public void Constructor_WhenLinearAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(linearAcceleration: 0));
+    }
+
+    [Fact]
+    public void Constructor_WhenYawAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(yawAcceleration: 0));
+    }
+
+    private static DroneProfile CreateProfile(
+        double linearAcceleration = 360,
+        double yawAcceleration = 240) =>
         new(
             minimumXMillimeters: 0,
             maximumXMillimeters: 500,
@@ -65,5 +79,7 @@ public sealed class DroneProfileTests
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: linearAcceleration,
+            maximumYawAccelerationDegreesPerSecondSquared: yawAcceleration);
 }

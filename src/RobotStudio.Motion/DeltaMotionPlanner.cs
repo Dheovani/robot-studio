@@ -46,13 +46,17 @@ public sealed class DeltaMotionPlanner
         var actuatorVelocity = GetEffectiveActuatorVelocity(
             involvedActuators,
             requestedActuatorVelocityMillimetersPerSecond);
-        var duration = TimeSpan.FromSeconds(maximumActuatorTravel / actuatorVelocity);
+        var actuatorAcceleration = involvedActuators.Min(
+            actuator => actuator.MaximumAccelerationMillimetersPerSecondSquared);
+        var profile = new TrapezoidalMotionProfile(
+            maximumActuatorTravel,
+            actuatorVelocity,
+            actuatorAcceleration);
         var segment = new DeltaMotionSegment(
             start,
             end,
             involvedActuators.Select(actuator => new MotionComponent(actuator.Id.ToString())).ToArray(),
-            duration,
-            actuatorVelocity);
+            profile);
 
         return new DeltaMotionPlan(start, end, maximumActuatorTravel, new[] { segment });
     }

@@ -56,6 +56,10 @@ Articulated simulation steps may also carry their planned scalar profile as time
 
 Differential-drive planning keeps translation and rotation as sequential segments with independent scalar profiles. Translation uses millimeters, millimeters per second, and millimeters per second squared; rotation uses degrees, degrees per second, and degrees per second squared. The simulator records the pose at the boundary between segments, and playback completes translation before changing heading. This preserves the planner's intended mobile motion instead of blending incompatible linear and angular units into one profile.
 
+Delta planning synchronizes all involved linear actuators using the maximum actuator travel and the lowest velocity and acceleration limits among those actuators. Every actuator follows the same normalized millimeter-based profile progress so the parallel mechanism remains coordinated.
+
+Drone planning keeps independent profiles for 3D translation and yaw because they use different units. Both occur during one coordinated segment whose duration is the longer profile duration. Playback time-scales the shorter profile's progress to the shared segment duration, causing translation and yaw to finish together while staying below their configured velocity and acceleration limits. This remains a simplified kinematic teaching model; full roll, pitch, dynamics, and flight-control physics are future work.
+
 Cartesian playback snapshot format version 2 adds these motion metrics to each visual frame. The validator accepts both versions 1 and 2 so existing exported lessons remain usable; missing version 1 metrics deserialize to zero and no profile phase. New version 2 snapshots validate finite acceleration and finite, non-negative velocity. Future additions must follow the same explicit versioning and compatibility-test process.
 
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.

@@ -100,6 +100,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] 6-DOF industrial arm planning synchronizes all involved joints with one constrained angular profile.
 - [x] Differential-drive planning uses independent linear and angular acceleration profiles.
 - [x] Differential-drive playback completes translation before rotation and follows each segment profile.
+- [x] Delta planning and playback synchronize involved actuators with the lowest acceleration limit.
+- [x] Drone planning and playback synchronize independent translation and yaw profiles without mixing units.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
@@ -132,7 +134,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add family-specific acceleration profile tests when parallel and aerial planners adopt acceleration-aware planning.
+- [x] Add family-specific acceleration profile tests for every currently available robot family.
 
 ## `RobotStudio.Simulation.Tests`
 

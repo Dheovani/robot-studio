@@ -92,12 +92,12 @@ public sealed class DeltaSimulator
     {
         var targetActuators = new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0);
         var homingContext = TransitionTo(context, RobotState.Homing);
-        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentActuators,
             targetActuators,
             context.RobotProfile);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+        timeline.Add(CreateStep(homingContext, "Home command started.", commandIndex, nameof(HomeCommand), command.Source, motionProfile));
 
         var completedContext = homingContext with
         {
@@ -106,7 +106,7 @@ public sealed class DeltaSimulator
             ElapsedTime = homingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source));
+        timeline.Add(CreateStep(completedContext, "Home command completed.", commandIndex, nameof(HomeCommand), command.Source, motionProfile));
 
         return completedContext;
     }
@@ -118,13 +118,13 @@ public sealed class DeltaSimulator
         List<DeltaSimulationStep> timeline)
     {
         var movingContext = TransitionTo(context, RobotState.Moving);
-        timeline.Add(CreateStep(movingContext, "Delta actuator move started.", commandIndex, nameof(DeltaMoveActuatorsCommand), command.Source));
-
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentActuators,
             command.TargetActuators,
             context.RobotProfile,
             command.RequestedActuatorVelocityMillimetersPerSecond);
+        var motionProfile = motionPlan.Segments.SingleOrDefault()?.Profile;
+        timeline.Add(CreateStep(movingContext, "Delta actuator move started.", commandIndex, nameof(DeltaMoveActuatorsCommand), command.Source, motionProfile));
 
         var completedContext = movingContext with
         {
@@ -133,7 +133,7 @@ public sealed class DeltaSimulator
             ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
         };
 
-        timeline.Add(CreateStep(completedContext, "Delta actuator move completed.", commandIndex, nameof(DeltaMoveActuatorsCommand), command.Source));
+        timeline.Add(CreateStep(completedContext, "Delta actuator move completed.", commandIndex, nameof(DeltaMoveActuatorsCommand), command.Source, motionProfile));
 
         return completedContext;
     }
@@ -172,7 +172,8 @@ public sealed class DeltaSimulator
         string description,
         int? commandIndex = null,
         string? commandName = null,
-        RobotCommandSource? commandSource = null) =>
+        RobotCommandSource? commandSource = null,
+        TrapezoidalMotionProfile? motionProfile = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -181,7 +182,10 @@ public sealed class DeltaSimulator
             description,
             commandIndex,
             commandName,
-            commandSource);
+            commandSource)
+        {
+            MotionProfile = motionProfile
+        };
 
     private static string GetCommandName(RobotCommand command) => command switch
     {

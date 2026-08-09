@@ -32,6 +32,23 @@ public sealed class DronePlaybackSamplerTests
     }
 
     [Fact]
+    public void Sample_DuringAcceleration_ShouldSynchronizeTranslationAndYawProfiles()
+    {
+        var result = CreateMoveResult();
+        var snapshot = new DronePlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(100));
+        var acceleratingFrame = Assert.Single(
+            snapshot.Frames,
+            frame => frame.Time == TimeSpan.FromMilliseconds(100));
+
+        Assert.NotNull(result.Timeline[1].TranslationProfile);
+        Assert.NotNull(result.Timeline[1].YawProfile);
+        Assert.InRange(acceleratingFrame.Pose.XMillimeters, 0, 3);
+        Assert.InRange(acceleratingFrame.Pose.YawDegrees, 0, 3);
+    }
+
+    [Fact]
     public void Sample_WhenDroneMoves_ShouldPreserveCommandMetadata()
     {
         var snapshot = new DronePlaybackSampler()
@@ -53,7 +70,9 @@ public sealed class DronePlaybackSamplerTests
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 360,
+            maximumYawAccelerationDegreesPerSecondSquared: 240);
         var context = DroneSimulationContext.Create(profile, new DronePose(0, 0, 0, 0));
         var sequence = new RobotCommandSequence(
             [new DroneMoveCommand(

@@ -66,5 +66,7 @@ public sealed class DroneSimulatorTests
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 360,
+            maximumYawAccelerationDegreesPerSecondSquared: 240);
 }

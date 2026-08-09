@@ -39,8 +39,10 @@ public sealed class DroneMotionPlannerTests
 
         var segment = Assert.Single(plan.Segments);
         Assert.Equal(0, segment.LinearVelocityMillimetersPerSecond);
-        Assert.Equal(45, segment.YawVelocityDegreesPerSecond);
-        Assert.Equal(TimeSpan.FromSeconds(2), segment.Duration);
+        Assert.Equal(45, segment.YawProfile!.MaximumVelocity);
+        Assert.Equal(240, segment.YawProfile.Acceleration);
+        Assert.True(segment.YawVelocityDegreesPerSecond < 45);
+        Assert.Equal(TimeSpan.FromMilliseconds(2187.5), segment.Duration);
     }
 
     [Fact]
@@ -76,5 +78,7 @@ public sealed class DroneMotionPlannerTests
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 360,
+            maximumYawAccelerationDegreesPerSecondSquared: 240);
 }

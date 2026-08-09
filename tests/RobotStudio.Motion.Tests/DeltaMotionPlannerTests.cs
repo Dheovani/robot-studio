@@ -19,7 +19,8 @@ public sealed class DeltaMotionPlannerTests
         var segment = Assert.Single(plan.Segments);
         Assert.Equal(90, plan.MaximumActuatorTravelMillimeters);
         Assert.Equal(90, segment.EffectiveActuatorVelocityMillimetersPerSecond);
-        Assert.True(plan.TotalDuration > TimeSpan.Zero);
+        Assert.Equal(180, segment.Profile.Acceleration);
+        Assert.True(plan.TotalDuration > TimeSpan.FromSeconds(1));
     }
 
     [Fact]
@@ -51,7 +52,7 @@ public sealed class DeltaMotionPlannerTests
         new(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
-            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
-            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
-            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
 }

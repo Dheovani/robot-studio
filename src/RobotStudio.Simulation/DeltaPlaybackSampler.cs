@@ -47,7 +47,11 @@ public sealed class DeltaPlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = (time - current.Time).TotalSeconds / (next.Time - current.Time).TotalSeconds;
+                var progress = MotionProfileTimelineSampler.CalculateProgress(
+                    current.MotionProfile,
+                    current.Time,
+                    next.Time,
+                    time);
                 var actuators = Interpolate(current.Actuators, next.Actuators, progress);
                 frames.Add(new DeltaPlaybackFrame(
                     time,

@@ -8,7 +8,8 @@ public sealed record DeltaActuator
         DeltaActuatorId id,
         double minimumMillimeters,
         double maximumMillimeters,
-        double maximumVelocityMillimetersPerSecond)
+        double maximumVelocityMillimetersPerSecond,
+        double maximumAccelerationMillimetersPerSecondSquared)
     {
         if (maximumMillimeters <= minimumMillimeters)
         {
@@ -20,10 +21,16 @@ public sealed record DeltaActuator
             throw new ArgumentException("Delta actuator maximum velocity must be greater than zero.");
         }
 
+        if (maximumAccelerationMillimetersPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Delta actuator maximum acceleration must be greater than zero.");
+        }
+
         Id = id;
         MinimumMillimeters = minimumMillimeters;
         MaximumMillimeters = maximumMillimeters;
         MaximumVelocityMillimetersPerSecond = maximumVelocityMillimetersPerSecond;
+        MaximumAccelerationMillimetersPerSecondSquared = maximumAccelerationMillimetersPerSecondSquared;
     }
 
     public DeltaActuatorId Id { get; }
@@ -33,6 +40,8 @@ public sealed record DeltaActuator
     public double MaximumMillimeters { get; }
 
     public double MaximumVelocityMillimetersPerSecond { get; }
+
+    public double MaximumAccelerationMillimetersPerSecondSquared { get; }
 
     public void ValidateCoordinate(double coordinateMillimeters)
     {

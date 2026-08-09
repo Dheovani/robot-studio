@@ -34,11 +34,20 @@ public sealed class DronePlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = (time - current.Time).TotalSeconds / (next.Time - current.Time).TotalSeconds;
+                var translationProgress = MotionProfileTimelineSampler.CalculateSynchronizedProgress(
+                    current.TranslationProfile,
+                    current.Time,
+                    next.Time,
+                    time);
+                var yawProgress = MotionProfileTimelineSampler.CalculateSynchronizedProgress(
+                    current.YawProfile,
+                    current.Time,
+                    next.Time,
+                    time);
                 frames.Add(new DronePlaybackFrame(
                     time,
                     current.State,
-                    Interpolate(current.Pose, next.Pose, progress),
+                    Interpolate(current.Pose, next.Pose, translationProgress, yawProgress),
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -77,15 +86,17 @@ public sealed class DronePlaybackSampler
     private static DronePose Interpolate(
         DronePose start,
         DronePose end,
-        double progress)
+        double translationProgress,
+        double yawProgress)
     {
-        var clampedProgress = Math.Clamp(progress, 0, 1);
+        var clampedTranslationProgress = Math.Clamp(translationProgress, 0, 1);
+        var clampedYawProgress = Math.Clamp(yawProgress, 0, 1);
         var yawDelta = DronePose.NormalizeSignedDegrees(end.YawDegrees - start.YawDegrees);
 
         return new DronePose(
-            start.XMillimeters + ((end.XMillimeters - start.XMillimeters) * clampedProgress),
-            start.YMillimeters + ((end.YMillimeters - start.YMillimeters) * clampedProgress),
-            start.ZMillimeters + ((end.ZMillimeters - start.ZMillimeters) * clampedProgress),
-            DronePose.NormalizeYawDegrees(start.YawDegrees + (yawDelta * clampedProgress)));
+            start.XMillimeters + ((end.XMillimeters - start.XMillimeters) * clampedTranslationProgress),
+            start.YMillimeters + ((end.YMillimeters - start.YMillimeters) * clampedTranslationProgress),
+            start.ZMillimeters + ((end.ZMillimeters - start.ZMillimeters) * clampedTranslationProgress),
+            DronePose.NormalizeYawDegrees(start.YawDegrees + (yawDelta * clampedYawProgress)));
     }
 }

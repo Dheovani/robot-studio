@@ -28,6 +28,22 @@ public sealed class DeltaPlaybackSamplerTests
     }
 
     [Fact]
+    public void Sample_DuringAcceleration_ShouldUseActuatorProfile()
+    {
+        var result = CreateMoveResult();
+        var snapshot = new DeltaPlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(100));
+        var acceleratingFrame = Assert.Single(
+            snapshot.Frames,
+            frame => frame.Time == TimeSpan.FromMilliseconds(100));
+
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        Assert.Equal(0.9, acceleratingFrame.Actuators.CMillimeters, precision: 6);
+        Assert.Equal(0.3, acceleratingFrame.Actuators.AMillimeters, precision: 6);
+    }
+
+    [Fact]
     public void Sample_ShouldPreserveCommandMetadata()
     {
         var snapshot = new DeltaPlaybackSampler()
@@ -44,9 +60,9 @@ public sealed class DeltaPlaybackSamplerTests
         var profile = new DeltaRobotProfile(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
-            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
-            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
-            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
         var context = DeltaSimulationContext.Create(
             profile,
             new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0));

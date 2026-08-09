@@ -5190,17 +5190,20 @@ public partial class MainWindow : Window
                 DeltaActuatorId.A,
                 minimumMillimeters: 0,
                 maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 110),
+                maximumVelocityMillimetersPerSecond: 110,
+                maximumAccelerationMillimetersPerSecondSquared: 220),
             actuatorB: new DeltaActuator(
                 DeltaActuatorId.B,
                 minimumMillimeters: 0,
                 maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 100),
+                maximumVelocityMillimetersPerSecond: 100,
+                maximumAccelerationMillimetersPerSecondSquared: 200),
             actuatorC: new DeltaActuator(
                 DeltaActuatorId.C,
                 minimumMillimeters: 0,
                 maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 90));
+                maximumVelocityMillimetersPerSecond: 90,
+                maximumAccelerationMillimetersPerSecondSquared: 180));
 
     private static DroneProfile CreateDroneProfile() =>
         new(
@@ -5211,7 +5214,9 @@ public partial class MainWindow : Window
             minimumZMillimeters: 0,
             maximumZMillimeters: 240,
             maximumLinearVelocityMillimetersPerSecond: 180,
-            maximumYawVelocityDegreesPerSecond: 120);
+            maximumYawVelocityDegreesPerSecond: 120,
+            maximumLinearAccelerationMillimetersPerSecondSquared: 360,
+            maximumYawAccelerationDegreesPerSecondSquared: 240);
 
     private static IndustrialArmRobotProfile CreateIndustrialArmProfile() =>
         new(

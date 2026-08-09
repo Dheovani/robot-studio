@@ -1,6 +1,7 @@
 using RobotStudio.Domain;
 using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -11,4 +12,9 @@ public sealed record DroneSimulationStep(
     string Description,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource)
+{
+    public TrapezoidalMotionProfile? TranslationProfile { get; init; }
+
+    public TrapezoidalMotionProfile? YawProfile { get; init; }
+}

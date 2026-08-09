@@ -13,7 +13,9 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         double minimumZMillimeters,
         double maximumZMillimeters,
         double maximumLinearVelocityMillimetersPerSecond,
-        double maximumYawVelocityDegreesPerSecond)
+        double maximumYawVelocityDegreesPerSecond,
+        double maximumLinearAccelerationMillimetersPerSecondSquared,
+        double maximumYawAccelerationDegreesPerSecondSquared)
     {
         if (maximumXMillimeters <= minimumXMillimeters)
         {
@@ -40,6 +42,16 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
             throw new ArgumentException("Maximum yaw velocity must be greater than zero.");
         }
 
+        if (maximumLinearAccelerationMillimetersPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Maximum linear acceleration must be greater than zero.");
+        }
+
+        if (maximumYawAccelerationDegreesPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Maximum yaw acceleration must be greater than zero.");
+        }
+
         MinimumXMillimeters = minimumXMillimeters;
         MaximumXMillimeters = maximumXMillimeters;
         MinimumYMillimeters = minimumYMillimeters;
@@ -48,6 +60,8 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         MaximumZMillimeters = maximumZMillimeters;
         MaximumLinearVelocityMillimetersPerSecond = maximumLinearVelocityMillimetersPerSecond;
         MaximumYawVelocityDegreesPerSecond = maximumYawVelocityDegreesPerSecond;
+        MaximumLinearAccelerationMillimetersPerSecondSquared = maximumLinearAccelerationMillimetersPerSecondSquared;
+        MaximumYawAccelerationDegreesPerSecondSquared = maximumYawAccelerationDegreesPerSecondSquared;
     }
 
     public double MinimumXMillimeters { get; }
@@ -65,6 +79,10 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
     public double MaximumLinearVelocityMillimetersPerSecond { get; }
 
     public double MaximumYawVelocityDegreesPerSecond { get; }
+
+    public double MaximumLinearAccelerationMillimetersPerSecondSquared { get; }
+
+    public double MaximumYawAccelerationDegreesPerSecondSquared { get; }
 
     public void ValidatePosition(DronePose position)
     {

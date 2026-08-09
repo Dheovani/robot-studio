@@ -64,7 +64,7 @@ public sealed class DeltaSimulatorTests
         new(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
-            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
-            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
-            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
 }

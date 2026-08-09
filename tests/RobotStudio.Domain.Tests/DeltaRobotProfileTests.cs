@@ -51,11 +51,18 @@ public sealed class DeltaRobotProfileTests
             RobotCommandValidator.Validate(command, profile));
     }
 
+    [Fact]
+    public void ActuatorConstructor_WhenMaximumAccelerationIsNotPositive_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() =>
+            new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 0));
+    }
+
     private static DeltaRobotProfile CreateProfile() =>
         new(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
-            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120),
-            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100),
-            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90));
+            actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
+            actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
+            actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
 }

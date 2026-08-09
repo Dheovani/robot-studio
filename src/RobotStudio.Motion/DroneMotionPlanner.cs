@@ -52,26 +52,24 @@ public sealed class DroneMotionPlanner
         var yawVelocity = GetEffectiveYawVelocity(
             robotProfile,
             requestedYawVelocityDegreesPerSecond);
-        var translationDuration = distanceMillimeters <= MovementToleranceMillimeters
-            ? TimeSpan.Zero
-            : TimeSpan.FromSeconds(distanceMillimeters / linearVelocity);
-        var yawDuration = yawRotationDegrees <= RotationToleranceDegrees
-            ? TimeSpan.Zero
-            : TimeSpan.FromSeconds(yawRotationDegrees / yawVelocity);
-        var duration = translationDuration >= yawDuration
-            ? translationDuration
-            : yawDuration;
+        var translationProfile = distanceMillimeters <= MovementToleranceMillimeters
+            ? null
+            : new TrapezoidalMotionProfile(
+                distanceMillimeters,
+                linearVelocity,
+                robotProfile.MaximumLinearAccelerationMillimetersPerSecondSquared);
+        var yawProfile = yawRotationDegrees <= RotationToleranceDegrees
+            ? null
+            : new TrapezoidalMotionProfile(
+                yawRotationDegrees,
+                yawVelocity,
+                robotProfile.MaximumYawAccelerationDegreesPerSecondSquared);
 
         var segment = new DroneMotionSegment(
             start,
             end,
-            duration,
-            distanceMillimeters <= MovementToleranceMillimeters
-                ? 0
-                : distanceMillimeters / duration.TotalSeconds,
-            yawRotationDegrees <= RotationToleranceDegrees
-                ? 0
-                : yawRotationDegrees / duration.TotalSeconds);
+            translationProfile,
+            yawProfile);
 
         return new DroneMotionPlan(
             start,
