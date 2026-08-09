@@ -9,7 +9,8 @@ public sealed record DroneMoveCommand : RobotCommand
         DronePose targetPose,
         double? requestedLinearVelocityMillimetersPerSecond = null,
         double? requestedYawVelocityDegreesPerSecond = null,
-        RobotCommandSource? source = null)
+        RobotCommandSource? source = null,
+        double? requestedAttitudeVelocityDegreesPerSecond = null)
         : base(source)
     {
         if (requestedLinearVelocityMillimetersPerSecond <= 0)
@@ -28,9 +29,18 @@ public sealed record DroneMoveCommand : RobotCommand
                 "Expected value: greater than zero.");
         }
 
+        if (requestedAttitudeVelocityDegreesPerSecond <= 0)
+        {
+            throw new InvalidRobotCommandException(
+                "Drone requested attitude velocity must be greater than zero. " +
+                $"Invalid value: {requestedAttitudeVelocityDegreesPerSecond:0.###} deg/s. " +
+                "Expected value: greater than zero.");
+        }
+
         TargetPose = targetPose;
         RequestedLinearVelocityMillimetersPerSecond = requestedLinearVelocityMillimetersPerSecond;
         RequestedYawVelocityDegreesPerSecond = requestedYawVelocityDegreesPerSecond;
+        RequestedAttitudeVelocityDegreesPerSecond = requestedAttitudeVelocityDegreesPerSecond;
     }
 
     public DronePose TargetPose { get; }
@@ -38,4 +48,6 @@ public sealed record DroneMoveCommand : RobotCommand
     public double? RequestedLinearVelocityMillimetersPerSecond { get; }
 
     public double? RequestedYawVelocityDegreesPerSecond { get; }
+
+    public double? RequestedAttitudeVelocityDegreesPerSecond { get; }
 }

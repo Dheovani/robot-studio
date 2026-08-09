@@ -9,6 +9,8 @@ public sealed record DroneMotionPlan(
     double YawRotationDegrees,
     IReadOnlyList<DroneMotionSegment> Segments)
 {
+    public double MaximumTiltRotationDegrees => Start.MaximumTiltDistanceDegreesTo(End);
+
     public TimeSpan TotalDuration =>
         TimeSpan.FromTicks(Segments.Sum(segment => segment.Duration.Ticks));
 }

@@ -4,7 +4,9 @@ public readonly record struct DronePose(
     double XMillimeters,
     double YMillimeters,
     double ZMillimeters,
-    double YawDegrees) : IRobotPosition
+    double YawDegrees,
+    double RollDegrees = 0,
+    double PitchDegrees = 0) : IRobotPosition
 {
     public double DistanceTo(DronePose other)
     {
@@ -20,6 +22,11 @@ public readonly record struct DronePose(
         var delta = NormalizeYawDegrees(other.YawDegrees) - NormalizeYawDegrees(YawDegrees);
         return Math.Abs(NormalizeSignedDegrees(delta));
     }
+
+    public double MaximumTiltDistanceDegreesTo(DronePose other) =>
+        Math.Max(
+            Math.Abs(other.RollDegrees - RollDegrees),
+            Math.Abs(other.PitchDegrees - PitchDegrees));
 
     public static double NormalizeYawDegrees(double degrees)
     {

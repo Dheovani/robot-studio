@@ -195,6 +195,23 @@ public sealed class RobotScriptParserTests
         var command = Assert.IsType<DroneMoveCommand>(Assert.Single(sequence.Commands));
         Assert.Null(command.RequestedLinearVelocityMillimetersPerSecond);
         Assert.Null(command.RequestedYawVelocityDegreesPerSecond);
+        Assert.Equal(0, command.TargetPose.RollDegrees);
+        Assert.Equal(0, command.TargetPose.PitchDegrees);
+        Assert.Null(command.RequestedAttitudeVelocityDegreesPerSecond);
+    }
+
+    [Fact]
+    public void Parse_WhenDroneHasAttitude_ShouldReturnRollPitchAndRequestedVelocity()
+    {
+        var parser = new RobotScriptParser();
+
+        var sequence = parser.Parse(
+            "DRONE X=120 Y=80 Z=40 ROLL=10 PITCH=-5 YAW=90 ATTITUDE_SPEED=60");
+
+        var command = Assert.IsType<DroneMoveCommand>(Assert.Single(sequence.Commands));
+        Assert.Equal(10, command.TargetPose.RollDegrees);
+        Assert.Equal(-5, command.TargetPose.PitchDegrees);
+        Assert.Equal(60, command.RequestedAttitudeVelocityDegreesPerSecond);
     }
 
     [Fact]
@@ -394,7 +411,7 @@ public sealed class RobotScriptParserTests
         var parser = new RobotScriptParser();
 
         var exception = Assert.Throws<ScriptParseException>(() =>
-            parser.Parse("DRONE X=120 Y=80 Z=40 YAW=90 ROLL=10"));
+            parser.Parse("DRONE X=120 Y=80 Z=40 YAW=90 BANK=10"));
 
         Assert.Equal(1, exception.LineNumber);
         Assert.Contains("Unknown DRONE argument", exception.Message);

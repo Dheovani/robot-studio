@@ -33,7 +33,7 @@ WAIT 500
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
 - Open the first Delta Robot viewer for simplified parallel-actuator simulation.
-- Open the first Drone viewer for simplified 3D aerial pose and yaw simulation.
+- Open the Drone viewer for simplified 3D position plus coordinated roll, pitch, and yaw attitude simulation.
 - Load local teaching examples from every available desktop viewer.
 - Load and save `.robot` or `.txt` scripts in the desktop app.
 - Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
@@ -64,7 +64,7 @@ Implemented:
 - SCARA domain, kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Simple Articulated Arm domain, forward kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - Delta Robot domain, simplified parallel kinematics, motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
-- Drone domain, 3D pose model, yaw orientation, coordinated motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
+- Drone domain, 3D pose and attitude model, coordinated motion planner, deterministic simulator, DSL support, playback sampler, and 3D viewer;
 - 6-DOF Industrial Arm domain, simplified forward kinematics, coordinated joint planner, `ARM6` DSL support, deterministic simulator, playback sampler, local examples, and 3D viewer;
 - shared desktop rendering helpers for orbit cameras, simple meshes, paths, and reachable workspaces;
 - shared playback contracts for cross-family simulation summaries;

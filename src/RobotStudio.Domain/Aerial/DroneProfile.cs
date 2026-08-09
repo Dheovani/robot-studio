@@ -15,7 +15,10 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         double maximumLinearVelocityMillimetersPerSecond,
         double maximumYawVelocityDegreesPerSecond,
         double maximumLinearAccelerationMillimetersPerSecondSquared,
-        double maximumYawAccelerationDegreesPerSecondSquared)
+        double maximumYawAccelerationDegreesPerSecondSquared,
+        double maximumTiltDegrees,
+        double maximumAttitudeVelocityDegreesPerSecond,
+        double maximumAttitudeAccelerationDegreesPerSecondSquared)
     {
         if (maximumXMillimeters <= minimumXMillimeters)
         {
@@ -52,6 +55,21 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
             throw new ArgumentException("Maximum yaw acceleration must be greater than zero.");
         }
 
+        if (maximumTiltDegrees <= 0 || maximumTiltDegrees > 90)
+        {
+            throw new ArgumentException("Maximum tilt must be greater than zero and no greater than 90 degrees.");
+        }
+
+        if (maximumAttitudeVelocityDegreesPerSecond <= 0)
+        {
+            throw new ArgumentException("Maximum attitude velocity must be greater than zero.");
+        }
+
+        if (maximumAttitudeAccelerationDegreesPerSecondSquared <= 0)
+        {
+            throw new ArgumentException("Maximum attitude acceleration must be greater than zero.");
+        }
+
         MinimumXMillimeters = minimumXMillimeters;
         MaximumXMillimeters = maximumXMillimeters;
         MinimumYMillimeters = minimumYMillimeters;
@@ -62,6 +80,9 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         MaximumYawVelocityDegreesPerSecond = maximumYawVelocityDegreesPerSecond;
         MaximumLinearAccelerationMillimetersPerSecondSquared = maximumLinearAccelerationMillimetersPerSecondSquared;
         MaximumYawAccelerationDegreesPerSecondSquared = maximumYawAccelerationDegreesPerSecondSquared;
+        MaximumTiltDegrees = maximumTiltDegrees;
+        MaximumAttitudeVelocityDegreesPerSecond = maximumAttitudeVelocityDegreesPerSecond;
+        MaximumAttitudeAccelerationDegreesPerSecondSquared = maximumAttitudeAccelerationDegreesPerSecondSquared;
     }
 
     public double MinimumXMillimeters { get; }
@@ -83,6 +104,12 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
     public double MaximumLinearAccelerationMillimetersPerSecondSquared { get; }
 
     public double MaximumYawAccelerationDegreesPerSecondSquared { get; }
+
+    public double MaximumTiltDegrees { get; }
+
+    public double MaximumAttitudeVelocityDegreesPerSecond { get; }
+
+    public double MaximumAttitudeAccelerationDegreesPerSecondSquared { get; }
 
     public void ValidatePosition(DronePose position)
     {
@@ -114,5 +141,19 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         }
 
         _ = DronePose.NormalizeYawDegrees(position.YawDegrees);
+
+        ValidateTilt(nameof(position.RollDegrees), position.RollDegrees);
+        ValidateTilt(nameof(position.PitchDegrees), position.PitchDegrees);
+    }
+
+    private void ValidateTilt(string component, double degrees)
+    {
+        if (!double.IsFinite(degrees) || Math.Abs(degrees) > MaximumTiltDegrees)
+        {
+            throw new InvalidRobotCommandException(
+                $"Drone {component} is outside its physical tilt limits. " +
+                $"Invalid value: {degrees:0.###} deg. " +
+                $"Expected range: {-MaximumTiltDegrees:0.###} deg to {MaximumTiltDegrees:0.###} deg.");
+        }
     }
 }

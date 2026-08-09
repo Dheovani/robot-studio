@@ -240,7 +240,10 @@ public sealed class RobotPlaybackContractTests
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
-            maximumYawAccelerationDegreesPerSecondSquared: 240);
+            maximumYawAccelerationDegreesPerSecondSquared: 240,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
         var context = DroneSimulationContext.Create(
             profile,
             new DronePose(0, 0, 0, 0));

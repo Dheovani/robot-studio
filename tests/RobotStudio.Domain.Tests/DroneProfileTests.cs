@@ -68,6 +68,24 @@ public sealed class DroneProfileTests
         Assert.Throws<ArgumentException>(() => CreateProfile(yawAcceleration: 0));
     }
 
+    [Theory]
+    [InlineData(46, 0)]
+    [InlineData(0, -46)]
+    public void ValidatePosition_WhenTiltExceedsLimit_ShouldThrow(
+        double rollDegrees,
+        double pitchDegrees)
+    {
+        var pose = new DronePose(
+            XMillimeters: 100,
+            YMillimeters: 100,
+            ZMillimeters: 100,
+            YawDegrees: 0,
+            RollDegrees: rollDegrees,
+            PitchDegrees: pitchDegrees);
+
+        Assert.Throws<InvalidRobotCommandException>(() => CreateProfile().ValidatePosition(pose));
+    }
+
     private static DroneProfile CreateProfile(
         double linearAcceleration = 360,
         double yawAcceleration = 240) =>
@@ -81,5 +99,8 @@ public sealed class DroneProfileTests
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: linearAcceleration,
-            maximumYawAccelerationDegreesPerSecondSquared: yawAcceleration);
+            maximumYawAccelerationDegreesPerSecondSquared: yawAcceleration,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
 }

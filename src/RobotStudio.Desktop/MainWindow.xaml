@@ -1759,7 +1759,7 @@
                             <TextBlock x:Name="DroneStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
                             <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Pose" />
                             <TextBlock x:Name="DronePoseText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Yaw" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Attitude" />
                             <TextBlock x:Name="DroneYawText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
                             <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
                             <TextBlock x:Name="DroneCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />

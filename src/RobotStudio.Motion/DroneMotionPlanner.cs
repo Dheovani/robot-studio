@@ -12,7 +12,8 @@ public sealed class DroneMotionPlanner
         DronePose end,
         DroneProfile robotProfile,
         double? requestedLinearVelocityMillimetersPerSecond = null,
-        double? requestedYawVelocityDegreesPerSecond = null)
+        double? requestedYawVelocityDegreesPerSecond = null,
+        double? requestedAttitudeVelocityDegreesPerSecond = null)
     {
         ArgumentNullException.ThrowIfNull(robotProfile);
 
@@ -30,13 +31,22 @@ public sealed class DroneMotionPlanner
                 "Requested yaw velocity must be greater than zero.");
         }
 
+        if (requestedAttitudeVelocityDegreesPerSecond <= 0)
+        {
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedAttitudeVelocityDegreesPerSecond),
+                "Requested attitude velocity must be greater than zero.");
+        }
+
         robotProfile.ValidatePosition(start);
         robotProfile.ValidatePosition(end);
 
         var distanceMillimeters = start.DistanceTo(end);
         var yawRotationDegrees = start.AngularDistanceDegreesTo(end);
+        var attitudeRotationDegrees = start.MaximumTiltDistanceDegreesTo(end);
         if (distanceMillimeters <= MovementToleranceMillimeters &&
-            yawRotationDegrees <= RotationToleranceDegrees)
+            yawRotationDegrees <= RotationToleranceDegrees &&
+            attitudeRotationDegrees <= RotationToleranceDegrees)
         {
             return new DroneMotionPlan(
                 start,
@@ -52,6 +62,9 @@ public sealed class DroneMotionPlanner
         var yawVelocity = GetEffectiveYawVelocity(
             robotProfile,
             requestedYawVelocityDegreesPerSecond);
+        var attitudeVelocity = GetEffectiveAttitudeVelocity(
+            robotProfile,
+            requestedAttitudeVelocityDegreesPerSecond);
         var translationProfile = distanceMillimeters <= MovementToleranceMillimeters
             ? null
             : new TrapezoidalMotionProfile(
@@ -64,11 +77,18 @@ public sealed class DroneMotionPlanner
                 yawRotationDegrees,
                 yawVelocity,
                 robotProfile.MaximumYawAccelerationDegreesPerSecondSquared);
+        var attitudeProfile = attitudeRotationDegrees <= RotationToleranceDegrees
+            ? null
+            : new TrapezoidalMotionProfile(
+                attitudeRotationDegrees,
+                attitudeVelocity,
+                robotProfile.MaximumAttitudeAccelerationDegreesPerSecondSquared);
 
         var segment = new DroneMotionSegment(
             start,
             end,
             translationProfile,
+            attitudeProfile,
             yawProfile);
 
         return new DroneMotionPlan(
@@ -96,4 +116,13 @@ public sealed class DroneMotionPlanner
                 robotProfile.MaximumYawVelocityDegreesPerSecond,
                 requestedYawVelocityDegreesPerSecond.Value)
             : robotProfile.MaximumYawVelocityDegreesPerSecond;
+
+    private static double GetEffectiveAttitudeVelocity(
+        DroneProfile robotProfile,
+        double? requestedAttitudeVelocityDegreesPerSecond) =>
+        requestedAttitudeVelocityDegreesPerSecond.HasValue
+            ? Math.Min(
+                robotProfile.MaximumAttitudeVelocityDegreesPerSecond,
+                requestedAttitudeVelocityDegreesPerSecond.Value)
+            : robotProfile.MaximumAttitudeVelocityDegreesPerSecond;
 }

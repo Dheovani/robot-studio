@@ -109,7 +109,9 @@ public sealed class RobotFramePresenterTests
                 XMillimeters: 120,
                 YMillimeters: 80,
                 ZMillimeters: 40,
-                YawDegrees: 90),
+                YawDegrees: 90,
+                RollDegrees: 10,
+                PitchDegrees: -5),
             CommandIndex: 0,
             CommandName: nameof(DroneMoveCommand),
             CommandSource: null);
@@ -117,9 +119,9 @@ public sealed class RobotFramePresenterTests
         var status = RobotFramePresenter.Create(frame, frameIndex: 2, frameCount: 5, TimeSpan.FromSeconds(4));
 
         Assert.Equal("X=120, Y=80, Z=40 mm", status.PrimaryPose);
-        Assert.Equal("Yaw=90 deg", RobotFramePresenter.FormatDroneYaw(frame));
+        Assert.Equal("R=10, P=-5, Y=90 deg", RobotFramePresenter.FormatDroneAttitude(frame));
         Assert.Contains("coordinated 3D flight motion", status.MovementExplanation);
-        Assert.Contains("without simulating thrust", status.MovementExplanation);
+        Assert.Contains("roll, pitch, and yaw", status.MovementExplanation);
     }
 
     [Fact]

@@ -32,7 +32,7 @@ This file tracks future work after the first stable Cartesian simulation release
 - [ ] Add collision or workspace obstruction concepts when the lessons need them.
 - [x] Add joint-space simulation for articulated robots.
 - [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
-- [ ] Add attitude/orientation simulation for aerial robots.
+- [x] Add roll, pitch, and yaw attitude simulation for the Drone.
 - [ ] Add a clearer recovery workflow for faulted simulations.
 - [ ] Add deterministic simulation fixtures for every future robot family.
 

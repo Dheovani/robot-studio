@@ -16,5 +16,7 @@ public sealed record DroneSimulationStep(
 {
     public TrapezoidalMotionProfile? TranslationProfile { get; init; }
 
+    public TrapezoidalMotionProfile? AttitudeProfile { get; init; }
+
     public TrapezoidalMotionProfile? YawProfile { get; init; }
 }

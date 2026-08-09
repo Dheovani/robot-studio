@@ -208,6 +208,7 @@ Expected result:
 - workspace limits are visible without covering the robot mechanism;
 - students can inspect current state, position, command, source line, and simulated time;
 - students can inspect ideal left/right wheel odometry while a Differential Drive command is playing;
+- students can observe Drone roll, pitch, and yaw attitude changing with the schematic 3D body;
 - visual controls do not change domain rules.
 
 ### Edit And Simulate A DSL Script In The Desktop App

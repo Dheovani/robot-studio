@@ -104,7 +104,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Differential-drive odometry produces opposite signed wheel travel during in-place rotation.
 - [x] Differential-drive playback exposes intermediate acceleration-aware wheel odometry.
 - [x] Delta planning and playback synchronize involved actuators with the lowest acceleration limit.
-- [x] Drone planning and playback synchronize independent translation and yaw profiles without mixing units.
+- [x] Drone planning and playback synchronize independent translation, attitude, and yaw profiles without mixing units.
+- [x] Drone profiles validate physical roll and pitch limits.
+- [x] Drone planning synchronizes roll/pitch attitude with translation and yaw.
+- [x] Drone playback interpolates roll, pitch, and yaw using acceleration-aware progress.
 - [x] Planner rejects impossible movement when distance exists but no axis displacement is measurable.
 - [x] XY plotter planner creates valid X/Y motion plans.
 - [x] XY plotter planner rejects target positions outside X/Y limits.
@@ -130,8 +133,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Delta planner caps requested actuator velocity by involved actuator limits.
 - [x] Delta planner handles stationary actuator movement predictably.
 - [x] Delta planner rejects target actuators outside physical limits.
-- [x] Drone planner creates coordinated 3D translation and yaw plans.
-- [x] Drone planner caps requested linear and yaw velocities.
+- [x] Drone planner creates coordinated 3D translation, roll/pitch attitude, and yaw plans.
+- [x] Drone planner caps requested linear, attitude, and yaw velocities.
 - [x] Drone planner handles stationary pose movement predictably.
 - [x] Drone planner rejects target poses outside physical limits.
 
@@ -241,7 +244,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Drone simulator executes 3D pose move commands.
 - [x] Drone simulator returns `Faulted` when a command fails.
 - [x] Drone playback sampling returns frames at fixed intervals.
-- [x] Drone playback sampling interpolates pose and yaw between timeline steps.
+- [x] Drone playback sampling interpolates position and full attitude between timeline steps.
 - [x] Drone playback sampling preserves command metadata.
 - [x] Cartesian, mobile, SCARA, simple arm, industrial arm, Delta, and Drone snapshots expose the shared playback snapshot contract.
 - [x] Cartesian, mobile, SCARA, simple arm, industrial arm, Delta, and Drone frames expose common timeline metadata.
@@ -274,6 +277,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Parse `DELTA A=30 B=60 C=90 SPEED=80`.
 - [x] Parse `DRONE X=120 Y=80 Z=40 YAW=90`.
 - [x] Parse `DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45`.
+- [x] Parse optional Drone `ROLL`, `PITCH`, and `ATTITUDE_SPEED` arguments while keeping older scripts compatible.
 - [x] Unknown command reports a clear parser error.
 - [x] Missing coordinate reports a clear parser error.
 - [x] Missing `DRIVE` heading reports a clear parser error.
@@ -459,7 +463,7 @@ Expected current behavior:
 - renders the SCARA robot as a 3D viewport with volumetric links and joints;
 - renders the Simple Articulated Arm as a 3D viewport with volumetric links and joints;
 - renders the Delta Robot as a 3D viewport with triangular frame, vertical actuator rails, moving carriages, platform, TCP, and path;
-- renders the Drone as a 3D viewport with flight-volume boundary, ground grid, rotor arms, yaw indicator, and path;
+- renders the Drone as a 3D viewport with flight-volume boundary, ground grid, attitude-aware rotor arms, heading indicator, and path;
 - loads selected local Cartesian examples from the Cartesian viewer;
 - loads selected local XY Plotter examples from the XY Plotter viewer;
 - loads selected local Differential Drive examples from the mobile viewer;

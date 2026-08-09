@@ -89,7 +89,9 @@ public sealed class DroneSimulator
             XMillimeters: 0,
             YMillimeters: 0,
             ZMillimeters: 0,
-            YawDegrees: 0);
+            YawDegrees: 0,
+            RollDegrees: 0,
+            PitchDegrees: 0);
         var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
@@ -134,7 +136,8 @@ public sealed class DroneSimulator
             command.TargetPose,
             context.RobotProfile,
             command.RequestedLinearVelocityMillimetersPerSecond,
-            command.RequestedYawVelocityDegreesPerSecond);
+            command.RequestedYawVelocityDegreesPerSecond,
+            command.RequestedAttitudeVelocityDegreesPerSecond);
         var motionSegment = motionPlan.Segments.SingleOrDefault();
         timeline.Add(CreateStep(
             movingContext,
@@ -211,6 +214,7 @@ public sealed class DroneSimulator
             commandSource)
         {
             TranslationProfile = motionSegment?.TranslationProfile,
+            AttitudeProfile = motionSegment?.AttitudeProfile,
             YawProfile = motionSegment?.YawProfile
         };
 

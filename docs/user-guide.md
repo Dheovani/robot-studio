@@ -85,7 +85,7 @@ Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reac
 
 Opening the Delta Robot renders a 3D simplified parallel robot viewer with a triangular frame, three vertical actuators, moving carriages, parallel links, platform/TCP, reachable workspace, planned path, current actuator positions, current tool pose, command name, camera orbit, zoom, and timeline controls. Its three linear actuators move with one synchronized acceleration-aware profile. The viewer includes a Delta DSL editor for `HOME`, `DELTA`, and `WAIT` commands, plus a local example selector.
 
-Opening the Drone renders a 3D aerial robot viewer with flight-volume boundaries, ground grid, drone body, rotor arms, yaw direction indicator, planned path, current X/Y/Z position, current yaw, command name, camera orbit, zoom, and timeline controls. Translation and yaw use independent but time-synchronized acceleration-aware profiles. This remains a simplified deterministic teaching model rather than an aerodynamic simulation. The viewer includes a Drone DSL editor for `HOME`, `DRONE`, and `WAIT` commands, plus a local example selector.
+Opening the Drone renders a 3D aerial robot viewer with flight-volume boundaries, ground grid, drone body, rotor arms, attitude and heading indicators, planned path, current X/Y/Z position, current roll/pitch/yaw, command name, camera orbit, zoom, and timeline controls. Translation, roll/pitch attitude, and yaw use independent but time-synchronized acceleration-aware profiles. This remains a simplified deterministic teaching model rather than an aerodynamic or flight-control simulation. The viewer includes a Drone DSL editor for `HOME`, `DRONE`, and `WAIT` commands, plus a local example selector.
 
 Opening the 6-DOF Industrial Arm renders a 3D serial arm viewer with a raised base, six joint markers, volumetric links, wrist/tool orientation, reachable floor area, TCP path, joint state, command name, camera orbit, zoom, and timeline controls. The viewer includes an industrial-arm DSL editor for `HOME`, `ARM6`, and `WAIT` commands, plus local examples.
 
@@ -279,10 +279,10 @@ DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 Drone movement:
 
 ```txt
-DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
+DRONE X=120 Y=80 Z=40 ROLL=10 PITCH=-5 YAW=90 SPEED=100 ATTITUDE_SPEED=60 YAW_SPEED=45
 ```
 
-`SPEED` is requested 3D linear velocity in millimeters per second. `YAW_SPEED` is requested yaw velocity in degrees per second.
+`SPEED` is requested 3D linear velocity in millimeters per second. `ATTITUDE_SPEED` is the requested shared roll/pitch velocity in degrees per second. `YAW_SPEED` is requested yaw velocity in degrees per second. `ROLL`, `PITCH`, and `ATTITUDE_SPEED` are optional; omitted roll and pitch values default to zero for compatibility with earlier scripts.
 
 Six-joint industrial arm movement:
 

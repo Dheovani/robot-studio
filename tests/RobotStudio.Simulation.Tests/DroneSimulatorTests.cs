@@ -57,6 +57,25 @@ public sealed class DroneSimulatorTests
         Assert.NotNull(result.Failure);
     }
 
+    [Fact]
+    public void Execute_WhenCommandChangesAttitude_ShouldPreserveRollPitchAndNormalizedYaw()
+    {
+        var target = new DronePose(
+            XMillimeters: 120,
+            YMillimeters: 80,
+            ZMillimeters: 40,
+            YawDegrees: 450,
+            RollDegrees: 20,
+            PitchDegrees: -10);
+        var result = new DroneSimulator().Execute(
+            DroneSimulationContext.Create(CreateProfile(), new DronePose(0, 0, 0, 0)),
+            new RobotCommandSequence([new DroneMoveCommand(target)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(target with { YawDegrees = 90 }, result.FinalContext.CurrentPose);
+        Assert.NotNull(result.Timeline[1].AttitudeProfile);
+    }
+
     private static DroneProfile CreateProfile() =>
         new(
             minimumXMillimeters: 0,
@@ -68,5 +87,8 @@ public sealed class DroneSimulatorTests
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
-            maximumYawAccelerationDegreesPerSecondSquared: 240);
+            maximumYawAccelerationDegreesPerSecondSquared: 240,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
 }

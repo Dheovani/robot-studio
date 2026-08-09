@@ -46,6 +46,24 @@ public sealed class DroneMotionPlannerTests
     }
 
     [Fact]
+    public void PlanMove_WhenOnlyAttitudeChanges_ShouldCreateSynchronizedTiltProfile()
+    {
+        var plan = new DroneMotionPlanner().PlanMove(
+            new DronePose(50, 50, 50, YawDegrees: 0),
+            new DronePose(50, 50, 50, YawDegrees: 0, RollDegrees: 30, PitchDegrees: -15),
+            CreateProfile(),
+            requestedAttitudeVelocityDegreesPerSecond: 60);
+
+        var segment = Assert.Single(plan.Segments);
+        Assert.Equal(30, plan.MaximumTiltRotationDegrees);
+        Assert.NotNull(segment.AttitudeProfile);
+        Assert.Null(segment.TranslationProfile);
+        Assert.Null(segment.YawProfile);
+        Assert.Equal(60, segment.AttitudeProfile.MaximumVelocity);
+        Assert.Equal(360, segment.AttitudeProfile.Acceleration);
+    }
+
+    [Fact]
     public void PlanMove_WhenPoseIsUnchanged_ShouldReturnEmptyPlan()
     {
         var planner = new DroneMotionPlanner();
@@ -80,5 +98,8 @@ public sealed class DroneMotionPlannerTests
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
-            maximumYawAccelerationDegreesPerSecondSquared: 240);
+            maximumYawAccelerationDegreesPerSecondSquared: 240,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
 }

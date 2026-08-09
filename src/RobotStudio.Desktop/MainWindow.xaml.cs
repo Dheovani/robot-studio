@@ -4832,7 +4832,7 @@ public partial class MainWindow : Window
             droneSnapshot.TotalDuration);
         DroneStateText.Text = status.State;
         DronePoseText.Text = status.PrimaryPose;
-        DroneYawText.Text = RobotFramePresenter.FormatDroneYaw(frame);
+        DroneYawText.Text = RobotFramePresenter.FormatDroneAttitude(frame);
         DroneCommandText.Text = status.Command;
         DroneTimeText.Text = status.Time;
         DroneStatusText.Text = status.Footer;
@@ -4935,9 +4935,13 @@ public partial class MainWindow : Window
     {
         var group = new Model3DGroup();
         var center = ToPoint3D(frame.Pose);
-        var yaw = frame.Pose.YawDegrees * Math.PI / 180;
-        var forward = new Vector3D(Math.Cos(yaw), Math.Sin(yaw), 0);
-        var right = new Vector3D(-Math.Sin(yaw), Math.Cos(yaw), 0);
+        var attitude = Matrix3D.Identity;
+        attitude.Rotate(new Quaternion(new Vector3D(1, 0, 0), frame.Pose.RollDegrees));
+        attitude.Rotate(new Quaternion(new Vector3D(0, 1, 0), frame.Pose.PitchDegrees));
+        attitude.Rotate(new Quaternion(new Vector3D(0, 0, 1), frame.Pose.YawDegrees));
+        var forward = attitude.Transform(new Vector3D(1, 0, 0));
+        var right = attitude.Transform(new Vector3D(0, 1, 0));
+        var up = attitude.Transform(new Vector3D(0, 0, 1));
         const double armLength = 56;
         const double rotorOffset = 42;
 
@@ -4958,18 +4962,19 @@ public partial class MainWindow : Window
                 new VisualVector3(30, 30, 5),
                 Color.FromRgb(226, 232, 240)));
             group.Children.Add(MeshModelFactory.CreateBox(
-                new VisualVector3(rotor.X, rotor.Y, rotor.Z + 6),
+                new VisualVector3(rotor.X + (up.X * 6), rotor.Y + (up.Y * 6), rotor.Z + (up.Z * 6)),
                 new VisualVector3(rotorOffset, 7, 4),
                 Color.FromRgb(30, 41, 59)));
             group.Children.Add(MeshModelFactory.CreateBox(
-                new VisualVector3(rotor.X, rotor.Y, rotor.Z + 6),
+                new VisualVector3(rotor.X + (up.X * 6), rotor.Y + (up.Y * 6), rotor.Z + (up.Z * 6)),
                 new VisualVector3(7, rotorOffset, 4),
                 Color.FromRgb(30, 41, 59)));
         }
 
-        group.Children.Add(MeshModelFactory.CreateBox(
-            new VisualVector3(center.X, center.Y, center.Z - 28),
-            new VisualVector3(8, 8, 40),
+        group.Children.Add(MeshModelFactory.CreateOrientedBox(
+            center,
+            center - (up * 48),
+            thickness: 8,
             Color.FromRgb(248, 113, 113)));
 
         return group;
@@ -5216,7 +5221,10 @@ public partial class MainWindow : Window
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
-            maximumYawAccelerationDegreesPerSecondSquared: 240);
+            maximumYawAccelerationDegreesPerSecondSquared: 240,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
 
     private static IndustrialArmRobotProfile CreateIndustrialArmProfile() =>
         new(

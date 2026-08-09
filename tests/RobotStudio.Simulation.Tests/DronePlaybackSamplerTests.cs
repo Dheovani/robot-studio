@@ -18,7 +18,7 @@ public sealed class DronePlaybackSamplerTests
     }
 
     [Fact]
-    public void Sample_WhenDroneMoves_ShouldInterpolatePoseAndYaw()
+    public void Sample_WhenDroneMoves_ShouldInterpolatePoseAndAttitude()
     {
         var snapshot = new DronePlaybackSampler()
             .Sample(CreateMoveResult(), TimeSpan.FromMilliseconds(100));
@@ -27,6 +27,8 @@ public sealed class DronePlaybackSamplerTests
             snapshot.Frames,
             frame => frame.Pose.XMillimeters > 0 &&
                      frame.Pose.XMillimeters < 120 &&
+                     frame.Pose.RollDegrees > 0 &&
+                     frame.Pose.RollDegrees < 20 &&
                      frame.Pose.YawDegrees > 0 &&
                      frame.Pose.YawDegrees < 90);
     }
@@ -43,9 +45,11 @@ public sealed class DronePlaybackSamplerTests
             frame => frame.Time == TimeSpan.FromMilliseconds(100));
 
         Assert.NotNull(result.Timeline[1].TranslationProfile);
+        Assert.NotNull(result.Timeline[1].AttitudeProfile);
         Assert.NotNull(result.Timeline[1].YawProfile);
         Assert.InRange(acceleratingFrame.Pose.XMillimeters, 0, 3);
         Assert.InRange(acceleratingFrame.Pose.YawDegrees, 0, 3);
+        Assert.InRange(acceleratingFrame.Pose.RollDegrees, 0, 1);
     }
 
     [Fact]
@@ -72,13 +76,17 @@ public sealed class DronePlaybackSamplerTests
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
-            maximumYawAccelerationDegreesPerSecondSquared: 240);
+            maximumYawAccelerationDegreesPerSecondSquared: 240,
+            maximumTiltDegrees: 45,
+            maximumAttitudeVelocityDegreesPerSecond: 180,
+            maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
         var context = DroneSimulationContext.Create(profile, new DronePose(0, 0, 0, 0));
         var sequence = new RobotCommandSequence(
             [new DroneMoveCommand(
-                new DronePose(120, 80, 40, 90),
+                new DronePose(120, 80, 40, YawDegrees: 90, RollDegrees: 20, PitchDegrees: -10),
                 requestedLinearVelocityMillimetersPerSecond: 120,
-                requestedYawVelocityDegreesPerSecond: 90)]);
+                requestedYawVelocityDegreesPerSecond: 90,
+                requestedAttitudeVelocityDegreesPerSecond: 60)]);
 
         return new DroneSimulator().Execute(context, sequence);
     }

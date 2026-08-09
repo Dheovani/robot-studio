@@ -148,23 +148,23 @@ public static class RobotExampleCatalog
         new(
             RobotViewerKind.DroneThreeDimensional,
             "Drone waypoint flight",
-            "Moves through two 3D waypoints while changing yaw.",
+            "Moves through two 3D waypoints while coordinating roll, pitch, and yaw.",
             """
             HOME
-            DRONE X=120 Y=80 Z=80 YAW=45 SPEED=120 YAW_SPEED=90
-            DRONE X=260 Y=180 Z=120 YAW=135 SPEED=110 YAW_SPEED=80
+            DRONE X=120 Y=80 Z=80 ROLL=10 PITCH=-8 YAW=45 SPEED=120 ATTITUDE_SPEED=60 YAW_SPEED=90
+            DRONE X=260 Y=180 Z=120 ROLL=-12 PITCH=6 YAW=135 SPEED=110 ATTITUDE_SPEED=55 YAW_SPEED=80
             WAIT 500
             """),
 
         new(
             RobotViewerKind.DroneThreeDimensional,
             "Drone climb and turn",
-            "Shows vertical motion, lateral motion, and yaw coordination.",
+            "Shows vertical motion, lateral motion, and full attitude coordination.",
             """
             HOME
-            DRONE X=80 Y=60 Z=140 YAW=0 SPEED=100 YAW_SPEED=90
-            DRONE X=220 Y=60 Z=180 YAW=90 SPEED=120 YAW_SPEED=60
-            DRONE X=220 Y=220 Z=90 YAW=180 SPEED=100 YAW_SPEED=75
+            DRONE X=80 Y=60 Z=140 ROLL=8 PITCH=-10 YAW=0 SPEED=100 ATTITUDE_SPEED=50 YAW_SPEED=90
+            DRONE X=220 Y=60 Z=180 ROLL=-8 PITCH=5 YAW=90 SPEED=120 ATTITUDE_SPEED=60 YAW_SPEED=60
+            DRONE X=220 Y=220 Z=90 ROLL=0 PITCH=0 YAW=180 SPEED=100 ATTITUDE_SPEED=75 YAW_SPEED=75
             WAIT 400
             """),
 

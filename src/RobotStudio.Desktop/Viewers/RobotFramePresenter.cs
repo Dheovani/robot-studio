@@ -105,8 +105,8 @@ public static class RobotFramePresenter
             Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as coordinated 3D flight motion. " +
-                "The drone pose combines X/Y/Z position with yaw orientation. " +
-                "This didactic model coordinates translation and yaw without simulating thrust, pitch, roll, or real aerodynamics.");
+                "The drone pose combines X/Y/Z position with roll, pitch, and yaw attitude. " +
+                "This didactic model coordinates translation and orientation without simulating thrust or real aerodynamics.");
     }
 
     public static RobotFrameStatus Create(
@@ -141,8 +141,8 @@ public static class RobotFramePresenter
     public static string FormatDeltaToolPose(DeltaPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.XMillimeters)}, Y={FormatNumber(frame.ToolPose.YMillimeters)}, Z={FormatNumber(frame.ToolPose.ZMillimeters)} mm";
 
-    public static string FormatDroneYaw(DronePlaybackFrame frame) =>
-        $"Yaw={FormatNumber(frame.Pose.YawDegrees)} deg";
+    public static string FormatDroneAttitude(DronePlaybackFrame frame) =>
+        $"R={FormatNumber(frame.Pose.RollDegrees)}, P={FormatNumber(frame.Pose.PitchDegrees)}, Y={FormatNumber(frame.Pose.YawDegrees)} deg";
 
     public static string FormatIndustrialArmToolPose(IndustrialArmPlaybackFrame frame) =>
         $"X={FormatNumber(frame.ToolPose.XMillimeters)}, Y={FormatNumber(frame.ToolPose.YMillimeters)}, " +

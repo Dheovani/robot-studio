@@ -255,12 +255,18 @@ public sealed class RobotScriptParser : IRobotScriptDialect
             lineNumber,
             line,
             arguments,
-            ["X", "Y", "Z", "YAW", "SPEED", "YAW_SPEED"]);
+            ["X", "Y", "Z", "ROLL", "PITCH", "YAW", "SPEED", "ATTITUDE_SPEED", "YAW_SPEED"]);
 
         var x = GetRequiredDouble(lineNumber, line, values, "X", "DRONE");
         var y = GetRequiredDouble(lineNumber, line, values, "Y", "DRONE");
         var z = GetRequiredDouble(lineNumber, line, values, "Z", "DRONE");
         var yaw = GetRequiredDouble(lineNumber, line, values, "YAW", "DRONE");
+        var roll = values.TryGetValue("ROLL", out var rollText)
+            ? ParseDouble(lineNumber, line, rollText, "ROLL")
+            : 0;
+        var pitch = values.TryGetValue("PITCH", out var pitchText)
+            ? ParseDouble(lineNumber, line, pitchText, "PITCH")
+            : 0;
 
         double? requestedLinearVelocity = values.TryGetValue("SPEED", out var speedText)
             ? ParseDouble(lineNumber, line, speedText, "SPEED")
@@ -268,12 +274,22 @@ public sealed class RobotScriptParser : IRobotScriptDialect
         double? requestedYawVelocity = values.TryGetValue("YAW_SPEED", out var yawSpeedText)
             ? ParseDouble(lineNumber, line, yawSpeedText, "YAW_SPEED")
             : null;
+        double? requestedAttitudeVelocity = values.TryGetValue("ATTITUDE_SPEED", out var attitudeSpeedText)
+            ? ParseDouble(lineNumber, line, attitudeSpeedText, "ATTITUDE_SPEED")
+            : null;
 
         return new DroneMoveCommand(
-            new DronePose(x, y, z, yaw),
+            new DronePose(
+                XMillimeters: x,
+                YMillimeters: y,
+                ZMillimeters: z,
+                YawDegrees: yaw,
+                RollDegrees: roll,
+                PitchDegrees: pitch),
             requestedLinearVelocity,
             requestedYawVelocity,
-            CreateSource(lineNumber, line));
+            CreateSource(lineNumber, line),
+            requestedAttitudeVelocity);
     }
 
     private static RobotCommandSource CreateSource(

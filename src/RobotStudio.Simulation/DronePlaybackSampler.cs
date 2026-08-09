@@ -44,10 +44,15 @@ public sealed class DronePlaybackSampler
                     current.Time,
                     next.Time,
                     time);
+                var attitudeProgress = MotionProfileTimelineSampler.CalculateSynchronizedProgress(
+                    current.AttitudeProfile,
+                    current.Time,
+                    next.Time,
+                    time);
                 frames.Add(new DronePlaybackFrame(
                     time,
                     current.State,
-                    Interpolate(current.Pose, next.Pose, translationProgress, yawProgress),
+                    Interpolate(current.Pose, next.Pose, translationProgress, attitudeProgress, yawProgress),
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -87,9 +92,11 @@ public sealed class DronePlaybackSampler
         DronePose start,
         DronePose end,
         double translationProgress,
+        double attitudeProgress,
         double yawProgress)
     {
         var clampedTranslationProgress = Math.Clamp(translationProgress, 0, 1);
+        var clampedAttitudeProgress = Math.Clamp(attitudeProgress, 0, 1);
         var clampedYawProgress = Math.Clamp(yawProgress, 0, 1);
         var yawDelta = DronePose.NormalizeSignedDegrees(end.YawDegrees - start.YawDegrees);
 
@@ -97,6 +104,8 @@ public sealed class DronePlaybackSampler
             start.XMillimeters + ((end.XMillimeters - start.XMillimeters) * clampedTranslationProgress),
             start.YMillimeters + ((end.YMillimeters - start.YMillimeters) * clampedTranslationProgress),
             start.ZMillimeters + ((end.ZMillimeters - start.ZMillimeters) * clampedTranslationProgress),
-            DronePose.NormalizeYawDegrees(start.YawDegrees + (yawDelta * clampedYawProgress)));
+            DronePose.NormalizeYawDegrees(start.YawDegrees + (yawDelta * clampedYawProgress)),
+            start.RollDegrees + ((end.RollDegrees - start.RollDegrees) * clampedAttitudeProgress),
+            start.PitchDegrees + ((end.PitchDegrees - start.PitchDegrees) * clampedAttitudeProgress));
     }
 }
