@@ -120,6 +120,15 @@ SCARA collision checks reuse the planar environment but not the mobile footprint
 
 SCARA movement collision is intentionally sampled rather than a mathematically continuous swept-volume solution. Smaller configurable angular steps increase detection resolution at a computational cost. The default is appropriate for the introductory deterministic model, while continuous collision detection remains future advanced work.
 
+The remaining 3D families use `SpatialSimulationEnvironment` and immutable axis-aligned `SpatialObstacle` volumes. Shared spatial code performs only envelope geometry; each family remains responsible for deriving meaningful physical components from its own state and kinematics.
+
+- The Simple Articulated Arm samples its three planar link envelopes through joint space.
+- The 6-DOF Industrial Arm derives the base column, upper arm, forearm, and wrist/tool chain in 3D and samples those link envelopes through six-joint movement.
+- The Delta Robot samples all actuator coordinates, derives three carriage-to-platform links plus the moving platform, and tests each parallel component.
+- The Drone uses an explicit spherical body radius and tests its complete 3D center trajectory; roll, pitch, and yaw do not change that rotationally symmetric introductory envelope.
+
+Spatial link and component checks conservatively expand axis-aligned obstacles by the configured component radius. Articulated movement uses a default maximum one-degree joint step, while Delta movement uses a default maximum two-millimeter actuator step. These deterministic safety envelopes favor understandable and repeatable behavior over production-grade continuous collision detection. More exact mesh, self-collision, and swept-volume analysis belongs to the future advanced rendering/simulation work.
+
 Robot commands may carry optional source metadata through `RobotCommandSource`. The simple DSL uses this metadata to preserve the source line number and original command text. Simulation timeline steps and timeline samples propagate this metadata so CLI output and future visual tools can explain where a command came from.
 
 Future visual layers should consume `RobotVisualState` instead of reading low-level simulation internals directly. The first mapper, `CartesianVisualStateMapper`, converts Cartesian simulation samples into a visual position expressed in millimeters. Visual pose mapping stays in `RobotStudio.Simulation`; it must not be added to `RobotStudio.Domain` or `RobotStudio.Motion`.

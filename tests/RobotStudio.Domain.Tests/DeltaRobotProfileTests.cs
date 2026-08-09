@@ -7,6 +7,12 @@ namespace RobotStudio.Domain.Tests;
 public sealed class DeltaRobotProfileTests
 {
     [Fact]
+    public void Constructor_WhenMovingComponentCollisionRadiusIsInvalid_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(collisionRadius: 0));
+    }
+
+    [Fact]
     public void ValidatePosition_WhenActuatorsAreInsideLimits_ShouldNotThrow()
     {
         var profile = CreateProfile();
@@ -58,10 +64,11 @@ public sealed class DeltaRobotProfileTests
             new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 0));
     }
 
-    private static DeltaRobotProfile CreateProfile() =>
+    private static DeltaRobotProfile CreateProfile(double collisionRadius = 14) =>
         new(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
+            movingComponentCollisionRadiusMillimeters: collisionRadius,
             actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
             actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
             actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));

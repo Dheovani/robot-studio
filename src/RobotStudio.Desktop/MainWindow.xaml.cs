@@ -5170,6 +5170,7 @@ public partial class MainWindow : Window
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
+            linkCollisionRadiusMillimeters: 10,
             baseJoint: new SimpleArmJoint(
                 SimpleArmJointId.Base,
                 minimumDegrees: -180,
@@ -5193,6 +5194,7 @@ public partial class MainWindow : Window
         new(
             baseRadiusMillimeters: 170,
             toolZOffsetMillimeters: 60,
+            movingComponentCollisionRadiusMillimeters: 14,
             actuatorA: new DeltaActuator(
                 DeltaActuatorId.A,
                 minimumMillimeters: 0,
@@ -5220,6 +5222,7 @@ public partial class MainWindow : Window
             maximumYMillimeters: 350,
             minimumZMillimeters: 0,
             maximumZMillimeters: 240,
+            collisionRadiusMillimeters: 24,
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,
@@ -5234,6 +5237,7 @@ public partial class MainWindow : Window
             upperArmLengthMillimeters: 180,
             forearmLengthMillimeters: 140,
             wristLengthMillimeters: 80,
+            linkCollisionRadiusMillimeters: 12,
             joints:
             [
                 new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),

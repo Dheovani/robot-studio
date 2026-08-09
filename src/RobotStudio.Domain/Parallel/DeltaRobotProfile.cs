@@ -5,6 +5,7 @@ public sealed record DeltaRobotProfile : IRobotProfile<DeltaActuatorPosition>
     public DeltaRobotProfile(
         double baseRadiusMillimeters,
         double toolZOffsetMillimeters,
+        double movingComponentCollisionRadiusMillimeters,
         DeltaActuator actuatorA,
         DeltaActuator actuatorB,
         DeltaActuator actuatorC)
@@ -14,12 +15,18 @@ public sealed record DeltaRobotProfile : IRobotProfile<DeltaActuatorPosition>
             throw new ArgumentException("Delta base radius must be greater than zero.");
         }
 
+        if (!double.IsFinite(movingComponentCollisionRadiusMillimeters) || movingComponentCollisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("Delta moving-component collision radius must be a finite number greater than zero.");
+        }
+
         ArgumentNullException.ThrowIfNull(actuatorA);
         ArgumentNullException.ThrowIfNull(actuatorB);
         ArgumentNullException.ThrowIfNull(actuatorC);
 
         BaseRadiusMillimeters = baseRadiusMillimeters;
         ToolZOffsetMillimeters = toolZOffsetMillimeters;
+        MovingComponentCollisionRadiusMillimeters = movingComponentCollisionRadiusMillimeters;
         ActuatorA = actuatorA;
         ActuatorB = actuatorB;
         ActuatorC = actuatorC;
@@ -28,6 +35,8 @@ public sealed record DeltaRobotProfile : IRobotProfile<DeltaActuatorPosition>
     public double BaseRadiusMillimeters { get; }
 
     public double ToolZOffsetMillimeters { get; }
+
+    public double MovingComponentCollisionRadiusMillimeters { get; }
 
     public DeltaActuator ActuatorA { get; }
 

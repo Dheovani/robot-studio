@@ -14,6 +14,7 @@ The project is intentionally educational. It is designed to help students unders
 - Model Cartesian workspace obstacles and reject linear paths that intersect them before simulated movement begins.
 - Detect Differential Drive collisions using the robot's circular body footprint rather than treating its center as a dimensionless point.
 - Detect SCARA collisions against both physical links throughout sampled joint-space movement, not only at the final TCP position.
+- Apply deterministic spatial collision envelopes to articulated links, Delta parallel components, and the Drone body while preserving each family's own kinematics.
 - Run movement commands plus `HOME`, `WAIT`, and the fault recovery command `RESET`.
 - Write simple DSL scripts such as:
 

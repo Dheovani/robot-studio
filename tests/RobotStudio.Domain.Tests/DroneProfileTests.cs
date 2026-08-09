@@ -68,6 +68,12 @@ public sealed class DroneProfileTests
         Assert.Throws<ArgumentException>(() => CreateProfile(yawAcceleration: 0));
     }
 
+    [Fact]
+    public void Constructor_WhenCollisionRadiusIsInvalid_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(collisionRadius: double.PositiveInfinity));
+    }
+
     [Theory]
     [InlineData(46, 0)]
     [InlineData(0, -46)]
@@ -88,7 +94,8 @@ public sealed class DroneProfileTests
 
     private static DroneProfile CreateProfile(
         double linearAcceleration = 360,
-        double yawAcceleration = 240) =>
+        double yawAcceleration = 240,
+        double collisionRadius = 24) =>
         new(
             minimumXMillimeters: 0,
             maximumXMillimeters: 500,
@@ -96,6 +103,7 @@ public sealed class DroneProfileTests
             maximumYMillimeters: 400,
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
+            collisionRadiusMillimeters: collisionRadius,
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: linearAcceleration,

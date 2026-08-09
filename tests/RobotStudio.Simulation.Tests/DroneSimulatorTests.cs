@@ -8,6 +8,23 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DroneSimulatorTests
 {
     [Fact]
+    public void Execute_WhenAerialBodyPathIsObstructed_ShouldFaultWithoutMoving()
+    {
+        var start = new DronePose(0, 0, 0, 0);
+        var environment = new SpatialSimulationEnvironment(
+            [new SpatialObstacle("fixture", new SpatialPoint(50, 30, 10), new SpatialPoint(70, 50, 30))]);
+        var result = new DroneSimulator(environment).Execute(
+            DroneSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence([new DroneMoveCommand(new DronePose(120, 80, 40, 0))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(start, result.FinalContext.CurrentPose);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        var exception = Assert.IsType<SpatialPathObstructedException>(result.Failure);
+        Assert.Equal("DroneBody", exception.ComponentId);
+    }
+
+    [Fact]
     public void Execute_WhenResettingFault_ShouldPreservePoseAndElapsedTime()
     {
         var context = DroneSimulationContext.Create(CreateProfile(), new DronePose(100, 80, 40, 30, 10, -5)) with
@@ -100,6 +117,7 @@ public sealed class DroneSimulatorTests
             maximumYMillimeters: 400,
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
+            collisionRadiusMillimeters: 24,
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,

@@ -9,21 +9,37 @@ public sealed class DeltaSimulator
 {
     private readonly DeltaMotionPlanner motionPlanner;
     private readonly DeltaKinematics kinematics;
+    private readonly SpatialSimulationEnvironment environment;
 
     public DeltaSimulator()
-        : this(new DeltaMotionPlanner(), new DeltaKinematics())
+        : this(new DeltaMotionPlanner(), new DeltaKinematics(), SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public DeltaSimulator(SpatialSimulationEnvironment environment)
+        : this(new DeltaMotionPlanner(), new DeltaKinematics(), environment)
     {
     }
 
     public DeltaSimulator(
         DeltaMotionPlanner motionPlanner,
         DeltaKinematics kinematics)
+        : this(motionPlanner, kinematics, SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public DeltaSimulator(
+        DeltaMotionPlanner motionPlanner,
+        DeltaKinematics kinematics,
+        SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
+        ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
         this.kinematics = kinematics;
+        this.environment = environment;
     }
 
     public DeltaSimulationResult Execute(
@@ -104,6 +120,7 @@ public sealed class DeltaSimulator
         List<DeltaSimulationStep> timeline)
     {
         var targetActuators = new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0);
+        EnsurePathIsClear(context, targetActuators);
         var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentActuators,
@@ -130,6 +147,7 @@ public sealed class DeltaSimulator
         int commandIndex,
         List<DeltaSimulationStep> timeline)
     {
+        EnsurePathIsClear(context, command.TargetActuators);
         var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentActuators,
@@ -178,6 +196,16 @@ public sealed class DeltaSimulator
         RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
 
         return context with { State = nextState };
+    }
+
+    private void EnsurePathIsClear(DeltaSimulationContext context, DeltaActuatorPosition target)
+    {
+        var collision = DeltaMechanismCollisionDetector.FindFirstCollision(
+            context.CurrentActuators, target, context.RobotProfile, environment);
+        if (collision is not null)
+        {
+            throw new SpatialPathObstructedException("Delta Robot", collision);
+        }
     }
 
     private DeltaSimulationStep CreateStep(

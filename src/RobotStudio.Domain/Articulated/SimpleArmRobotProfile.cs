@@ -6,6 +6,7 @@ public sealed record SimpleArmRobotProfile : IRobotProfile<SimpleArmJointPositio
         double firstLinkLengthMillimeters,
         double secondLinkLengthMillimeters,
         double thirdLinkLengthMillimeters,
+        double linkCollisionRadiusMillimeters,
         SimpleArmJoint baseJoint,
         SimpleArmJoint shoulderJoint,
         SimpleArmJoint elbowJoint)
@@ -29,6 +30,11 @@ public sealed record SimpleArmRobotProfile : IRobotProfile<SimpleArmJointPositio
             throw new ArgumentException("Third simple arm link length must be greater than zero.");
         }
 
+        if (!double.IsFinite(linkCollisionRadiusMillimeters) || linkCollisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("Simple arm link collision radius must be a finite number greater than zero.");
+        }
+
         if (baseJoint.Id != SimpleArmJointId.Base)
         {
             throw new ArgumentException("The base joint descriptor must use the Base id.");
@@ -47,6 +53,7 @@ public sealed record SimpleArmRobotProfile : IRobotProfile<SimpleArmJointPositio
         FirstLinkLengthMillimeters = firstLinkLengthMillimeters;
         SecondLinkLengthMillimeters = secondLinkLengthMillimeters;
         ThirdLinkLengthMillimeters = thirdLinkLengthMillimeters;
+        LinkCollisionRadiusMillimeters = linkCollisionRadiusMillimeters;
         BaseJoint = baseJoint;
         ShoulderJoint = shoulderJoint;
         ElbowJoint = elbowJoint;
@@ -58,6 +65,8 @@ public sealed record SimpleArmRobotProfile : IRobotProfile<SimpleArmJointPositio
     public double SecondLinkLengthMillimeters { get; }
 
     public double ThirdLinkLengthMillimeters { get; }
+
+    public double LinkCollisionRadiusMillimeters { get; }
 
     public SimpleArmJoint BaseJoint { get; }
 

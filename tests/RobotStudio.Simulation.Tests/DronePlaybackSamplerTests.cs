@@ -73,6 +73,7 @@ public sealed class DronePlaybackSamplerTests
             maximumYMillimeters: 400,
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
+            collisionRadiusMillimeters: 24,
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,

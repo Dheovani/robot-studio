@@ -9,21 +9,37 @@ public sealed class SimpleArmSimulator
 {
     private readonly SimpleArmMotionPlanner motionPlanner;
     private readonly SimpleArmKinematics kinematics;
+    private readonly SpatialSimulationEnvironment environment;
 
     public SimpleArmSimulator()
-        : this(new SimpleArmMotionPlanner(), new SimpleArmKinematics())
+        : this(new SimpleArmMotionPlanner(), new SimpleArmKinematics(), SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public SimpleArmSimulator(SpatialSimulationEnvironment environment)
+        : this(new SimpleArmMotionPlanner(), new SimpleArmKinematics(), environment)
     {
     }
 
     public SimpleArmSimulator(
         SimpleArmMotionPlanner motionPlanner,
         SimpleArmKinematics kinematics)
+        : this(motionPlanner, kinematics, SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public SimpleArmSimulator(
+        SimpleArmMotionPlanner motionPlanner,
+        SimpleArmKinematics kinematics,
+        SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
+        ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
         this.kinematics = kinematics;
+        this.environment = environment;
     }
 
     public SimpleArmSimulationResult Execute(
@@ -104,6 +120,7 @@ public sealed class SimpleArmSimulator
         List<SimpleArmSimulationStep> timeline)
     {
         var targetJoints = new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0);
+        EnsurePathIsClear(context, targetJoints);
         var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
@@ -130,6 +147,7 @@ public sealed class SimpleArmSimulator
         int commandIndex,
         List<SimpleArmSimulationStep> timeline)
     {
+        EnsurePathIsClear(context, command.TargetJoints);
         var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentJoints,
@@ -178,6 +196,16 @@ public sealed class SimpleArmSimulator
         RobotStateTransitions.EnsureCanTransitionTo(context.State, nextState);
 
         return context with { State = nextState };
+    }
+
+    private void EnsurePathIsClear(SimpleArmSimulationContext context, SimpleArmJointPosition target)
+    {
+        var collision = SimpleArmLinkCollisionDetector.FindFirstCollision(
+            context.CurrentJoints, target, context.RobotProfile, environment);
+        if (collision is not null)
+        {
+            throw new SpatialPathObstructedException("Simple Articulated Arm", collision);
+        }
     }
 
     private SimpleArmSimulationStep CreateStep(

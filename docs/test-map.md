@@ -87,6 +87,11 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] SCARA joint-path sampling detects intermediate collisions while accepting clear articulated paths.
 - [x] SCARA move and home commands preserve joints and elapsed time when a link path is obstructed.
 - [x] SCARA profiles reject non-finite or non-positive link collision radii.
+- [x] Spatial envelope tests cover swept body entry and clear link geometry.
+- [x] Simple Articulated Arm and 6-DOF Industrial Arm fixtures reject intermediate link obstructions.
+- [x] Delta fixtures reject moving-platform or parallel-link obstructions without changing actuator state.
+- [x] Drone fixtures reject body-envelope obstructions without changing pose or attitude.
+- [x] Every implemented robot family has deterministic simulator success, failure, recovery, and collision coverage appropriate to its topology.
 
 ## `RobotStudio.Motion.Tests`
 

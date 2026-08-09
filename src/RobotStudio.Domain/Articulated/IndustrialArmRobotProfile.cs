@@ -7,12 +7,18 @@ public sealed record IndustrialArmRobotProfile : IRobotProfile<IndustrialArmJoin
         double upperArmLengthMillimeters,
         double forearmLengthMillimeters,
         double wristLengthMillimeters,
+        double linkCollisionRadiusMillimeters,
         IReadOnlyList<IndustrialArmJoint> joints)
     {
         if (baseHeightMillimeters <= 0 || upperArmLengthMillimeters <= 0 ||
             forearmLengthMillimeters <= 0 || wristLengthMillimeters <= 0)
         {
             throw new ArgumentException("Industrial arm dimensions must be greater than zero.");
+        }
+
+        if (!double.IsFinite(linkCollisionRadiusMillimeters) || linkCollisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("Industrial arm link collision radius must be a finite number greater than zero.");
         }
 
         ArgumentNullException.ThrowIfNull(joints);
@@ -28,6 +34,7 @@ public sealed record IndustrialArmRobotProfile : IRobotProfile<IndustrialArmJoin
         UpperArmLengthMillimeters = upperArmLengthMillimeters;
         ForearmLengthMillimeters = forearmLengthMillimeters;
         WristLengthMillimeters = wristLengthMillimeters;
+        LinkCollisionRadiusMillimeters = linkCollisionRadiusMillimeters;
         Joints = joints.ToArray();
     }
 
@@ -38,6 +45,8 @@ public sealed record IndustrialArmRobotProfile : IRobotProfile<IndustrialArmJoin
     public double ForearmLengthMillimeters { get; }
 
     public double WristLengthMillimeters { get; }
+
+    public double LinkCollisionRadiusMillimeters { get; }
 
     public IReadOnlyList<IndustrialArmJoint> Joints { get; }
 

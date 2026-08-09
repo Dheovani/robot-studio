@@ -78,6 +78,7 @@ public sealed class IndustrialArmMotionPlannerTests
             180,
             140,
             80,
+            12,
             [
                 new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
                 new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),

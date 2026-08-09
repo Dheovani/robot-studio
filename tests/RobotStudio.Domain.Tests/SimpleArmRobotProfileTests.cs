@@ -7,6 +7,12 @@ namespace RobotStudio.Domain.Tests;
 public sealed class SimpleArmRobotProfileTests
 {
     [Fact]
+    public void Constructor_WhenLinkCollisionRadiusIsInvalid_ShouldThrow()
+    {
+        Assert.Throws<ArgumentException>(() => CreateProfile(linkCollisionRadius: double.NaN));
+    }
+
+    [Fact]
     public void ValidatePosition_WhenJointsAreInsideLimits_ShouldNotThrow()
     {
         var profile = CreateProfile();
@@ -67,11 +73,12 @@ public sealed class SimpleArmRobotProfileTests
         Assert.Throws<InvalidRobotCommandException>(() => RobotCommandValidator.Validate(command, profile));
     }
 
-    private static SimpleArmRobotProfile CreateProfile() =>
+    private static SimpleArmRobotProfile CreateProfile(double linkCollisionRadius = 10) =>
         new(
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
+            linkCollisionRadiusMillimeters: linkCollisionRadius,
             baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
             shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
             elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));

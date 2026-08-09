@@ -8,17 +8,32 @@ namespace RobotStudio.Simulation;
 public sealed class DroneSimulator
 {
     private readonly DroneMotionPlanner motionPlanner;
+    private readonly SpatialSimulationEnvironment environment;
 
     public DroneSimulator()
-        : this(new DroneMotionPlanner())
+        : this(new DroneMotionPlanner(), SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public DroneSimulator(SpatialSimulationEnvironment environment)
+        : this(new DroneMotionPlanner(), environment)
     {
     }
 
     public DroneSimulator(DroneMotionPlanner motionPlanner)
+        : this(motionPlanner, SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public DroneSimulator(
+        DroneMotionPlanner motionPlanner,
+        SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
+        this.environment = environment;
     }
 
     public DroneSimulationResult Execute(
@@ -105,6 +120,7 @@ public sealed class DroneSimulator
             YawDegrees: 0,
             RollDegrees: 0,
             PitchDegrees: 0);
+        EnsurePathIsClear(context, targetPose);
         var homingContext = TransitionTo(context, RobotState.Homing);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
@@ -143,6 +159,7 @@ public sealed class DroneSimulator
         int commandIndex,
         List<DroneSimulationStep> timeline)
     {
+        EnsurePathIsClear(context, command.TargetPose);
         var movingContext = TransitionTo(context, RobotState.Moving);
         var motionPlan = motionPlanner.PlanMove(
             context.CurrentPose,
@@ -209,6 +226,23 @@ public sealed class DroneSimulator
 
         return context with { State = nextState };
     }
+
+    private void EnsurePathIsClear(DroneSimulationContext context, DronePose target)
+    {
+        var collision = SpatialEnvelopeCollisionDetector.FindFirstSweptEnvelopeCollision(
+            ToPoint(context.CurrentPose),
+            ToPoint(target),
+            context.RobotProfile.CollisionRadiusMillimeters,
+            environment,
+            "DroneBody");
+        if (collision is not null)
+        {
+            throw new SpatialPathObstructedException("Drone", collision);
+        }
+    }
+
+    private static SpatialPoint ToPoint(DronePose pose) =>
+        new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
 
     private static DroneSimulationStep CreateStep(
         DroneSimulationContext context,

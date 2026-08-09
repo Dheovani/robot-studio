@@ -220,6 +220,23 @@ Expected result:
 - the command faults before execution and preserves the last valid joints and simulated time;
 - changing the configurable maximum angular sample step changes resolution without changing simulation determinism.
 
+### Reject Spatial Robot Collisions
+
+Actor: student or simulation host.
+
+Goal: compare how collision concepts differ across serial arms, parallel robots, and aerial robots.
+
+Current status: baseline deterministic collision envelopes are implemented for every available family; desktop obstacle authoring and overlays remain future work.
+
+Expected result:
+
+- Simple and 6-DOF articulated arms inspect every derived link during sampled joint-space motion;
+- Delta movement inspects the moving platform and all three carriage-to-platform links during sampled actuator motion;
+- Drone movement inspects a spherical body envelope along the complete 3D translation path;
+- failures identify the obstacle and semantic component that caused the obstruction;
+- blocked commands fault before execution and preserve the last valid physical state and elapsed time;
+- each family continues using its own kinematics rather than a Cartesian-only collision assumption.
+
 ### Simulate A Simple DSL Script
 
 Actor: student.

@@ -7,6 +7,23 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DeltaSimulatorTests
 {
     [Fact]
+    public void Execute_WhenParallelMechanismPathIsObstructed_ShouldFaultWithoutMoving()
+    {
+        var start = new DeltaActuatorPosition(0, 0, 0);
+        var environment = new SpatialSimulationEnvironment(
+            [new SpatialObstacle("fixture", new SpatialPoint(-30, -60, -75), new SpatialPoint(0, -30, -45))]);
+        var result = new DeltaSimulator(environment).Execute(
+            DeltaSimulationContext.Create(CreateProfile(), start),
+            new RobotCommandSequence(
+                [new DeltaMoveActuatorsCommand(new DeltaActuatorPosition(30, 60, 90))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(start, result.FinalContext.CurrentActuators);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        Assert.IsType<SpatialPathObstructedException>(result.Failure);
+    }
+
+    [Fact]
     public void Execute_WhenResettingFault_ShouldPreserveActuatorsAndElapsedTime()
     {
         var context = DeltaSimulationContext.Create(CreateProfile(), new DeltaActuatorPosition(30, 60, 90)) with
@@ -80,6 +97,7 @@ public sealed class DeltaSimulatorTests
         new(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
+            movingComponentCollisionRadiusMillimeters: 14,
             actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
             actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
             actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));

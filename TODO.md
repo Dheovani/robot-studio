@@ -32,12 +32,12 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Add deterministic Cartesian workspace obstacles and line-path collision detection.
 - [x] Add planar obstacles and swept circular-footprint collision detection for the Differential Drive Robot.
 - [x] Add deterministic capsule-link collision sampling for the planar SCARA Robot.
-- [ ] Define family-appropriate collision models for spatial articulated links, parallel mechanisms, and aerial bodies.
+- [x] Add family-appropriate collision envelopes for spatial articulated links, Delta parallel components, and the Drone body.
 - [x] Add joint-space simulation for articulated robots.
 - [x] Add ideal wheel odometry simulation for the Differential Drive Robot.
 - [x] Add roll, pitch, and yaw attitude simulation for the Drone.
 - [x] Add an explicit cross-family fault recovery command that preserves physical state and simulated time.
-- [ ] Add deterministic simulation fixtures for every future robot family.
+- [x] Add deterministic simulation fixtures for every currently implemented robot family.
 
 ## 4. Scripting And G-Code
 

@@ -7,8 +7,32 @@ namespace RobotStudio.Simulation;
 
 public sealed class IndustrialArmSimulator
 {
-    private readonly IndustrialArmMotionPlanner motionPlanner = new();
-    private readonly IndustrialArmKinematics kinematics = new();
+    private readonly IndustrialArmMotionPlanner motionPlanner;
+    private readonly IndustrialArmKinematics kinematics;
+    private readonly SpatialSimulationEnvironment environment;
+
+    public IndustrialArmSimulator()
+        : this(new IndustrialArmMotionPlanner(), new IndustrialArmKinematics(), SpatialSimulationEnvironment.Empty)
+    {
+    }
+
+    public IndustrialArmSimulator(SpatialSimulationEnvironment environment)
+        : this(new IndustrialArmMotionPlanner(), new IndustrialArmKinematics(), environment)
+    {
+    }
+
+    public IndustrialArmSimulator(
+        IndustrialArmMotionPlanner motionPlanner,
+        IndustrialArmKinematics kinematics,
+        SpatialSimulationEnvironment environment)
+    {
+        ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(kinematics);
+        ArgumentNullException.ThrowIfNull(environment);
+        this.motionPlanner = motionPlanner;
+        this.kinematics = kinematics;
+        this.environment = environment;
+    }
 
     public IndustrialArmSimulationResult Execute(
         IndustrialArmSimulationContext initialContext,
@@ -80,8 +104,15 @@ public sealed class IndustrialArmSimulator
         int commandIndex,
         List<IndustrialArmSimulationStep> timeline)
     {
-        var activeContext = TransitionTo(context, activeState);
         var plan = motionPlanner.PlanMove(context.CurrentJoints, target, context.RobotProfile, requestedVelocity);
+        var collision = IndustrialArmLinkCollisionDetector.FindFirstCollision(
+            context.CurrentJoints, target, context.RobotProfile, environment);
+        if (collision is not null)
+        {
+            throw new SpatialPathObstructedException("6-DOF Industrial Arm", collision);
+        }
+
+        var activeContext = TransitionTo(context, activeState);
         var motionProfile = plan.Segments.SingleOrDefault()?.Profile;
         timeline.Add(CreateStep(activeContext, $"{command.GetType().Name} started.", commandIndex, command.GetType().Name, command.Source, motionProfile));
         var completed = activeContext with

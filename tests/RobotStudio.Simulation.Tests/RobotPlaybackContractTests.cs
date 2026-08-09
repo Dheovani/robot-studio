@@ -159,6 +159,7 @@ public sealed class RobotPlaybackContractTests
             firstLinkLengthMillimeters: 120,
             secondLinkLengthMillimeters: 90,
             thirdLinkLengthMillimeters: 60,
+            linkCollisionRadiusMillimeters: 10,
             baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
             shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
             elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
@@ -182,6 +183,7 @@ public sealed class RobotPlaybackContractTests
         var profile = new DeltaRobotProfile(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
+            movingComponentCollisionRadiusMillimeters: 14,
             actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
             actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
             actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
@@ -207,6 +209,7 @@ public sealed class RobotPlaybackContractTests
             180,
             140,
             80,
+            12,
             [
                 new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
                 new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
@@ -239,6 +242,7 @@ public sealed class RobotPlaybackContractTests
             maximumYMillimeters: 400,
             minimumZMillimeters: 0,
             maximumZMillimeters: 250,
+            collisionRadiusMillimeters: 24,
             maximumLinearVelocityMillimetersPerSecond: 180,
             maximumYawVelocityDegreesPerSecond: 120,
             maximumLinearAccelerationMillimetersPerSecondSquared: 360,

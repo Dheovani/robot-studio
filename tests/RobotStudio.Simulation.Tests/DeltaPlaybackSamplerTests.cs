@@ -60,6 +60,7 @@ public sealed class DeltaPlaybackSamplerTests
         var profile = new DeltaRobotProfile(
             baseRadiusMillimeters: 140,
             toolZOffsetMillimeters: 0,
+            movingComponentCollisionRadiusMillimeters: 14,
             actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
             actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
             actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));

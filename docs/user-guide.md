@@ -319,6 +319,8 @@ The Differential Drive API accepts a `PlanarSimulationEnvironment` and uses the 
 
 The SCARA API reuses planar obstacles while modeling each robot link as a capsule with an explicit profile radius. Joint movements and homing inspect deterministic intermediate configurations, identifying whether the first or second link would collide. The default maximum joint-space sampling step is one degree. SCARA obstacle controls and collision overlays are not yet exposed in the desktop viewer.
 
+The Simple Articulated Arm, 6-DOF Industrial Arm, Delta Robot, and Drone accept `SpatialSimulationEnvironment`. Arm profiles define link radii, Delta defines a moving-component radius, and Drone defines a body radius. Blocked commands identify the affected semantic component and preserve the prior simulation state. These are deterministic introductory safety envelopes; mesh collision, self-collision, and desktop obstacle authoring remain future work.
+
 ## Planned CLI Learning Flow
 
 The CLI should later support:

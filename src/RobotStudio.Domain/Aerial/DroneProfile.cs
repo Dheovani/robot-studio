@@ -12,6 +12,7 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         double maximumYMillimeters,
         double minimumZMillimeters,
         double maximumZMillimeters,
+        double collisionRadiusMillimeters,
         double maximumLinearVelocityMillimetersPerSecond,
         double maximumYawVelocityDegreesPerSecond,
         double maximumLinearAccelerationMillimetersPerSecondSquared,
@@ -33,6 +34,11 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         if (maximumZMillimeters <= minimumZMillimeters)
         {
             throw new ArgumentException("Maximum Z limit must be greater than minimum Z limit.");
+        }
+
+        if (!double.IsFinite(collisionRadiusMillimeters) || collisionRadiusMillimeters <= 0)
+        {
+            throw new ArgumentException("Drone collision radius must be a finite number greater than zero.");
         }
 
         if (maximumLinearVelocityMillimetersPerSecond <= 0)
@@ -76,6 +82,7 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
         MaximumYMillimeters = maximumYMillimeters;
         MinimumZMillimeters = minimumZMillimeters;
         MaximumZMillimeters = maximumZMillimeters;
+        CollisionRadiusMillimeters = collisionRadiusMillimeters;
         MaximumLinearVelocityMillimetersPerSecond = maximumLinearVelocityMillimetersPerSecond;
         MaximumYawVelocityDegreesPerSecond = maximumYawVelocityDegreesPerSecond;
         MaximumLinearAccelerationMillimetersPerSecondSquared = maximumLinearAccelerationMillimetersPerSecondSquared;
@@ -96,6 +103,8 @@ public sealed record DroneProfile : IRobotProfile<DronePose>
     public double MinimumZMillimeters { get; }
 
     public double MaximumZMillimeters { get; }
+
+    public double CollisionRadiusMillimeters { get; }
 
     public double MaximumLinearVelocityMillimetersPerSecond { get; }
 

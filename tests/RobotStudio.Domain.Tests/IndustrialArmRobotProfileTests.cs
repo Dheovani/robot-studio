@@ -6,6 +6,15 @@ namespace RobotStudio.Domain.Tests;
 public sealed class IndustrialArmRobotProfileTests
 {
     [Fact]
+    public void Constructor_WhenLinkCollisionRadiusIsInvalid_ShouldThrow()
+    {
+        var joints = CreateProfile().Joints;
+
+        Assert.Throws<ArgumentException>(() =>
+            new IndustrialArmRobotProfile(100, 180, 140, 80, 0, joints));
+    }
+
+    [Fact]
     public void ValidatePosition_WhenAllSixJointsAreInsideLimits_ShouldNotThrow()
     {
         CreateProfile().ValidatePosition(new IndustrialArmJointPosition(30, 20, -40, 90, 15, -120));
@@ -48,7 +57,7 @@ public sealed class IndustrialArmRobotProfileTests
             .ToArray();
 
         var exception = Assert.Throws<ArgumentException>(() =>
-            new IndustrialArmRobotProfile(100, 180, 140, 80, joints));
+            new IndustrialArmRobotProfile(100, 180, 140, 80, 12, joints));
 
         Assert.Contains("each joint J1 through J6 exactly once", exception.Message);
     }
@@ -60,7 +69,7 @@ public sealed class IndustrialArmRobotProfileTests
         joints[^1] = new IndustrialArmJoint(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220);
 
         Assert.Throws<ArgumentException>(() =>
-            new IndustrialArmRobotProfile(100, 180, 140, 80, joints));
+            new IndustrialArmRobotProfile(100, 180, 140, 80, 12, joints));
     }
 
     [Fact]
@@ -79,6 +88,7 @@ public sealed class IndustrialArmRobotProfileTests
             upperArmLengthMillimeters: 180,
             forearmLengthMillimeters: 140,
             wristLengthMillimeters: 80,
+            linkCollisionRadiusMillimeters: 12,
             joints:
             [
                 new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),

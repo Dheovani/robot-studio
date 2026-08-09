@@ -7,6 +7,23 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class IndustrialArmSimulatorTests
 {
     [Fact]
+    public void Execute_WhenSpatialLinkPathIsObstructed_ShouldFaultWithoutMoving()
+    {
+        var environment = new SpatialSimulationEnvironment(
+            [new SpatialObstacle("fixture", new SpatialPoint(80, 20, 90), new SpatialPoint(100, 30, 110))]);
+        var result = new IndustrialArmSimulator(environment).Execute(
+            IndustrialArmSimulationContext.Create(CreateProfile(), IndustrialArmJointPosition.Home),
+            new RobotCommandSequence(
+                [new IndustrialArmMoveJointsCommand(new IndustrialArmJointPosition(30, 0, 0, 0, 0, 0))]));
+
+        Assert.False(result.Succeeded);
+        Assert.Equal(IndustrialArmJointPosition.Home, result.FinalContext.CurrentJoints);
+        Assert.Equal(TimeSpan.Zero, result.FinalContext.ElapsedTime);
+        var exception = Assert.IsType<SpatialPathObstructedException>(result.Failure);
+        Assert.StartsWith("IndustrialLink", exception.ComponentId);
+    }
+
+    [Fact]
     public void Execute_WhenResettingFault_ShouldPreserveJointsAndElapsedTime()
     {
         var joints = new IndustrialArmJointPosition(30, 20, -15, 40, 10, 60);
@@ -104,6 +121,7 @@ public sealed class IndustrialArmSimulatorTests
             180,
             140,
             80,
+            12,
             [
                 new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
                 new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
