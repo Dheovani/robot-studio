@@ -1,5 +1,7 @@
 param(
-    [string] $Version = "1.0.0",
+    [Parameter(Mandatory = $true)]
+    [ValidatePattern('^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$')]
+    [string] $Version,
     [string] $Runtime = "win-x64"
 )
 
@@ -19,6 +21,7 @@ dotnet publish (Join-Path $repoRoot "src\RobotStudio.Cli\RobotStudio.Cli.csproj"
     --runtime $Runtime `
     --self-contained true `
     --output $publishDir `
+    -p:Version=$Version `
     -p:PublishSingleFile=false `
     -p:PublishReadyToRun=false
 

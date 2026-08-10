@@ -2,7 +2,9 @@
 
 All notable user-facing changes to RobotStudio are documented in this file.
 
-## Unreleased - Multi-Robot Teaching Platform Expansion
+## Unreleased
+
+## 1.1.0 - Multi-Robot Teaching Platform Expansion
 
 ### Added
 
@@ -53,7 +55,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Updated articulated playback to follow acceleration-aware profile progress instead of constant-speed joint interpolation.
 - Updated differential-drive playback to complete its planned translation before rotation and to follow each segment's acceleration-aware progress.
 - Updated Delta and Drone playback to follow deterministic profile progress instead of constant-speed interpolation.
-- Kept G-code, hardware execution, real drone physics, collision detection, inverse kinematics, and richer 3D graphics as planned future work.
+- Kept G-code, hardware execution, real drone physics, advanced inverse kinematics, and richer 3D graphics as planned future work.
 
 ### Fixed
 

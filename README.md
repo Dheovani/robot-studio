@@ -2,7 +2,7 @@
 
 RobotStudio is a didactic robotics and C#/.NET learning platform.
 
-Version `1.0.0` delivers the first stable vertical slice: a generic three-axis Cartesian robot can be scripted, validated, simulated, inspected through CLI output, and visualized in a WPF desktop 3D viewer.
+Version `1.1.0` expands RobotStudio into a multi-robot teaching platform. Eight robot models can be scripted, validated, simulated, inspected through deterministic playback, and visualized in dedicated desktop workspaces.
 
 The project is intentionally educational. It is designed to help students understand both robotics concepts and software architecture: domain modeling, motion planning, deterministic simulation, scripting, UI boundaries, tests, and future hardware integration.
 
@@ -24,6 +24,7 @@ MOVE X=120 Y=80 Z=40 SPEED=90
 DRIVE X=160 Y=80 HEADING=45 LIN=120 ANG=90
 SCARA SHOULDER=45 ELBOW=30 SPEED=80
 ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
+ARM6 J1=35 J2=30 J3=-45 J4=60 J5=20 J6=90 SPEED=80
 DELTA A=30 B=60 C=90 SPEED=80
 DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 WAIT 500
@@ -34,7 +35,7 @@ WAIT 500
 - Run the CLI to inspect commands, timeline steps, final state, and final position.
 - Open the WPF desktop viewer to inspect the Cartesian robot in 3D.
 - Open the first XY Plotter viewer as a beginner two-axis model.
-- Open the first Differential Drive viewer for a beginner mobile-robot simulation.
+- Open the Differential Drive viewer for an intermediate mobile-robot simulation.
 - Inspect ideal differential-drive odometry with accumulated wheel travel and rotation.
 - Open the first SCARA viewer for introductory articulated joint-space simulation.
 - Open the first Simple Articulated Arm viewer for three-joint articulated robot lessons.
@@ -51,9 +52,9 @@ WAIT 500
 
 ## Current Release
 
-Current stable version: `1.0.0`.
+Current stable version: `1.1.0`.
 
-This release is stable for the first educational goal: simulate and inspect the first robot model without real hardware.
+This release provides a stable educational progression from Cartesian motion to mobile, articulated, parallel, and aerial robotics without requiring real hardware.
 
 Implemented:
 
@@ -100,7 +101,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, and `Drone` are available in the current development build.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, `Drone`, and `6-DOF Industrial Arm` are available in version `1.1.0`.
 
 ## Portable CLI And Core
 
@@ -121,7 +122,7 @@ dotnet test build/RobotStudio.Portable.slnx
 Build a portable CLI release artifact:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.0.0 -Runtime linux-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime linux-x64
 ```
 
 Supported initial CLI release runtimes:
@@ -217,30 +218,30 @@ dotnet format RobotStudio.slnx --verify-no-changes
 
 ## Build The Windows Installer
 
-RobotStudio `1.0.0` is distributed as a Windows installer for the WPF desktop app.
+RobotStudio `1.1.0` is distributed as a Windows installer for the WPF desktop app.
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.0.0 -Runtime win-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.1.0 -Runtime win-x64
 ```
 
 The installer is generated at:
 
 ```txt
-artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
+artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe
 ```
 
 The release script also generates:
 
 ```txt
-artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
+artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe.sha256
 ```
 
-When a version tag such as `v1.0.0` is pushed to GitHub, CI builds the Windows installer, builds portable CLI ZIP archives for Windows/Linux/macOS, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
+When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact version from the tag, builds the Windows installer and portable CLI ZIP archives for Windows/Linux/macOS, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
 
 ## Project Structure
 
-- `src/RobotStudio.Domain`: pure domain model for robot concepts, commands, state, contracts, domain errors, and the first Cartesian model.
-- `src/RobotStudio.Motion`: simple motion planning based on domain types.
+- `src/RobotStudio.Domain`: pure domain models, commands, states, limits, kinematics inputs, contracts, and errors for the supported robot families.
+- `src/RobotStudio.Motion`: family-appropriate deterministic motion planning with coordinated acceleration-aware profiles.
 - `src/RobotStudio.Simulation`: deterministic command execution, sampling, playback snapshots, visual states, and scene frames.
 - `src/RobotStudio.Scripting`: simple educational DSL exposed through a dialect contract prepared for future G-code.
 - `src/RobotStudio.Hardware`: future hardware integration boundary contracts and planned prototype metadata.

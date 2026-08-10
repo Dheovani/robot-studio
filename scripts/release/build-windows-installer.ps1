@@ -1,5 +1,7 @@
 param(
-    [string] $Version = "1.0.0",
+    [Parameter(Mandatory = $true)]
+    [ValidatePattern('^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$')]
+    [string] $Version,
     [string] $Runtime = "win-x64",
     [string] $SigningCertificatePath = $env:ROBOTSTUDIO_SIGNING_CERTIFICATE_PATH,
     [string] $SigningCertificatePassword = $env:ROBOTSTUDIO_SIGNING_CERTIFICATE_PASSWORD,
@@ -99,6 +101,7 @@ dotnet publish (Join-Path $repoRoot "src\RobotStudio.Desktop\RobotStudio.Desktop
     --runtime $Runtime `
     --self-contained true `
     --output $publishDir `
+    -p:Version=$Version `
     -p:PublishSingleFile=false `
     -p:PublishReadyToRun=false
 

@@ -38,7 +38,7 @@ dotnet test build/RobotStudio.Portable.slnx
 Build a portable CLI release artifact:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.0.0 -Runtime linux-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime linux-x64
 ```
 
 The initial CLI release runtimes are:
@@ -115,22 +115,22 @@ Desktop keyboard shortcuts:
 Run from the repository root on Windows:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.0.0 -Runtime win-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.1.0 -Runtime win-x64
 ```
 
 The installer is generated at:
 
 ```txt
-artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe
+artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe
 ```
 
 The script also generates a SHA256 checksum file next to the installer:
 
 ```txt
-artifacts/release/RobotStudio-1.0.0-win-x64-setup.exe.sha256
+artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe.sha256
 ```
 
-For official releases, push a version tag such as `v1.0.0`. GitHub Actions will publish a GitHub Release with the Windows installer, portable CLI ZIP archives, and SHA256 checksum files attached.
+For official releases, push a version tag such as `v1.1.0`. GitHub Actions derives the artifact version from the tag and publishes a GitHub Release with the Windows installer, portable CLI ZIP archives, and SHA256 checksum files attached.
 
 Current desktop controls:
 
