@@ -21,6 +21,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added desktop script load/save support for `.robot` and `.txt` files.
 - Added clearer script validation messages for syntax errors, unsupported command arguments, and physical limit violations.
 - Added keyboard shortcuts for active-viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
+- Added desktop session recovery actions that execute `HOME` or `RESET` from each robot family's preserved final simulation context.
+- Added shared script-action, playback-action, recovery-action, and timeline components for the multi-robot desktop workspaces.
 - Added architecture tests to guard project dependency rules and keep WPF isolated from portable core projects.
 - Added portable solution validation for non-desktop projects, keeping the CLI and core libraries testable outside the Windows desktop target.
 - Added Windows release artifact and installer generation groundwork for distributing the desktop application.
@@ -43,6 +45,9 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 - Expanded the desktop app from a Cartesian-only visual simulator into a multi-robot teaching environment.
 - Refined robot catalog cards with compact rectangular metadata tags, clickable available cards, non-interactive planned-release footers, accurate catalog copy, and interaction feedback reserved for openable models.
+- Standardized the existing RobotStudio robot icon across the WPF window and executable as the current application identity.
+- Kept simulation headers focused on navigation and playback, with fault recovery controls shown contextually only when needed.
+- Updated the robot catalog to derive one to six columns from available width, keeping cards readable on smaller windows while using wide and ultrawide displays more efficiently.
 - Updated Cartesian and XY plotter planning to respect acceleration limits, producing acceleration-aware durations and Cartesian playback interpolation.
 - Updated articulated playback to follow acceleration-aware profile progress instead of constant-speed joint interpolation.
 - Updated differential-drive playback to complete its planned translation before rotation and to follow each segment's acceleration-aware progress.

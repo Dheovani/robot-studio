@@ -428,10 +428,13 @@ Expected current behavior:
 - presents robot status, complexity, and capabilities as compact rectangular tags;
 - keeps robot card metadata visible above the footer without clipping;
 - keeps available actions and planned-release footers aligned across cards;
-- adjusts robot selection cards responsively across one, two, and three columns;
+- adjusts robot selection cards responsively across one to six columns without forcing narrow cards;
 - shows hover and keyboard focus feedback only on openable robot selection cards;
 - opens an available robot from its card body, action button, or keyboard;
 - represents planned models with static release status instead of disabled buttons;
+- retains typed final simulation contexts for desktop `HOME` and `Reset Fault` recovery actions;
+- shows recovery controls only while the active retained context is faulted;
+- reuses shared script actions, playback actions, contextual recovery actions, and timeline controls across robot viewers;
 - lists robot templates in the expected didactic complexity order;
 - lists the Cartesian robot as available;
 - lists the XY plotter as available;

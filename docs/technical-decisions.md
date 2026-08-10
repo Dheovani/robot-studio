@@ -91,6 +91,8 @@ The simulator must eventually model both position and robot state. State names a
 
 `RESET` is represented by `ResetFaultCommand` and is valid only while the simulation is `Faulted`. A caller resumes execution from the failed result's `FinalContext`; resetting changes only the logical state to `Idle`, preserving Cartesian pose, mobile pose and odometry, articulated joints, parallel actuators, aerial attitude, and elapsed simulated time. `HOME` is intentionally different because it performs a planned physical movement to the robot family's origin. The failed result and its timeline remain available as the immutable history of the previous execution.
 
+The desktop application retains the typed `FinalContext` produced by the latest executed script for each active robot family. Its session `HOME` and `Reset Fault` actions execute a new one-command sequence from that context and build a new playback from the recovery result. Validation remains side-effect free and does not replace the retained session context.
+
 The initial simulation state is `Idle`. Normal commands may start from `Idle` or `Completed`. The active execution states are `Moving`, `Homing`, and `Waiting`. A command ends in either `Completed` or `Faulted`.
 
 The allowed first-version transitions are:
@@ -194,6 +196,8 @@ Shared viewer presentation logic belongs in `RobotStudio.Desktop.Viewers`. The W
 Desktop script validation messages are formatted in `RobotStudio.Desktop.Scripting`. The parser and domain still throw explicit technical exceptions, while the desktop layer translates them into concise student-facing summaries with a probable category, the original detail, and a suggested next action.
 
 The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.
+
+Desktop viewers share reusable templates for script actions, playback actions, and contextual fault recovery. Non-Cartesian viewers also share a `ViewerTimeline` control. Recovery actions remain hidden during normal operation and are presented in the script panel only while the retained session is faulted.
 
 The current didactic order is:
 

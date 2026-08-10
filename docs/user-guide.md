@@ -133,9 +133,10 @@ For official releases, push a version tag such as `v1.0.0`. GitHub Actions will 
 Current desktop controls:
 
 - robot cards showing name, family, compact status and complexity tags, description, and capability tags.
-- robot selection cards arrange responsively across one, two, or three columns depending on window width.
+- robot selection cards arrange responsively across one to six columns according to available width and a comfortable target card size.
 - available robot selection cards can be opened from the card body, the `Open Robot` button, or the keyboard and show hover and focus feedback.
 - non-interactive planned-release labels on future robot entries ordered by didactic complexity.
+- contextual `HOME` and `Reset Fault` actions inside the script panel. They remain hidden until the retained simulation context becomes faulted.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
 - DSL editor inside the Cartesian viewer.
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.
@@ -310,7 +311,7 @@ Current parser behavior:
 - parser errors include the script line number.
 - G-code is tracked as a planned future dialect, not as an executable parser.
 
-Core fault recovery currently requires the caller to start a new simulation execution with the failed result's `FinalContext`. The desktop app does not yet preserve that session boundary for a user-facing `RESET` action. Use `HOME` when recovery should include real simulated movement back to the family-specific origin.
+The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 
 The Cartesian simulation API can also receive a `CartesianSimulationEnvironment` containing axis-aligned obstacle volumes. Cartesian `MOVE` and `HOME` commands reject paths that touch or cross an obstacle and report the obstacle ID and first collision position. The current desktop app does not yet provide obstacle editing or visualization.
 

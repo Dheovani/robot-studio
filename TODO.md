@@ -66,16 +66,14 @@ This file tracks future work after the first stable Cartesian simulation release
 - [x] Improve the visual design of the robot selection screen.
 - [ ] Improve the visual design of each simulation workspace.
 - [x] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
-- [ ] Add a more polished application logo and brand system if needed.
-- [ ] Add a view cube or compact camera orientation selector.
-- [ ] Add optional beginner, teacher, and debug display modes.
+- [x] Add a more polished application logo and brand system if needed.
 - [x] Expand the local example catalog into a multi-example gallery for common scripts.
-- [ ] Extract a common desktop viewer shell for repeated script panels, timeline controls, and playback controls.
+- [x] Extract a common desktop viewer shell for repeated script panels, timeline controls, and playback controls.
 - [x] Extract shared non-Cartesian frame presentation for state panels and didactic movement explanations.
 - [x] Add import/export for desktop scripts.
 - [x] Add clearer validation summaries for invalid commands.
 - [x] Add keyboard shortcuts for playback, script files, validation, simulation, frame stepping, zoom, and camera controls.
-- [ ] Expose `HOME` and `RESET` recovery actions in desktop sessions without rebuilding a clean simulation context.
+- [x] Expose `HOME` and `RESET` recovery actions in desktop sessions without rebuilding a clean simulation context.
 
 ## 7. Didactic Tools
 

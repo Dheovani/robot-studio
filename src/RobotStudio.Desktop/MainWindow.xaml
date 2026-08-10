@@ -2,6 +2,7 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:didactics="clr-namespace:RobotStudio.Desktop.Didactics"
+        xmlns:viewers="clr-namespace:RobotStudio.Desktop.Viewers"
         Title="RobotStudio"
         Width="1180"
         Height="780"
@@ -105,6 +106,93 @@
         <Style TargetType="Slider">
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
+
+        <DataTemplate x:Key="ViewerScriptActionsTemplate">
+            <StackPanel>
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Margin="0,0,6,0"
+                            Content="Validate"
+                            Click="ValidateActiveScriptButton_Click" />
+                    <Button Grid.Column="1"
+                            Margin="6,0,0,0"
+                            Content="Simulate"
+                            Click="SimulateActiveScriptButton_Click" />
+                </Grid>
+                <Button Margin="0,0,0,10"
+                        Content="Load Example"
+                        Click="LoadActiveExampleButton_Click" />
+                <Grid Margin="0,0,0,10">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Button Grid.Column="0"
+                            Margin="0,0,6,0"
+                            Content="Load Script"
+                            Click="LoadActiveScriptButton_Click" />
+                    <Button Grid.Column="1"
+                            Margin="6,0,0,0"
+                            Content="Save Script"
+                            Click="SaveActiveScriptButton_Click" />
+                </Grid>
+                <ContentControl ContentTemplate="{DynamicResource ViewerRecoveryActionsTemplate}" />
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ViewerRecoveryActionsTemplate">
+            <Border Margin="0,2,0,10"
+                    Padding="10"
+                    Background="#261F2937"
+                    BorderBrush="#7F1D1D"
+                    BorderThickness="1"
+                    CornerRadius="4"
+                    Visibility="Collapsed"
+                    Loaded="SessionRecoveryPanel_Loaded">
+                <StackPanel>
+                    <TextBlock Margin="0,0,0,8"
+                               Foreground="#FCA5A5"
+                               FontWeight="SemiBold"
+                               Text="Simulation faulted" />
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Margin="0,0,6,0"
+                                Content="HOME"
+                                ToolTip="Home the robot from the preserved faulted context."
+                                Click="SessionHomeButton_Click" />
+                        <Button Grid.Column="1"
+                                Margin="6,0,0,0"
+                                Content="Reset Fault"
+                                ToolTip="Acknowledge the fault without changing pose or elapsed time."
+                                Click="SessionResetFaultButton_Click" />
+                    </Grid>
+                </StackPanel>
+            </Border>
+        </DataTemplate>
+
+        <DataTemplate x:Key="ViewerPlaybackActionsTemplate">
+            <StackPanel Orientation="Horizontal">
+                <Button Width="96"
+                        Height="34"
+                        Margin="8,0,0,0"
+                        Content="Play"
+                        Loaded="PlayPauseButton_Loaded"
+                        Click="PlayPauseButton_Click" />
+                <Button Width="80"
+                        Height="34"
+                        Margin="8,0,0,0"
+                        Content="Reset"
+                        Click="ResetActivePlaybackButton_Click" />
+            </StackPanel>
+        </DataTemplate>
     </Window.Resources>
 
     <Grid>
@@ -198,17 +286,7 @@
                             Margin="8,0,0,0"
                             Click="BackToSelectionButton_Click"
                             Content="Robots" />
-                    <Button x:Name="PlayPauseButton"
-                            Width="96"
-                            Height="34"
-                            Margin="8,0,0,0"
-                            Click="PlayPauseButton_Click"
-                            Content="Play" />
-                    <Button Width="80"
-                            Height="34"
-                            Margin="8,0,0,0"
-                            Click="ResetButton_Click"
-                            Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -355,6 +433,8 @@
                                        Foreground="#94A3B8"
                                        TextWrapping="Wrap"
                                        Text="Edit the DSL script and validate it before simulation." />
+
+                            <ContentControl ContentTemplate="{StaticResource ViewerRecoveryActionsTemplate}" />
 
                             <TextBlock x:Name="CurrentScriptLineText"
                                        Margin="0,0,0,18"
@@ -931,17 +1011,7 @@
                             Margin="8,0,0,0"
                             Click="BackToSelectionButton_Click"
                             Content="Robots" />
-                    <Button x:Name="DifferentialDrivePlayPauseButton"
-                            Width="96"
-                            Height="34"
-                            Margin="8,0,0,0"
-                            Click="PlayPauseButton_Click"
-                            Content="Play" />
-                    <Button Width="80"
-                            Height="34"
-                            Margin="8,0,0,0"
-                            Click="DifferentialDriveResetButton_Click"
-                            Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1034,39 +1104,7 @@
                                  BorderBrush="#334155"
                                  CaretBrush="#E5E7EB" />
 
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Validate"
-                                    Click="ValidateDifferentialDriveScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Simulate"
-                                    Click="SimulateDifferentialDriveScriptButton_Click" />
-                        </Grid>
-
-                        <Button Margin="0,0,0,10"
-                                Content="Load Example"
-                                Click="LoadDifferentialDriveExampleButton_Click" />
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Load Script"
-                                    Click="LoadDifferentialDriveScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Save Script"
-                                    Click="SaveDifferentialDriveScriptButton_Click" />
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DifferentialDriveScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1076,40 +1114,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0"
-                            Orientation="Horizontal"
-                            VerticalAlignment="Center">
-                    <Button Width="48"
-                            Margin="0,0,8,0"
-                            Content="Prev"
-                            Click="DifferentialDrivePreviousFrameButton_Click" />
-                    <Button Width="48"
-                            Margin="0,0,12,0"
-                            Content="Next"
-                            Click="DifferentialDriveNextFrameButton_Click" />
-                </StackPanel>
-
-                <Slider x:Name="DifferentialDriveTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="DifferentialDriveTimelineSlider_ValueChanged" />
-
-                <TextBlock x:Name="DifferentialDriveStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="DifferentialDriveTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="DifferentialDrivePreviousFrameButton_Click"
+                                    NextRequested="DifferentialDriveNextFrameButton_Click"
+                                    ValueChanged="DifferentialDriveTimelineSlider_ValueChanged" />
         </Grid>
 
         <Grid x:Name="ScaraViewerView" Visibility="Collapsed">
@@ -1134,8 +1144,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button x:Name="ScaraPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="ScaraResetButton_Click" Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1225,33 +1234,7 @@
                                  BorderBrush="#334155"
                                  CaretBrush="#E5E7EB" />
 
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateScaraScriptButton_Click" />
-                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateScaraScriptButton_Click" />
-                        </Grid>
-
-                        <Button Margin="0,0,0,10"
-                                Content="Load Example"
-                                Click="LoadScaraExampleButton_Click" />
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Load Script"
-                                    Click="LoadScaraScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Save Script"
-                                    Click="SaveScaraScriptButton_Click" />
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="ScaraScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1272,32 +1255,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="ScaraPreviousFrameButton_Click" />
-                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="ScaraNextFrameButton_Click" />
-                </StackPanel>
-
-                <Slider x:Name="ScaraTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="ScaraTimelineSlider_ValueChanged" />
-
-                <TextBlock x:Name="ScaraStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="ScaraTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="ScaraPreviousFrameButton_Click"
+                                    NextRequested="ScaraNextFrameButton_Click"
+                                    ValueChanged="ScaraTimelineSlider_ValueChanged" />
         </Grid>
 
         <Grid x:Name="SimpleArmViewerView" Visibility="Collapsed">
@@ -1322,8 +1285,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button x:Name="SimpleArmPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="SimpleArmResetButton_Click" Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1413,33 +1375,7 @@
                                  BorderBrush="#334155"
                                  CaretBrush="#E5E7EB" />
 
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateSimpleArmScriptButton_Click" />
-                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateSimpleArmScriptButton_Click" />
-                        </Grid>
-
-                        <Button Margin="0,0,0,10"
-                                Content="Load Example"
-                                Click="LoadSimpleArmExampleButton_Click" />
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Load Script"
-                                    Click="LoadSimpleArmScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Save Script"
-                                    Click="SaveSimpleArmScriptButton_Click" />
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="SimpleArmScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1460,32 +1396,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="SimpleArmPreviousFrameButton_Click" />
-                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="SimpleArmNextFrameButton_Click" />
-                </StackPanel>
-
-                <Slider x:Name="SimpleArmTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="SimpleArmTimelineSlider_ValueChanged" />
-
-                <TextBlock x:Name="SimpleArmStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="SimpleArmTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="SimpleArmPreviousFrameButton_Click"
+                                    NextRequested="SimpleArmNextFrameButton_Click"
+                                    ValueChanged="SimpleArmTimelineSlider_ValueChanged" />
         </Grid>
 
         <Grid x:Name="DeltaViewerView" Visibility="Collapsed">
@@ -1510,8 +1426,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button x:Name="DeltaPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="DeltaResetButton_Click" Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1601,33 +1516,7 @@
                                  BorderBrush="#334155"
                                  CaretBrush="#E5E7EB" />
 
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateDeltaScriptButton_Click" />
-                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateDeltaScriptButton_Click" />
-                        </Grid>
-
-                        <Button Margin="0,0,0,10"
-                                Content="Load Example"
-                                Click="LoadDeltaExampleButton_Click" />
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Load Script"
-                                    Click="LoadDeltaScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Save Script"
-                                    Click="SaveDeltaScriptButton_Click" />
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DeltaScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1648,32 +1537,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="DeltaPreviousFrameButton_Click" />
-                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="DeltaNextFrameButton_Click" />
-                </StackPanel>
-
-                <Slider x:Name="DeltaTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="DeltaTimelineSlider_ValueChanged" />
-
-                <TextBlock x:Name="DeltaStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="DeltaTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="DeltaPreviousFrameButton_Click"
+                                    NextRequested="DeltaNextFrameButton_Click"
+                                    ValueChanged="DeltaTimelineSlider_ValueChanged" />
         </Grid>
 
         <Grid x:Name="DroneViewerView" Visibility="Collapsed">
@@ -1698,8 +1567,7 @@
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button x:Name="DronePlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="DroneResetButton_Click" Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1789,33 +1657,7 @@
                                  BorderBrush="#334155"
                                  CaretBrush="#E5E7EB" />
 
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateDroneScriptButton_Click" />
-                            <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateDroneScriptButton_Click" />
-                        </Grid>
-
-                        <Button Margin="0,0,0,10"
-                                Content="Load Example"
-                                Click="LoadDroneExampleButton_Click" />
-
-                        <Grid Margin="0,0,0,10">
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition Width="*" />
-                                <ColumnDefinition Width="*" />
-                            </Grid.ColumnDefinitions>
-                            <Button Grid.Column="0"
-                                    Margin="0,0,6,0"
-                                    Content="Load Script"
-                                    Click="LoadDroneScriptButton_Click" />
-                            <Button Grid.Column="1"
-                                    Margin="6,0,0,0"
-                                    Content="Save Script"
-                                    Click="SaveDroneScriptButton_Click" />
-                        </Grid>
+                        <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DroneScriptStatusText"
                                    Foreground="#94A3B8"
@@ -1836,32 +1678,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="DronePreviousFrameButton_Click" />
-                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="DroneNextFrameButton_Click" />
-                </StackPanel>
-
-                <Slider x:Name="DroneTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="DroneTimelineSlider_ValueChanged" />
-
-                <TextBlock x:Name="DroneStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="DroneTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="DronePreviousFrameButton_Click"
+                                    NextRequested="DroneNextFrameButton_Click"
+                                    ValueChanged="DroneTimelineSlider_ValueChanged" />
         </Grid>
 
         <Grid x:Name="IndustrialArmViewerView" Visibility="Collapsed">
@@ -1878,8 +1700,7 @@
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
                     <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
-                    <Button x:Name="IndustrialArmPlayPauseButton" Width="96" Height="34" Margin="8,0,0,0" Click="PlayPauseButton_Click" Content="Play" />
-                    <Button Width="80" Height="34" Margin="8,0,0,0" Click="IndustrialArmResetButton_Click" Content="Reset" />
+                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
 
@@ -1958,23 +1779,7 @@
                                      TextWrapping="NoWrap"
                                      VerticalScrollBarVisibility="Auto"
                                      HorizontalScrollBarVisibility="Auto" />
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Margin="0,0,6,0" Content="Validate" Click="ValidateIndustrialArmScriptButton_Click" />
-                                <Button Grid.Column="1" Margin="6,0,0,0" Content="Simulate" Click="SimulateIndustrialArmScriptButton_Click" />
-                            </Grid>
-                            <Button Margin="0,0,0,10" Content="Load Example" Click="LoadIndustrialArmExampleButton_Click" />
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-                                <Button Grid.Column="0" Margin="0,0,6,0" Content="Load Script" Click="LoadIndustrialArmScriptButton_Click" />
-                                <Button Grid.Column="1" Margin="6,0,0,0" Content="Save Script" Click="SaveIndustrialArmScriptButton_Click" />
-                            </Grid>
+                            <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
                             <TextBlock x:Name="IndustrialArmScriptStatusText"
                                        Foreground="#94A3B8"
                                        TextWrapping="Wrap"
@@ -1986,29 +1791,12 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="Auto" />
-                    <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="280" />
-                </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0" Orientation="Horizontal" VerticalAlignment="Center">
-                    <Button Width="48" Margin="0,0,8,0" Content="Prev" Click="IndustrialArmPreviousFrameButton_Click" />
-                    <Button Width="48" Margin="0,0,12,0" Content="Next" Click="IndustrialArmNextFrameButton_Click" />
-                </StackPanel>
-                <Slider x:Name="IndustrialArmTimelineSlider"
-                        Grid.Column="1"
-                        Margin="12,0,0,0"
-                        Minimum="0"
-                        IsSnapToTickEnabled="True"
-                        ValueChanged="IndustrialArmTimelineSlider_ValueChanged" />
-                <TextBlock x:Name="IndustrialArmStatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
-                           TextAlignment="Right" />
-            </Grid>
+            <viewers:ViewerTimeline x:Name="IndustrialArmTimeline"
+                                    Grid.Row="2"
+                                    Margin="16,0,16,16"
+                                    PreviousRequested="IndustrialArmPreviousFrameButton_Click"
+                                    NextRequested="IndustrialArmNextFrameButton_Click"
+                                    ValueChanged="IndustrialArmTimelineSlider_ValueChanged" />
         </Grid>
     </Grid>
 </Window>

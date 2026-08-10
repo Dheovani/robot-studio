@@ -168,6 +168,9 @@ Expected result:
 - robot pose, joints, actuators, odometry, and elapsed simulated time remain unchanged;
 - executing `HOME` from the faulted context instead performs the family's planned homing movement;
 - `RESET` from a non-faulted state is rejected with an explicit state-transition error.
+- the desktop `Reset Fault` action is enabled only for a retained `Faulted` context;
+- the desktop `HOME` action executes homing from the retained family-specific context instead of rebuilding a clean simulation;
+- validation does not mutate or replace the retained desktop session.
 
 ### Reject An Obstructed Cartesian Path
 

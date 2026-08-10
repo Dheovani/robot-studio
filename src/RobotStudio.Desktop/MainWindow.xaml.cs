@@ -44,6 +44,8 @@ public partial class MainWindow : Window
     private const double StateChartRowGap = 4;
     private const double RobotCardGap = 18;
     private const double RobotCardMinimumWidth = 280;
+    private const double RobotCardPreferredWidth = 360;
+    private const int RobotCardMaximumColumns = 6;
     private const int MaximumPathPointCount = 140;
     private const string ScriptFileDialogFilter = "RobotStudio scripts (*.robot;*.txt)|*.robot;*.txt|All files (*.*)|*.*";
     private const string ScriptFileDefaultExtension = ".robot";
@@ -69,6 +71,8 @@ public partial class MainWindow : Window
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
+    private readonly List<FrameworkElement> sessionRecoveryPanels = [];
+    private readonly List<Button> playPauseButtons = [];
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -80,6 +84,13 @@ public partial class MainWindow : Window
     private DeltaPlaybackSnapshot? deltaSnapshot;
     private DronePlaybackSnapshot? droneSnapshot;
     private IndustrialArmPlaybackSnapshot? industrialArmSnapshot;
+    private SimulationContext? cartesianSessionContext;
+    private DifferentialDriveSimulationContext? differentialDriveSessionContext;
+    private ScaraSimulationContext? scaraSessionContext;
+    private SimpleArmSimulationContext? simpleArmSessionContext;
+    private DeltaSimulationContext? deltaSessionContext;
+    private DroneSimulationContext? droneSessionContext;
+    private IndustrialArmSimulationContext? industrialArmSessionContext;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
@@ -282,16 +293,27 @@ public partial class MainWindow : Window
         TogglePlayback();
     }
 
+    private void PlayPauseButton_Loaded(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is Button button && !playPauseButtons.Contains(button))
+        {
+            playPauseButtons.Add(button);
+        }
+
+        UpdatePlaybackButtonLabels();
+    }
+
+    private void ResetActivePlaybackButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ResetActivePlayback();
+
     private void TogglePlayback()
     {
         isPlaying = !isPlaying;
-        PlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        DifferentialDrivePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        ScaraPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        SimpleArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        DeltaPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        DronePlayPauseButton.Content = isPlaying ? "Pause" : "Play";
-        IndustrialArmPlayPauseButton.Content = isPlaying ? "Pause" : "Play";
+        UpdatePlaybackButtonLabels();
 
         if (isPlaying)
         {
@@ -314,7 +336,7 @@ public partial class MainWindow : Window
 
         playbackTimer.Stop();
         isPlaying = false;
-        PlayPauseButton.Content = "Play";
+        UpdatePlaybackButtonLabels();
         RenderFrame(index: 0);
     }
 
@@ -419,7 +441,8 @@ public partial class MainWindow : Window
         if (!TryCreateDifferentialDriveSnapshotFromScript(
             DifferentialDriveScriptTextBox.Text,
             out var nextSnapshot,
-            out var message))
+            out var message,
+            captureSession: true))
         {
             SetDifferentialDriveScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -433,8 +456,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         differentialDriveSnapshot = nextSnapshot;
-        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
-        DifferentialDriveTimelineSlider.TickFrequency = 1;
+        DifferentialDriveTimeline.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimeline.TickFrequency = 1;
         RenderDifferentialDriveFrame(index: 0);
         SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -456,7 +479,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (!TryCreateScaraSnapshotFromScript(ScaraScriptTextBox.Text, out var nextSnapshot, out var message))
+        if (!TryCreateScaraSnapshotFromScript(
+            ScaraScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
         {
             SetScaraScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -470,8 +497,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         scaraSnapshot = nextSnapshot;
-        ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
-        ScaraTimelineSlider.TickFrequency = 1;
+        ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimeline.TickFrequency = 1;
         RenderScaraFrame(index: 0);
         SetScaraScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -484,9 +511,9 @@ public partial class MainWindow : Window
         ScaraScriptTextBox.Text = GetSelectedExampleScript(
             ScaraExampleComboBox,
             RobotViewerKind.ScaraThreeDimensional);
-        scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text);
-        ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
-        ScaraTimelineSlider.TickFrequency = 1;
+        scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text, captureSession: true);
+        ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimeline.TickFrequency = 1;
         RenderScaraFrame(index: 0);
         SetScaraScriptStatus("Loaded the selected SCARA example.", Color.FromRgb(74, 222, 128));
     }
@@ -499,9 +526,11 @@ public partial class MainWindow : Window
         DifferentialDriveScriptTextBox.Text = GetSelectedExampleScript(
             DifferentialDriveExampleComboBox,
             RobotViewerKind.DifferentialDriveTwoDimensional);
-        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(DifferentialDriveScriptTextBox.Text);
-        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
-        DifferentialDriveTimelineSlider.TickFrequency = 1;
+        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(
+            DifferentialDriveScriptTextBox.Text,
+            captureSession: true);
+        DifferentialDriveTimeline.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimeline.TickFrequency = 1;
         RenderDifferentialDriveFrame(index: 0);
         SetDifferentialDriveScriptStatus("Loaded the selected mobile robot example.", Color.FromRgb(74, 222, 128));
     }
@@ -523,7 +552,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (!TryCreateSimpleArmSnapshotFromScript(SimpleArmScriptTextBox.Text, out var nextSnapshot, out var message))
+        if (!TryCreateSimpleArmSnapshotFromScript(
+            SimpleArmScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
         {
             SetSimpleArmScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -537,8 +570,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         simpleArmSnapshot = nextSnapshot;
-        SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
-        SimpleArmTimelineSlider.TickFrequency = 1;
+        SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimeline.TickFrequency = 1;
         RenderSimpleArmFrame(index: 0);
         SetSimpleArmScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -551,9 +584,9 @@ public partial class MainWindow : Window
         SimpleArmScriptTextBox.Text = GetSelectedExampleScript(
             SimpleArmExampleComboBox,
             RobotViewerKind.SimpleArmThreeDimensional);
-        simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text);
-        SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
-        SimpleArmTimelineSlider.TickFrequency = 1;
+        simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text, captureSession: true);
+        SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimeline.TickFrequency = 1;
         RenderSimpleArmFrame(index: 0);
         SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
     }
@@ -575,7 +608,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (!TryCreateDeltaSnapshotFromScript(DeltaScriptTextBox.Text, out var nextSnapshot, out var message))
+        if (!TryCreateDeltaSnapshotFromScript(
+            DeltaScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
         {
             SetDeltaScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -589,8 +626,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         deltaSnapshot = nextSnapshot;
-        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
-        DeltaTimelineSlider.TickFrequency = 1;
+        DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimeline.TickFrequency = 1;
         RenderDeltaFrame(index: 0);
         SetDeltaScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -603,9 +640,9 @@ public partial class MainWindow : Window
         DeltaScriptTextBox.Text = GetSelectedExampleScript(
             DeltaExampleComboBox,
             RobotViewerKind.DeltaThreeDimensional);
-        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text);
-        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
-        DeltaTimelineSlider.TickFrequency = 1;
+        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text, captureSession: true);
+        DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimeline.TickFrequency = 1;
         RenderDeltaFrame(index: 0);
         SetDeltaScriptStatus("Loaded the selected Delta example.", Color.FromRgb(74, 222, 128));
     }
@@ -627,7 +664,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (!TryCreateDroneSnapshotFromScript(DroneScriptTextBox.Text, out var nextSnapshot, out var message))
+        if (!TryCreateDroneSnapshotFromScript(
+            DroneScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
         {
             SetDroneScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -641,8 +682,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         droneSnapshot = nextSnapshot;
-        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
-        DroneTimelineSlider.TickFrequency = 1;
+        DroneTimeline.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimeline.TickFrequency = 1;
         RenderDroneFrame(index: 0);
         SetDroneScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -655,9 +696,9 @@ public partial class MainWindow : Window
         DroneScriptTextBox.Text = GetSelectedExampleScript(
             DroneExampleComboBox,
             RobotViewerKind.DroneThreeDimensional);
-        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text);
-        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
-        DroneTimelineSlider.TickFrequency = 1;
+        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text, captureSession: true);
+        DroneTimeline.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimeline.TickFrequency = 1;
         RenderDroneFrame(index: 0);
         SetDroneScriptStatus("Loaded the selected Drone example.", Color.FromRgb(74, 222, 128));
     }
@@ -682,7 +723,8 @@ public partial class MainWindow : Window
         if (!TryCreateIndustrialArmSnapshotFromScript(
                 IndustrialArmScriptTextBox.Text,
                 out var nextSnapshot,
-                out var message) ||
+                out var message,
+                captureSession: true) ||
             nextSnapshot is null)
         {
             SetIndustrialArmScriptStatus(message, Color.FromRgb(248, 113, 113));
@@ -691,8 +733,8 @@ public partial class MainWindow : Window
 
         StopPlayback();
         industrialArmSnapshot = nextSnapshot;
-        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
-        IndustrialArmTimelineSlider.TickFrequency = 1;
+        IndustrialArmTimeline.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimeline.TickFrequency = 1;
         RenderIndustrialArmFrame(index: 0);
         SetIndustrialArmScriptStatus(message, Color.FromRgb(74, 222, 128));
     }
@@ -705,9 +747,11 @@ public partial class MainWindow : Window
         IndustrialArmScriptTextBox.Text = GetSelectedExampleScript(
             IndustrialArmExampleComboBox,
             RobotViewerKind.IndustrialArmThreeDimensional);
-        industrialArmSnapshot = CreateIndustrialArmSnapshot(IndustrialArmScriptTextBox.Text);
-        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
-        IndustrialArmTimelineSlider.TickFrequency = 1;
+        industrialArmSnapshot = CreateIndustrialArmSnapshot(
+            IndustrialArmScriptTextBox.Text,
+            captureSession: true);
+        IndustrialArmTimeline.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimeline.TickFrequency = 1;
         RenderIndustrialArmFrame(index: 0);
         SetIndustrialArmScriptStatus("Loaded the selected industrial arm example.", Color.FromRgb(74, 222, 128));
     }
@@ -720,7 +764,7 @@ public partial class MainWindow : Window
         ScriptEditorTextBox.Text = GetSelectedExampleScript(
             CartesianExampleComboBox,
             activeViewerKind);
-        snapshot = CreateSnapshot(ScriptEditorTextBox.Text);
+        snapshot = CreateSnapshot(ScriptEditorTextBox.Text, captureSession: true);
         TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
         TimelineSlider.TickFrequency = 1;
         RenderFrame(index: 0);
@@ -961,6 +1005,57 @@ public partial class MainWindow : Window
         }
     }
 
+    private void ValidateActiveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ValidateActiveScript();
+
+    private void SimulateActiveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SimulateActiveScript();
+
+    private void LoadActiveExampleButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                LoadDifferentialDriveExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.ScaraThreeDimensional:
+                LoadScaraExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                LoadSimpleArmExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.DeltaThreeDimensional:
+                LoadDeltaExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.DroneThreeDimensional:
+                LoadDroneExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                LoadIndustrialArmExampleButton_Click(sender, e);
+                break;
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                LoadCartesianExampleButton_Click(sender, e);
+                break;
+        }
+    }
+
+    private void LoadActiveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        LoadActiveScript();
+
+    private void SaveActiveScriptButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        SaveActiveScript();
+
     private void ResetActivePlayback()
     {
         switch (activeViewerKind)
@@ -1122,6 +1217,229 @@ public partial class MainWindow : Window
             case RobotViewerKind.CartesianThreeDimensional:
             case RobotViewerKind.XYPlotterTwoDimensional:
                 SetCameraControls(azimuth: -45, elevation: 35, zoom: 1);
+                break;
+        }
+    }
+
+    private void UpdateSessionRecoveryControls()
+    {
+        var visibility = GetActiveSessionState() == RobotState.Faulted
+            ? Visibility.Visible
+            : Visibility.Collapsed;
+        foreach (var panel in sessionRecoveryPanels)
+        {
+            panel.Visibility = visibility;
+        }
+    }
+
+    private RobotState? GetActiveSessionState() => activeViewerKind switch
+    {
+        RobotViewerKind.DifferentialDriveTwoDimensional => differentialDriveSessionContext?.State,
+        RobotViewerKind.ScaraThreeDimensional => scaraSessionContext?.State,
+        RobotViewerKind.SimpleArmThreeDimensional => simpleArmSessionContext?.State,
+        RobotViewerKind.DeltaThreeDimensional => deltaSessionContext?.State,
+        RobotViewerKind.DroneThreeDimensional => droneSessionContext?.State,
+        RobotViewerKind.IndustrialArmThreeDimensional => industrialArmSessionContext?.State,
+        RobotViewerKind.CartesianThreeDimensional or RobotViewerKind.XYPlotterTwoDimensional => cartesianSessionContext?.State,
+        _ => null
+    };
+
+    private void ExecuteSessionRecoveryCommand(string commandText)
+    {
+        if (commandText == "RESET" && GetActiveSessionState() != RobotState.Faulted)
+        {
+            SetActiveScriptStatus(
+                "RESET is available only after the active simulation enters Faulted.",
+                Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        var commands = scriptDialect.Parse(commandText);
+
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                ExecuteDifferentialDriveRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.ScaraThreeDimensional:
+                ExecuteScaraRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                ExecuteSimpleArmRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.DeltaThreeDimensional:
+                ExecuteDeltaRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.DroneThreeDimensional:
+                ExecuteDroneRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                ExecuteIndustrialArmRecovery(commands, commandText);
+                break;
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                ExecuteCartesianRecovery(commands, commandText);
+                break;
+        }
+
+        UpdateSessionRecoveryControls();
+    }
+
+    private void ExecuteCartesianRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var context = cartesianSessionContext ?? SimulationContext.Create(profile, initialPosition);
+        var result = new RobotSimulator().Execute(context, commands);
+        cartesianSessionContext = result.FinalContext;
+        snapshot = new CartesianPlaybackSnapshotBuilder()
+            .Build(profile, result, TimeSpan.FromMilliseconds(100));
+        InitializeTimelineForSnapshot();
+        RenderFrame(snapshot.SceneFrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteDifferentialDriveRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateDifferentialDriveProfile();
+        var context = differentialDriveSessionContext ?? DifferentialDriveSimulationContext.Create(
+            profile,
+            new DifferentialDrivePose(X: 60, Y: 50, HeadingDegrees: 0));
+        var result = new DifferentialDriveSimulator().Execute(context, commands);
+        differentialDriveSessionContext = result.FinalContext;
+        differentialDriveSnapshot = new DifferentialDrivePlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+        DifferentialDriveTimeline.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        RenderDifferentialDriveFrame(differentialDriveSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteScaraRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateScaraProfile();
+        var context = scaraSessionContext ?? ScaraSimulationContext.Create(
+            profile,
+            new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0));
+        var result = new ScaraSimulator().Execute(context, commands);
+        scaraSessionContext = result.FinalContext;
+        scaraSnapshot = new ScaraPlaybackSampler().Sample(result, TimeSpan.FromMilliseconds(100));
+        ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
+        RenderScaraFrame(scaraSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteSimpleArmRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateSimpleArmProfile();
+        var context = simpleArmSessionContext ?? SimpleArmSimulationContext.Create(
+            profile,
+            new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0));
+        var result = new SimpleArmSimulator().Execute(context, commands);
+        simpleArmSessionContext = result.FinalContext;
+        simpleArmSnapshot = new SimpleArmPlaybackSampler().Sample(result, TimeSpan.FromMilliseconds(100));
+        SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
+        RenderSimpleArmFrame(simpleArmSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteDeltaRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateDeltaProfile();
+        var context = deltaSessionContext ?? DeltaSimulationContext.Create(
+            profile,
+            new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0));
+        var result = new DeltaSimulator().Execute(context, commands);
+        deltaSessionContext = result.FinalContext;
+        deltaSnapshot = new DeltaPlaybackSampler().Sample(result, TimeSpan.FromMilliseconds(100));
+        DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
+        RenderDeltaFrame(deltaSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteDroneRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateDroneProfile();
+        var context = droneSessionContext ?? DroneSimulationContext.Create(
+            profile,
+            new DronePose(
+                XMillimeters: 0,
+                YMillimeters: 0,
+                ZMillimeters: 0,
+                YawDegrees: 0));
+        var result = new DroneSimulator().Execute(context, commands);
+        droneSessionContext = result.FinalContext;
+        droneSnapshot = new DronePlaybackSampler().Sample(result, TimeSpan.FromMilliseconds(100));
+        DroneTimeline.Maximum = droneSnapshot.FrameCount - 1;
+        RenderDroneFrame(droneSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void ExecuteIndustrialArmRecovery(
+        RobotCommandSequence commands,
+        string commandText)
+    {
+        var profile = CreateIndustrialArmProfile();
+        var context = industrialArmSessionContext ?? IndustrialArmSimulationContext.Create(
+            profile,
+            IndustrialArmJointPosition.Home);
+        var result = new IndustrialArmSimulator().Execute(context, commands);
+        industrialArmSessionContext = result.FinalContext;
+        industrialArmSnapshot = new IndustrialArmPlaybackSampler()
+            .Sample(result, TimeSpan.FromMilliseconds(100));
+        IndustrialArmTimeline.Maximum = industrialArmSnapshot.FrameCount - 1;
+        RenderIndustrialArmFrame(industrialArmSnapshot.FrameCount - 1);
+        SetRecoveryStatus(commandText, result.Succeeded, result.Failure);
+    }
+
+    private void SetRecoveryStatus(
+        string commandText,
+        bool succeeded,
+        Exception? failure)
+    {
+        var message = succeeded
+            ? $"{commandText} executed from the preserved desktop session context."
+            : ScriptValidationMessageFormatter.Format(failure!);
+        SetActiveScriptStatus(
+            message,
+            succeeded ? Color.FromRgb(74, 222, 128) : Color.FromRgb(248, 113, 113));
+    }
+
+    private void SetActiveScriptStatus(string message, Color color)
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                SetDifferentialDriveScriptStatus(message, color);
+                break;
+            case RobotViewerKind.ScaraThreeDimensional:
+                SetScaraScriptStatus(message, color);
+                break;
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                SetSimpleArmScriptStatus(message, color);
+                break;
+            case RobotViewerKind.DeltaThreeDimensional:
+                SetDeltaScriptStatus(message, color);
+                break;
+            case RobotViewerKind.DroneThreeDimensional:
+                SetDroneScriptStatus(message, color);
+                break;
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                SetIndustrialArmScriptStatus(message, color);
+                break;
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                SetScriptStatus(message, color);
                 break;
         }
     }
@@ -1365,6 +1683,28 @@ public partial class MainWindow : Window
         RoutedEventArgs e) =>
         SetCameraControls(azimuth: -45, elevation: 35, zoom: 1);
 
+    private void SessionRecoveryPanel_Loaded(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is FrameworkElement panel && !sessionRecoveryPanels.Contains(panel))
+        {
+            sessionRecoveryPanels.Add(panel);
+        }
+
+        UpdateSessionRecoveryControls();
+    }
+
+    private void SessionHomeButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ExecuteSessionRecoveryCommand("HOME");
+
+    private void SessionResetFaultButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ExecuteSessionRecoveryCommand("RESET");
+
     private void BackToSelectionButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -1407,7 +1747,11 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        if (!TryCreateSnapshotFromScript(ScriptEditorTextBox.Text, out var nextSnapshot, out var message))
+        if (!TryCreateSnapshotFromScript(
+            ScriptEditorTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
         {
             SetScriptStatus(message, Color.FromRgb(248, 113, 113));
             return;
@@ -2190,19 +2534,28 @@ public partial class MainWindow : Window
         ScriptEditorTextBox.Select(selection.Start, selection.Length);
     }
 
-    private CartesianPlaybackSnapshot CreateSnapshot(string script)
+    private CartesianPlaybackSnapshot CreateSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var commands = scriptDialect.Parse(script);
         ValidateCommandSequence(commands);
 
         var context = SimulationContext.Create(profile, initialPosition);
         var result = new RobotSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            cartesianSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new CartesianPlaybackSnapshotBuilder()
             .Build(profile, result, TimeSpan.FromMilliseconds(100));
     }
 
-    private DifferentialDrivePlaybackSnapshot CreateDifferentialDriveSnapshot(string script)
+    private DifferentialDrivePlaybackSnapshot CreateDifferentialDriveSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateDifferentialDriveProfile();
         var commands = scriptDialect.Parse(script);
@@ -2212,12 +2565,19 @@ public partial class MainWindow : Window
             profile,
             new DifferentialDrivePose(X: 60, Y: 50, HeadingDegrees: 0));
         var result = new DifferentialDriveSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            differentialDriveSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new DifferentialDrivePlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
-    private ScaraPlaybackSnapshot CreateScaraSnapshot(string script)
+    private ScaraPlaybackSnapshot CreateScaraSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateScaraProfile();
         var commands = scriptDialect.Parse(script);
@@ -2227,12 +2587,19 @@ public partial class MainWindow : Window
             profile,
             new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0));
         var result = new ScaraSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            scaraSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new ScaraPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
-    private SimpleArmPlaybackSnapshot CreateSimpleArmSnapshot(string script)
+    private SimpleArmPlaybackSnapshot CreateSimpleArmSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateSimpleArmProfile();
         var commands = scriptDialect.Parse(script);
@@ -2242,12 +2609,19 @@ public partial class MainWindow : Window
             profile,
             new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0));
         var result = new SimpleArmSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            simpleArmSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new SimpleArmPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
-    private DeltaPlaybackSnapshot CreateDeltaSnapshot(string script)
+    private DeltaPlaybackSnapshot CreateDeltaSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateDeltaProfile();
         var commands = scriptDialect.Parse(script);
@@ -2257,12 +2631,19 @@ public partial class MainWindow : Window
             profile,
             new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0));
         var result = new DeltaSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            deltaSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new DeltaPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
-    private DronePlaybackSnapshot CreateDroneSnapshot(string script)
+    private DronePlaybackSnapshot CreateDroneSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateDroneProfile();
         var commands = scriptDialect.Parse(script);
@@ -2276,18 +2657,30 @@ public partial class MainWindow : Window
                 ZMillimeters: 0,
                 YawDegrees: 0));
         var result = new DroneSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            droneSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new DronePlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
     }
 
-    private IndustrialArmPlaybackSnapshot CreateIndustrialArmSnapshot(string script)
+    private IndustrialArmPlaybackSnapshot CreateIndustrialArmSnapshot(
+        string script,
+        bool captureSession = false)
     {
         var profile = CreateIndustrialArmProfile();
         var commands = scriptDialect.Parse(script);
         ValidateIndustrialArmCommandSequence(commands, profile);
         var context = IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home);
         var result = new IndustrialArmSimulator().Execute(context, commands);
+        if (captureSession)
+        {
+            industrialArmSessionContext = result.FinalContext;
+            UpdateSessionRecoveryControls();
+        }
 
         return new IndustrialArmPlaybackSampler()
             .Sample(result, TimeSpan.FromMilliseconds(100));
@@ -2482,13 +2875,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        var columns = availableWidth >= 1020
-            ? 3
-            : availableWidth >= 660
-                ? 2
-                : 1;
-
-        RobotCardsPanel.Columns = columns;
+        RobotCardsPanel.Columns = ResponsiveGridLayout.CalculateColumnCount(
+            availableWidth,
+            RobotCardPreferredWidth,
+            RobotCardGap,
+            RobotCardMaximumColumns);
     }
 
     private static Border CreateStatusBadge(RobotAvailabilityStatus status) =>
@@ -2628,6 +3019,13 @@ public partial class MainWindow : Window
         deltaSnapshot = null;
         droneSnapshot = null;
         industrialArmSnapshot = null;
+        cartesianSessionContext = null;
+        differentialDriveSessionContext = null;
+        scaraSessionContext = null;
+        simpleArmSessionContext = null;
+        deltaSessionContext = null;
+        droneSessionContext = null;
+        industrialArmSessionContext = null;
         currentFrameIndex = 0;
         differentialDriveFrameIndex = 0;
         scaraFrameIndex = 0;
@@ -2677,6 +3075,7 @@ public partial class MainWindow : Window
         }
 
         RefreshScriptEditorGutter();
+        UpdateSessionRecoveryControls();
     }
 
     private void ConfigureCartesianViewer()
@@ -2836,7 +3235,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        snapshot = CreateSnapshot(ScriptEditorTextBox.Text);
+        snapshot = CreateSnapshot(ScriptEditorTextBox.Text, captureSession: true);
         InitializeTimelineForSnapshot();
     }
 
@@ -2847,9 +3246,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(DifferentialDriveScriptTextBox.Text);
-        DifferentialDriveTimelineSlider.Maximum = differentialDriveSnapshot.FrameCount - 1;
-        DifferentialDriveTimelineSlider.TickFrequency = 1;
+        differentialDriveSnapshot = CreateDifferentialDriveSnapshot(
+            DifferentialDriveScriptTextBox.Text,
+            captureSession: true);
+        DifferentialDriveTimeline.Maximum = differentialDriveSnapshot.FrameCount - 1;
+        DifferentialDriveTimeline.TickFrequency = 1;
     }
 
     private void EnsureScaraSnapshot()
@@ -2859,9 +3260,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text);
-        ScaraTimelineSlider.Maximum = scaraSnapshot.FrameCount - 1;
-        ScaraTimelineSlider.TickFrequency = 1;
+        scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text, captureSession: true);
+        ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimeline.TickFrequency = 1;
     }
 
     private void EnsureSimpleArmSnapshot()
@@ -2871,9 +3272,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text);
-        SimpleArmTimelineSlider.Maximum = simpleArmSnapshot.FrameCount - 1;
-        SimpleArmTimelineSlider.TickFrequency = 1;
+        simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text, captureSession: true);
+        SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimeline.TickFrequency = 1;
     }
 
     private void EnsureDeltaSnapshot()
@@ -2883,9 +3284,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text);
-        DeltaTimelineSlider.Maximum = deltaSnapshot.FrameCount - 1;
-        DeltaTimelineSlider.TickFrequency = 1;
+        deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text, captureSession: true);
+        DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimeline.TickFrequency = 1;
     }
 
     private void EnsureDroneSnapshot()
@@ -2895,9 +3296,9 @@ public partial class MainWindow : Window
             return;
         }
 
-        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text);
-        DroneTimelineSlider.Maximum = droneSnapshot.FrameCount - 1;
-        DroneTimelineSlider.TickFrequency = 1;
+        droneSnapshot = CreateDroneSnapshot(DroneScriptTextBox.Text, captureSession: true);
+        DroneTimeline.Maximum = droneSnapshot.FrameCount - 1;
+        DroneTimeline.TickFrequency = 1;
     }
 
     private void EnsureIndustrialArmSnapshot()
@@ -2907,9 +3308,11 @@ public partial class MainWindow : Window
             return;
         }
 
-        industrialArmSnapshot = CreateIndustrialArmSnapshot(IndustrialArmScriptTextBox.Text);
-        IndustrialArmTimelineSlider.Maximum = industrialArmSnapshot.FrameCount - 1;
-        IndustrialArmTimelineSlider.TickFrequency = 1;
+        industrialArmSnapshot = CreateIndustrialArmSnapshot(
+            IndustrialArmScriptTextBox.Text,
+            captureSession: true);
+        IndustrialArmTimeline.Maximum = industrialArmSnapshot.FrameCount - 1;
+        IndustrialArmTimeline.TickFrequency = 1;
     }
 
     private void InitializeTimelineForSnapshot()
@@ -2936,13 +3339,16 @@ public partial class MainWindow : Window
     {
         playbackTimer.Stop();
         isPlaying = false;
-        PlayPauseButton.Content = "Play";
-        DifferentialDrivePlayPauseButton.Content = "Play";
-        ScaraPlayPauseButton.Content = "Play";
-        SimpleArmPlayPauseButton.Content = "Play";
-        DeltaPlayPauseButton.Content = "Play";
-        DronePlayPauseButton.Content = "Play";
-        IndustrialArmPlayPauseButton.Content = "Play";
+        UpdatePlaybackButtonLabels();
+    }
+
+    private void UpdatePlaybackButtonLabels()
+    {
+        var label = isPlaying ? "Pause" : "Play";
+        foreach (var button in playPauseButtons)
+        {
+            button.Content = label;
+        }
     }
 
     private void ApplyPlaybackSpeed()
@@ -4213,7 +4619,7 @@ public partial class MainWindow : Window
         }
 
         differentialDriveFrameIndex = Math.Clamp(index, 0, differentialDriveSnapshot.FrameCount - 1);
-        DifferentialDriveTimelineSlider.Value = differentialDriveFrameIndex;
+        DifferentialDriveTimeline.Value = differentialDriveFrameIndex;
 
         var frame = differentialDriveSnapshot.Frames[differentialDriveFrameIndex];
         DifferentialDriveCanvas.Children.Clear();
@@ -4232,7 +4638,7 @@ public partial class MainWindow : Window
         DifferentialDriveCommandText.Text = status.Command;
         DifferentialDriveTimeText.Text = status.Time;
         DifferentialDriveFramesText.Text = status.Frames;
-        DifferentialDriveStatusText.Text = status.Footer;
+        DifferentialDriveTimeline.Status = status.Footer;
     }
 
     private void DrawDifferentialDriveWorkspace(DifferentialDriveProfile profile)
@@ -4419,7 +4825,7 @@ public partial class MainWindow : Window
         }
 
         scaraFrameIndex = Math.Clamp(index, 0, scaraSnapshot.FrameCount - 1);
-        ScaraTimelineSlider.Value = scaraFrameIndex;
+        ScaraTimeline.Value = scaraFrameIndex;
 
         var frame = scaraSnapshot.Frames[scaraFrameIndex];
         ScaraViewport.Children.Clear();
@@ -4441,7 +4847,7 @@ public partial class MainWindow : Window
         ScaraToolText.Text = RobotFramePresenter.FormatScaraToolPose(frame);
         ScaraCommandText.Text = status.Command;
         ScaraTimeText.Text = status.Time;
-        ScaraStatusText.Text = status.Footer;
+        ScaraTimeline.Status = status.Footer;
         ScaraMovementExplanationText.Text = status.MovementExplanation;
     }
 
@@ -4533,7 +4939,7 @@ public partial class MainWindow : Window
         }
 
         simpleArmFrameIndex = Math.Clamp(index, 0, simpleArmSnapshot.FrameCount - 1);
-        SimpleArmTimelineSlider.Value = simpleArmFrameIndex;
+        SimpleArmTimeline.Value = simpleArmFrameIndex;
 
         var frame = simpleArmSnapshot.Frames[simpleArmFrameIndex];
         SimpleArmViewport.Children.Clear();
@@ -4555,7 +4961,7 @@ public partial class MainWindow : Window
         SimpleArmToolText.Text = RobotFramePresenter.FormatSimpleArmToolPose(frame);
         SimpleArmCommandText.Text = status.Command;
         SimpleArmTimeText.Text = status.Time;
-        SimpleArmStatusText.Text = status.Footer;
+        SimpleArmTimeline.Status = status.Footer;
         SimpleArmMovementExplanationText.Text = status.MovementExplanation;
     }
 
@@ -4662,7 +5068,7 @@ public partial class MainWindow : Window
         }
 
         deltaFrameIndex = Math.Clamp(index, 0, deltaSnapshot.FrameCount - 1);
-        DeltaTimelineSlider.Value = deltaFrameIndex;
+        DeltaTimeline.Value = deltaFrameIndex;
 
         var frame = deltaSnapshot.Frames[deltaFrameIndex];
         DeltaViewport.Children.Clear();
@@ -4684,7 +5090,7 @@ public partial class MainWindow : Window
         DeltaToolText.Text = RobotFramePresenter.FormatDeltaToolPose(frame);
         DeltaCommandText.Text = status.Command;
         DeltaTimeText.Text = status.Time;
-        DeltaStatusText.Text = status.Footer;
+        DeltaTimeline.Status = status.Footer;
         DeltaMovementExplanationText.Text = status.MovementExplanation;
     }
 
@@ -4851,7 +5257,7 @@ public partial class MainWindow : Window
         }
 
         droneFrameIndex = Math.Clamp(index, 0, droneSnapshot.FrameCount - 1);
-        DroneTimelineSlider.Value = droneFrameIndex;
+        DroneTimeline.Value = droneFrameIndex;
 
         var frame = droneSnapshot.Frames[droneFrameIndex];
         DroneViewport.Children.Clear();
@@ -4873,7 +5279,7 @@ public partial class MainWindow : Window
         DroneYawText.Text = RobotFramePresenter.FormatDroneAttitude(frame);
         DroneCommandText.Text = status.Command;
         DroneTimeText.Text = status.Time;
-        DroneStatusText.Text = status.Footer;
+        DroneTimeline.Status = status.Footer;
         DroneMovementExplanationText.Text = status.MovementExplanation;
     }
 
@@ -5029,7 +5435,7 @@ public partial class MainWindow : Window
         }
 
         industrialArmFrameIndex = Math.Clamp(index, 0, industrialArmSnapshot.FrameCount - 1);
-        IndustrialArmTimelineSlider.Value = industrialArmFrameIndex;
+        IndustrialArmTimeline.Value = industrialArmFrameIndex;
         var frame = industrialArmSnapshot.Frames[industrialArmFrameIndex];
 
         IndustrialArmViewport.Children.Clear();
@@ -5050,7 +5456,7 @@ public partial class MainWindow : Window
         IndustrialArmToolText.Text = RobotFramePresenter.FormatIndustrialArmToolPose(frame);
         IndustrialArmCommandText.Text = status.Command;
         IndustrialArmTimeText.Text = status.Time;
-        IndustrialArmStatusText.Text = status.Footer;
+        IndustrialArmTimeline.Status = status.Footer;
         IndustrialArmMovementExplanationText.Text = status.MovementExplanation;
     }
 
@@ -5372,11 +5778,12 @@ public partial class MainWindow : Window
     private bool TryCreateSnapshotFromScript(
         string script,
         out CartesianPlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateSnapshot(script);
+            nextSnapshot = CreateSnapshot(script, captureSession);
             message = $"Script is valid. Generated {nextSnapshot.SceneFrameCount} playback frames.";
             return true;
         }
@@ -5391,11 +5798,12 @@ public partial class MainWindow : Window
     private bool TryCreateDifferentialDriveSnapshotFromScript(
         string script,
         out DifferentialDrivePlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateDifferentialDriveSnapshot(script);
+            nextSnapshot = CreateDifferentialDriveSnapshot(script, captureSession);
             message = $"Mobile script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
@@ -5410,11 +5818,12 @@ public partial class MainWindow : Window
     private bool TryCreateScaraSnapshotFromScript(
         string script,
         out ScaraPlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateScaraSnapshot(script);
+            nextSnapshot = CreateScaraSnapshot(script, captureSession);
             message = $"SCARA script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
@@ -5429,11 +5838,12 @@ public partial class MainWindow : Window
     private bool TryCreateSimpleArmSnapshotFromScript(
         string script,
         out SimpleArmPlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateSimpleArmSnapshot(script);
+            nextSnapshot = CreateSimpleArmSnapshot(script, captureSession);
             message = $"Simple arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
@@ -5448,11 +5858,12 @@ public partial class MainWindow : Window
     private bool TryCreateDeltaSnapshotFromScript(
         string script,
         out DeltaPlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateDeltaSnapshot(script);
+            nextSnapshot = CreateDeltaSnapshot(script, captureSession);
             message = $"Delta script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
@@ -5467,11 +5878,12 @@ public partial class MainWindow : Window
     private bool TryCreateDroneSnapshotFromScript(
         string script,
         out DronePlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateDroneSnapshot(script);
+            nextSnapshot = CreateDroneSnapshot(script, captureSession);
             message = $"Drone script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
@@ -5486,11 +5898,12 @@ public partial class MainWindow : Window
     private bool TryCreateIndustrialArmSnapshotFromScript(
         string script,
         out IndustrialArmPlaybackSnapshot? nextSnapshot,
-        out string message)
+        out string message,
+        bool captureSession = false)
     {
         try
         {
-            nextSnapshot = CreateIndustrialArmSnapshot(script);
+            nextSnapshot = CreateIndustrialArmSnapshot(script, captureSession);
             message = $"Industrial arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
             return true;
         }
