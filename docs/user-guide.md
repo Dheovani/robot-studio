@@ -91,6 +91,8 @@ Opening the 6-DOF Industrial Arm renders a 3D serial arm viewer with a raised ba
 
 Every available desktop viewer includes an example selector and a `Load Example` button. The non-Cartesian side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
+Simulation workspaces use the same visual hierarchy across robot families: the active robot is identified in the header, the simulation viewport remains the primary surface, state/script/explanation information is grouped in the side panel, and playback navigation remains in the timeline footer. `Play` and `Simulate` are emphasized as primary actions; navigation, validation, file operations, and reset actions use a quieter secondary treatment.
+
 Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading a script replaces the editor text and asks the student to validate or simulate before playback. Saving writes the current editor text without changing the simulation.
 
 When validation fails, the desktop app shows a student-facing summary. Syntax errors include the script line number when available, physical limit errors explain that the target is outside the workspace, and command argument errors suggest checking required values such as speed or duration.

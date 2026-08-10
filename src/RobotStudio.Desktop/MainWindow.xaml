@@ -69,6 +69,100 @@
             </Setter>
         </Style>
 
+        <Style x:Key="SecondaryButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource {x:Type Button}}">
+            <Setter Property="Background" Value="{StaticResource SubtlePanelBackgroundBrush}" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+        </Style>
+
+        <Style x:Key="ViewerHeaderStyle" TargetType="DockPanel">
+            <Setter Property="Margin" Value="16,12,16,10" />
+            <Setter Property="LastChildFill" Value="True" />
+        </Style>
+
+        <Style x:Key="ViewerTitleStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            <Setter Property="FontSize" Value="22" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="ViewerSubtitleStyle" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,2,0,0" />
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+            <Setter Property="FontSize" Value="13" />
+        </Style>
+
+        <Style x:Key="ViewerToolbarButtonStyle"
+               TargetType="Button"
+               BasedOn="{StaticResource SecondaryButtonStyle}">
+            <Setter Property="Width" Value="92" />
+            <Setter Property="Height" Value="34" />
+            <Setter Property="Margin" Value="8,0,0,0" />
+        </Style>
+
+        <Style x:Key="ViewerViewportStyle" TargetType="Border">
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{StaticResource PanelBackgroundBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+            <Setter Property="ClipToBounds" Value="True" />
+        </Style>
+
+        <Style x:Key="ViewerSidebarStyle" TargetType="Border">
+            <Setter Property="Margin" Value="12,0,0,0" />
+            <Setter Property="Padding" Value="12" />
+            <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+            <Setter Property="BorderThickness" Value="1" />
+            <Setter Property="Background" Value="{StaticResource HeaderBackgroundBrush}" />
+            <Setter Property="CornerRadius" Value="4" />
+        </Style>
+
+        <Style x:Key="ViewerSplitterStyle" TargetType="GridSplitter">
+            <Setter Property="Width" Value="8" />
+            <Setter Property="Margin" Value="6,0,0,0" />
+            <Setter Property="HorizontalAlignment" Value="Stretch" />
+            <Setter Property="VerticalAlignment" Value="Stretch" />
+            <Setter Property="Background" Value="Transparent" />
+            <Setter Property="ResizeBehavior" Value="PreviousAndNext" />
+            <Setter Property="ResizeDirection" Value="Columns" />
+            <Setter Property="ShowsPreview" Value="True" />
+            <Setter Property="Cursor" Value="SizeWE" />
+        </Style>
+
+        <Style x:Key="ViewerSectionHeadingStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+            <Setter Property="FontSize" Value="16" />
+            <Setter Property="FontWeight" Value="SemiBold" />
+        </Style>
+
+        <Style x:Key="ViewerHelpTextStyle" TargetType="TextBlock">
+            <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+            <Setter Property="LineHeight" Value="18" />
+            <Setter Property="TextWrapping" Value="Wrap" />
+        </Style>
+
+        <Style x:Key="ViewerSectionDividerStyle" TargetType="Border">
+            <Setter Property="Height" Value="1" />
+            <Setter Property="Margin" Value="0,16,0,16" />
+            <Setter Property="Background" Value="{StaticResource SubtleBorderBrush}" />
+        </Style>
+
+        <Style x:Key="ViewerScriptEditorStyle"
+               TargetType="TextBox"
+               BasedOn="{StaticResource {x:Type TextBox}}">
+            <Setter Property="Height" Value="142" />
+            <Setter Property="Margin" Value="0,10,0,10" />
+            <Setter Property="Padding" Value="10" />
+            <Setter Property="AcceptsReturn" Value="True" />
+            <Setter Property="AcceptsTab" Value="True" />
+            <Setter Property="FontFamily" Value="Consolas" />
+            <Setter Property="FontSize" Value="12" />
+            <Setter Property="TextWrapping" Value="NoWrap" />
+            <Setter Property="VerticalScrollBarVisibility" Value="Auto" />
+            <Setter Property="HorizontalScrollBarVisibility" Value="Auto" />
+        </Style>
+
         <Style TargetType="Expander">
             <Setter Property="Margin" Value="{StaticResource PanelSectionSpacing}" />
             <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
@@ -116,6 +210,7 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
                             Margin="0,0,6,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
                             Content="Validate"
                             Click="ValidateActiveScriptButton_Click" />
                     <Button Grid.Column="1"
@@ -124,6 +219,7 @@
                             Click="SimulateActiveScriptButton_Click" />
                 </Grid>
                 <Button Margin="0,0,0,10"
+                        Style="{StaticResource SecondaryButtonStyle}"
                         Content="Load Example"
                         Click="LoadActiveExampleButton_Click" />
                 <Grid Margin="0,0,0,10">
@@ -133,10 +229,12 @@
                     </Grid.ColumnDefinitions>
                     <Button Grid.Column="0"
                             Margin="0,0,6,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
                             Content="Load Script"
                             Click="LoadActiveScriptButton_Click" />
                     <Button Grid.Column="1"
                             Margin="6,0,0,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
                             Content="Save Script"
                             Click="SaveActiveScriptButton_Click" />
                 </Grid>
@@ -170,6 +268,7 @@
                                 Click="SessionHomeButton_Click" />
                         <Button Grid.Column="1"
                                 Margin="6,0,0,0"
+                                Style="{StaticResource SecondaryButtonStyle}"
                                 Content="Reset Fault"
                                 ToolTip="Acknowledge the fault without changing pose or elapsed time."
                                 Click="SessionResetFaultButton_Click" />
@@ -189,6 +288,7 @@
                 <Button Width="80"
                         Height="34"
                         Margin="8,0,0,0"
+                        Style="{StaticResource SecondaryButtonStyle}"
                         Content="Reset"
                         Click="ResetActivePlaybackButton_Click" />
             </StackPanel>
@@ -266,24 +366,19 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="Cartesian Robot"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock x:Name="ViewerSubtitleText"
                                Text="Cartesian robot simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104"
-                            Height="34"
-                            Margin="8,0,0,0"
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}"
                             Click="BackToSelectionButton_Click"
                             Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
@@ -299,9 +394,7 @@
 
                 <Border x:Name="RobotViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="RobotViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="RobotViewport_MouseLeftButtonUp"
@@ -313,21 +406,10 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
                 <Border Grid.Column="2"
-                        Margin="12,0,0,0"
-                        Padding="14"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A">
+                        Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,0,10,0">
@@ -937,7 +1019,14 @@
                 </Border>
             </Grid>
 
-            <Grid Grid.Row="2" Margin="16,0,16,16">
+            <Border Grid.Row="2"
+                    Margin="16,0,16,16"
+                    Padding="10,8"
+                    Background="{StaticResource HeaderBackgroundBrush}"
+                    BorderBrush="{StaticResource SubtleBorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+            <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
@@ -949,11 +1038,13 @@
                             VerticalAlignment="Center">
                     <Button Width="48"
                             Margin="0,0,8,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
                             Content="Prev"
                             ToolTip="Move one playback frame backward."
                             Click="PreviousFrameButton_Click" />
                     <Button Width="48"
                             Margin="0,0,12,0"
+                            Style="{StaticResource SecondaryButtonStyle}"
                             Content="Next"
                             ToolTip="Move one playback frame forward."
                             Click="NextFrameButton_Click" />
@@ -981,8 +1072,11 @@
                            Margin="16,0,0,0"
                            VerticalAlignment="Center"
                            Foreground="#E5E7EB"
+                           FontFamily="Consolas"
+                           FontSize="12"
                            TextAlignment="Right" />
             </Grid>
+            </Border>
         </Grid>
 
         <Grid x:Name="DifferentialDriveViewerView" Visibility="Collapsed">
@@ -992,23 +1086,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="Differential Drive Robot"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock Text="Differential drive robot simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104"
-                            Height="34"
-                            Margin="8,0,0,0"
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}"
                             Click="BackToSelectionButton_Click"
                             Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
@@ -1023,9 +1112,7 @@
                 </Grid.ColumnDefinitions>
 
                 <Border Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A">
+                        Style="{StaticResource ViewerViewportStyle}">
                     <Canvas x:Name="DifferentialDriveCanvas"
                             ClipToBounds="True"
                             MouseWheel="DifferentialDriveCanvas_MouseWheel"
@@ -1033,26 +1120,13 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
                 <Border Grid.Column="2"
-                        Margin="12,0,0,0"
-                        Padding="16"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A">
+                        Style="{StaticResource ViewerSidebarStyle}">
                     <StackPanel>
-                        <TextBlock Text="Mobile Robot State"
-                                   Foreground="#F9FAFB"
-                                   FontSize="18"
-                                   FontWeight="SemiBold" />
+                        <TextBlock Text="Robot State"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
 
                         <Grid Margin="0,18,0,18">
                             <Grid.ColumnDefinitions>
@@ -1079,36 +1153,21 @@
                             <TextBlock x:Name="DifferentialDriveFramesText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                         </Grid>
 
-                        <TextBlock Text="Mobile DSL"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                        <TextBlock Text="Script"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
                                    Margin="0,10,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="DifferentialDriveExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DifferentialDriveScriptTextBox"
-                                 Height="132"
-                                 Margin="0,10,0,10"
-                                 Padding="10"
-                                 AcceptsReturn="True"
-                                 AcceptsTab="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 TextWrapping="NoWrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Foreground="#E5E7EB"
-                                 Background="#111827"
-                                 BorderBrush="#334155"
-                                 CaretBrush="#E5E7EB" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DifferentialDriveScriptStatusText"
-                                   Foreground="#94A3B8"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit DRIVE commands and simulate the mobile robot." />
                     </StackPanel>
                 </Border>
@@ -1129,21 +1188,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="SCARA Robot"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock Text="SCARA robot simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1157,9 +1213,7 @@
 
                 <Border x:Name="ScaraViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="ScaraViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="ScaraViewport_MouseLeftButtonUp"
@@ -1172,20 +1226,13 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
-                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border Grid.Column="2" Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,0,10,0">
-                        <TextBlock Text="SCARA State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                        <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
                         <Grid Margin="0,18,0,18">
                             <Grid.ColumnDefinitions>
@@ -1212,44 +1259,28 @@
                             <TextBlock x:Name="ScaraTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                         </Grid>
 
-                        <TextBlock Text="SCARA DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                        <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
                                    Margin="0,10,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="ScaraExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="ScaraScriptTextBox"
-                                 Height="132"
-                                 Margin="0,10,0,10"
-                                 Padding="10"
-                                 AcceptsReturn="True"
-                                 AcceptsTab="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 TextWrapping="NoWrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Foreground="#E5E7EB"
-                                 Background="#111827"
-                                 BorderBrush="#334155"
-                                 CaretBrush="#E5E7EB" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="ScaraScriptStatusText"
-                                   Foreground="#94A3B8"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit SCARA joint commands and simulate the articulated robot." />
 
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
-                                   Margin="0,18,0,8"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
+                                   Margin="0,0,0,8"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock x:Name="ScaraMovementExplanationText"
-                                   Foreground="#CBD5E1"
-                                   LineHeight="18"
-                                   TextWrapping="Wrap" />
+                                   Style="{StaticResource ViewerHelpTextStyle}" />
                     </StackPanel>
                     </ScrollViewer>
                 </Border>
@@ -1270,21 +1301,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="Simple Articulated Arm"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock Text="Simple articulated arm simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1298,9 +1326,7 @@
 
                 <Border x:Name="SimpleArmViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="SimpleArmViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="SimpleArmViewport_MouseLeftButtonUp"
@@ -1313,20 +1339,13 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
-                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border Grid.Column="2" Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,0,10,0">
-                        <TextBlock Text="Arm State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                        <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
                         <Grid Margin="0,18,0,18">
                             <Grid.ColumnDefinitions>
@@ -1353,44 +1372,28 @@
                             <TextBlock x:Name="SimpleArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                         </Grid>
 
-                        <TextBlock Text="Arm DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                        <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
                                    Margin="0,10,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="SimpleArmExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="SimpleArmScriptTextBox"
-                                 Height="132"
-                                 Margin="0,10,0,10"
-                                 Padding="10"
-                                 AcceptsReturn="True"
-                                 AcceptsTab="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 TextWrapping="NoWrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Foreground="#E5E7EB"
-                                 Background="#111827"
-                                 BorderBrush="#334155"
-                                 CaretBrush="#E5E7EB" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="SimpleArmScriptStatusText"
-                                   Foreground="#94A3B8"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit ARM joint commands and simulate the articulated arm." />
 
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
-                                   Margin="0,18,0,8"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
+                                   Margin="0,0,0,8"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock x:Name="SimpleArmMovementExplanationText"
-                                   Foreground="#CBD5E1"
-                                   LineHeight="18"
-                                   TextWrapping="Wrap" />
+                                   Style="{StaticResource ViewerHelpTextStyle}" />
                     </StackPanel>
                     </ScrollViewer>
                 </Border>
@@ -1411,21 +1414,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="Delta Robot"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock Text="Delta robot simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1439,9 +1439,7 @@
 
                 <Border x:Name="DeltaViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="DeltaViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="DeltaViewport_MouseLeftButtonUp"
@@ -1454,20 +1452,13 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
-                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border Grid.Column="2" Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,0,10,0">
-                        <TextBlock Text="Delta State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                        <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
                         <Grid Margin="0,18,0,18">
                             <Grid.ColumnDefinitions>
@@ -1494,44 +1485,28 @@
                             <TextBlock x:Name="DeltaTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                         </Grid>
 
-                        <TextBlock Text="Delta DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                        <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
                                    Margin="0,10,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="DeltaExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DeltaScriptTextBox"
-                                 Height="132"
-                                 Margin="0,10,0,10"
-                                 Padding="10"
-                                 AcceptsReturn="True"
-                                 AcceptsTab="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 TextWrapping="NoWrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Foreground="#E5E7EB"
-                                 Background="#111827"
-                                 BorderBrush="#334155"
-                                 CaretBrush="#E5E7EB" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DeltaScriptStatusText"
-                                   Foreground="#94A3B8"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit DELTA actuator commands and simulate the parallel robot." />
 
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
-                                   Margin="0,18,0,8"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
+                                   Margin="0,0,0,8"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock x:Name="DeltaMovementExplanationText"
-                                   Foreground="#CBD5E1"
-                                   LineHeight="18"
-                                   TextWrapping="Wrap" />
+                                   Style="{StaticResource ViewerHelpTextStyle}" />
                     </StackPanel>
                     </ScrollViewer>
                 </Border>
@@ -1552,21 +1527,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio"
-                               Foreground="#F9FAFB"
-                               FontSize="24"
-                               FontWeight="SemiBold" />
+                    <TextBlock Text="Drone"
+                               Style="{StaticResource ViewerTitleStyle}" />
                     <TextBlock Text="Drone simulation"
-                               Foreground="#CBD5E1"
-                               FontSize="13" />
+                               Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
 
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1580,9 +1552,7 @@
 
                 <Border x:Name="DroneViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="DroneViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="DroneViewport_MouseLeftButtonUp"
@@ -1595,20 +1565,13 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
-                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border Grid.Column="2" Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto"
                                   HorizontalScrollBarVisibility="Disabled">
                     <StackPanel Margin="0,0,10,0">
-                        <TextBlock Text="Drone State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                        <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
                         <Grid Margin="0,18,0,18">
                             <Grid.ColumnDefinitions>
@@ -1635,44 +1598,28 @@
                             <TextBlock x:Name="DroneTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                         </Grid>
 
-                        <TextBlock Text="Drone DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                        <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
                                    Margin="0,10,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="DroneExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DroneScriptTextBox"
-                                 Height="132"
-                                 Margin="0,10,0,10"
-                                 Padding="10"
-                                 AcceptsReturn="True"
-                                 AcceptsTab="True"
-                                 FontFamily="Consolas"
-                                 FontSize="12"
-                                 TextWrapping="NoWrap"
-                                 VerticalScrollBarVisibility="Auto"
-                                 HorizontalScrollBarVisibility="Auto"
-                                 Foreground="#E5E7EB"
-                                 Background="#111827"
-                                 BorderBrush="#334155"
-                                 CaretBrush="#E5E7EB" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DroneScriptStatusText"
-                                   Foreground="#94A3B8"
-                                   TextWrapping="Wrap"
+                                   Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit DRONE pose commands and simulate the aerial robot." />
 
+                        <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
-                                   Margin="0,18,0,8"
-                                   Foreground="#F9FAFB"
-                                   FontSize="16"
-                                   FontWeight="SemiBold" />
+                                   Margin="0,0,0,8"
+                                   Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock x:Name="DroneMovementExplanationText"
-                                   Foreground="#CBD5E1"
-                                   LineHeight="18"
-                                   TextWrapping="Wrap" />
+                                   Style="{StaticResource ViewerHelpTextStyle}" />
                     </StackPanel>
                     </ScrollViewer>
                 </Border>
@@ -1693,13 +1640,13 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Margin="16,14,16,10">
+            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
                 <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="RobotStudio" Foreground="#F9FAFB" FontSize="24" FontWeight="SemiBold" />
-                    <TextBlock Text="6-DOF industrial arm simulation" Foreground="#CBD5E1" FontSize="13" />
+                    <TextBlock Text="6-DOF Industrial Arm" Style="{StaticResource ViewerTitleStyle}" />
+                    <TextBlock Text="Industrial arm simulation" Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Width="104" Height="34" Margin="8,0,0,0" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1713,9 +1660,7 @@
 
                 <Border x:Name="IndustrialArmViewportHost"
                         Grid.Column="0"
-                        BorderBrush="#334155"
-                        BorderThickness="1"
-                        Background="#0F172A"
+                        Style="{StaticResource ViewerViewportStyle}"
                         Cursor="Hand"
                         MouseLeftButtonDown="IndustrialArmViewport_MouseLeftButtonDown"
                         MouseLeftButtonUp="IndustrialArmViewport_MouseLeftButtonUp"
@@ -1728,19 +1673,12 @@
                 </Border>
 
                 <GridSplitter Grid.Column="1"
-                              Width="8"
-                              Margin="6,0,0,0"
-                              HorizontalAlignment="Stretch"
-                              VerticalAlignment="Stretch"
-                              Background="#1E293B"
-                              ResizeBehavior="PreviousAndNext"
-                              ResizeDirection="Columns"
-                              ShowsPreview="True" />
+                              Style="{StaticResource ViewerSplitterStyle}" />
 
-                <Border Grid.Column="2" Margin="12,0,0,0" Padding="16" BorderBrush="#334155" BorderThickness="1" Background="#0F172A">
+                <Border Grid.Column="2" Style="{StaticResource ViewerSidebarStyle}">
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,0,10,0">
-                            <TextBlock Text="Industrial Arm State" Foreground="#F9FAFB" FontSize="18" FontWeight="SemiBold" />
+                            <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
                             <Grid Margin="0,18,0,18">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="92" />
@@ -1765,27 +1703,19 @@
                                 <TextBlock x:Name="IndustrialArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
                             </Grid>
 
-                            <TextBlock Text="ARM6 DSL" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
+                            <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                            <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                             <TextBlock Text="Example" Margin="0,10,0,4" Foreground="#94A3B8" />
                             <ComboBox x:Name="IndustrialArmExampleComboBox" Margin="0,0,0,8" />
                             <TextBox x:Name="IndustrialArmScriptTextBox"
-                                     Height="150"
-                                     Margin="0,10,0,10"
-                                     Padding="10"
-                                     AcceptsReturn="True"
-                                     AcceptsTab="True"
-                                     FontFamily="Consolas"
-                                     FontSize="12"
-                                     TextWrapping="NoWrap"
-                                     VerticalScrollBarVisibility="Auto"
-                                     HorizontalScrollBarVisibility="Auto" />
+                                     Style="{StaticResource ViewerScriptEditorStyle}" />
                             <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
                             <TextBlock x:Name="IndustrialArmScriptStatusText"
-                                       Foreground="#94A3B8"
-                                       TextWrapping="Wrap"
+                                       Style="{StaticResource ViewerHelpTextStyle}"
                                        Text="Edit ARM6 joint commands and simulate the industrial arm." />
-                            <TextBlock Text="Movement Explanation" Margin="0,18,0,8" Foreground="#F9FAFB" FontSize="16" FontWeight="SemiBold" />
-                            <TextBlock x:Name="IndustrialArmMovementExplanationText" Foreground="#CBD5E1" LineHeight="18" TextWrapping="Wrap" />
+                            <Border Style="{StaticResource ViewerSectionDividerStyle}" />
+                            <TextBlock Text="Movement Explanation" Margin="0,0,0,8" Style="{StaticResource ViewerSectionHeadingStyle}" />
+                            <TextBlock x:Name="IndustrialArmMovementExplanationText" Style="{StaticResource ViewerHelpTextStyle}" />
                         </StackPanel>
                     </ScrollViewer>
                 </Border>

@@ -48,6 +48,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Standardized the existing RobotStudio robot icon across the WPF window and executable as the current application identity.
 - Kept simulation headers focused on navigation and playback, with fault recovery controls shown contextually only when needed.
 - Updated the robot catalog to derive one to six columns from available width, keeping cards readable on smaller windows while using wide and ultrawide displays more efficiently.
+- Unified simulation workspaces with robot-specific headers, quieter secondary actions, consistent viewport and sidebar framing, clearer state/script/explanation sections, and a shared timeline treatment.
 - Updated Cartesian and XY plotter planning to respect acceleration limits, producing acceleration-aware durations and Cartesian playback interpolation.
 - Updated articulated playback to follow acceleration-aware profile progress instead of constant-speed joint interpolation.
 - Updated differential-drive playback to complete its planned translation before rotation and to follow each segment's acceleration-aware progress.

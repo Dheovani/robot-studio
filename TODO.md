@@ -64,7 +64,7 @@ This file tracks future work after the first stable Cartesian simulation release
 ## 6. Desktop User Experience
 
 - [x] Improve the visual design of the robot selection screen.
-- [ ] Improve the visual design of each simulation workspace.
+- [x] Improve the visual design of each simulation workspace.
 - [x] Improve viewport drag behavior so orbiting works when dragging anywhere inside the simulation area, not only when the pointer starts over a rendered primitive.
 - [x] Add a more polished application logo and brand system if needed.
 - [x] Expand the local example catalog into a multi-example gallery for common scripts.
