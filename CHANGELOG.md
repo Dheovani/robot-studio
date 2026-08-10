@@ -55,6 +55,10 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Updated Delta and Drone playback to follow deterministic profile progress instead of constant-speed interpolation.
 - Kept G-code, hardware execution, real drone physics, collision detection, inverse kinematics, and richer 3D graphics as planned future work.
 
+### Fixed
+
+- Fixed architecture tests across Linux, macOS, and concurrent Windows WPF builds by normalizing project reference paths and ignoring SDK-generated temporary WPF projects.
+
 ## 1.0.0 - Stable Cartesian Simulation Release
 
 RobotStudio `1.0.0` is the first stable educational release of the project. It provides a complete introductory robotics workflow centered on a Cartesian X/Y/Z robot, while keeping the architecture prepared for future robot families.

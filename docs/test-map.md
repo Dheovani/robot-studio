@@ -374,6 +374,8 @@ This document maps expected automated tests to project behavior. It should be up
 ## Architecture Tests
 
 - [x] Source projects follow the allowed project reference map.
+- [x] Project reference names are resolved consistently from Windows and Unix directory separators.
+- [x] Temporary WPF build projects are excluded from source-project architecture discovery.
 - [x] `RobotStudio.Domain` has no project references, package references, or Windows target.
 - [x] `RobotStudio.Desktop` is the only WPF source project.
 - [x] The portable solution excludes the WPF desktop project while retaining CLI and core projects.

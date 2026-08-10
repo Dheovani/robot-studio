@@ -81,6 +81,22 @@ public sealed class ProjectDependencyRulesTests
         Assert.Contains("RobotStudio.Domain", portableSolution);
     }
 
+    [Theory]
+    [InlineData(@"..\RobotStudio.Domain\RobotStudio.Domain.csproj")]
+    [InlineData("../RobotStudio.Domain/RobotStudio.Domain.csproj")]
+    public void GetProjectName_WhenReferenceUsesEitherDirectorySeparator_ShouldReturnProjectName(
+        string projectReference)
+    {
+        Assert.Equal("RobotStudio.Domain", GetProjectName(projectReference));
+    }
+
+    [Fact]
+    public void IsTemporaryWpfProject_WhenSdkGeneratesBuildProject_ShouldReturnTrue()
+    {
+        Assert.True(IsTemporaryWpfProject("RobotStudio.Desktop_ab12cd34_wpftmp.csproj"));
+        Assert.False(IsTemporaryWpfProject("RobotStudio.Desktop.csproj"));
+    }
+
     private static IReadOnlyList<string> ReadProjectReferences(string projectPath)
     {
         var document = XDocument.Load(projectPath);
@@ -91,14 +107,19 @@ public sealed class ProjectDependencyRulesTests
             .Descendants("ProjectReference")
             .Select(reference => reference.Attribute("Include")?.Value)
             .Where(include => !string.IsNullOrWhiteSpace(include))
-            .Select(include => Path.GetFullPath(Path.Combine(projectDirectory, include!)))
+            .Select(include => NormalizePathSeparators(include!))
+            .Select(include => Path.GetFullPath(Path.Combine(projectDirectory, include)))
             .ToArray();
     }
 
     private static IEnumerable<string> EnumerateSourceProjects(string repositoryRoot) =>
         Directory
             .EnumerateFiles(Path.Combine(repositoryRoot, "src"), "*.csproj", SearchOption.AllDirectories)
-            .Where(projectPath => !ContainsGeneratedPathSegment(projectPath));
+            .Where(projectPath => !ContainsGeneratedPathSegment(projectPath))
+            .Where(projectPath => !IsTemporaryWpfProject(projectPath));
+
+    private static bool IsTemporaryWpfProject(string projectPath) =>
+        GetProjectName(projectPath).EndsWith("_wpftmp", StringComparison.OrdinalIgnoreCase);
 
     private static bool ContainsGeneratedPathSegment(string projectPath)
     {
@@ -122,7 +143,11 @@ public sealed class ProjectDependencyRulesTests
     }
 
     private static string GetProjectName(string projectPath) =>
-        Path.GetFileNameWithoutExtension(projectPath);
+        Path.GetFileNameWithoutExtension(NormalizePathSeparators(projectPath));
+
+    private static string NormalizePathSeparators(string path) =>
+        path
+            .Replace(Path.DirectorySeparatorChar == '\\' ? '/' : '\\', Path.DirectorySeparatorChar);
 
     private static string FindRepositoryRoot()
     {
