@@ -310,6 +310,24 @@ Expected result:
 - validation, simulation, playback, and snapshot export consume the resolved `IRobotScriptDialect`;
 - unsupported dialect names and malformed options return clear argument errors.
 
+### Study Cartesian Validation And Sequencing Examples
+
+Actor: student.
+
+Goal: compare valid motion, constrained speed, intentional validation failure, and state sequencing without writing the first script from scratch.
+
+Current status: implemented in the Cartesian desktop example selector and `examples/cartesian/`.
+
+Expected result:
+
+- the axis-limit lesson intentionally targets `X=320 mm` and explains the valid `0..300 mm` range when validated;
+- the speed lesson compares an accepted X request with Y and Z requests capped by their axis limits;
+- charts and movement explanations show requested and effective speed without reparsing source text;
+- the jog-style lesson mirrors small X+, Y+, and Z+ actions as an ordered command sequence;
+- waits visibly retain position while advancing simulated time;
+- the final home command returns the robot to the origin;
+- Simple DSL and G-code variants preserve the same lesson intent.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

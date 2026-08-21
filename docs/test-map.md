@@ -378,6 +378,9 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Local desktop examples cover every openable robot viewer.
 - [x] Local desktop examples expose non-empty names, descriptions, and scripts.
 - [x] Local desktop examples can be filtered by viewer kind.
+- [x] Cartesian examples validate or fail according to their declared expected result in both Simple DSL and G-code.
+- [x] The intentional axis-limit lesson is the only Cartesian example declared as a validation failure.
+- [x] Focused Cartesian teaching files remain synchronized with their desktop catalog scripts.
 - [x] Training viewers expose multiple local examples, including Cartesian, XY Plotter, Differential Drive, SCARA, Simple Arm, and Delta.
 - [x] The 6-DOF Industrial Arm is available with a concrete 3D viewer descriptor.
 - [x] The industrial arm viewer exposes multiple local `ARM6` examples.
@@ -437,13 +440,13 @@ Expected current behavior:
 Additional manual CLI checks:
 
 - `dotnet run --project src/RobotStudio.Cli -- example` prints the built-in script.
-- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot` validates the example script.
-- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.
-- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.gcode` infers and validates G-code.
-- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.gcode` infers and simulates G-code.
+- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian/basic.robot` validates the example script.
+- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian/basic.robot` simulates the example script.
+- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian/basic.gcode` infers and validates G-code.
+- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian/basic.gcode` infers and simulates G-code.
 - `dotnet run --project src/RobotStudio.Cli -- example --dialect gcode` prints the built-in example as G-code.
-- `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
-- `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json` exports fixed-interval playback data.
+- `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian/basic.robot 500` prints fixed-interval playback frames.
+- `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian/basic.robot 500 playback.json` exports fixed-interval playback data.
 - `dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json` validates exported playback data.
 
 ## Desktop Verification

@@ -7,7 +7,8 @@ public sealed record RobotExample(
     string Name,
     string Description,
     string Script,
-    string? GCodeScript = null)
+    string? GCodeScript = null,
+    RobotExampleExpectedResult ExpectedResult = RobotExampleExpectedResult.Succeeds)
 {
     public override string ToString() => Name;
 }

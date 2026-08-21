@@ -42,6 +42,67 @@ public static class RobotExampleCatalog
             """),
 
         new(
+            RobotViewerKind.CartesianThreeDimensional,
+            "Axis limit validation (invalid)",
+            "Intentionally requests X=320 mm beyond the 300 mm limit. Validate it to inspect the axis-specific error; simulation is expected to be rejected.",
+            """
+            HOME
+            MOVE X=320 Y=80 Z=40 SPEED=90
+            """,
+            """
+            G28
+            G90
+            G1 X320 Y80 Z40 F5400
+            """,
+            RobotExampleExpectedResult.ValidationError),
+
+        new(
+            RobotViewerKind.CartesianThreeDimensional,
+            "Requested vs effective speed",
+            "Moves X, Y, and Z separately. Requested speeds above the Y and Z limits are capped, making the comparison visible in the charts and explanation panel.",
+            """
+            HOME
+            MOVE X=120 Y=0 Z=0 SPEED=90
+            MOVE X=120 Y=130 Z=0 SPEED=140
+            MOVE X=120 Y=130 Z=100 SPEED=140
+            WAIT 500
+            """,
+            """
+            G28
+            G90
+            G1 X120 Y0 Z0 F5400
+            G1 X120 Y130 Z0 F8400
+            G1 X120 Y130 Z100 F8400
+            G4 P500
+            """),
+
+        new(
+            RobotViewerKind.CartesianThreeDimensional,
+            "Jog, wait, and home sequence",
+            "Mirrors small X+/Y+/Z+ jog actions, pauses between phases, and returns HOME to teach command sequencing and state transitions.",
+            """
+            HOME
+            WAIT 300
+            MOVE X=10 Y=0 Z=0 SPEED=40
+            MOVE X=20 Y=0 Z=0 SPEED=40
+            MOVE X=20 Y=10 Z=0 SPEED=40
+            MOVE X=20 Y=10 Z=10 SPEED=40
+            WAIT 700
+            HOME
+            """,
+            """
+            G28
+            G4 P300
+            G91
+            G1 X10 F2400
+            G1 X10 F2400
+            G1 Y10 F2400
+            G1 Z10 F2400
+            G4 P700
+            G28
+            """),
+
+        new(
             RobotViewerKind.XYPlotterTwoDimensional,
             "Planar plotting path",
             "Moves through two planar points before waiting.",

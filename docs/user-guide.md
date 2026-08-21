@@ -173,20 +173,20 @@ dotnet run --project src/RobotStudio.Cli -- example
 Validate a script file:
 
 ```bash
-dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian/basic.robot
 ```
 
 Simulate a script file:
 
 ```bash
-dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian/basic.robot
 ```
 
 Validate or simulate the equivalent G-code example:
 
 ```bash
-dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.gcode
-dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.gcode
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian/basic.gcode
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian/basic.gcode
 ```
 
 The CLI infers the dialect from `.robot` and `.gcode`. Use an explicit override for neutral file extensions or classroom comparisons:
@@ -201,13 +201,13 @@ The explicit option takes precedence over the extension and accepts `dsl` or `gc
 Print fixed-interval playback frames for a script file:
 
 ```bash
-dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
+dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian/basic.robot 500
 ```
 
 Export fixed-interval playback data as JSON:
 
 ```bash
-dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
+dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian/basic.robot 500 playback.json
 ```
 
 Validate exported playback data:
@@ -337,6 +337,16 @@ G4 P500
 - Loading a `.gcode` or `.robot` file selects its matching dialect automatically; `.txt` keeps the current selection.
 - `G90` and `G91` do not create timeline movements themselves; they control how subsequent `G1` lines are resolved.
 - Feed-rate retention, hardware execution, non-Cartesian mappings, and other G-codes are not part of this subset.
+
+## Teaching Examples
+
+Standalone scripts are grouped by robot model under `examples/`. The Cartesian desktop selector includes these focused lessons in both Simple DSL and G-code:
+
+- `Axis limit validation (invalid)` intentionally exceeds the X-axis maximum and should be validated to inspect the error message;
+- `Requested vs effective speed` isolates X, Y, and Z movements so axis-specific speed caps are visible in the charts;
+- `Jog, wait, and home sequence` mirrors small manual jog actions, pauses without movement, and returns to the origin.
+
+An intentional validation failure is a teaching asset, not an executable success example. Its catalog metadata and automated tests record that expectation explicitly.
 
 The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 

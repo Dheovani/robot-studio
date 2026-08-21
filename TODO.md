@@ -16,7 +16,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Map `G1 X... Y... Z... F...` to linear movement, interpreting `F` as millimeters per minute.
 - [x] Map `G4 P...` to wait/dwell behavior, interpreting `P` as milliseconds.
 - [x] Allow Simple DSL and G-code scripts to produce the same domain command model.
-- [x] Add equivalent `examples/cartesian.robot` and `examples/cartesian.gcode` programs.
+- [x] Add equivalent `examples/cartesian/basic.robot` and `examples/cartesian/basic.gcode` programs.
 - [x] Add dialect-aware CLI validation, simulation, playback, export, and examples with extension inference and an explicit `--dialect` override.
 - [x] Add `G90` absolute and `G91` relative positioning with parse context, retained coordinates, and deterministic conversion to absolute `MoveToCommand` targets.
 - [x] Replace the Cartesian-specific shared parse context with an extensible robot-position context and explicit compatibility validation.
@@ -38,9 +38,9 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 ## 4. Didactic Tools
 
 - [ ] Expand movement explanations for acceleration-aware plans.
-- [ ] Add lesson-friendly examples for invalid axis limits.
-- [ ] Add examples for requested speed versus effective speed.
-- [ ] Add examples for waits, homing, manual jogging, and command sequencing.
+- [x] Add lesson-friendly examples for invalid axis limits.
+- [x] Add examples for requested speed versus effective speed.
+- [x] Add examples for waits, homing, manual jogging, and command sequencing.
 - [ ] Add glossary entries for technical robotics terms.
 - [ ] Add optional inline explanations for future G-code commands.
 

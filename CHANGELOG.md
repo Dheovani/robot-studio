@@ -13,6 +13,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added `G90` absolute and `G91` relative positioning, retained coordinates, parse-context resolution, dedicated desktop editor tags, and a relative-motion teaching example.
 - Added compiled script statements that preserve positioning-mode directives alongside executable domain commands.
 - Added Cartesian playback snapshot format 3 with requested movement velocity and wait-duration metadata.
+- Added organized per-robot example files and Cartesian lessons for axis-limit errors, requested versus effective speed, jog-style sequencing, waits, and homing.
 
 ### Changed
 
