@@ -15,4 +15,8 @@ public sealed record SimulationStep(
     RobotCommandSource? CommandSource)
 {
     public TrapezoidalMotionProfile? MotionProfile { get; init; }
+
+    public double? RequestedVelocityMillimetersPerSecond { get; init; }
+
+    public TimeSpan? RequestedWaitDuration { get; init; }
 }

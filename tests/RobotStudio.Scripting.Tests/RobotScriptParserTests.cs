@@ -5,6 +5,21 @@ namespace RobotStudio.Scripting.Tests;
 public sealed class RobotScriptParserTests
 {
     [Fact]
+    public void Compile_WhenSimpleDslIsValid_ShouldPreserveExecutableStatements()
+    {
+        var compilation = new RobotScriptParser().Compile(
+            """
+            HOME
+            WAIT 500
+            """);
+
+        Assert.Equal(2, compilation.Statements.Count);
+        Assert.All(compilation.Statements, statement =>
+            Assert.IsType<RobotScriptCommandStatement>(statement));
+        Assert.Equal(2, compilation.Commands.Commands.Count);
+    }
+
+    [Fact]
     public void Parse_WhenResetIsValid_ShouldReturnResetFaultCommandWithSource()
     {
         var command = Assert.IsType<ResetFaultCommand>(

@@ -7,7 +7,7 @@ public sealed record PlaybackSnapshotMetadata(
     string TimeUnit,
     double SampleIntervalMilliseconds)
 {
-    public const int CurrentCartesianFormatVersion = 2;
+    public const int CurrentCartesianFormatVersion = 3;
 
     public static PlaybackSnapshotMetadata CreateCartesian(TimeSpan sampleInterval)
     {

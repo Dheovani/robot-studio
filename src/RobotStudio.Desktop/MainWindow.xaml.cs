@@ -4162,13 +4162,9 @@ public partial class MainWindow : Window
         var samples = new List<ScalarSample>();
         foreach (var frame in snapshot.SceneFrames)
         {
-            var requestedVelocity = 0d;
-            if (frame.State == RobotState.Moving &&
-                frame.CommandSource is not null &&
-                TryParseSingleCommand(frame.CommandSource.Text, initialPosition) is MoveToCommand moveCommand)
-            {
-                requestedVelocity = moveCommand.RequestedVelocityMillimetersPerSecond ?? 0;
-            }
+            var requestedVelocity = frame.State == RobotState.Moving
+                ? frame.RequestedVelocityMillimetersPerSecond ?? 0
+                : 0;
 
             samples.Add(new ScalarSample(frame.Time, requestedVelocity));
         }
@@ -4540,20 +4536,22 @@ public partial class MainWindow : Window
         explanation.AppendLine($"Command line {sceneFrame.CommandSource.LineNumber}: {commandText}");
         explanation.AppendLine($"Current state: {sceneFrame.State}.");
 
-        var parsedCommand = TryParseSingleCommand(commandText, initialPosition);
-        switch (parsedCommand)
+        switch (sceneFrame.CommandName)
         {
-            case MoveToCommand moveToCommand:
-                AppendMoveExplanation(explanation, sceneFrame, moveToCommand);
+            case nameof(MoveToCommand):
+                AppendMoveExplanation(
+                    explanation,
+                    sceneFrame,
+                    sceneFrame.RequestedVelocityMillimetersPerSecond);
                 break;
 
-            case HomeCommand:
+            case nameof(HomeCommand):
                 explanation.AppendLine("HOME requests a return to the Cartesian origin at X=0, Y=0, Z=0.");
                 explanation.AppendLine("The simulator treats homing as a normal planned movement with the Homing state.");
                 break;
 
-            case WaitCommand waitCommand:
-                explanation.AppendLine($"WAIT keeps the current position fixed for {waitCommand.Duration.TotalMilliseconds:0.###} ms.");
+            case nameof(WaitCommand):
+                explanation.AppendLine($"WAIT keeps the current position fixed for {sceneFrame.RequestedWaitDuration?.TotalMilliseconds ?? 0:0.###} ms.");
                 explanation.AppendLine("Only simulated time advances while the robot is waiting.");
                 break;
 
@@ -4568,7 +4566,7 @@ public partial class MainWindow : Window
     private void AppendMoveExplanation(
         StringBuilder explanation,
         CartesianSceneFrame sceneFrame,
-        MoveToCommand command)
+        double? requestedVelocityMillimetersPerSecond)
     {
         if (snapshot is null || sceneFrame.CommandIndex is null)
         {
@@ -4614,37 +4612,20 @@ public partial class MainWindow : Window
         explanation.AppendLine($"Duration in the generated playback: {duration.TotalSeconds:0.###} s.");
         explanation.AppendLine($"Effective velocity: {effectiveVelocity:0.###} mm/s.");
 
-        if (command.RequestedVelocityMillimetersPerSecond is null)
+        if (requestedVelocityMillimetersPerSecond is null)
         {
             explanation.AppendLine($"No speed was requested, so the slowest involved axis limit is used: {slowestAxis.Id} at {slowestAxis.MaximumVelocityMillimetersPerSecond:0.###} mm/s.");
             return;
         }
 
-        explanation.AppendLine($"Requested velocity: {command.RequestedVelocityMillimetersPerSecond.Value:0.###} mm/s.");
-        if (command.RequestedVelocityMillimetersPerSecond.Value > slowestAxis.MaximumVelocityMillimetersPerSecond)
+        explanation.AppendLine($"Requested velocity: {requestedVelocityMillimetersPerSecond.Value:0.###} mm/s.");
+        if (requestedVelocityMillimetersPerSecond.Value > slowestAxis.MaximumVelocityMillimetersPerSecond)
         {
             explanation.AppendLine($"The requested velocity is capped by the {slowestAxis.Id} axis limit of {slowestAxis.MaximumVelocityMillimetersPerSecond:0.###} mm/s.");
         }
         else
         {
             explanation.AppendLine("The requested velocity is within the involved axis limits.");
-        }
-    }
-
-    private RobotCommand? TryParseSingleCommand(
-        string commandText,
-        CartesianPosition? parsePosition = null)
-    {
-        try
-        {
-            var context = parsePosition is { } position
-                ? new RobotScriptParseContext(position)
-                : null;
-            return CartesianScriptDialect.Parse(commandText, context).Commands[0];
-        }
-        catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
-        {
-            return null;
         }
     }
 

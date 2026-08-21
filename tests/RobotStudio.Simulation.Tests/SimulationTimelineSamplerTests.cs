@@ -78,6 +78,18 @@ public sealed class SimulationTimelineSamplerTests
     }
 
     [Fact]
+    public void SampleAt_WhenMoving_ShouldPreserveRequestedVelocity()
+    {
+        var result = CreateMoveSimulation();
+
+        var sample = new SimulationTimelineSampler().SampleAt(
+            result,
+            TimeSpan.FromSeconds(1));
+
+        Assert.Equal(50, sample.RequestedVelocityMillimetersPerSecond);
+    }
+
+    [Fact]
     public void SampleAt_WhenTimeIsDuringWait_ShouldKeepPosition()
     {
         var result = CreateMoveAndWaitSimulation();
@@ -89,6 +101,7 @@ public sealed class SimulationTimelineSamplerTests
         Assert.Equal(new CartesianPosition(X: 100, Y: 0, Z: 0), sample.Position);
         Assert.Equal(1, sample.CommandIndex);
         Assert.Equal(nameof(WaitCommand), sample.CommandName);
+        Assert.Equal(TimeSpan.FromSeconds(1), sample.RequestedWaitDuration);
     }
 
     [Fact]

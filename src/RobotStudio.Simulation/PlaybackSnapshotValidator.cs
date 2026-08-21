@@ -16,6 +16,7 @@ public sealed class PlaybackSnapshotValidator
         ValidateRequiredSections(snapshot, errors);
         ValidateCounts(snapshot, errors);
         ValidateMotionMetrics(snapshot, errors);
+        ValidateCommandMetadata(snapshot, errors);
 
         if (snapshot.TotalDuration < TimeSpan.Zero)
         {
@@ -138,6 +139,50 @@ public sealed class PlaybackSnapshotValidator
             !double.IsFinite(frame.AccelerationMillimetersPerSecondSquared)))
         {
             errors.Add("Snapshot frame accelerations must be finite.");
+        }
+    }
+
+    private static void ValidateCommandMetadata(
+        CartesianPlaybackSnapshot snapshot,
+        List<string> errors)
+    {
+        if (snapshot.Metadata?.FormatVersion < 3 || snapshot.Frames is null)
+        {
+            return;
+        }
+
+        if (snapshot.Frames.Any(frame =>
+            frame.RequestedVelocityMillimetersPerSecond is { } velocity &&
+            (!double.IsFinite(velocity) || velocity <= 0)))
+        {
+            errors.Add("Snapshot requested velocities must be finite and greater than zero when present.");
+        }
+
+        if (snapshot.Frames.Any(frame => frame.RequestedWaitDuration < TimeSpan.Zero))
+        {
+            errors.Add("Snapshot requested wait durations cannot be negative.");
+        }
+
+        if (snapshot.Poses is null || snapshot.SceneFrames is null ||
+            snapshot.Frames.Count != snapshot.Poses.Count ||
+            snapshot.Frames.Count != snapshot.SceneFrames.Count)
+        {
+            return;
+        }
+
+        for (var index = 0; index < snapshot.Frames.Count; index++)
+        {
+            var frame = snapshot.Frames[index];
+            var pose = snapshot.Poses[index];
+            var sceneFrame = snapshot.SceneFrames[index];
+            if (frame.RequestedVelocityMillimetersPerSecond != pose.RequestedVelocityMillimetersPerSecond ||
+                frame.RequestedVelocityMillimetersPerSecond != sceneFrame.RequestedVelocityMillimetersPerSecond ||
+                frame.RequestedWaitDuration != pose.RequestedWaitDuration ||
+                frame.RequestedWaitDuration != sceneFrame.RequestedWaitDuration)
+            {
+                errors.Add($"Snapshot command metadata is inconsistent at frame {index}.");
+                return;
+            }
         }
     }
 }

@@ -14,4 +14,6 @@ public sealed record SimulationSample(
     RobotCommandSource? CommandSource,
     double VelocityMillimetersPerSecond = 0,
     double AccelerationMillimetersPerSecondSquared = 0,
-    MotionProfilePhase? MotionProfilePhase = null);
+    MotionProfilePhase? MotionProfilePhase = null,
+    double? RequestedVelocityMillimetersPerSecond = null,
+    TimeSpan? RequestedWaitDuration = null);

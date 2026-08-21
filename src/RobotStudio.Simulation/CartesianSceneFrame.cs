@@ -9,7 +9,9 @@ public sealed record CartesianSceneFrame(
     IReadOnlyList<CartesianScenePrimitive> Primitives,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource)
+    RobotCommandSource? CommandSource,
+    double? RequestedVelocityMillimetersPerSecond = null,
+    TimeSpan? RequestedWaitDuration = null)
 {
     public int PrimitiveCount => Primitives.Count;
 }

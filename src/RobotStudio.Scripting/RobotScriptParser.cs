@@ -14,11 +14,16 @@ public sealed class RobotScriptParser : IRobotScriptDialect
 
     public RobotCommandSequence Parse(
         string script,
+        RobotScriptParseContext? context = null) =>
+        Compile(script, context).Commands;
+
+    public RobotScriptCompilation Compile(
+        string script,
         RobotScriptParseContext? context = null)
     {
         ArgumentNullException.ThrowIfNull(script);
 
-        var commands = new List<RobotCommand>();
+        var statements = new List<RobotScriptStatement>();
         var lines = script.Split(
             ["\r\n", "\n"],
             StringSplitOptions.None);
@@ -33,10 +38,11 @@ public sealed class RobotScriptParser : IRobotScriptDialect
                 continue;
             }
 
-            commands.Add(ParseLine(lineNumber, line));
+            var command = ParseLine(lineNumber, line);
+            statements.Add(new RobotScriptCommandStatement(command));
         }
 
-        return new RobotCommandSequence(commands);
+        return new RobotScriptCompilation(statements);
     }
 
     private static RobotCommand ParseLine(

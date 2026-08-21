@@ -13,4 +13,6 @@ public sealed record RobotVisualState(
     RobotCommandSource? CommandSource,
     double VelocityMillimetersPerSecond = 0,
     double AccelerationMillimetersPerSecondSquared = 0,
-    MotionProfilePhase? MotionProfilePhase = null) : IRobotPlaybackFrame;
+    MotionProfilePhase? MotionProfilePhase = null,
+    double? RequestedVelocityMillimetersPerSecond = null,
+    TimeSpan? RequestedWaitDuration = null) : IRobotPlaybackFrame;

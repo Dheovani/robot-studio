@@ -225,6 +225,7 @@ Current output includes:
 - simulation timeline with command source line numbers;
 - fixed-interval playback frames when using the `playback` command;
 - exact Cartesian motion-profile phase, velocity, and acceleration in version 2 playback frames;
+- requested Cartesian movement velocity and wait duration in version 3 playback frames;
 - Cartesian workspace bounds when using the `playback` command;
 - JSON playback snapshots when using the `export-playback` command;
 - playback snapshot validation when using the `validate-playback` command;
@@ -232,7 +233,7 @@ Current output includes:
 - Cartesian scene frames with renderable primitives in exported playback snapshots;
 - Cartesian viewport data for initial 3D camera framing in exported playback snapshots;
 - versioned playback metadata in exported playback snapshots;
-- compatibility validation for Cartesian snapshot formats 1 and 2;
+- compatibility validation for Cartesian snapshot formats 1, 2, and 3;
 - final robot state;
 - final robot position;
 - total simulated duration.

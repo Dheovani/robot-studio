@@ -169,7 +169,8 @@ public sealed class RobotSimulator
             commandIndex,
             nameof(MoveToCommand),
             command.Source,
-            motionProfile));
+            motionProfile,
+            command.RequestedVelocityMillimetersPerSecond));
 
         var completedContext = movingContext with
         {
@@ -184,7 +185,8 @@ public sealed class RobotSimulator
             commandIndex,
             nameof(MoveToCommand),
             command.Source,
-            motionProfile));
+            motionProfile,
+            command.RequestedVelocityMillimetersPerSecond));
 
         return completedContext;
     }
@@ -196,7 +198,13 @@ public sealed class RobotSimulator
         List<SimulationStep> timeline)
     {
         var waitingContext = TransitionTo(context, RobotState.Waiting);
-        timeline.Add(CreateStep(waitingContext, "Wait command started.", commandIndex, nameof(WaitCommand), command.Source));
+        timeline.Add(CreateStep(
+            waitingContext,
+            "Wait command started.",
+            commandIndex,
+            nameof(WaitCommand),
+            command.Source,
+            requestedWaitDuration: command.Duration));
 
         var completedContext = waitingContext with
         {
@@ -204,7 +212,13 @@ public sealed class RobotSimulator
             ElapsedTime = waitingContext.ElapsedTime + command.Duration
         };
 
-        timeline.Add(CreateStep(completedContext, "Wait command completed.", commandIndex, nameof(WaitCommand), command.Source));
+        timeline.Add(CreateStep(
+            completedContext,
+            "Wait command completed.",
+            commandIndex,
+            nameof(WaitCommand),
+            command.Source,
+            requestedWaitDuration: command.Duration));
 
         return completedContext;
     }
@@ -235,7 +249,9 @@ public sealed class RobotSimulator
         int? commandIndex = null,
         string? commandName = null,
         RobotCommandSource? commandSource = null,
-        TrapezoidalMotionProfile? motionProfile = null) =>
+        TrapezoidalMotionProfile? motionProfile = null,
+        double? requestedVelocityMillimetersPerSecond = null,
+        TimeSpan? requestedWaitDuration = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -245,7 +261,9 @@ public sealed class RobotSimulator
             commandName,
             commandSource)
         {
-            MotionProfile = motionProfile
+            MotionProfile = motionProfile,
+            RequestedVelocityMillimetersPerSecond = requestedVelocityMillimetersPerSecond,
+            RequestedWaitDuration = requestedWaitDuration
         };
 
     private static string GetCommandName(RobotCommand command) => command switch

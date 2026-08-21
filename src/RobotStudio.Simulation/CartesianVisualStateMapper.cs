@@ -18,6 +18,8 @@ public sealed class CartesianVisualStateMapper
             sample.CommandSource,
             sample.VelocityMillimetersPerSecond,
             sample.AccelerationMillimetersPerSecondSquared,
-            sample.MotionProfilePhase);
+            sample.MotionProfilePhase,
+            sample.RequestedVelocityMillimetersPerSecond,
+            sample.RequestedWaitDuration);
     }
 }

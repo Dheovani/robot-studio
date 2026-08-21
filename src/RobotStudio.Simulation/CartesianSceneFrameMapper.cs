@@ -67,7 +67,9 @@ public sealed class CartesianSceneFrameMapper
             primitives,
             pose.CommandIndex,
             pose.CommandName,
-            pose.CommandSource);
+            pose.CommandSource,
+            pose.RequestedVelocityMillimetersPerSecond,
+            pose.RequestedWaitDuration);
     }
 
     private static VisualVector3 CreateCarriageSize() =>

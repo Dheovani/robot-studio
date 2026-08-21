@@ -13,4 +13,6 @@ public sealed record CartesianRobotPose(
     VisualVector3 ToolCenterPoint,
     int? CommandIndex,
     string? CommandName,
-    RobotCommandSource? CommandSource);
+    RobotCommandSource? CommandSource,
+    double? RequestedVelocityMillimetersPerSecond = null,
+    TimeSpan? RequestedWaitDuration = null);

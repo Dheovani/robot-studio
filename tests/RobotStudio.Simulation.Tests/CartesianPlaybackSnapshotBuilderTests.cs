@@ -14,7 +14,7 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
 
         var snapshot = builder.Build(profile, result, TimeSpan.FromSeconds(1));
 
-        Assert.Equal(2, snapshot.Metadata.FormatVersion);
+        Assert.Equal(3, snapshot.Metadata.FormatVersion);
         Assert.Equal("Cartesian", snapshot.Metadata.RobotFamily);
         Assert.Equal("Millimeters", snapshot.Metadata.DistanceUnit);
         Assert.Equal("Seconds", snapshot.Metadata.TimeUnit);

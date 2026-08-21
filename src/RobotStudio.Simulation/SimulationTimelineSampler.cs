@@ -50,7 +50,9 @@ public sealed class SimulationTimelineSampler
             previousStep.CommandSource,
             profileSample?.Velocity ?? 0,
             profileSample?.Acceleration ?? 0,
-            profileSample?.Phase);
+            profileSample?.Phase,
+            previousStep.RequestedVelocityMillimetersPerSecond,
+            previousStep.RequestedWaitDuration);
     }
 
     private static int? FindFirstStepAfter(
@@ -127,6 +129,8 @@ public sealed class SimulationTimelineSampler
             step.CommandSource,
             profileSample?.Velocity ?? 0,
             profileSample?.Acceleration ?? 0,
-            profileSample?.Phase);
+            profileSample?.Phase,
+            step.RequestedVelocityMillimetersPerSecond,
+            step.RequestedWaitDuration);
     }
 }

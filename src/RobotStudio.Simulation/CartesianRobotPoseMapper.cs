@@ -18,6 +18,8 @@ public sealed class CartesianRobotPoseMapper
             ToolCenterPoint: toolCenterPoint,
             visualState.CommandIndex,
             visualState.CommandName,
-            visualState.CommandSource);
+            visualState.CommandSource,
+            visualState.RequestedVelocityMillimetersPerSecond,
+            visualState.RequestedWaitDuration);
     }
 }

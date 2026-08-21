@@ -12,14 +12,19 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
     public RobotCommandSequence Parse(
         string script,
+        RobotScriptParseContext? context = null) =>
+        Compile(script, context).Commands;
+
+    public RobotScriptCompilation Compile(
+        string script,
         RobotScriptParseContext? context = null)
     {
         ArgumentNullException.ThrowIfNull(script);
 
-        var commands = new List<RobotCommand>();
+        var statements = new List<RobotScriptStatement>();
         var lines = script.Split(["\r\n", "\n"], StringSplitOptions.None);
-        var positioningMode = GCodePositioningMode.Absolute;
-        CartesianPosition? currentPosition = context?.InitialCartesianPosition;
+        var positioningMode = RobotScriptPositioningMode.Absolute;
+        CartesianPosition? currentPosition = ResolveInitialPosition(context);
 
         for (var index = 0; index < lines.Length; index++)
         {
@@ -32,26 +37,34 @@ public sealed partial class GCodeParser : IRobotScriptDialect
                 continue;
             }
 
-            var command = ParseLine(
+            var statement = ParseLine(
                 lineNumber,
                 sourceText,
                 commandText,
                 ref positioningMode,
                 ref currentPosition);
-            if (command is not null)
-            {
-                commands.Add(command);
-            }
+            statements.Add(statement);
         }
 
-        return new RobotCommandSequence(commands);
+        return new RobotScriptCompilation(statements);
     }
 
-    private static RobotCommand? ParseLine(
+    private static CartesianPosition? ResolveInitialPosition(
+        RobotScriptParseContext? context) =>
+        context?.InitialPosition switch
+        {
+            null => null,
+            CartesianPosition position => position,
+            var position => throw new ArgumentException(
+                $"The G-code dialect requires a {nameof(CartesianPosition)} initial position, but received {position.GetType().Name}.",
+                nameof(context))
+        };
+
+    private static RobotScriptStatement ParseLine(
         int lineNumber,
         string sourceText,
         string commandText,
-        ref GCodePositioningMode positioningMode,
+        ref RobotScriptPositioningMode positioningMode,
         ref CartesianPosition? currentPosition)
     {
         var words = Tokenize(lineNumber, sourceText, commandText);
@@ -70,7 +83,20 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         var code = ParseInteger(lineNumber, sourceText, words[commandIndex].Value, "G code");
         var arguments = words.Skip(commandIndex + 1).ToArray();
 
-        return code switch
+        if (code is 90 or 91)
+        {
+            SetPositioningMode(
+                lineNumber,
+                sourceText,
+                arguments,
+                code == 90 ? RobotScriptPositioningMode.Absolute : RobotScriptPositioningMode.Relative,
+                ref positioningMode);
+            return new RobotScriptPositioningModeStatement(
+                CreateSource(lineNumber, sourceText),
+                positioningMode);
+        }
+
+        RobotCommand command = code switch
         {
             1 => ParseLinearMove(
                 lineNumber,
@@ -80,20 +106,10 @@ public sealed partial class GCodeParser : IRobotScriptDialect
                 ref currentPosition),
             4 => ParseDwell(lineNumber, sourceText, arguments),
             28 => ParseHome(lineNumber, sourceText, arguments, ref currentPosition),
-            90 => SetPositioningMode(
-                lineNumber,
-                sourceText,
-                arguments,
-                GCodePositioningMode.Absolute,
-                ref positioningMode),
-            91 => SetPositioningMode(
-                lineNumber,
-                sourceText,
-                arguments,
-                GCodePositioningMode.Relative,
-                ref positioningMode),
             _ => throw new ScriptParseException(lineNumber, sourceText, $"Unsupported G-code command 'G{code}'. Supported commands are G28, G1, G4, G90, and G91.")
         };
+
+        return new RobotScriptCommandStatement(command);
     }
 
     private static HomeCommand ParseHome(
@@ -115,7 +131,7 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         int lineNumber,
         string sourceText,
         IReadOnlyCollection<GCodeWord> arguments,
-        GCodePositioningMode positioningMode,
+        RobotScriptPositioningMode positioningMode,
         ref CartesianPosition? currentPosition)
     {
         var values = BuildArgumentMap(lineNumber, sourceText, arguments, ['X', 'Y', 'Z', 'F']);
@@ -126,12 +142,12 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
         var targetPosition = positioningMode switch
         {
-            GCodePositioningMode.Absolute => ResolveAbsoluteTarget(
+            RobotScriptPositioningMode.Absolute => ResolveAbsoluteTarget(
                 lineNumber,
                 sourceText,
                 values,
                 currentPosition),
-            GCodePositioningMode.Relative => ResolveRelativeTarget(
+            RobotScriptPositioningMode.Relative => ResolveRelativeTarget(
                 lineNumber,
                 sourceText,
                 values,
@@ -224,20 +240,19 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         return ParseDouble(lineNumber, sourceText, value, letter.ToString());
     }
 
-    private static RobotCommand? SetPositioningMode(
+    private static void SetPositioningMode(
         int lineNumber,
         string sourceText,
         IReadOnlyCollection<GCodeWord> arguments,
-        GCodePositioningMode mode,
-        ref GCodePositioningMode positioningMode)
+        RobotScriptPositioningMode mode,
+        ref RobotScriptPositioningMode positioningMode)
     {
         if (arguments.Count > 0)
         {
-            throw new ScriptParseException(lineNumber, sourceText, $"G{(mode == GCodePositioningMode.Absolute ? 90 : 91)} does not accept arguments.");
+            throw new ScriptParseException(lineNumber, sourceText, $"G{(mode == RobotScriptPositioningMode.Absolute ? 90 : 91)} does not accept arguments.");
         }
 
         positioningMode = mode;
-        return null;
     }
 
     private static WaitCommand ParseDwell(
@@ -401,9 +416,4 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
     private sealed record GCodeWord(char Letter, string Value);
 
-    private enum GCodePositioningMode
-    {
-        Absolute,
-        Relative
-    }
 }

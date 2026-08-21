@@ -34,5 +34,7 @@ public sealed class PlaybackSnapshotCompatibilityTests
         Assert.Equal(0, frame.VelocityMillimetersPerSecond);
         Assert.Equal(0, frame.AccelerationMillimetersPerSecondSquared);
         Assert.Null(frame.MotionProfilePhase);
+        Assert.Null(frame.RequestedVelocityMillimetersPerSecond);
+        Assert.Null(frame.RequestedWaitDuration);
     }
 }

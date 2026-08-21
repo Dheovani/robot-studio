@@ -149,13 +149,13 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianViewportPlanner` derives an initial camera target, camera position, up direction, and clipping distances from the workspace bounds. This keeps first-load scene framing deterministic while leaving camera interaction and rendering technology for the future UI layer.
 
-Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately.
+Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately. Cartesian format version 3 adds requested movement velocity and wait-duration metadata while retaining validation compatibility with versions 1 and 2.
 
-`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks supported metadata versions, required sections, frame/pose/scene-frame count consistency, non-negative duration, and version 2 motion metrics.
+`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks supported metadata versions, required sections, frame/pose/scene-frame count consistency, non-negative duration, version 2 motion metrics, and version 3 command metadata.
 
 ### Scripting
 
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`, keeping simulation and domain validation independent of source syntax. `RobotScriptParser` implements the Simple DSL for every available robot family. `GCodeParser` implements the first introductory Cartesian subset, and both parsers produce the same `HomeCommand`, `MoveToCommand`, and `WaitCommand` types.
+Script compilation is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotScriptCompilation` containing ordered source statements and the shared executable `RobotCommandSequence`. This preserves non-executable directives for didactic tooling while keeping simulation and domain validation independent of source syntax. `Parse` remains a convenience operation for consumers that need only commands. `RobotScriptParser` implements the Simple DSL for every available robot family. `GCodeParser` implements the first introductory Cartesian subset, and both compilers produce the same `HomeCommand`, `MoveToCommand`, and `WaitCommand` types.
 
 Initial target syntax:
 
@@ -167,7 +167,9 @@ HOME
 
 The first G-code subset supports `G28`, `G1`, `G4`, `G90`, and `G91`. Optional `F` follows the conventional millimeters-per-minute unit and is converted to the domain's millimeters-per-second velocity. `G4 P` uses milliseconds. Feed rate is intentionally not retained as modal state in this introductory subset.
 
-`RobotScriptParseContext` supplies the Cartesian position at which parsing begins. `GCodeParser` tracks positioning mode and the last resolved position only while parsing one script. In `G90`, omitted axes retain their current values; in `G91`, supplied coordinates are displacements and omitted axes contribute zero. Every `G1` is emitted as an absolute `MoveToCommand`, ensuring Domain, Motion, Simulation, CLI, and Desktop do not need G-code-specific movement rules. `G28` updates the parser's known position to the origin without changing the selected positioning mode.
+`RobotScriptParseContext` carries an `IRobotPosition`, so the shared dialect boundary does not depend on a Cartesian type. Each stateful dialect must explicitly validate that the supplied position belongs to a compatible robot family. `GCodeParser` accepts `CartesianPosition`, tracks positioning mode and the last resolved position only while compiling one script, and rejects incompatible contexts clearly. In `G90`, omitted axes retain their current values; in `G91`, supplied coordinates are displacements and omitted axes contribute zero. Every `G1` is emitted as an absolute `MoveToCommand`, ensuring Domain, Motion, Simulation, CLI, and Desktop do not need G-code-specific movement rules. `G28` updates the compiler's known position to the origin without changing the selected positioning mode. `G90` and `G91` remain available as typed positioning-mode statements even though they emit no robot command.
+
+Cartesian simulation steps carry requested velocity and wait duration from the compiled command through samples, visual states, poses, and scene frames. Desktop charts and explanations consume this metadata directly. The UI must not reparse individual source lines because modal languages require the complete preceding program state for correct interpretation.
 
 G-code remains intentionally limited to Cartesian and XY Plotter workflows in M2. Differential drive, articulated, parallel, and aerial robots retain their explicit Simple DSL commands. RobotStudio will not invent nonstandard G-codes for these families merely to make the dialect appear universal.
 

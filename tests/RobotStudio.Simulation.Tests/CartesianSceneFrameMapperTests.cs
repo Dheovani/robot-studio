@@ -67,6 +67,8 @@ public sealed class CartesianSceneFrameMapperTests
         Assert.Equal(pose.CommandIndex, sceneFrame.CommandIndex);
         Assert.Equal(pose.CommandName, sceneFrame.CommandName);
         Assert.Equal(pose.CommandSource, sceneFrame.CommandSource);
+        Assert.Equal(pose.RequestedVelocityMillimetersPerSecond, sceneFrame.RequestedVelocityMillimetersPerSecond);
+        Assert.Equal(pose.RequestedWaitDuration, sceneFrame.RequestedWaitDuration);
     }
 
     [Fact]
@@ -108,5 +110,7 @@ public sealed class CartesianSceneFrameMapperTests
             ToolCenterPoint: new VisualVector3(120, 80, 40),
             CommandIndex: 2,
             CommandName: nameof(MoveToCommand),
-            CommandSource: new RobotCommandSource(3, "MOVE X=120 Y=80 Z=40"));
+            CommandSource: new RobotCommandSource(3, "MOVE X=120 Y=80 Z=40"),
+            RequestedVelocityMillimetersPerSecond: 75,
+            RequestedWaitDuration: TimeSpan.FromMilliseconds(500));
 }

@@ -11,10 +11,13 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added equivalent Simple DSL and G-code Cartesian example files for comparing both command languages.
 - Added dialect-aware CLI commands that infer Simple DSL or G-code from script extensions, accept an explicit `--dialect` override, and report the selected dialect.
 - Added `G90` absolute and `G91` relative positioning, retained coordinates, parse-context resolution, dedicated desktop editor tags, and a relative-motion teaching example.
+- Added compiled script statements that preserve positioning-mode directives alongside executable domain commands.
+- Added Cartesian playback snapshot format 3 with requested movement velocity and wait-duration metadata.
 
 ### Changed
 
 - Kept introductory G-code intentionally limited to Cartesian-family robots; other robot families continue using Simple DSL until an appropriate standard mapping is selected.
+- Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

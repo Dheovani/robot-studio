@@ -1,10 +1,49 @@
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
+using RobotStudio.Domain.Mobile;
 
 namespace RobotStudio.Scripting.Tests;
 
 public sealed class GCodeParserTests
 {
+    [Fact]
+    public void Compile_WhenProgramContainsPositioningModes_ShouldPreserveDirectivesAndCommands()
+    {
+        var compilation = new GCodeParser().Compile(
+            """
+            G90
+            G1 X10 Y20 Z5
+            G91
+            G1 X5
+            """);
+
+        Assert.Collection(
+            compilation.Statements,
+            statement => Assert.Equal(
+                RobotScriptPositioningMode.Absolute,
+                Assert.IsType<RobotScriptPositioningModeStatement>(statement).Mode),
+            statement => Assert.IsType<MoveToCommand>(
+                Assert.IsType<RobotScriptCommandStatement>(statement).Command),
+            statement => Assert.Equal(
+                RobotScriptPositioningMode.Relative,
+                Assert.IsType<RobotScriptPositioningModeStatement>(statement).Mode),
+            statement => Assert.IsType<MoveToCommand>(
+                Assert.IsType<RobotScriptCommandStatement>(statement).Command));
+        Assert.Equal(2, compilation.Commands.Commands.Count);
+    }
+
+    [Fact]
+    public void Compile_WhenContextPositionIsNotCartesian_ShouldRejectIncompatibleContext()
+    {
+        var context = new RobotScriptParseContext(
+            new DifferentialDrivePose(0, 0, 0));
+
+        var exception = Assert.Throws<ArgumentException>(() =>
+            new GCodeParser().Compile("G28", context));
+
+        Assert.Contains("requires a CartesianPosition initial position", exception.Message);
+    }
+
     [Fact]
     public void Parse_WhenSupportedProgramIsValid_ShouldReturnSharedDomainCommands()
     {

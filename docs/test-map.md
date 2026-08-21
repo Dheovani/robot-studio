@@ -219,7 +219,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Playback snapshot validation reports incompatible metadata.
 - [x] Playback snapshot validation reports missing sections and inconsistent counts.
 - [x] Playback snapshot version 2 validates frame velocity and acceleration values.
-- [x] Playback snapshot validation remains compatible with version 1 metadata.
+- [x] Playback snapshot version 3 validates requested velocity, wait duration, and metadata consistency across frames, poses, and scene frames.
+- [x] Playback snapshot validation remains compatible with version 1 and version 2 metadata.
 - [x] Version 1 frames without motion metrics deserialize with compatible defaults.
 - [x] Differential drive simulator executes `HOME`.
 - [x] Differential drive simulator executes differential-drive move commands.
@@ -333,6 +334,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Reject arguments on `G90` and `G91`.
 - [x] Classify `G90` and `G91` as positioning-mode lines in the desktop script gutter.
 - [x] Validate dedicated Cartesian G-code examples from the viewer's initial position.
+- [x] Preserve executable commands and typed `G90`/`G91` directives in the compiled statement sequence.
+- [x] Reject a non-Cartesian initial position supplied to the G-code compiler context.
+- [x] Preserve Simple DSL commands as executable compiled statements.
+- [x] Carry requested movement velocity and wait duration through Cartesian timeline sampling and scene-frame mapping.
 
 ## `RobotStudio.Hardware.Tests`
 
