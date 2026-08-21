@@ -1,3 +1,4 @@
+using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 
 namespace RobotStudio.Scripting.Tests;
@@ -51,13 +52,107 @@ public sealed class GCodeParserTests
     }
 
     [Fact]
-    public void Parse_WhenG1OmitsCoordinate_ShouldExplainRequiredCoordinate()
+    public void Parse_WhenAbsoluteG1OmitsCoordinateWithoutContext_ShouldExplainRequiredPosition()
     {
         var exception = Assert.Throws<ScriptParseException>(() =>
             new GCodeParser().Parse("G1 X10 Y20"));
 
         Assert.Equal(1, exception.LineNumber);
-        Assert.Contains("requires a Z coordinate", exception.Message);
+        Assert.Contains("requires a known initial Cartesian position", exception.Message);
+    }
+
+    [Fact]
+    public void Parse_WhenAbsoluteG1OmitsAxes_ShouldRetainCurrentCoordinates()
+    {
+        var context = new RobotScriptParseContext(
+            new CartesianPosition(40, 30, 20));
+
+        var move = Assert.IsType<MoveToCommand>(Assert.Single(
+            new GCodeParser().Parse("G90\nG1 X100", context).Commands));
+
+        Assert.Equal(100, move.TargetPosition.X);
+        Assert.Equal(30, move.TargetPosition.Y);
+        Assert.Equal(20, move.TargetPosition.Z);
+        Assert.Equal(2, move.Source?.LineNumber);
+    }
+
+    [Fact]
+    public void Parse_WhenRelativeMovesAreConsecutive_ShouldResolveAbsoluteTargets()
+    {
+        var context = new RobotScriptParseContext(
+            new CartesianPosition(40, 30, 20));
+
+        var sequence = new GCodeParser().Parse(
+            """
+            G91
+            G1 X10 Y-5 F3000
+            G1 Z15
+            """,
+            context);
+
+        var first = Assert.IsType<MoveToCommand>(sequence.Commands[0]);
+        Assert.Equal(new CartesianPosition(50, 25, 20), first.TargetPosition);
+        Assert.Equal(50, first.RequestedVelocityMillimetersPerSecond);
+
+        var second = Assert.IsType<MoveToCommand>(sequence.Commands[1]);
+        Assert.Equal(new CartesianPosition(50, 25, 35), second.TargetPosition);
+    }
+
+    [Fact]
+    public void Parse_WhenModeReturnsToAbsolute_ShouldStopAccumulatingCoordinates()
+    {
+        var context = new RobotScriptParseContext(
+            new CartesianPosition(40, 30, 20));
+
+        var sequence = new GCodeParser().Parse(
+            """
+            G91
+            G1 X10
+            G90
+            G1 Y100
+            """,
+            context);
+
+        Assert.Equal(
+            new CartesianPosition(50, 100, 20),
+            Assert.IsType<MoveToCommand>(sequence.Commands[1]).TargetPosition);
+    }
+
+    [Fact]
+    public void Parse_WhenRelativeModeFollowsHome_ShouldUseOriginAsReference()
+    {
+        var sequence = new GCodeParser().Parse(
+            """
+            G28
+            G91
+            G1 X10 Y20
+            """);
+
+        Assert.IsType<HomeCommand>(sequence.Commands[0]);
+        Assert.Equal(
+            new CartesianPosition(10, 20, 0),
+            Assert.IsType<MoveToCommand>(sequence.Commands[1]).TargetPosition);
+    }
+
+    [Fact]
+    public void Parse_WhenRelativeModeHasNoKnownPosition_ShouldThrow()
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new GCodeParser().Parse("G91\nG1 X10"));
+
+        Assert.Equal(2, exception.LineNumber);
+        Assert.Contains("G91 relative movement requires a known initial Cartesian position", exception.Message);
+    }
+
+    [Theory]
+    [InlineData("G90 X0")]
+    [InlineData("G91 X0")]
+    public void Parse_WhenPositioningModeHasArguments_ShouldThrow(string script)
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new GCodeParser().Parse($"{script}\nG1 X0 Y0 Z0"));
+
+        Assert.Contains("does not accept arguments", exception.Message);
     }
 
     [Fact]
@@ -82,9 +177,9 @@ public sealed class GCodeParserTests
     public void Parse_WhenCodeIsUnsupported_ShouldListSupportedCommands()
     {
         var exception = Assert.Throws<ScriptParseException>(() =>
-            new GCodeParser().Parse("G90"));
+            new GCodeParser().Parse("G92"));
 
-        Assert.Contains("Supported commands are G28, G1, and G4", exception.Message);
+        Assert.Contains("Supported commands are G28, G1, G4, G90, and G91", exception.Message);
     }
 
     [Fact]

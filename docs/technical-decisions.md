@@ -165,7 +165,11 @@ WAIT 500
 HOME
 ```
 
-The first G-code subset intentionally supports only `G28`, `G1`, and `G4`. `G1` requires explicit `X`, `Y`, and `Z` values, while optional `F` follows the conventional millimeters-per-minute unit and is converted to the domain's millimeters-per-second velocity. `G4 P` uses milliseconds. This release does not introduce modal state, `G90`, `G91`, omitted-coordinate retention, hardware execution, or G-code mappings for non-Cartesian families.
+The first G-code subset supports `G28`, `G1`, `G4`, `G90`, and `G91`. Optional `F` follows the conventional millimeters-per-minute unit and is converted to the domain's millimeters-per-second velocity. `G4 P` uses milliseconds. Feed rate is intentionally not retained as modal state in this introductory subset.
+
+`RobotScriptParseContext` supplies the Cartesian position at which parsing begins. `GCodeParser` tracks positioning mode and the last resolved position only while parsing one script. In `G90`, omitted axes retain their current values; in `G91`, supplied coordinates are displacements and omitted axes contribute zero. Every `G1` is emitted as an absolute `MoveToCommand`, ensuring Domain, Motion, Simulation, CLI, and Desktop do not need G-code-specific movement rules. `G28` updates the parser's known position to the origin without changing the selected positioning mode.
+
+G-code remains intentionally limited to Cartesian and XY Plotter workflows in M2. Differential drive, articulated, parallel, and aerial robots retain their explicit Simple DSL commands. RobotStudio will not invent nonstandard G-codes for these families merely to make the dialect appear universal.
 
 `GCodeWriter` converts supported domain command sequences into this subset. It is used to present equivalent desktop teaching examples without duplicating simulation rules.
 

@@ -34,11 +34,14 @@ WAIT 500
 
 ```gcode
 G28
+G90
 G1 X120 Y80 Z40 F5400
+G91
+G1 X20 Y-10
 G4 P500
 ```
 
-In this first explicit subset, `G1` requires all three coordinates, `F` is millimeters per minute, and `G4 P` is milliseconds. Both dialects produce the same domain command types before validation and simulation.
+`G90` selects absolute positioning and `G91` selects relative positioning. Omitted axes retain their current coordinate in absolute mode and represent zero displacement in relative mode. `F` is millimeters per minute and `G4 P` is milliseconds. The parser resolves both positioning modes into absolute `MoveToCommand` targets before validation and simulation, so the rest of the system remains independent of G-code.
 
 `RESET` acknowledges a fault when execution resumes from a failed simulation context. It returns the logical state to `Idle` while preserving the robot's physical state and elapsed simulation time; `HOME` remains the recovery option that physically returns the robot to its family-specific origin.
 

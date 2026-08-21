@@ -290,6 +290,7 @@ Expected result:
 - the student selects Simple DSL or G-code before validating or simulating;
 - local examples are presented in the selected dialect;
 - `HOME` and `G28`, `MOVE` and `G1`, and `WAIT` and `G4` produce the same domain command types;
+- `G90` absolute and `G91` relative movements resolve to absolute domain targets using the viewer's initial position and prior G-code movements;
 - manual jog and direct console actions append syntax matching the selected dialect;
 - switching syntax does not duplicate domain, motion, or simulation rules.
 

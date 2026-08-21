@@ -805,7 +805,7 @@ public partial class MainWindow : Window
             ? "G1 X100 Y50 Z20 F4800"
             : "MOVE X=100 Y=50 Z=20 SPEED=80";
         ScriptStatusText.Text = descriptor.Id == RobotScriptDialectId.GCode
-            ? "G-code mode uses G28, G1 X/Y/Z with optional F in mm/min, and G4 P in milliseconds."
+            ? "G-code mode uses G28, G1, G4, and G90/G91 positioning. F is measured in mm/min."
             : "Simple DSL mode uses HOME, MOVE, and WAIT commands.";
         RefreshScriptEditorGutter();
     }
@@ -2574,7 +2574,9 @@ public partial class MainWindow : Window
         string script,
         bool captureSession = false)
     {
-        var commands = CartesianScriptDialect.Parse(script);
+        var commands = CartesianScriptDialect.Parse(
+            script,
+            new RobotScriptParseContext(initialPosition));
         ValidateCommandSequence(commands);
 
         var context = SimulationContext.Create(profile, initialPosition);
@@ -3217,20 +3219,21 @@ public partial class MainWindow : Window
 
     private string GetCartesianExampleScript(RobotViewerKind viewerKind)
     {
-        var dslScript = GetDefaultExampleScript(viewerKind);
-        return ConvertCartesianExampleForSelectedDialect(dslScript);
+        var example = RobotExampleCatalog.GetDefaultFor(viewerKind);
+        return ConvertCartesianExampleForSelectedDialect(example);
     }
 
     private string GetSelectedCartesianExampleScript()
     {
-        var dslScript = GetSelectedExampleScript(CartesianExampleComboBox, activeViewerKind);
-        return ConvertCartesianExampleForSelectedDialect(dslScript);
+        var example = CartesianExampleComboBox.SelectedItem as RobotExample ??
+            RobotExampleCatalog.GetDefaultFor(activeViewerKind);
+        return ConvertCartesianExampleForSelectedDialect(example);
     }
 
-    private string ConvertCartesianExampleForSelectedDialect(string dslScript) =>
+    private string ConvertCartesianExampleForSelectedDialect(RobotExample example) =>
         CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
-            ? GCodeWriter.Write(simpleDslDialect.Parse(dslScript))
-            : dslScript;
+            ? example.GCodeScript ?? GCodeWriter.Write(simpleDslDialect.Parse(example.Script))
+            : example.Script;
 
     private static void ConfigureExampleSelector(
         ComboBox comboBox,
@@ -3432,7 +3435,10 @@ public partial class MainWindow : Window
             AxisId.Z => currentPosition with { Z = currentPosition.Z + (stepMillimeters * direction) },
             _ => currentPosition
         };
-        var command = GetCartesianMoveCommandText(targetPosition, speedMillimetersPerSecond);
+        var command = GetCartesianMoveCommandText(
+            targetPosition,
+            speedMillimetersPerSecond,
+            ensureAbsoluteMode: true);
 
         AppendManualCommandAndSimulate(command);
     }
@@ -3444,9 +3450,11 @@ public partial class MainWindow : Window
 
     private string GetCartesianMoveCommandText(
         CartesianPosition targetPosition,
-        double speedMillimetersPerSecond) =>
+        double speedMillimetersPerSecond,
+        bool ensureAbsoluteMode = false) =>
         CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
-            ? $"G1 X{FormatNumber(targetPosition.X)} " +
+            ? (ensureAbsoluteMode ? $"G90{Environment.NewLine}" : string.Empty) +
+              $"G1 X{FormatNumber(targetPosition.X)} " +
               $"Y{FormatNumber(targetPosition.Y)} " +
               $"Z{FormatNumber(targetPosition.Z)} " +
               $"F{FormatNumber(speedMillimetersPerSecond * 60d)}"
@@ -4157,7 +4165,7 @@ public partial class MainWindow : Window
             var requestedVelocity = 0d;
             if (frame.State == RobotState.Moving &&
                 frame.CommandSource is not null &&
-                TryParseSingleCommand(frame.CommandSource.Text) is MoveToCommand moveCommand)
+                TryParseSingleCommand(frame.CommandSource.Text, initialPosition) is MoveToCommand moveCommand)
             {
                 requestedVelocity = moveCommand.RequestedVelocityMillimetersPerSecond ?? 0;
             }
@@ -4532,7 +4540,7 @@ public partial class MainWindow : Window
         explanation.AppendLine($"Command line {sceneFrame.CommandSource.LineNumber}: {commandText}");
         explanation.AppendLine($"Current state: {sceneFrame.State}.");
 
-        var parsedCommand = TryParseSingleCommand(commandText);
+        var parsedCommand = TryParseSingleCommand(commandText, initialPosition);
         switch (parsedCommand)
         {
             case MoveToCommand moveToCommand:
@@ -4623,11 +4631,16 @@ public partial class MainWindow : Window
         }
     }
 
-    private RobotCommand? TryParseSingleCommand(string commandText)
+    private RobotCommand? TryParseSingleCommand(
+        string commandText,
+        CartesianPosition? parsePosition = null)
     {
         try
         {
-            return CartesianScriptDialect.Parse(commandText).Commands[0];
+            var context = parsePosition is { } position
+                ? new RobotScriptParseContext(position)
+                : null;
+            return CartesianScriptDialect.Parse(commandText, context).Commands[0];
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
@@ -6182,6 +6195,7 @@ public partial class MainWindow : Window
     {
         ScriptEditorLineKind.Home => Color.FromRgb(30, 64, 175),
         ScriptEditorLineKind.Move => Color.FromRgb(22, 101, 52),
+        ScriptEditorLineKind.PositioningMode => Color.FromRgb(88, 28, 135),
         ScriptEditorLineKind.Wait => Color.FromRgb(133, 77, 14),
         ScriptEditorLineKind.Other => Color.FromRgb(127, 29, 29),
         _ => Color.FromRgb(30, 41, 59)
@@ -6191,6 +6205,7 @@ public partial class MainWindow : Window
     {
         ScriptEditorLineKind.Home => Color.FromRgb(191, 219, 254),
         ScriptEditorLineKind.Move => Color.FromRgb(187, 247, 208),
+        ScriptEditorLineKind.PositioningMode => Color.FromRgb(233, 213, 255),
         ScriptEditorLineKind.Wait => Color.FromRgb(254, 240, 138),
         ScriptEditorLineKind.Other => Color.FromRgb(254, 202, 202),
         _ => Color.FromRgb(203, 213, 225)

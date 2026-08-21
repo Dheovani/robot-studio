@@ -14,6 +14,12 @@ public static class RobotExampleCatalog
             HOME
             MOVE X=120 Y=80 Z=40 SPEED=90
             WAIT 500
+            """,
+            """
+            G28
+            G90
+            G1 X120 Y80 Z40 F5400
+            G4 P500
             """),
 
         new(
@@ -25,6 +31,14 @@ public static class RobotExampleCatalog
             MOVE X=80 Y=40 Z=0 SPEED=70
             MOVE X=180 Y=120 Z=0 SPEED=80
             WAIT 300
+            """,
+            """
+            G28
+            G90
+            G1 X80 Y40 Z0 F4200
+            G91
+            G1 X100 Y80 F4800
+            G4 P300
             """),
 
         new(

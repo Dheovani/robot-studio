@@ -10,12 +10,16 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 {
     public RobotScriptDialectDescriptor Descriptor => RobotScriptDialects.GCode;
 
-    public RobotCommandSequence Parse(string script)
+    public RobotCommandSequence Parse(
+        string script,
+        RobotScriptParseContext? context = null)
     {
         ArgumentNullException.ThrowIfNull(script);
 
         var commands = new List<RobotCommand>();
         var lines = script.Split(["\r\n", "\n"], StringSplitOptions.None);
+        var positioningMode = GCodePositioningMode.Absolute;
+        CartesianPosition? currentPosition = context?.InitialCartesianPosition;
 
         for (var index = 0; index < lines.Length; index++)
         {
@@ -28,16 +32,27 @@ public sealed partial class GCodeParser : IRobotScriptDialect
                 continue;
             }
 
-            commands.Add(ParseLine(lineNumber, sourceText, commandText));
+            var command = ParseLine(
+                lineNumber,
+                sourceText,
+                commandText,
+                ref positioningMode,
+                ref currentPosition);
+            if (command is not null)
+            {
+                commands.Add(command);
+            }
         }
 
         return new RobotCommandSequence(commands);
     }
 
-    private static RobotCommand ParseLine(
+    private static RobotCommand? ParseLine(
         int lineNumber,
         string sourceText,
-        string commandText)
+        string commandText,
+        ref GCodePositioningMode positioningMode,
+        ref CartesianPosition? currentPosition)
     {
         var words = Tokenize(lineNumber, sourceText, commandText);
         var commandIndex = words[0].Letter == 'N' ? 1 : 0;
@@ -49,7 +64,7 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
         if (commandIndex >= words.Count || words[commandIndex].Letter != 'G')
         {
-            throw new ScriptParseException(lineNumber, sourceText, "Expected a G-code command such as G28, G1, or G4.");
+            throw new ScriptParseException(lineNumber, sourceText, "Expected a G-code command such as G28, G1, G4, G90, or G91.");
         }
 
         var code = ParseInteger(lineNumber, sourceText, words[commandIndex].Value, "G code");
@@ -57,35 +72,72 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
         return code switch
         {
-            1 => ParseLinearMove(lineNumber, sourceText, arguments),
+            1 => ParseLinearMove(
+                lineNumber,
+                sourceText,
+                arguments,
+                positioningMode,
+                ref currentPosition),
             4 => ParseDwell(lineNumber, sourceText, arguments),
-            28 => ParseHome(lineNumber, sourceText, arguments),
-            _ => throw new ScriptParseException(lineNumber, sourceText, $"Unsupported G-code command 'G{code}'. Supported commands are G28, G1, and G4.")
+            28 => ParseHome(lineNumber, sourceText, arguments, ref currentPosition),
+            90 => SetPositioningMode(
+                lineNumber,
+                sourceText,
+                arguments,
+                GCodePositioningMode.Absolute,
+                ref positioningMode),
+            91 => SetPositioningMode(
+                lineNumber,
+                sourceText,
+                arguments,
+                GCodePositioningMode.Relative,
+                ref positioningMode),
+            _ => throw new ScriptParseException(lineNumber, sourceText, $"Unsupported G-code command 'G{code}'. Supported commands are G28, G1, G4, G90, and G91.")
         };
     }
 
     private static HomeCommand ParseHome(
         int lineNumber,
         string sourceText,
-        IReadOnlyCollection<GCodeWord> arguments)
+        IReadOnlyCollection<GCodeWord> arguments,
+        ref CartesianPosition? currentPosition)
     {
         if (arguments.Count > 0)
         {
             throw new ScriptParseException(lineNumber, sourceText, "G28 does not accept axis arguments in the introductory RobotStudio dialect.");
         }
 
+        currentPosition = new CartesianPosition(0, 0, 0);
         return new HomeCommand(CreateSource(lineNumber, sourceText));
     }
 
     private static MoveToCommand ParseLinearMove(
         int lineNumber,
         string sourceText,
-        IReadOnlyCollection<GCodeWord> arguments)
+        IReadOnlyCollection<GCodeWord> arguments,
+        GCodePositioningMode positioningMode,
+        ref CartesianPosition? currentPosition)
     {
         var values = BuildArgumentMap(lineNumber, sourceText, arguments, ['X', 'Y', 'Z', 'F']);
-        var x = GetRequiredDouble(lineNumber, sourceText, values, 'X', "G1 requires an X coordinate.");
-        var y = GetRequiredDouble(lineNumber, sourceText, values, 'Y', "G1 requires a Y coordinate.");
-        var z = GetRequiredDouble(lineNumber, sourceText, values, 'Z', "G1 requires a Z coordinate.");
+        if (!values.ContainsKey('X') && !values.ContainsKey('Y') && !values.ContainsKey('Z'))
+        {
+            throw new ScriptParseException(lineNumber, sourceText, "G1 requires at least one X, Y, or Z coordinate.");
+        }
+
+        var targetPosition = positioningMode switch
+        {
+            GCodePositioningMode.Absolute => ResolveAbsoluteTarget(
+                lineNumber,
+                sourceText,
+                values,
+                currentPosition),
+            GCodePositioningMode.Relative => ResolveRelativeTarget(
+                lineNumber,
+                sourceText,
+                values,
+                currentPosition),
+            _ => throw new InvalidOperationException($"Unsupported G-code positioning mode: {positioningMode}.")
+        };
         double? velocity = null;
 
         if (values.TryGetValue('F', out var feedRateText))
@@ -99,10 +151,93 @@ public sealed partial class GCodeParser : IRobotScriptDialect
             velocity = feedRate / 60d;
         }
 
+        currentPosition = targetPosition;
         return new MoveToCommand(
-            new CartesianPosition(x, y, z),
+            targetPosition,
             velocity,
             CreateSource(lineNumber, sourceText));
+    }
+
+    private static CartesianPosition ResolveAbsoluteTarget(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyDictionary<char, string> values,
+        CartesianPosition? currentPosition)
+    {
+        if (currentPosition is null &&
+            (!values.ContainsKey('X') || !values.ContainsKey('Y') || !values.ContainsKey('Z')))
+        {
+            throw new ScriptParseException(
+                lineNumber,
+                sourceText,
+                "G1 with omitted axes requires a known initial Cartesian position, a previous complete G1 target, or G28.");
+        }
+
+        return new CartesianPosition(
+            GetCoordinate(lineNumber, sourceText, values, 'X', currentPosition?.X ?? 0),
+            GetCoordinate(lineNumber, sourceText, values, 'Y', currentPosition?.Y ?? 0),
+            GetCoordinate(lineNumber, sourceText, values, 'Z', currentPosition?.Z ?? 0));
+    }
+
+    private static CartesianPosition ResolveRelativeTarget(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyDictionary<char, string> values,
+        CartesianPosition? currentPosition)
+    {
+        if (currentPosition is null)
+        {
+            throw new ScriptParseException(
+                lineNumber,
+                sourceText,
+                "G91 relative movement requires a known initial Cartesian position, a previous complete G1 target, or G28.");
+        }
+
+        return new CartesianPosition(
+            currentPosition.Value.X + GetCoordinate(lineNumber, sourceText, values, 'X', 0),
+            currentPosition.Value.Y + GetCoordinate(lineNumber, sourceText, values, 'Y', 0),
+            currentPosition.Value.Z + GetCoordinate(lineNumber, sourceText, values, 'Z', 0));
+    }
+
+    private static double GetCoordinate(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyDictionary<char, string> values,
+        char letter,
+        double fallback) =>
+        values.TryGetValue(letter, out var value)
+            ? ParseDouble(lineNumber, sourceText, value, letter.ToString())
+            : fallback;
+
+    private static double GetRequiredDouble(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyDictionary<char, string> values,
+        char letter,
+        string missingMessage)
+    {
+        if (!values.TryGetValue(letter, out var value))
+        {
+            throw new ScriptParseException(lineNumber, sourceText, missingMessage);
+        }
+
+        return ParseDouble(lineNumber, sourceText, value, letter.ToString());
+    }
+
+    private static RobotCommand? SetPositioningMode(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyCollection<GCodeWord> arguments,
+        GCodePositioningMode mode,
+        ref GCodePositioningMode positioningMode)
+    {
+        if (arguments.Count > 0)
+        {
+            throw new ScriptParseException(lineNumber, sourceText, $"G{(mode == GCodePositioningMode.Absolute ? 90 : 91)} does not accept arguments.");
+        }
+
+        positioningMode = mode;
+        return null;
     }
 
     private static WaitCommand ParseDwell(
@@ -150,21 +285,6 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         }
 
         return values;
-    }
-
-    private static double GetRequiredDouble(
-        int lineNumber,
-        string sourceText,
-        IReadOnlyDictionary<char, string> values,
-        char letter,
-        string missingMessage)
-    {
-        if (!values.TryGetValue(letter, out var value))
-        {
-            throw new ScriptParseException(lineNumber, sourceText, missingMessage);
-        }
-
-        return ParseDouble(lineNumber, sourceText, value, letter.ToString());
     }
 
     private static IReadOnlyList<GCodeWord> Tokenize(
@@ -280,4 +400,10 @@ public sealed partial class GCodeParser : IRobotScriptDialect
     private static partial Regex GCodeWordPattern();
 
     private sealed record GCodeWord(char Letter, string Value);
+
+    private enum GCodePositioningMode
+    {
+        Absolute,
+        Relative
+    }
 }

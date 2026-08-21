@@ -1,5 +1,7 @@
 using RobotStudio.Desktop.Examples;
 using RobotStudio.Desktop.Robots;
+using RobotStudio.Domain.Cartesian;
+using RobotStudio.Scripting;
 
 namespace RobotStudio.Desktop.Tests;
 
@@ -62,5 +64,20 @@ public sealed class RobotExampleCatalogTests
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DeltaThreeDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.DroneThreeDimensional).Count >= 2);
         Assert.True(RobotExampleCatalog.GetFor(RobotViewerKind.IndustrialArmThreeDimensional).Count >= 2);
+    }
+
+    [Fact]
+    public void CartesianExamples_WithDedicatedGCode_ShouldParseFromViewerInitialPosition()
+    {
+        var examples = RobotExampleCatalog
+            .GetFor(RobotViewerKind.CartesianThreeDimensional)
+            .Where(example => example.GCodeScript is not null);
+
+        Assert.NotEmpty(examples);
+        Assert.All(
+            examples,
+            example => Assert.NotEmpty(new GCodeParser().Parse(
+                example.GCodeScript!,
+                new RobotScriptParseContext(new CartesianPosition(40, 30, 20))).Commands));
     }
 }

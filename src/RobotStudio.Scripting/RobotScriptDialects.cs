@@ -12,7 +12,7 @@ public static class RobotScriptDialects
         RobotScriptDialectId.GCode,
         "G-code",
         RobotScriptDialectStatus.Available,
-        "Introductory G-code subset for G28 homing, G1 linear movement, and G4 dwell commands.");
+        "Introductory Cartesian G-code subset for G28 homing, G1 linear movement, G4 dwell, and G90/G91 positioning modes.");
 
     public static IReadOnlyList<RobotScriptDialectDescriptor> All { get; } =
     [

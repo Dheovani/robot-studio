@@ -12,7 +12,9 @@ public sealed class RobotScriptParser : IRobotScriptDialect
 {
     public RobotScriptDialectDescriptor Descriptor => RobotScriptDialects.SimpleDsl;
 
-    public RobotCommandSequence Parse(string script)
+    public RobotCommandSequence Parse(
+        string script,
+        RobotScriptParseContext? context = null)
     {
         ArgumentNullException.ThrowIfNull(script);
 

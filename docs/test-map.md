@@ -325,7 +325,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Accept optional `N` line numbers and compact G-code words.
 - [x] Reject missing coordinates, duplicate words, invalid feed rates, and unsupported codes with line-aware errors.
 - [x] Write supported domain command sequences as equivalent G-code.
-- [ ] Add modal-state tests when absolute or relative positioning modes are designed.
+- [x] Parse `G90` absolute positioning while retaining omitted coordinates from the supplied parse context.
+- [x] Parse consecutive `G91` relative movements into accumulated absolute targets.
+- [x] Switch from `G91` back to `G90` predictably.
+- [x] Treat `G28` as a known origin for later relative movement.
+- [x] Reject relative movement without a known starting position.
+- [x] Reject arguments on `G90` and `G91`.
+- [x] Classify `G90` and `G91` as positioning-mode lines in the desktop script gutter.
+- [x] Validate dedicated Cartesian G-code examples from the viewer's initial position.
 
 ## `RobotStudio.Hardware.Tests`
 

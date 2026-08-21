@@ -79,4 +79,14 @@ public sealed class ScriptEditorLineMetadataBuilderTests
             line => Assert.Equal(ScriptEditorLineKind.Move, line.Kind),
             line => Assert.Equal(ScriptEditorLineKind.Wait, line.Kind));
     }
+
+    [Fact]
+    public void Build_WhenGCodeChangesPositioningMode_ShouldClassifyModeDirectives()
+    {
+        var metadata = ScriptEditorLineMetadataBuilder.Build("G90\nG91");
+
+        Assert.All(
+            metadata,
+            line => Assert.Equal(ScriptEditorLineKind.PositioningMode, line.Kind));
+    }
 }

@@ -319,17 +319,23 @@ Introductory Cartesian G-code:
 
 ```gcode
 G28
+G90
 G1 X120 Y80 Z40 F5400
+G91
+G1 X20 Y-10
 G4 P500
 ```
 
 - `G28` maps to homing.
-- `G1` requires explicit `X`, `Y`, and `Z` coordinates.
+- `G90` selects absolute positioning and is the default mode.
+- `G91` selects relative positioning.
+- `G1` requires at least one coordinate. In absolute mode omitted axes retain their current position; in relative mode they do not move.
 - `F` is an optional feed rate in millimeters per minute; RobotStudio converts it to millimeters per second for the shared movement command.
 - `G4 P` maps to a dwell duration in milliseconds.
 - `N` line numbers, compact words, semicolon comments, and parenthesized comments are accepted.
 - Loading a `.gcode` or `.robot` file selects its matching dialect automatically; `.txt` keeps the current selection.
-- Modal positioning (`G90`/`G91`), retained coordinates, hardware execution, and other G-codes are not part of this first subset.
+- `G90` and `G91` do not create timeline movements themselves; they control how subsequent `G1` lines are resolved.
+- Feed-rate retention, hardware execution, non-Cartesian mappings, and other G-codes are not part of this subset.
 
 The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 

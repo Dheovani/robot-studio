@@ -6,5 +6,7 @@ public interface IRobotScriptDialect
 {
     RobotScriptDialectDescriptor Descriptor { get; }
 
-    RobotCommandSequence Parse(string script);
+    RobotCommandSequence Parse(
+        string script,
+        RobotScriptParseContext? context = null);
 }

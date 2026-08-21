@@ -32,7 +32,11 @@ try
     {
         [] => SimulateExample(profile, initialPosition, commandLine.DialectName),
         ["example"] => PrintExampleScript(commandLine.DialectName),
-        ["validate", var path] => ValidateScriptFile(path, profile, ResolveDialect(commandLine, path)),
+        ["validate", var path] => ValidateScriptFile(
+            path,
+            profile,
+            initialPosition,
+            ResolveDialect(commandLine, path)),
         ["simulate", var path] => SimulateScriptFile(
             path,
             profile,
@@ -120,10 +124,11 @@ static IRobotScriptDialect ResolveDialect(
 static int ValidateScriptFile(
     string path,
     CartesianRobotProfile profile,
+    CartesianPosition initialPosition,
     IRobotScriptDialect scriptDialect)
 {
     var script = File.ReadAllText(path);
-    var commands = scriptDialect.Parse(script);
+    var commands = ParseScript(script, scriptDialect, initialPosition);
     ValidateCommandSequence(commands, profile);
 
     Console.WriteLine("Script is valid.");
@@ -152,7 +157,7 @@ static int SimulateScript(
     IRobotScriptDialect scriptDialect)
 {
     var context = SimulationContext.Create(profile, initialPosition);
-    var commands = scriptDialect.Parse(script);
+    var commands = ParseScript(script, scriptDialect, initialPosition);
     ValidateCommandSequence(commands, profile);
 
     var simulator = new RobotSimulator();
@@ -434,7 +439,7 @@ static CartesianPlaybackSnapshot BuildPlaybackSnapshot(
     TimeSpan interval)
 {
     var context = SimulationContext.Create(profile, initialPosition);
-    var commands = scriptDialect.Parse(script);
+    var commands = ParseScript(script, scriptDialect, initialPosition);
     ValidateCommandSequence(commands, profile);
 
     var simulator = new RobotSimulator();
@@ -443,6 +448,12 @@ static CartesianPlaybackSnapshot BuildPlaybackSnapshot(
 
     return snapshotBuilder.Build(profile, result, interval);
 }
+
+static RobotCommandSequence ParseScript(
+    string script,
+    IRobotScriptDialect scriptDialect,
+    CartesianPosition initialPosition) =>
+    scriptDialect.Parse(script, new RobotScriptParseContext(initialPosition));
 
 static JsonSerializerOptions CreateJsonOptions() =>
     new()
