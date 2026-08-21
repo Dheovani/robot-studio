@@ -278,7 +278,7 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [x] The Simple DSL parser implements the script dialect contract.
 - [x] The Simple DSL dialect is marked as available.
-- [x] The G-code dialect is marked as planned.
+- [x] The G-code parser implements the script dialect contract and is marked as available.
 - [x] Parse `HOME`.
 - [x] Parse `WAIT 500`.
 - [x] Parse `MOVE X=10 Y=20 Z=5`.
@@ -319,7 +319,13 @@ This document maps expected automated tests to project behavior. It should be up
 
 ### Required Next Coverage
 
-- [ ] Add G-code dialect tests when G-code parsing is implemented.
+- [x] Parse `G28`, `G1 X... Y... Z... F...`, and `G4 P...` into shared domain commands.
+- [x] Convert G-code feed rate from millimeters per minute to millimeters per second.
+- [x] Preserve G-code source line metadata and comments.
+- [x] Accept optional `N` line numbers and compact G-code words.
+- [x] Reject missing coordinates, duplicate words, invalid feed rates, and unsupported codes with line-aware errors.
+- [x] Write supported domain command sequences as equivalent G-code.
+- [ ] Add modal-state tests when absolute or relative positioning modes are designed.
 
 ## `RobotStudio.Hardware.Tests`
 

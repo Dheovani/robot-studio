@@ -22,12 +22,21 @@ public sealed class RobotScriptDialectTests
     }
 
     [Fact]
-    public void RobotScriptDialects_ShouldExposeGCodeAsPlanned()
+    public void GCodeParser_ShouldImplementScriptDialectContract()
+    {
+        IRobotScriptDialect dialect = new GCodeParser();
+
+        Assert.Equal(RobotScriptDialectId.GCode, dialect.Descriptor.Id);
+        Assert.Equal(RobotScriptDialectStatus.Available, dialect.Descriptor.Status);
+    }
+
+    [Fact]
+    public void RobotScriptDialects_ShouldExposeGCodeAsAvailable()
     {
         var gCode = RobotScriptDialects.All.Single(dialect =>
             dialect.Id == RobotScriptDialectId.GCode);
 
         Assert.Equal("G-code", gCode.Name);
-        Assert.Equal(RobotScriptDialectStatus.Planned, gCode.Status);
+        Assert.Equal(RobotScriptDialectStatus.Available, gCode.Status);
     }
 }

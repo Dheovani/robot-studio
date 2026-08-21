@@ -30,6 +30,16 @@ DRONE X=120 Y=80 Z=40 YAW=90 SPEED=100 YAW_SPEED=45
 WAIT 500
 ```
 
+- Use the introductory G-code dialect for Cartesian and XY Plotter lessons:
+
+```gcode
+G28
+G1 X120 Y80 Z40 F5400
+G4 P500
+```
+
+In this first explicit subset, `G1` requires all three coordinates, `F` is millimeters per minute, and `G4 P` is milliseconds. Both dialects produce the same domain command types before validation and simulation.
+
 `RESET` acknowledges a fault when execution resumes from a failed simulation context. It returns the logical state to `Idle` while preserving the robot's physical state and elapsed simulation time; `HOME` remains the recovery option that physically returns the robot to its family-specific origin.
 
 - Run the CLI to inspect commands, timeline steps, final state, and final position.
@@ -42,7 +52,7 @@ WAIT 500
 - Open the first Delta Robot viewer for simplified parallel-actuator simulation.
 - Open the Drone viewer for simplified 3D position plus coordinated roll, pitch, and yaw attitude simulation.
 - Load local teaching examples from every available desktop viewer.
-- Load and save `.robot` or `.txt` scripts in the desktop app.
+- Load and save `.robot`, `.gcode`, or `.txt` scripts in the desktop app.
 - Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
 - Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
 - Rotate, zoom, and reset the camera.
@@ -78,13 +88,13 @@ Implemented:
 - local desktop teaching examples and selectors for available training viewers;
 - playback snapshots;
 - didactic overlays, charts, timeline, and tooltips;
-- future boundaries for G-code and hardware.
+- Simple DSL and introductory Cartesian G-code dialects;
+- future hardware boundaries.
 
 Not implemented yet:
 
 - real serial communication;
 - Arduino or ESP32 firmware/protocols;
-- G-code parser;
 - richer industrial-arm graphics, inverse kinematics, singularity analysis, and collision visualization.
 - planned Cylindrical, Ackermann Steering, Omnidirectional, Self-Balancing, Stewart Platform, and Mobile Manipulator simulations.
 
@@ -241,7 +251,7 @@ When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact
 - `src/RobotStudio.Domain`: pure domain models, commands, states, limits, kinematics inputs, contracts, and errors for the supported robot families.
 - `src/RobotStudio.Motion`: family-appropriate deterministic motion planning with coordinated acceleration-aware profiles.
 - `src/RobotStudio.Simulation`: deterministic command execution, sampling, playback snapshots, visual states, and scene frames.
-- `src/RobotStudio.Scripting`: simple educational DSL exposed through a dialect contract prepared for future G-code.
+- `src/RobotStudio.Scripting`: Simple DSL and introductory Cartesian G-code parsers exposed through a shared dialect contract.
 - `src/RobotStudio.Hardware`: future hardware integration boundary contracts and planned prototype metadata.
 - `src/RobotStudio.Cli`: terminal entry point for examples, validation, simulation, playback, and snapshot export.
 - `src/RobotStudio.Desktop`: WPF desktop app for robot selection and visual robot simulation.

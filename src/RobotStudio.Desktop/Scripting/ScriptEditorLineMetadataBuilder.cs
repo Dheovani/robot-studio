@@ -36,9 +36,9 @@ public static class ScriptEditorLineMetadataBuilder
 
     private static ScriptEditorLineKind GetLineKind(string commandText) => commandText switch
     {
-        "HOME" => ScriptEditorLineKind.Home,
-        "MOVE" => ScriptEditorLineKind.Move,
-        "WAIT" => ScriptEditorLineKind.Wait,
+        "HOME" or "G28" => ScriptEditorLineKind.Home,
+        "MOVE" or "G1" => ScriptEditorLineKind.Move,
+        "WAIT" or "G4" => ScriptEditorLineKind.Wait,
         "" => ScriptEditorLineKind.Empty,
         _ => ScriptEditorLineKind.Other
     };

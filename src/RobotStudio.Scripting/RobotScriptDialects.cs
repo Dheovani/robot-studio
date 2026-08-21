@@ -11,8 +11,8 @@ public static class RobotScriptDialects
     public static RobotScriptDialectDescriptor GCode { get; } = new(
         RobotScriptDialectId.GCode,
         "G-code",
-        RobotScriptDialectStatus.Planned,
-        "Future industrial-style command dialect that will produce the same domain commands.");
+        RobotScriptDialectStatus.Available,
+        "Introductory G-code subset for G28 homing, G1 linear movement, and G4 dwell commands.");
 
     public static IReadOnlyList<RobotScriptDialectDescriptor> All { get; } =
     [

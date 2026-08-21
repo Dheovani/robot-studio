@@ -126,18 +126,18 @@ Current desktop controls:
 - non-interactive planned-release labels on future robot entries ordered by didactic complexity.
 - contextual `HOME` and `Reset Fault` actions inside the script panel. They remain hidden until the retained simulation context becomes faulted.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
-- DSL editor inside the Cartesian viewer.
+- Simple DSL/G-code dialect selector and script editor inside the Cartesian viewer.
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.
 - collapsible sidebar panels for script, manual control, command console, robot state, charts, movement explanation, timeline markers, overlays, and camera controls.
 - technical tooltips on dense script, manual control, overlay, camera, and timeline controls.
 - didactic tooltips for robotics concepts such as workspace, TCP, homing, timeline, requested velocity, and effective velocity.
-- `Validate` to parse the current DSL script and check Cartesian limits.
-- `Simulate` to regenerate the visual playback from the current DSL script.
+- `Validate` to parse the current script dialect and check Cartesian limits.
+- `Simulate` to regenerate visual playback from the current script.
 - validation messages summarize syntax errors, physical limit errors, and invalid command arguments with suggested next steps.
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
 - step size and requested speed fields for manual jog commands.
-- manual actions append DSL commands and regenerate playback.
-- command console for executing one DSL command at a time.
+- manual actions append commands in the selected dialect and regenerate playback.
+- command console for executing one command in the selected dialect at a time.
 - command history with accepted and rejected command entries.
 - `Play` and `Reset` for playback.
 - `Prev` and `Next` for frame-by-frame inspection.
@@ -246,9 +246,9 @@ Current simulation output includes:
 - success/failure flag;
 - failure exception when execution cannot continue.
 
-## Current DSL
+## Current Script Dialects
 
-The simple DSL parser can convert text scripts into command sequences. Internally, scripting now uses a dialect contract so future formats such as G-code can produce the same command sequence type. The CLI can validate and simulate script files.
+The Simple DSL parser converts text scripts into command sequences for every implemented robot family. The Cartesian and XY Plotter desktop workspaces also provide an introductory G-code dialect selector. Both dialects produce the same domain commands before physical validation and simulation.
 
 Cartesian movement:
 
@@ -297,7 +297,22 @@ Current parser behavior:
 - `SPEED` requests a movement speed in millimeters per second;
 - physical axis limits still cap the effective movement speed;
 - parser errors include the script line number.
-- G-code is tracked as a planned future dialect, not as an executable parser.
+
+Introductory Cartesian G-code:
+
+```gcode
+G28
+G1 X120 Y80 Z40 F5400
+G4 P500
+```
+
+- `G28` maps to homing.
+- `G1` requires explicit `X`, `Y`, and `Z` coordinates.
+- `F` is an optional feed rate in millimeters per minute; RobotStudio converts it to millimeters per second for the shared movement command.
+- `G4 P` maps to a dwell duration in milliseconds.
+- `N` line numbers, compact words, semicolon comments, and parenthesized comments are accepted.
+- Loading a `.gcode` or `.robot` file selects its matching dialect automatically; `.txt` keeps the current selection.
+- Modal positioning (`G90`/`G91`), retained coordinates, hardware execution, and other G-codes are not part of this first subset.
 
 The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 
@@ -319,6 +334,6 @@ The CLI should later support:
 
 ## Not Available Yet
 
-- G-code parsing.
+- Extended or hardware-executed G-code.
 - Hardware communication.
 - Arduino or ESP32 integration.

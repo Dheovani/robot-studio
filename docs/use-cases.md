@@ -277,6 +277,22 @@ Expected result:
 - invalid numbers are reported clearly;
 - invalid positions are reported with the expected axis limits.
 
+### Compare Simple DSL And G-Code
+
+Actor: student.
+
+Goal: execute the same Cartesian lesson using two command syntaxes.
+
+Current status: implemented in the Cartesian and XY Plotter desktop workspaces.
+
+Expected result:
+
+- the student selects Simple DSL or G-code before validating or simulating;
+- local examples are presented in the selected dialect;
+- `HOME` and `G28`, `MOVE` and `G1`, and `WAIT` and `G4` produce the same domain command types;
+- manual jog and direct console actions append syntax matching the selected dialect;
+- switching syntax does not duplicate domain, motion, or simulation rules.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.
@@ -298,7 +314,7 @@ Expected result:
 - students can observe Drone roll, pitch, and yaw attitude changing with the schematic 3D body;
 - visual controls do not change domain rules.
 
-### Edit And Simulate A DSL Script In The Desktop App
+### Edit And Simulate A Script In The Desktop App
 
 Actor: student.
 
@@ -308,12 +324,12 @@ Current status: implemented for the first Cartesian WPF viewer.
 
 Expected result:
 
-- the student edits DSL text in the Cartesian viewer;
-- the script editor shows line numbers and simple command tags for `HOME`, `MOVE`, and `WAIT`;
+- the student selects Simple DSL or G-code and edits text in the Cartesian viewer;
+- the script editor shows line numbers and command tags for `HOME`/`G28`, `MOVE`/`G1`, and `WAIT`/`G4`;
 - `Validate` reports parser or physical limit errors without running playback;
 - `Simulate` regenerates playback from the current script when the script is valid;
 - playback displays the command source line associated with the current frame;
-- G-code remains out of scope for this workflow, but the scripting boundary can accept future dialects that produce the same command sequence.
+- the selected dialect produces the shared domain command sequence consumed by the same simulator.
 
 ### Jog A Cartesian Robot Manually In The Desktop App
 
@@ -327,24 +343,24 @@ Expected result:
 
 - the student chooses a step size in millimeters;
 - the student chooses a requested speed in millimeters per second;
-- `HOME` appends a `HOME` command to the DSL script;
-- jog buttons append `MOVE` commands to the DSL script;
-- each manual action reuses the DSL parser and simulator;
+- homing appends `HOME` or `G28` according to the selected dialect;
+- jog buttons append `MOVE` or `G1` according to the selected dialect;
+- each manual action reuses the selected parser and the same simulator;
 - invalid manual movements report the same domain validation errors as scripts.
 
 ### Execute A Direct Command In The Desktop App
 
 Actor: student.
 
-Goal: type and execute one DSL command without editing the full script manually.
+Goal: type and execute one command in the selected dialect without editing the full script manually.
 
 Current status: implemented for the first Cartesian WPF viewer.
 
 Expected result:
 
-- the student types one DSL command in the command console;
+- the student types one Simple DSL or G-code command in the command console;
 - pressing `Enter` or `Execute` runs the command;
-- accepted commands are appended to the DSL script;
+- accepted commands are appended to the current script;
 - rejected commands are reported without closing the app;
 - command history records accepted and rejected command attempts;
 - direct commands reuse the same parser and simulator as scripts and manual controls.

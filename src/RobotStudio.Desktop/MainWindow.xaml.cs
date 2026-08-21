@@ -47,7 +47,7 @@ public partial class MainWindow : Window
     private const double RobotCardPreferredWidth = 360;
     private const int RobotCardMaximumColumns = 6;
     private const int MaximumPathPointCount = 140;
-    private const string ScriptFileDialogFilter = "RobotStudio scripts (*.robot;*.txt)|*.robot;*.txt|All files (*.*)|*.*";
+    private const string ScriptFileDialogFilter = "RobotStudio scripts (*.robot;*.gcode;*.txt)|*.robot;*.gcode;*.txt|All files (*.*)|*.*";
     private const string ScriptFileDefaultExtension = ".robot";
 
     private static readonly SolidColorBrush RobotCardBackgroundBrush =
@@ -70,9 +70,18 @@ public partial class MainWindow : Window
 
     private readonly DispatcherTimer playbackTimer;
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
-    private readonly IRobotScriptDialect scriptDialect = new RobotScriptParser();
+    private readonly IRobotScriptDialect simpleDslDialect = new RobotScriptParser();
+    private readonly IRobotScriptDialect gCodeDialect = new GCodeParser();
     private readonly List<FrameworkElement> sessionRecoveryPanels = [];
     private readonly List<Button> playPauseButtons = [];
+
+    private IRobotScriptDialect CartesianScriptDialect =>
+        ScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
+        {
+            Id: RobotScriptDialectId.GCode
+        }
+            ? gCodeDialect
+            : simpleDslDialect;
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -173,7 +182,10 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
-        ScriptEditorTextBox.Text = GetDefaultExampleScript(RobotViewerKind.CartesianThreeDimensional);
+        ScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
+            .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
+        ScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
         RefreshScriptEditorGutter();
         BuildRobotSelectionCards();
     }
@@ -761,9 +773,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        ScriptEditorTextBox.Text = GetSelectedExampleScript(
-            CartesianExampleComboBox,
-            activeViewerKind);
+        ScriptEditorTextBox.Text = GetSelectedCartesianExampleScript();
         snapshot = CreateSnapshot(ScriptEditorTextBox.Text, captureSession: true);
         TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
         TimelineSlider.TickFrequency = 1;
@@ -778,18 +788,44 @@ public partial class MainWindow : Window
             CartesianExampleComboBox,
             CartesianExampleDescriptionText);
 
+    private void ScriptDialectComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded || ScriptDialectComboBox.SelectedItem is not RobotScriptDialectDescriptor descriptor)
+        {
+            return;
+        }
+
+        StopPlayback();
+        snapshot = null;
+        cartesianSessionContext = null;
+        ScriptEditorTextBox.Text = GetSelectedCartesianExampleScript();
+        CommandConsoleTextBox.Text = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G1 X100 Y50 Z20 F4800"
+            : "MOVE X=100 Y=50 Z=20 SPEED=80";
+        ScriptStatusText.Text = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code mode uses G28, G1 X/Y/Z with optional F in mm/min, and G4 P in milliseconds."
+            : "Simple DSL mode uses HOME, MOVE, and WAIT commands.";
+        RefreshScriptEditorGutter();
+    }
+
     private void LoadCartesianScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
         LoadScriptInto(
             ScriptEditorTextBox,
             SetScriptStatus,
-            () => snapshot = null);
+            () => snapshot = null,
+            SelectCartesianDialectForFile);
 
     private void SaveCartesianScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        SaveScriptFrom(ScriptEditorTextBox, SetScriptStatus);
+        SaveScriptFrom(
+            ScriptEditorTextBox,
+            SetScriptStatus,
+            CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode ? ".gcode" : ScriptFileDefaultExtension);
 
     private void LoadDifferentialDriveScriptButton_Click(
         object sender,
@@ -1255,7 +1291,7 @@ public partial class MainWindow : Window
         }
 
         StopPlayback();
-        var commands = scriptDialect.Parse(commandText);
+        var commands = simpleDslDialect.Parse(commandText);
 
         switch (activeViewerKind)
         {
@@ -1767,7 +1803,7 @@ public partial class MainWindow : Window
     private void ManualHomeButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        AppendManualCommandAndSimulate("HOME");
+        AppendManualCommandAndSimulate(GetCartesianHomeCommandText());
 
     private void JogPositiveXButton_Click(
         object sender,
@@ -2538,7 +2574,7 @@ public partial class MainWindow : Window
         string script,
         bool captureSession = false)
     {
-        var commands = scriptDialect.Parse(script);
+        var commands = CartesianScriptDialect.Parse(script);
         ValidateCommandSequence(commands);
 
         var context = SimulationContext.Create(profile, initialPosition);
@@ -2558,7 +2594,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateDifferentialDriveProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateDifferentialDriveCommandSequence(commands, profile);
 
         var context = DifferentialDriveSimulationContext.Create(
@@ -2580,7 +2616,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateScaraProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateScaraCommandSequence(commands, profile);
 
         var context = ScaraSimulationContext.Create(
@@ -2602,7 +2638,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateSimpleArmProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateSimpleArmCommandSequence(commands, profile);
 
         var context = SimpleArmSimulationContext.Create(
@@ -2624,7 +2660,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateDeltaProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateDeltaCommandSequence(commands, profile);
 
         var context = DeltaSimulationContext.Create(
@@ -2646,7 +2682,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateDroneProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateDroneCommandSequence(commands, profile);
 
         var context = DroneSimulationContext.Create(
@@ -2672,7 +2708,7 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateIndustrialArmProfile();
-        var commands = scriptDialect.Parse(script);
+        var commands = simpleDslDialect.Parse(script);
         ValidateIndustrialArmCommandSequence(commands, profile);
         var context = IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home);
         var result = new IndustrialArmSimulator().Execute(context, commands);
@@ -3087,11 +3123,11 @@ public partial class MainWindow : Window
         ConfigureExampleSelector(
             CartesianExampleComboBox,
             RobotViewerKind.CartesianThreeDimensional);
-        ScriptEditorTextBox.Text = GetDefaultExampleScript(RobotViewerKind.CartesianThreeDimensional);
-        CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=20 SPEED=80";
+        ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
+        CommandConsoleTextBox.Text = GetCartesianMoveCommandText(new CartesianPosition(100, 50, 20), 80);
         JogNegativeZButton.IsEnabled = true;
         JogPositiveZButton.IsEnabled = true;
-        ManualControlStatusText.Text = "Manual actions append DSL commands and resimulate the robot.";
+        ManualControlStatusText.Text = "Manual actions append commands in the selected dialect and resimulate the robot.";
     }
 
     private void ConfigureXYPlotterViewer()
@@ -3103,8 +3139,8 @@ public partial class MainWindow : Window
         ConfigureExampleSelector(
             CartesianExampleComboBox,
             RobotViewerKind.XYPlotterTwoDimensional);
-        ScriptEditorTextBox.Text = GetDefaultExampleScript(RobotViewerKind.XYPlotterTwoDimensional);
-        CommandConsoleTextBox.Text = "MOVE X=100 Y=50 Z=0 SPEED=80";
+        ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.XYPlotterTwoDimensional);
+        CommandConsoleTextBox.Text = GetCartesianMoveCommandText(new CartesianPosition(100, 50, 0), 80);
         JogNegativeZButton.IsEnabled = false;
         JogPositiveZButton.IsEnabled = false;
         ManualControlStatusText.Text = "XY Plotter uses X/Y jog commands. Z remains fixed at 0 mm.";
@@ -3178,6 +3214,23 @@ public partial class MainWindow : Window
 
     private static string GetDefaultExampleScript(RobotViewerKind viewerKind) =>
         RobotExampleCatalog.GetDefaultFor(viewerKind).Script;
+
+    private string GetCartesianExampleScript(RobotViewerKind viewerKind)
+    {
+        var dslScript = GetDefaultExampleScript(viewerKind);
+        return ConvertCartesianExampleForSelectedDialect(dslScript);
+    }
+
+    private string GetSelectedCartesianExampleScript()
+    {
+        var dslScript = GetSelectedExampleScript(CartesianExampleComboBox, activeViewerKind);
+        return ConvertCartesianExampleForSelectedDialect(dslScript);
+    }
+
+    private string ConvertCartesianExampleForSelectedDialect(string dslScript) =>
+        CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? GCodeWriter.Write(simpleDslDialect.Parse(dslScript))
+            : dslScript;
 
     private static void ConfigureExampleSelector(
         ComboBox comboBox,
@@ -3379,14 +3432,28 @@ public partial class MainWindow : Window
             AxisId.Z => currentPosition with { Z = currentPosition.Z + (stepMillimeters * direction) },
             _ => currentPosition
         };
-        var command =
-            $"MOVE X={FormatNumber(targetPosition.X)} " +
-            $"Y={FormatNumber(targetPosition.Y)} " +
-            $"Z={FormatNumber(targetPosition.Z)} " +
-            $"SPEED={FormatNumber(speedMillimetersPerSecond)}";
+        var command = GetCartesianMoveCommandText(targetPosition, speedMillimetersPerSecond);
 
         AppendManualCommandAndSimulate(command);
     }
+
+    private string GetCartesianHomeCommandText() =>
+        CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? "G28"
+            : "HOME";
+
+    private string GetCartesianMoveCommandText(
+        CartesianPosition targetPosition,
+        double speedMillimetersPerSecond) =>
+        CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? $"G1 X{FormatNumber(targetPosition.X)} " +
+              $"Y{FormatNumber(targetPosition.Y)} " +
+              $"Z{FormatNumber(targetPosition.Z)} " +
+              $"F{FormatNumber(speedMillimetersPerSecond * 60d)}"
+            : $"MOVE X={FormatNumber(targetPosition.X)} " +
+              $"Y={FormatNumber(targetPosition.Y)} " +
+              $"Z={FormatNumber(targetPosition.Z)} " +
+              $"SPEED={FormatNumber(speedMillimetersPerSecond)}";
 
     private CartesianPosition GetCurrentToolPosition()
     {
@@ -4560,7 +4627,7 @@ public partial class MainWindow : Window
     {
         try
         {
-            return scriptDialect.Parse(commandText).Commands[0];
+            return CartesianScriptDialect.Parse(commandText).Commands[0];
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
         {
@@ -5918,7 +5985,8 @@ public partial class MainWindow : Window
     private void LoadScriptInto(
         TextBox target,
         Action<string, Color> setStatus,
-        Action resetSnapshot)
+        Action resetSnapshot,
+        Action<string>? beforeLoad = null)
     {
         var dialog = new OpenFileDialog
         {
@@ -5936,6 +6004,7 @@ public partial class MainWindow : Window
 
         try
         {
+            beforeLoad?.Invoke(dialog.FileName);
             target.Text = File.ReadAllText(dialog.FileName, Encoding.UTF8);
             resetSnapshot();
             setStatus("Script loaded. Validate or simulate it before playback.", Color.FromRgb(74, 222, 128));
@@ -5946,14 +6015,28 @@ public partial class MainWindow : Window
         }
     }
 
+    private void SelectCartesianDialectForFile(string fileName)
+    {
+        var extension = System.IO.Path.GetExtension(fileName);
+        if (extension.Equals(".gcode", StringComparison.OrdinalIgnoreCase))
+        {
+            ScriptDialectComboBox.SelectedItem = RobotScriptDialects.GCode;
+        }
+        else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
+        {
+            ScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        }
+    }
+
     private void SaveScriptFrom(
         TextBox source,
-        Action<string, Color> setStatus)
+        Action<string, Color> setStatus,
+        string defaultExtension = ScriptFileDefaultExtension)
     {
         var dialog = new SaveFileDialog
         {
             Title = "Save RobotStudio script",
-            DefaultExt = ScriptFileDefaultExtension,
+            DefaultExt = defaultExtension,
             Filter = ScriptFileDialogFilter,
             AddExtension = true,
             OverwritePrompt = true

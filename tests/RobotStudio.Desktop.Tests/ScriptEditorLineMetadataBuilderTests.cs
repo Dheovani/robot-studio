@@ -60,4 +60,23 @@ public sealed class ScriptEditorLineMetadataBuilderTests
                 Assert.Equal(ScriptEditorLineKind.Other, line.Kind);
             });
     }
+
+    [Fact]
+    public void Build_WhenScriptContainsGCode_ShouldReuseDidacticCommandKinds()
+    {
+        const string script =
+            """
+            G28
+            G1 X10 Y20 Z5 F6000
+            G4 P500
+            """;
+
+        var metadata = ScriptEditorLineMetadataBuilder.Build(script);
+
+        Assert.Collection(
+            metadata,
+            line => Assert.Equal(ScriptEditorLineKind.Home, line.Kind),
+            line => Assert.Equal(ScriptEditorLineKind.Move, line.Kind),
+            line => Assert.Equal(ScriptEditorLineKind.Wait, line.Kind));
+    }
 }

@@ -415,8 +415,15 @@
                         <StackPanel Margin="0,0,10,0">
                             <Expander Header="Script"
                                       IsExpanded="True"
-                                      ToolTip="Edit DSL commands before validating or simulating the robot.">
+                                      ToolTip="Edit commands in the selected dialect before validating or simulating the robot.">
                                 <StackPanel Margin="0,10,0,0">
+                                    <TextBlock Text="Dialect"
+                                               Foreground="#94A3B8" />
+                                    <ComboBox x:Name="ScriptDialectComboBox"
+                                              Margin="0,4,0,8"
+                                              DisplayMemberPath="Name"
+                                              ToolTip="Choose the command language used by the Cartesian script editor."
+                                              SelectionChanged="ScriptDialectComboBox_SelectionChanged" />
                                     <TextBlock Text="Example"
                                                Foreground="#94A3B8" />
                                     <ComboBox x:Name="CartesianExampleComboBox"
@@ -468,7 +475,7 @@
                                              Background="#111827"
                                              BorderThickness="0"
                                              CaretBrush="#E5E7EB"
-                                             ToolTip="DSL script editor. Supported commands are HOME, MOVE, and WAIT."
+                                             ToolTip="Script editor for the selected Simple DSL or introductory G-code dialect."
                                              ScrollViewer.ScrollChanged="ScriptEditorTextBox_ScrollChanged"
                                              TextChanged="ScriptEditorTextBox_TextChanged" />
                                 </Grid>
@@ -483,7 +490,7 @@
                                 <Button Grid.Column="0"
                                         Margin="0,0,6,0"
                                         Content="Validate"
-                                        ToolTip="Parse the DSL script and check Cartesian limits without changing playback."
+                                        ToolTip="Parse the selected script dialect and check Cartesian limits without changing playback."
                                         Click="ValidateScriptButton_Click" />
                                 <Button Grid.Column="1"
                                         Margin="6,0,0,0"
@@ -501,12 +508,12 @@
                                 <Button Grid.Column="0"
                                         Margin="0,0,6,0"
                                         Content="Load Script"
-                                        ToolTip="Load a DSL script from a local text file."
+                                        ToolTip="Load a RobotStudio DSL or G-code script from a local text file."
                                         Click="LoadCartesianScriptButton_Click" />
                                 <Button Grid.Column="1"
                                         Margin="6,0,0,0"
                                         Content="Save Script"
-                                        ToolTip="Save the current DSL script to a local text file."
+                                        ToolTip="Save the current DSL or G-code script to a local text file."
                                         Click="SaveCartesianScriptButton_Click" />
                             </Grid>
 
@@ -514,7 +521,7 @@
                                        Margin="0,0,0,18"
                                        Foreground="#94A3B8"
                                        TextWrapping="Wrap"
-                                       Text="Edit the DSL script and validate it before simulation." />
+                                       Text="Choose a dialect, edit the script, and validate it before simulation." />
 
                             <ContentControl ContentTemplate="{StaticResource ViewerRecoveryActionsTemplate}" />
 
@@ -528,7 +535,7 @@
 
                             <Expander Header="Manual Control"
                                       IsExpanded="True"
-                                      ToolTip="Jog the simulated Cartesian robot by appending DSL commands.">
+                                      ToolTip="Jog the simulated Cartesian robot by appending commands in the selected dialect.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
                                 <Grid.ColumnDefinitions>
@@ -591,13 +598,13 @@
                                        Margin="0,0,0,18"
                                        Foreground="#94A3B8"
                                        TextWrapping="Wrap"
-                                       Text="Manual actions append DSL commands and resimulate the robot." />
+                                       Text="Manual actions append commands in the selected dialect and resimulate the robot." />
                                 </StackPanel>
                             </Expander>
 
                             <Expander Header="Command Console"
                                       IsExpanded="False"
-                                      ToolTip="Execute one DSL command at a time and append valid commands to the script.">
+                                      ToolTip="Execute one command in the selected dialect and append valid commands to the script.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
                                 <Grid.ColumnDefinitions>
@@ -612,7 +619,7 @@
                                          Padding="8,5"
                                          FontFamily="Consolas"
                                          Text="MOVE X=100 Y=50 Z=20 SPEED=80"
-                                         ToolTip="Type one DSL command. Press Enter or Execute to validate and append it."
+                                         ToolTip="Type one command in the selected dialect. Press Enter or Execute to validate and append it."
                                          Foreground="#E5E7EB"
                                          Background="#111827"
                                          BorderBrush="#334155"
@@ -639,7 +646,7 @@
                                        Margin="0,0,0,18"
                                        Foreground="#94A3B8"
                                        TextWrapping="Wrap"
-                                       Text="Execute one DSL command at a time." />
+                                       Text="Execute one command in the selected dialect at a time." />
                                 </StackPanel>
                             </Expander>
 

@@ -155,9 +155,7 @@ Playback snapshots include `PlaybackSnapshotMetadata` with a format version, rob
 
 ### Scripting
 
-The first scripting format is a simple educational DSL, not G-code.
-
-Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`. The current `RobotScriptParser` implements this contract as the available Simple DSL dialect for `HOME`, fault recovery `RESET`, Cartesian `MOVE`, mobile `DRIVE`, SCARA joint commands, simple arm joint commands, six-joint industrial arm commands, Delta actuator commands, Drone pose commands, and `WAIT`. G-code is represented as a planned dialect descriptor, but no G-code parser is implemented yet.
+Script parsing is exposed through `IRobotScriptDialect`. A dialect receives script text and produces a `RobotCommandSequence`, keeping simulation and domain validation independent of source syntax. `RobotScriptParser` implements the Simple DSL for every available robot family. `GCodeParser` implements the first introductory Cartesian subset, and both parsers produce the same `HomeCommand`, `MoveToCommand`, and `WaitCommand` types.
 
 Initial target syntax:
 
@@ -167,7 +165,9 @@ WAIT 500
 HOME
 ```
 
-G-code support is planned for a future course module and should eventually produce the same domain command types as the simple DSL.
+The first G-code subset intentionally supports only `G28`, `G1`, and `G4`. `G1` requires explicit `X`, `Y`, and `Z` values, while optional `F` follows the conventional millimeters-per-minute unit and is converted to the domain's millimeters-per-second velocity. `G4 P` uses milliseconds. This release does not introduce modal state, `G90`, `G91`, omitted-coordinate retention, hardware execution, or G-code mappings for non-Cartesian families.
+
+`GCodeWriter` converts supported domain command sequences into this subset. It is used to present equivalent desktop teaching examples without duplicating simulation rules.
 
 ### UI And Visualization
 

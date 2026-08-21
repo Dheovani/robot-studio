@@ -10,13 +10,15 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 
 ## 2. Scripting And G-Code
 
-- [ ] Add a script dialect selector to the desktop app.
-- [ ] Design the first G-code parser dialect.
-- [ ] Map `G28` to homing behavior.
-- [ ] Map `G1` to linear movement behavior.
-- [ ] Map `G4` to wait/dwell behavior.
-- [ ] Allow DSL and G-code scripts to produce the same domain command model where possible.
-- [ ] Add examples that compare DSL and G-code versions of the same movement.
+- [x] Add a script dialect selector to the Cartesian and XY Plotter desktop workspaces.
+- [x] Design the first conservative G-code parser dialect with explicit coordinates and no modal positioning state.
+- [x] Map `G28` to homing behavior.
+- [x] Map `G1 X... Y... Z... F...` to linear movement, interpreting `F` as millimeters per minute.
+- [x] Map `G4 P...` to wait/dwell behavior, interpreting `P` as milliseconds.
+- [x] Allow Simple DSL and G-code scripts to produce the same domain command model.
+- [x] Add equivalent `examples/cartesian.robot` and `examples/cartesian.gcode` programs.
+- [ ] Add absolute and relative positioning modes only after their state and teaching flow are specified.
+- [ ] Expand G-code beyond Cartesian motion only when a standard, robot-appropriate mapping is selected.
 
 ## 3. Hardware Integration
 
