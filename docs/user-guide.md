@@ -85,6 +85,7 @@ When validation fails, the desktop app shows a student-facing summary. Syntax er
 
 Desktop keyboard shortcuts:
 
+- `Ctrl+G`: open or close the searchable robotics glossary from the catalog or any simulation workspace.
 - `Ctrl+O`: load a script into the active viewer.
 - `Ctrl+S`: save the active viewer script.
 - `Ctrl+Enter`: validate the active script.
@@ -120,6 +121,7 @@ For official releases, push a version tag such as `v1.1.0`. GitHub Actions deriv
 
 Current desktop controls:
 
+- searchable robotics glossary with topic filters, available from the catalog and every simulation workspace.
 - robot cards showing name, family, compact status and complexity tags, description, and capability tags.
 - robot selection cards arrange responsively across one to six columns according to available width and a comfortable target card size.
 - available robot selection cards can be opened from the card body, the `Open Robot` button, or the keyboard and show hover and focus feedback.

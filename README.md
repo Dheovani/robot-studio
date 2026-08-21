@@ -11,6 +11,7 @@ The project is intentionally educational. It is designed to help students unders
 - Simulate a generic Cartesian robot with X/Y/Z axes.
 - Validate physical axis limits for position, velocity, and acceleration.
 - Observe acceleration-aware movement across every available robot family using triangular or trapezoidal velocity profiles.
+- Consult a searchable in-app robotics glossary covering fundamentals, motion, kinematics, simulation, programming, and safety.
 - Model Cartesian workspace obstacles and reject linear paths that intersect them before simulated movement begins.
 - Detect Differential Drive collisions using the robot's circular body footprint rather than treating its center as a dimensionless point.
 - Detect SCARA collisions against both physical links throughout sampled joint-space movement, not only at the final TCP position.

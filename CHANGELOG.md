@@ -17,6 +17,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an in-memory Cartesian robot configuration panel for editing axis limits, maximum velocity, and maximum acceleration with immediate playback and workspace regeneration.
 - Added Cartesian playback snapshot format 4 with exact per-command motion summaries, including profile shape, phase durations, peak velocity, acceleration, and involved axes.
 - Added acceleration-aware Cartesian movement explanations for triangular and trapezoidal profiles, limiting axes, phase timing, and the current motion phase.
+- Added a searchable in-app robotics glossary with 48 terms, topic filters, related concepts, catalog and workspace access, and a `Ctrl+G` shortcut.
 
 ### Changed
 

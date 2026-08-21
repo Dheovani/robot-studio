@@ -8,6 +8,7 @@ This folder keeps the project decisions and learning-oriented documentation clos
 - [Use Cases](use-cases.md): user-facing workflows the application must eventually support.
 - [Test Map](test-map.md): expected automated test coverage by project area.
 - [User Guide](user-guide.md): current and planned ways to use the CLI and future scripting flow.
+- [Robotics Glossary](glossary.md): technical robotics, programming, motion, simulation, and safety terms used by RobotStudio.
 - [Continuous Integration](ci.md): GitHub Actions validation for build, tests, and formatting.
 - [Advanced 3D Visualization](advanced-3d-visualization.md): future Milestone 9 rendering modes, technology constraints, asset direction, and architectural boundaries.
 - [Changelog](../CHANGELOG.md): user-facing release history and included capabilities.

@@ -497,6 +497,7 @@ Expected current behavior:
 - groups dense Cartesian viewer controls into collapsible sidebar panels;
 - shows technical tooltips for dense desktop controls;
 - shows didactic tooltips for workspace, TCP, homing, timeline, requested velocity, and effective velocity concepts;
+- exposes a searchable, categorized robotics glossary with unique and readable technical definitions;
 - remains usable at the current minimum desktop window size;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;

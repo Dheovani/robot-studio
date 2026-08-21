@@ -41,7 +41,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Add lesson-friendly examples for invalid axis limits.
 - [x] Add examples for requested speed versus effective speed.
 - [x] Add examples for waits, homing, manual jogging, and command sequencing.
-- [ ] Add glossary entries for technical robotics terms.
+- [x] Add glossary entries for technical robotics terms.
 - [ ] Add optional inline explanations for future G-code commands.
 
 ## 5. Testing And Quality

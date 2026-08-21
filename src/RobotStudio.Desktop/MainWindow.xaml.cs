@@ -189,6 +189,11 @@ public partial class MainWindow : Window
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         ScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
+        GlossaryCategoryComboBox.ItemsSource = new object[] { "All topics" }
+            .Concat(Enum.GetValues<GlossaryCategory>().Cast<object>())
+            .ToArray();
+        GlossaryCategoryComboBox.SelectedIndex = 0;
+        RefreshGlossaryEntries();
         RefreshScriptEditorGutter();
         BuildRobotSelectionCards();
     }
@@ -197,12 +202,30 @@ public partial class MainWindow : Window
         object sender,
         KeyEventArgs e)
     {
+        var isControlPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
+
+        if (isControlPressed && e.Key == Key.G)
+        {
+            ToggleGlossary();
+            e.Handled = true;
+            return;
+        }
+
+        if (GlossaryOverlay.Visibility == Visibility.Visible)
+        {
+            if (e.Key == Key.Escape)
+            {
+                CloseGlossary();
+                e.Handled = true;
+            }
+
+            return;
+        }
+
         if (RobotSelectionView.Visibility == Visibility.Visible)
         {
             return;
         }
-
-        var isControlPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
 
         if (isControlPressed && e.Key == Key.O)
         {
@@ -284,6 +307,65 @@ public partial class MainWindow : Window
             ResetActiveCamera();
             e.Handled = true;
         }
+    }
+
+    private void OpenGlossaryButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        OpenGlossary();
+
+    private void CloseGlossaryButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        CloseGlossary();
+
+    private void GlossaryFilter_Changed(
+        object sender,
+        EventArgs e) =>
+        RefreshGlossaryEntries();
+
+    private void ToggleGlossary()
+    {
+        if (GlossaryOverlay.Visibility == Visibility.Visible)
+        {
+            CloseGlossary();
+            return;
+        }
+
+        OpenGlossary();
+    }
+
+    private void OpenGlossary()
+    {
+        StopPlayback();
+        GlossaryOverlay.Visibility = Visibility.Visible;
+        RefreshGlossaryEntries();
+        GlossarySearchTextBox.Focus();
+        GlossarySearchTextBox.SelectAll();
+    }
+
+    private void CloseGlossary()
+    {
+        GlossaryOverlay.Visibility = Visibility.Collapsed;
+        Focus();
+    }
+
+    private void RefreshGlossaryEntries()
+    {
+        if (GlossaryEntriesListBox is null || GlossaryResultCountText is null)
+        {
+            return;
+        }
+
+        var category = GlossaryCategoryComboBox?.SelectedItem is GlossaryCategory selectedCategory
+            ? selectedCategory
+            : (GlossaryCategory?)null;
+        var entries = GlossaryCatalog.Search(GlossarySearchTextBox?.Text, category);
+
+        GlossaryEntriesListBox.ItemsSource = entries;
+        GlossaryResultCountText.Text = entries.Count == 1
+            ? "1 term"
+            : $"{entries.Count} terms";
     }
 
     private void MainWindow_PreviewMouseWheel(

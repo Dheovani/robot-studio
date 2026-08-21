@@ -329,6 +329,22 @@ Expected result:
 - the final home command returns the robot to the origin;
 - Simple DSL and G-code variants preserve the same lesson intent.
 
+### Consult The Robotics Glossary
+
+Actor: student or instructor.
+
+Goal: understand a technical term without leaving the current RobotStudio workflow.
+
+Current status: implemented in the desktop robot catalog and every simulation workspace.
+
+Expected result:
+
+- opening the glossary pauses visual playback without changing the active simulation frame;
+- search matches terms, acronyms, definitions, and related concepts;
+- topic filters narrow results to fundamentals, motion, kinematics, simulation, programming, or safety;
+- `Ctrl+G` opens or closes the glossary and `Escape` closes it;
+- the same definitions remain available in `docs/glossary.md` outside the application.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.
