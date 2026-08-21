@@ -17,6 +17,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Map `G4 P...` to wait/dwell behavior, interpreting `P` as milliseconds.
 - [x] Allow Simple DSL and G-code scripts to produce the same domain command model.
 - [x] Add equivalent `examples/cartesian.robot` and `examples/cartesian.gcode` programs.
+- [x] Add dialect-aware CLI validation, simulation, playback, export, and examples with extension inference and an explicit `--dialect` override.
 - [ ] Add absolute and relative positioning modes only after their state and teaching flow are specified.
 - [ ] Expand G-code beyond Cartesian motion only when a standard, robot-appropriate mapping is selected.
 

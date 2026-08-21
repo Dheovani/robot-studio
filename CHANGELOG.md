@@ -9,6 +9,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an introductory G-code dialect that maps `G28`, `G1`, and `G4` to the same homing, Cartesian movement, and wait domain commands used by the Simple DSL.
 - Added a desktop dialect selector for Cartesian and XY Plotter scripts, including G-code-aware examples, manual jogging, direct commands, validation, simulation, editor tags, and automatic dialect selection for `.robot` and `.gcode` files.
 - Added equivalent Simple DSL and G-code Cartesian example files for comparing both command languages.
+- Added dialect-aware CLI commands that infer Simple DSL or G-code from script extensions, accept an explicit `--dialect` override, and report the selected dialect.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

@@ -10,6 +10,7 @@
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/RobotStudio.Architecture.Tests/RobotStudio.Architecture.Tests.csproj" />
+    <Project Path="tests/RobotStudio.Cli.Tests/RobotStudio.Cli.Tests.csproj" />
     <Project Path="tests/RobotStudio.Desktop.Tests/RobotStudio.Desktop.Tests.csproj" />
     <Project Path="tests/RobotStudio.Domain.Tests/RobotStudio.Domain.Tests.csproj" />
     <Project Path="tests/RobotStudio.Hardware.Tests/RobotStudio.Hardware.Tests.csproj" />

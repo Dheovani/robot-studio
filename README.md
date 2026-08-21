@@ -199,10 +199,15 @@ Other useful CLI commands:
 dotnet run --project src/RobotStudio.Cli -- example
 dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.gcode
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.gcode
+dotnet run --project src/RobotStudio.Cli -- simulate lesson.txt --dialect gcode
 dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500
 dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json
 dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json
 ```
+
+The CLI infers G-code from `.gcode` and Simple DSL from `.robot`. For `.txt` files or an intentional override, pass `--dialect dsl` or `--dialect gcode`. The option is supported by `example`, `validate`, `simulate`, `playback`, and `export-playback`.
 
 ## Build And Test
 

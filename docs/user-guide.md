@@ -182,6 +182,22 @@ Simulate a script file:
 dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot
 ```
 
+Validate or simulate the equivalent G-code example:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.gcode
+dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.gcode
+```
+
+The CLI infers the dialect from `.robot` and `.gcode`. Use an explicit override for neutral file extensions or classroom comparisons:
+
+```bash
+dotnet run --project src/RobotStudio.Cli -- simulate lesson.txt --dialect gcode
+dotnet run --project src/RobotStudio.Cli -- example --dialect gcode
+```
+
+The explicit option takes precedence over the extension and accepts `dsl` or `gcode`.
+
 Print fixed-interval playback frames for a script file:
 
 ```bash
@@ -202,6 +218,7 @@ dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json
 
 Current output includes:
 
+- selected script dialect for validation, simulation, and playback flows;
 - robot profile limits;
 - axis velocity and acceleration limits;
 - command sequence summary;

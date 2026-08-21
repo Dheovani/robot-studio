@@ -293,6 +293,22 @@ Expected result:
 - manual jog and direct console actions append syntax matching the selected dialect;
 - switching syntax does not duplicate domain, motion, or simulation rules.
 
+### Run A Selected Script Dialect In The CLI
+
+Actor: student.
+
+Goal: validate, simulate, sample, or export a Cartesian script without changing execution rules between Simple DSL and G-code.
+
+Current status: implemented.
+
+Expected result:
+
+- `.robot` files use Simple DSL and `.gcode` files use G-code automatically;
+- `--dialect dsl|gcode` overrides extension inference for neutral files and comparisons;
+- the CLI reports the selected dialect;
+- validation, simulation, playback, and snapshot export consume the resolved `IRobotScriptDialect`;
+- unsupported dialect names and malformed options return clear argument errors.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

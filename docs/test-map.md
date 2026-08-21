@@ -390,9 +390,21 @@ This document maps expected automated tests to project behavior. It should be up
 
 - [ ] Add UI smoke tests when the desktop workflow becomes stable enough to automate.
 
-## CLI Verification
+## `RobotStudio.Cli.Tests`
 
-The CLI may be verified manually until CLI behavior becomes complex enough to require automated tests.
+### Current Coverage
+
+- [x] Parse `--dialect gcode` independently of its position in the command line.
+- [x] Parse `--dialect=dsl` syntax.
+- [x] Reject missing dialect values.
+- [x] Reject unknown command-line options.
+- [x] Resolve explicit `dsl`, `simple-dsl`, `gcode`, and `g-code` names.
+- [x] Infer G-code from `.gcode` case-insensitively.
+- [x] Default `.robot`, `.txt`, and unspecified extensions to Simple DSL.
+- [x] Give an explicit dialect precedence over the file extension.
+- [x] Reject unknown dialect names with the supported values in the error.
+
+### Manual CLI Verification
 
 Current command:
 
@@ -415,6 +427,9 @@ Additional manual CLI checks:
 - `dotnet run --project src/RobotStudio.Cli -- example` prints the built-in script.
 - `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.robot` validates the example script.
 - `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.robot` simulates the example script.
+- `dotnet run --project src/RobotStudio.Cli -- validate examples/cartesian.gcode` infers and validates G-code.
+- `dotnet run --project src/RobotStudio.Cli -- simulate examples/cartesian.gcode` infers and simulates G-code.
+- `dotnet run --project src/RobotStudio.Cli -- example --dialect gcode` prints the built-in example as G-code.
 - `dotnet run --project src/RobotStudio.Cli -- playback examples/cartesian.robot 500` prints fixed-interval playback frames.
 - `dotnet run --project src/RobotStudio.Cli -- export-playback examples/cartesian.robot 500 playback.json` exports fixed-interval playback data.
 - `dotnet run --project src/RobotStudio.Cli -- validate-playback playback.json` validates exported playback data.

@@ -1,6 +1,7 @@
 using System.Globalization;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using RobotStudio.Cli;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Scripting;
@@ -22,30 +23,37 @@ var profile = CartesianRobotProfile.CreateCartesian(
     new Axis(AxisId.Z, 0, 150, 80, 160));
 
 var initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-IRobotScriptDialect scriptDialect = new RobotScriptParser();
 
 try
 {
-    return args switch
+    var commandLine = CliCommandLine.Parse(args);
+
+    return commandLine.Arguments switch
     {
-        [] => SimulateScript(ExampleScript, profile, initialPosition, scriptDialect),
-        ["example"] => PrintExampleScript(),
-        ["validate", var path] => ValidateScriptFile(path, profile, scriptDialect),
-        ["simulate", var path] => SimulateScriptFile(path, profile, initialPosition, scriptDialect),
+        [] => SimulateExample(profile, initialPosition, commandLine.DialectName),
+        ["example"] => PrintExampleScript(commandLine.DialectName),
+        ["validate", var path] => ValidateScriptFile(path, profile, ResolveDialect(commandLine, path)),
+        ["simulate", var path] => SimulateScriptFile(
+            path,
+            profile,
+            initialPosition,
+            ResolveDialect(commandLine, path)),
         ["playback", var path, var intervalMilliseconds] => PrintPlaybackFile(
             path,
             intervalMilliseconds,
             profile,
             initialPosition,
-            scriptDialect),
+            ResolveDialect(commandLine, path)),
         ["export-playback", var path, var intervalMilliseconds, var outputPath] => ExportPlaybackFile(
             path,
             intervalMilliseconds,
             outputPath,
             profile,
             initialPosition,
-            scriptDialect),
-        ["validate-playback", var path] => ValidatePlaybackFile(path),
+            ResolveDialect(commandLine, path)),
+        ["validate-playback", var path] => ValidatePlaybackFile(
+            path,
+            commandLine.DialectName),
         _ => PrintUsage()
     };
 }
@@ -75,12 +83,39 @@ catch (InvalidOperationException exception)
     Console.Error.WriteLine($"Validation error: {exception.Message}");
     return 1;
 }
-
-static int PrintExampleScript()
+catch (ArgumentException exception)
 {
-    Console.WriteLine(ExampleScript);
+    Console.Error.WriteLine($"Argument error: {exception.Message}");
+    return 1;
+}
+
+static int SimulateExample(
+    CartesianRobotProfile profile,
+    CartesianPosition initialPosition,
+    string? dialectName)
+{
+    var dialect = RobotScriptDialectResolver.Resolve(dialectName);
+    var script = GetExampleScript(dialect);
+
+    return SimulateScript(script, profile, initialPosition, dialect);
+}
+
+static int PrintExampleScript(string? dialectName)
+{
+    var dialect = RobotScriptDialectResolver.Resolve(dialectName);
+    Console.WriteLine(GetExampleScript(dialect));
     return 0;
 }
+
+static string GetExampleScript(IRobotScriptDialect dialect) =>
+    dialect.Descriptor.Id == RobotScriptDialectId.GCode
+        ? GCodeWriter.Write(new RobotScriptParser().Parse(ExampleScript))
+        : ExampleScript;
+
+static IRobotScriptDialect ResolveDialect(
+    CliCommandLine commandLine,
+    string scriptPath) =>
+    RobotScriptDialectResolver.Resolve(commandLine.DialectName, scriptPath);
 
 static int ValidateScriptFile(
     string path,
@@ -92,6 +127,7 @@ static int ValidateScriptFile(
     ValidateCommandSequence(commands, profile);
 
     Console.WriteLine("Script is valid.");
+    Console.WriteLine($"Dialect: {scriptDialect.Descriptor.Name}");
     Console.WriteLine();
     PrintCommandSequence(commands);
 
@@ -123,6 +159,7 @@ static int SimulateScript(
     var result = simulator.Execute(context, commands);
 
     Console.WriteLine("RobotStudio CLI");
+    Console.WriteLine($"Script dialect: {scriptDialect.Descriptor.Name}");
     Console.WriteLine();
     PrintProfile(profile);
     Console.WriteLine();
@@ -141,12 +178,14 @@ static int PrintUsage()
     Console.WriteLine();
     Console.WriteLine("Usage:");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli");
-    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- example");
-    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate <script-file>");
-    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file>");
-    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- playback <script-file> <interval-ms>");
-    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- export-playback <script-file> <interval-ms> <output-json>");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- example [--dialect dsl|gcode]");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate <script-file> [--dialect dsl|gcode]");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- simulate <script-file> [--dialect dsl|gcode]");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- playback <script-file> <interval-ms> [--dialect dsl|gcode]");
+    Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- export-playback <script-file> <interval-ms> <output-json> [--dialect dsl|gcode]");
     Console.WriteLine("  dotnet run --project src/RobotStudio.Cli -- validate-playback <snapshot-json>");
+    Console.WriteLine();
+    Console.WriteLine("Script dialect is inferred from .robot or .gcode files. Use --dialect to override it.");
 
     return 1;
 }
@@ -163,6 +202,7 @@ static int PrintPlaybackFile(
     var snapshot = BuildPlaybackSnapshot(script, profile, initialPosition, scriptDialect, interval);
 
     Console.WriteLine("RobotStudio CLI");
+    Console.WriteLine($"Script dialect: {scriptDialect.Descriptor.Name}");
     Console.WriteLine();
     Console.WriteLine($"Playback interval: {interval.TotalMilliseconds:0.###} ms");
     Console.WriteLine();
@@ -208,8 +248,15 @@ static int ExportPlaybackFile(
     return snapshot.Succeeded ? 0 : 1;
 }
 
-static int ValidatePlaybackFile(string path)
+static int ValidatePlaybackFile(
+    string path,
+    string? dialectName)
 {
+    if (dialectName is not null)
+    {
+        throw new ArgumentException("The --dialect option cannot be used with validate-playback.");
+    }
+
     var json = File.ReadAllText(path);
     var snapshot = JsonSerializer.Deserialize<CartesianPlaybackSnapshot>(json, CreateJsonOptions());
     var validator = new PlaybackSnapshotValidator();

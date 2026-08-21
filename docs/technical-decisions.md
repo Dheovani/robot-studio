@@ -169,6 +169,8 @@ The first G-code subset intentionally supports only `G28`, `G1`, and `G4`. `G1` 
 
 `GCodeWriter` converts supported domain command sequences into this subset. It is used to present equivalent desktop teaching examples without duplicating simulation rules.
 
+`RobotScriptDialectResolver` centralizes command-line dialect selection. An explicit `dsl` or `gcode` request takes precedence; otherwise `.gcode` selects G-code and all other extensions retain the backward-compatible Simple DSL default. The resolver returns `IRobotScriptDialect`, so the CLI's validation, simulation, playback, and export paths remain independent of concrete parser classes.
+
 ### UI And Visualization
 
 The first desktop UI uses WPF and targets Windows. This keeps the first visual iteration package-free and focused on rendering the simulation contract already produced by `RobotStudio.Simulation`.
