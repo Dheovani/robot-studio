@@ -4,10 +4,9 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 
 ## 1. Release And Distribution
 
-- [ ] Create and push the `v1.1.0` Git tag after the release commit passes CI.
+- [x] Create and push the `v1.1.0` Git tag after the release commit passes CI.
 - [ ] Acquire a code signing certificate before publishing signed Windows releases.
-- [ ] Add ARM64 CLI release artifacts if student machines need them.
-- [ ] Evaluate a future cross-platform desktop UI strategy after the Windows desktop release.
+- [ ] Add Windows ARM64 CLI release artifacts if student machines need them.
 
 ## 2. Scripting And G-Code
 

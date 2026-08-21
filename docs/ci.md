@@ -2,7 +2,7 @@
 
 RobotStudio uses GitHub Actions to validate the project on pushes and pull requests targeting `main` or `master`.
 
-The full desktop workflow runs on Windows because the solution includes the first WPF desktop viewer. The portable CLI/core workflow runs on Windows, Linux, and macOS.
+The current CI is Windows-only because the desktop app uses WPF and the official release tooling builds Windows artifacts.
 
 ## Workflow
 
@@ -17,24 +17,6 @@ The workflow file is:
 ### Release Metadata
 
 For manual release runs and version tags, this job resolves one validated semantic version for every packaging job. Tags such as `v1.1.0` become artifact version `1.1.0`; manual runs use the required `version` workflow input.
-
-### Portable Build And Test
-
-This job runs on:
-
-- `windows-latest`
-- `ubuntu-latest`
-- `macos-latest`
-
-It validates the portable solution:
-
-```bash
-dotnet restore build/RobotStudio.Portable.slnx
-dotnet build build/RobotStudio.Portable.slnx --configuration Release --no-restore
-dotnet test build/RobotStudio.Portable.slnx --configuration Release --no-build
-```
-
-The portable solution file is `build/RobotStudio.Portable.slnx`. It excludes WPF desktop projects and validates the CLI, domain, motion, simulation, scripting, hardware boundary, architecture rules, and non-desktop tests.
 
 ### Windows Desktop Build And Test
 
@@ -87,45 +69,42 @@ Supported optional signing configuration:
 - `ROBOTSTUDIO_SIGNING_CERTIFICATE_THUMBPRINT`: GitHub secret for signing with a certificate already available in the Windows certificate store.
 - `ROBOTSTUDIO_SIGNING_TIMESTAMP_URL`: GitHub variable with a timestamp server URL.
 
-### CLI Release Artifacts
+### Windows CLI Release Artifact
 
 This job runs only for manual workflow dispatches and version tags such as `v1.1.0`.
 
-It builds self-contained CLI ZIP archives for:
+It builds a self-contained CLI ZIP archive for:
 
 - `win-x64`
-- `linux-x64`
-- `osx-x64`
 
-Each archive is uploaded with a matching `.sha256` checksum file.
+The archive is uploaded with a matching `.sha256` checksum file.
 
 ### GitHub Release
 
 This job runs only for version tags such as `v1.1.0`.
 
-It waits for the Windows installer and CLI artifact jobs, downloads the workflow artifacts, keeps only public release assets, and creates the GitHub Release for the tag.
+It waits for the Windows installer and Windows CLI artifact jobs, downloads the workflow artifacts, keeps only public release assets, and creates the GitHub Release for the tag.
 
 Published assets include:
 
 - Windows installer `.exe`;
 - Windows installer `.sha256`;
-- CLI ZIP archives for `win-x64`, `linux-x64`, and `osx-x64`;
-- CLI `.sha256` files for each runtime.
+- Windows CLI ZIP archive;
+- Windows CLI `.sha256` file.
 
 The release notes are extracted from the matching version section in `CHANGELOG.md`. Publication fails if that section is missing.
 
 ## Current Quality Scope
 
-The first CI version checks:
+The CI checks:
 
 - dependency restoration;
-- portable CLI/core build on Windows, Linux, and macOS;
-- Release build;
+- Windows Release build;
 - xUnit tests;
 - architecture dependency rules;
-- formatting rules.
-- Windows installer generation for manual or tagged release builds.
-- CLI release artifacts for manual or tagged release builds.
+- formatting rules;
+- Windows installer generation for manual or tagged release builds;
+- Windows CLI artifact generation for manual or tagged release builds;
 - GitHub Release publication for version tags.
 
 Future quality checks may include stricter analyzers, code coverage, package vulnerability scans, documentation checks, and mandatory signed release enforcement.

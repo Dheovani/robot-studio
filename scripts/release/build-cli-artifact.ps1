@@ -2,6 +2,8 @@ param(
     [Parameter(Mandatory = $true)]
     [ValidatePattern('^\d+\.\d+\.\d+(?:-[0-9A-Za-z.-]+)?$')]
     [string] $Version,
+
+    [ValidateSet("win-x64")]
     [string] $Runtime = "win-x64"
 )
 

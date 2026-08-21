@@ -173,9 +173,9 @@ G-code support is planned for a future course module and should eventually produ
 
 The first desktop UI uses WPF and targets Windows. This keeps the first visual iteration package-free and focused on rendering the simulation contract already produced by `RobotStudio.Simulation`.
 
-The core libraries and CLI are validated separately through `build/RobotStudio.Portable.slnx`, which excludes WPF desktop projects and runs in CI on Windows, Linux, and macOS. Cross-platform desktop UI support remains a future product decision.
+The full solution is validated on Windows in CI. Earlier cross-platform validation was removed because the product and release tooling currently depend on Windows desktop technology.
 
-Architecture tests live in `RobotStudio.Architecture.Tests`. They read project files as XML and guard the allowed project reference map, the purity of `RobotStudio.Domain`, the WPF-only desktop boundary, and the portable solution's exclusion of WPF projects. These tests are intentionally package-free so the architecture rules remain easy to inspect in class.
+Architecture tests live in `RobotStudio.Architecture.Tests`. They read project files as XML and guard the allowed project reference map, the purity of `RobotStudio.Domain`, and the WPF-only desktop boundary. These tests are intentionally package-free so the architecture rules remain easy to inspect in class.
 
 The desktop viewer must consume simulation output, especially scene frames and viewport data, instead of duplicating simulation, motion, or geometry rules.
 

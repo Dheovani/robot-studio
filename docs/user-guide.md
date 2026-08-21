@@ -15,12 +15,6 @@ dotnet build
 
 The full solution includes the WPF desktop viewer and is intended for Windows.
 
-Build the portable CLI/core solution on Windows, Linux, or macOS:
-
-```bash
-dotnet build build/RobotStudio.Portable.slnx
-```
-
 ## Run Tests
 
 Run from the repository root:
@@ -29,23 +23,15 @@ Run from the repository root:
 dotnet test
 ```
 
-Run only the portable tests on Windows, Linux, or macOS:
+Build a Windows CLI release artifact:
 
 ```bash
-dotnet test build/RobotStudio.Portable.slnx
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime win-x64
 ```
 
-Build a portable CLI release artifact:
-
-```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime linux-x64
-```
-
-The initial CLI release runtimes are:
+The supported CLI release runtime is:
 
 - `win-x64`
-- `linux-x64`
-- `osx-x64`
 
 CLI release archives are generated under:
 
@@ -130,7 +116,7 @@ The script also generates a SHA256 checksum file next to the installer:
 artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe.sha256
 ```
 
-For official releases, push a version tag such as `v1.1.0`. GitHub Actions derives the artifact version from the tag and publishes a GitHub Release with the Windows installer, portable CLI ZIP archives, and SHA256 checksum files attached.
+For official releases, push a version tag such as `v1.1.0`. GitHub Actions derives the artifact version from the tag and publishes a GitHub Release with the Windows installer, Windows CLI ZIP archive, and SHA256 checksum files attached.
 
 Current desktop controls:
 

@@ -70,15 +70,18 @@ public sealed class ProjectDependencyRulesTests
     }
 
     [Fact]
-    public void PortableSolution_ShouldExcludeDesktopProject()
+    public void DesktopProject_ShouldTargetWindows()
     {
         var repositoryRoot = FindRepositoryRoot();
-        var portableSolutionPath = Path.Combine(repositoryRoot, "build", "RobotStudio.Portable.slnx");
-        var portableSolution = File.ReadAllText(portableSolutionPath);
+        var desktopProjectPath = Path.Combine(repositoryRoot, "src", "RobotStudio.Desktop", "RobotStudio.Desktop.csproj");
+        var document = XDocument.Load(desktopProjectPath);
+        var targetFramework = document
+            .Descendants("TargetFramework")
+            .Single()
+            .Value;
 
-        Assert.DoesNotContain("RobotStudio.Desktop", portableSolution);
-        Assert.Contains("RobotStudio.Cli", portableSolution);
-        Assert.Contains("RobotStudio.Domain", portableSolution);
+        Assert.Contains("windows", targetFramework, StringComparison.OrdinalIgnoreCase);
+        Assert.True(HasProperty(desktopProjectPath, "UseWPF", "true"));
     }
 
     [Theory]

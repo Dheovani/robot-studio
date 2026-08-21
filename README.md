@@ -103,33 +103,31 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, `Drone`, and `6-DOF Industrial Arm` are available in version `1.1.0`.
 
-## Portable CLI And Core
+## Windows CLI And Core
 
-The WPF desktop viewer is Windows-only. The portable solution validates the CLI, domain, motion, simulation, scripting, hardware boundary, and their non-desktop tests on Windows, Linux, and macOS.
+RobotStudio currently targets Windows because the desktop viewer uses WPF and the official release tooling is Windows-based. The CLI, domain, motion, simulation, scripting, hardware boundary, and tests are validated through the main solution.
 
-Build the portable solution:
-
-```bash
-dotnet build build/RobotStudio.Portable.slnx
-```
-
-Run portable tests:
+Build the solution:
 
 ```bash
-dotnet test build/RobotStudio.Portable.slnx
+dotnet build RobotStudio.slnx
 ```
 
-Build a portable CLI release artifact:
+Run tests:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime linux-x64
+dotnet test RobotStudio.slnx
 ```
 
-Supported initial CLI release runtimes:
+Build a Windows CLI release artifact:
+
+```bash
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime win-x64
+```
+
+Supported CLI release runtime:
 
 - `win-x64`
-- `linux-x64`
-- `osx-x64`
 
 ## Preview
 
@@ -236,7 +234,7 @@ The release script also generates:
 artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe.sha256
 ```
 
-When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact version from the tag, builds the Windows installer and portable CLI ZIP archives for Windows/Linux/macOS, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
+When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact version from the tag, builds the Windows installer and Windows CLI ZIP archive, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
 
 ## Project Structure
 
