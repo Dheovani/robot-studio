@@ -532,6 +532,7 @@ Expected current behavior:
 - renders the Delta Robot as a 3D viewport with triangular frame, vertical actuator rails, moving carriages, platform, TCP, and path;
 - renders the Drone as a 3D viewport with flight-volume boundary, ground grid, attitude-aware rotor arms, heading indicator, and path;
 - loads selected local Cartesian examples from the Cartesian viewer;
+- switches Cartesian-family script dialects without leaving playback without a generated snapshot;
 - loads selected local XY Plotter examples from the XY Plotter viewer;
 - loads selected local Differential Drive examples from the mobile viewer;
 - loads selected local SCARA examples from the SCARA viewer;

@@ -24,6 +24,10 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
 - Changed Cartesian movement explanations to use exact command boundaries instead of estimating motion from fixed-interval playback frames.
 
+### Fixed
+
+- Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.
+
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 
 ### Added

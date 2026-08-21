@@ -327,6 +327,11 @@ public partial class MainWindow : Window
 
     private void TogglePlayback()
     {
+        if (!isPlaying && !TryPreparePlayback())
+        {
+            return;
+        }
+
         isPlaying = !isPlaying;
         UpdatePlaybackButtonLabels();
 
@@ -338,6 +343,33 @@ public partial class MainWindow : Window
         {
             playbackTimer.Stop();
         }
+    }
+
+    private bool TryPreparePlayback()
+    {
+        if (activeViewerKind is not (
+            RobotViewerKind.CartesianThreeDimensional or
+            RobotViewerKind.XYPlotterTwoDimensional) ||
+            snapshot is not null)
+        {
+            return true;
+        }
+
+        if (!TryCreateSnapshotFromScript(
+            ScriptEditorTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            SetScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return false;
+        }
+
+        snapshot = nextSnapshot;
+        InitializeTimelineForSnapshot();
+        RenderFrame(index: 0);
+        SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+        return true;
     }
 
     private void ResetButton_Click(
@@ -801,16 +833,31 @@ public partial class MainWindow : Window
         }
 
         StopPlayback();
-        snapshot = null;
-        cartesianSessionContext = null;
         ScriptEditorTextBox.Text = GetSelectedCartesianExampleScript();
         CommandConsoleTextBox.Text = descriptor.Id == RobotScriptDialectId.GCode
             ? "G1 X100 Y50 Z20 F4800"
             : "MOVE X=100 Y=50 Z=20 SPEED=80";
-        ScriptStatusText.Text = descriptor.Id == RobotScriptDialectId.GCode
-            ? "G-code mode uses G28, G1, G4, and G90/G91 positioning. F is measured in mm/min."
-            : "Simple DSL mode uses HOME, MOVE, and WAIT commands.";
         RefreshScriptEditorGutter();
+
+        if (!TryCreateSnapshotFromScript(
+            ScriptEditorTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            snapshot = null;
+            cartesianSessionContext = null;
+            SetScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        snapshot = nextSnapshot;
+        InitializeTimelineForSnapshot();
+        RenderFrame(index: 0);
+        var dialectMessage = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code mode ready. F is measured in mm/min."
+            : "Simple DSL mode ready.";
+        SetScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
     }
 
     private void ApplyCartesianProfileButton_Click(

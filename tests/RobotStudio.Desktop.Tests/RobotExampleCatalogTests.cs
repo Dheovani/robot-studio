@@ -4,6 +4,7 @@ using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Exceptions;
 using RobotStudio.Scripting;
+using RobotStudio.Simulation;
 
 namespace RobotStudio.Desktop.Tests;
 
@@ -104,6 +105,38 @@ public sealed class RobotExampleCatalogTests
                     example.ExpectedResult);
             }
         }
+    }
+
+    [Theory]
+    [InlineData(RobotViewerKind.CartesianThreeDimensional, 40, 30, 20)]
+    [InlineData(RobotViewerKind.XYPlotterTwoDimensional, 40, 30, 0)]
+    public void CartesianFamilyDefault_WhenConvertedToGCode_ShouldProduceMovingPlayback(
+        RobotViewerKind viewerKind,
+        double initialX,
+        double initialY,
+        double initialZ)
+    {
+        var profile = CreateCartesianProfile();
+        var initialPosition = new CartesianPosition(initialX, initialY, initialZ);
+        var example = RobotExampleCatalog.GetDefaultFor(viewerKind);
+        var gCode = example.GCodeScript ??
+            GCodeWriter.Write(new RobotScriptParser().Parse(example.Script));
+        var commands = new GCodeParser().Parse(
+            gCode,
+            new RobotScriptParseContext(initialPosition));
+        var result = new RobotSimulator().Execute(
+            SimulationContext.Create(profile, initialPosition),
+            commands);
+        var snapshot = new CartesianPlaybackSnapshotBuilder().Build(
+            profile,
+            result,
+            TimeSpan.FromMilliseconds(100));
+
+        Assert.True(snapshot.Succeeded);
+        Assert.True(snapshot.SceneFrameCount > 1);
+        Assert.Contains(
+            snapshot.Frames,
+            frame => frame.Position != new VisualVector3(initialX, initialY, initialZ));
     }
 
     [Fact]
