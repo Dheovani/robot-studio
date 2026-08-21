@@ -60,6 +60,7 @@ G4 P500
 - Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.
+- Configure Cartesian X/Y/Z limits, maximum velocity, and maximum acceleration directly in the desktop workspace.
 - Inspect playback frames, state, position, exact velocity and acceleration charts, planned path, workspace, TCP, and didactic tooltips.
 - Export and validate playback snapshots as JSON.
 

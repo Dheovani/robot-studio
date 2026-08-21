@@ -391,6 +391,10 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Desktop script validation messages explain invalid command arguments.
 - [x] Script editor metadata classifies `HOME`, `MOVE`, and `WAIT` lines.
 - [x] Script editor metadata classifies blank and unknown lines predictably.
+- [x] Cartesian profile input round-trips every default axis value.
+- [x] Cartesian profile input parses invariant decimal values.
+- [x] Cartesian profile input rejects blank, malformed, NaN, and infinite values with a field-specific error.
+- [x] Cartesian profile creation reuses domain validation for inconsistent axis limits.
 
 ## Architecture Tests
 

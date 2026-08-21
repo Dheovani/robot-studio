@@ -207,6 +207,8 @@ The desktop start screen uses a didactic robot catalog made of family descriptor
 
 Desktop viewers share reusable templates for script actions, playback actions, and contextual fault recovery. Non-Cartesian viewers also share a `ViewerTimeline` control. Recovery actions remain hidden during normal operation and are presented in the script panel only while the retained session is faulted.
 
+Cartesian profile editing belongs in the Desktop as text-input orchestration, while physical validity remains enforced by Domain `Axis` and `CartesianRobotProfile` objects. `CartesianProfileInput` performs invariant, finite-number conversion without referencing WPF controls. Applying a profile resets the Cartesian simulation start to the fixed HOME origin and regenerates all playback-derived visualization. A valid profile is retained even when the current script becomes invalid; in that case Desktop replaces stale playback with a HOME preview and keeps the script available for correction. Profile persistence is a separate future concern and must not add file access to Domain.
+
 The current didactic order is:
 
 - Cartesian Robot.

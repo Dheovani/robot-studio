@@ -533,6 +533,76 @@
                                 </StackPanel>
                             </Expander>
 
+                            <Expander x:Name="CartesianProfileExpander"
+                                      Header="Robot Configuration"
+                                      IsExpanded="False"
+                                      ToolTip="Configure Cartesian axis limits, maximum velocity, and maximum acceleration.">
+                                <StackPanel Margin="0,10,0,0">
+                                    <Grid>
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="28" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Grid.RowDefinitions>
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                            <RowDefinition Height="Auto" />
+                                        </Grid.RowDefinitions>
+
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3,0,3,4" Text="Min" Foreground="#94A3B8" HorizontalAlignment="Center" />
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="3,0,3,4" Text="Max" Foreground="#94A3B8" HorizontalAlignment="Center" />
+                                        <TextBlock Grid.Row="0" Grid.Column="3" Margin="3,0,3,4" Text="Vel" Foreground="#94A3B8" HorizontalAlignment="Center" ToolTip="Maximum velocity in millimeters per second." />
+                                        <TextBlock Grid.Row="0" Grid.Column="4" Margin="3,0,3,4" Text="Accel" Foreground="#94A3B8" HorizontalAlignment="Center" ToolTip="Maximum acceleration in millimeters per second squared." />
+
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" Foreground="#F87171" />
+                                        <TextBox x:Name="ProfileXMinimumTextBox" Grid.Row="1" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis minimum position in millimeters." />
+                                        <TextBox x:Name="ProfileXMaximumTextBox" Grid.Row="1" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum position in millimeters." />
+                                        <TextBox x:Name="ProfileXVelocityTextBox" Grid.Row="1" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum velocity in millimeters per second." />
+                                        <TextBox x:Name="ProfileXAccelerationTextBox" Grid.Row="1" Grid.Column="4" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum acceleration in millimeters per second squared." />
+
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" VerticalAlignment="Center" Foreground="#4ADE80" />
+                                        <TextBox x:Name="ProfileYMinimumTextBox" Grid.Row="2" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis minimum position in millimeters." />
+                                        <TextBox x:Name="ProfileYMaximumTextBox" Grid.Row="2" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum position in millimeters." />
+                                        <TextBox x:Name="ProfileYVelocityTextBox" Grid.Row="2" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum velocity in millimeters per second." />
+                                        <TextBox x:Name="ProfileYAccelerationTextBox" Grid.Row="2" Grid.Column="4" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum acceleration in millimeters per second squared." />
+
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Z" VerticalAlignment="Center" Foreground="#60A5FA" />
+                                        <TextBox x:Name="ProfileZMinimumTextBox" Grid.Row="3" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis minimum position in millimeters." />
+                                        <TextBox x:Name="ProfileZMaximumTextBox" Grid.Row="3" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis maximum position in millimeters." />
+                                        <TextBox x:Name="ProfileZVelocityTextBox" Grid.Row="3" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis maximum velocity in millimeters per second." />
+                                        <TextBox x:Name="ProfileZAccelerationTextBox" Grid.Row="3" Grid.Column="4" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis maximum acceleration in millimeters per second squared." />
+                                    </Grid>
+
+                                    <Grid Margin="0,10,0,0">
+                                        <Grid.ColumnDefinitions>
+                                            <ColumnDefinition Width="*" />
+                                            <ColumnDefinition Width="*" />
+                                        </Grid.ColumnDefinitions>
+                                        <Button Grid.Column="0"
+                                                Margin="0,0,6,0"
+                                                Content="Apply"
+                                                ToolTip="Validate the profile and regenerate playback with the new physical limits."
+                                                Click="ApplyCartesianProfileButton_Click" />
+                                        <Button Grid.Column="1"
+                                                Margin="6,0,0,0"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Content="Restore"
+                                                ToolTip="Restore the default Cartesian robot profile."
+                                                Click="RestoreCartesianProfileButton_Click" />
+                                    </Grid>
+
+                                    <TextBlock x:Name="CartesianProfileStatusText"
+                                               Margin="0,10,0,8"
+                                               Foreground="#94A3B8"
+                                               TextWrapping="Wrap"
+                                               Text="Default Cartesian profile." />
+                                </StackPanel>
+                            </Expander>
+
                             <Expander Header="Manual Control"
                                       IsExpanded="True"
                                       ToolTip="Jog the simulated Cartesian robot by appending commands in the selected dialect.">

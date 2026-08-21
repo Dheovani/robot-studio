@@ -10,6 +10,7 @@ using System.Windows.Shapes;
 using System.Windows.Threading;
 using Microsoft.Win32;
 using RobotStudio.Desktop.Examples;
+using RobotStudio.Desktop.Profiles;
 using RobotStudio.Desktop.Rendering;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
@@ -808,6 +809,113 @@ public partial class MainWindow : Window
             ? "G-code mode uses G28, G1, G4, and G90/G91 positioning. F is measured in mm/min."
             : "Simple DSL mode uses HOME, MOVE, and WAIT commands.";
         RefreshScriptEditorGutter();
+    }
+
+    private void ApplyCartesianProfileButton_Click(
+        object sender,
+        RoutedEventArgs e) =>
+        ApplyCartesianProfile(ReadCartesianProfileInput(), isRestore: false);
+
+    private void RestoreCartesianProfileButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        var defaultProfile = CreateCartesianProfile();
+        var input = CartesianProfileInput.FromProfile(defaultProfile);
+        PopulateCartesianProfileEditor(defaultProfile);
+        ApplyCartesianProfile(input, isRestore: true);
+    }
+
+    private void ApplyCartesianProfile(
+        CartesianProfileInput input,
+        bool isRestore)
+    {
+        CartesianRobotProfile nextProfile;
+        try
+        {
+            nextProfile = input.CreateProfile();
+            nextProfile.ValidatePosition(new CartesianPosition(0, 0, 0));
+        }
+        catch (Exception exception) when (exception is InvalidOperationException or ArgumentException)
+        {
+            SetCartesianProfileStatus(
+                $"Profile was not changed: {exception.Message}",
+                Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        StopPlayback();
+        profile = nextProfile;
+        initialPosition = new CartesianPosition(0, 0, 0);
+        cartesianSessionContext = null;
+        UpdateSessionRecoveryControls();
+
+        if (TryCreateSnapshotFromScript(
+            ScriptEditorTextBox.Text,
+            out var nextSnapshot,
+            out var scriptMessage,
+            captureSession: true))
+        {
+            snapshot = nextSnapshot;
+            InitializeTimelineForSnapshot();
+            RenderFrame(index: 0);
+            SetCartesianProfileStatus(
+                isRestore
+                    ? "Default profile restored. Simulation reset to HOME."
+                    : "Profile applied. Simulation reset to HOME.",
+                Color.FromRgb(74, 222, 128));
+            SetScriptStatus(scriptMessage, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        snapshot = CreateCartesianProfilePreview(nextProfile);
+        InitializeTimelineForSnapshot();
+        RenderFrame(index: 0);
+        SetCartesianProfileStatus(
+            "Profile applied. The current script is outside the new profile, so the viewport shows a HOME preview.",
+            Color.FromRgb(251, 191, 36));
+        SetScriptStatus(scriptMessage, Color.FromRgb(248, 113, 113));
+    }
+
+    private CartesianProfileInput ReadCartesianProfileInput() =>
+        new(
+            ProfileXMinimumTextBox.Text,
+            ProfileXMaximumTextBox.Text,
+            ProfileXVelocityTextBox.Text,
+            ProfileXAccelerationTextBox.Text,
+            ProfileYMinimumTextBox.Text,
+            ProfileYMaximumTextBox.Text,
+            ProfileYVelocityTextBox.Text,
+            ProfileYAccelerationTextBox.Text,
+            ProfileZMinimumTextBox.Text,
+            ProfileZMaximumTextBox.Text,
+            ProfileZVelocityTextBox.Text,
+            ProfileZAccelerationTextBox.Text);
+
+    private void PopulateCartesianProfileEditor(CartesianRobotProfile robotProfile)
+    {
+        var input = CartesianProfileInput.FromProfile(robotProfile);
+        ProfileXMinimumTextBox.Text = input.XMinimum;
+        ProfileXMaximumTextBox.Text = input.XMaximum;
+        ProfileXVelocityTextBox.Text = input.XMaximumVelocity;
+        ProfileXAccelerationTextBox.Text = input.XMaximumAcceleration;
+        ProfileYMinimumTextBox.Text = input.YMinimum;
+        ProfileYMaximumTextBox.Text = input.YMaximum;
+        ProfileYVelocityTextBox.Text = input.YMaximumVelocity;
+        ProfileYAccelerationTextBox.Text = input.YMaximumAcceleration;
+        ProfileZMinimumTextBox.Text = input.ZMinimum;
+        ProfileZMaximumTextBox.Text = input.ZMaximum;
+        ProfileZVelocityTextBox.Text = input.ZMaximumVelocity;
+        ProfileZAccelerationTextBox.Text = input.ZMaximumAcceleration;
+        SetCartesianProfileStatus("Default Cartesian profile.", Color.FromRgb(148, 163, 184));
+    }
+
+    private void SetCartesianProfileStatus(
+        string message,
+        Color color)
+    {
+        CartesianProfileStatusText.Text = message;
+        CartesianProfileStatusText.Foreground = new SolidColorBrush(color);
     }
 
     private void LoadCartesianScriptButton_Click(
@@ -2572,14 +2680,20 @@ public partial class MainWindow : Window
 
     private CartesianPlaybackSnapshot CreateSnapshot(
         string script,
-        bool captureSession = false)
+        bool captureSession = false) =>
+        CreateSnapshot(script, profile, captureSession);
+
+    private CartesianPlaybackSnapshot CreateSnapshot(
+        string script,
+        CartesianRobotProfile robotProfile,
+        bool captureSession)
     {
         var commands = CartesianScriptDialect.Parse(
             script,
             new RobotScriptParseContext(initialPosition));
-        ValidateCommandSequence(commands);
+        ValidateCommandSequence(commands, robotProfile);
 
-        var context = SimulationContext.Create(profile, initialPosition);
+        var context = SimulationContext.Create(robotProfile, initialPosition);
         var result = new RobotSimulator().Execute(context, commands);
         if (captureSession)
         {
@@ -2588,7 +2702,19 @@ public partial class MainWindow : Window
         }
 
         return new CartesianPlaybackSnapshotBuilder()
-            .Build(profile, result, TimeSpan.FromMilliseconds(100));
+            .Build(robotProfile, result, TimeSpan.FromMilliseconds(100));
+    }
+
+    private static CartesianPlaybackSnapshot CreateCartesianProfilePreview(
+        CartesianRobotProfile robotProfile)
+    {
+        var home = new CartesianPosition(0, 0, 0);
+        var context = SimulationContext.Create(robotProfile, home);
+        var commands = new RobotCommandSequence([new HomeCommand()]);
+        var result = new RobotSimulator().Execute(context, commands);
+
+        return new CartesianPlaybackSnapshotBuilder()
+            .Build(robotProfile, result, TimeSpan.FromMilliseconds(100));
     }
 
     private DifferentialDrivePlaybackSnapshot CreateDifferentialDriveSnapshot(
@@ -3130,6 +3256,8 @@ public partial class MainWindow : Window
         JogNegativeZButton.IsEnabled = true;
         JogPositiveZButton.IsEnabled = true;
         ManualControlStatusText.Text = "Manual actions append commands in the selected dialect and resimulate the robot.";
+        CartesianProfileExpander.Visibility = Visibility.Visible;
+        PopulateCartesianProfileEditor(profile);
     }
 
     private void ConfigureXYPlotterViewer()
@@ -3146,6 +3274,7 @@ public partial class MainWindow : Window
         JogNegativeZButton.IsEnabled = false;
         JogPositiveZButton.IsEnabled = false;
         ManualControlStatusText.Text = "XY Plotter uses X/Y jog commands. Z remains fixed at 0 mm.";
+        CartesianProfileExpander.Visibility = Visibility.Collapsed;
     }
 
     private void ConfigureDifferentialDriveViewer()
@@ -5753,7 +5882,9 @@ public partial class MainWindow : Window
                 new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
             ]);
 
-    private void ValidateCommandSequence(RobotCommandSequence commands)
+    private void ValidateCommandSequence(
+        RobotCommandSequence commands,
+        CartesianRobotProfile? robotProfile = null)
     {
         if (activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional)
         {
@@ -5772,7 +5903,7 @@ public partial class MainWindow : Window
 
         foreach (var command in commands.Commands)
         {
-            RobotCommandValidator.Validate(command, profile);
+            RobotCommandValidator.Validate(command, robotProfile ?? profile);
         }
     }
 

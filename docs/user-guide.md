@@ -160,9 +160,18 @@ Current desktop controls:
 - isometric, front, side, top, and reset camera buttons.
 - state panel showing current state, position, command, source line, simulated time, and frame number.
 - local example selector and `Load Example` controls for every available desktop viewer.
+- Cartesian robot configuration for axis minimum, maximum, maximum velocity, and maximum acceleration.
 - `Load Script` and `Save Script` controls for desktop script editors.
 - keyboard shortcuts for active viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
 - movement explanation text for SCARA and Simple Articulated Arm joint-space commands.
+
+### Cartesian Robot Configuration
+
+The Cartesian workspace includes a collapsible `Robot Configuration` panel. Each X/Y/Z row accepts minimum and maximum position in millimeters, maximum velocity in millimeters per second, and maximum acceleration in millimeters per second squared.
+
+`Apply` validates the values through the domain `Axis` and `CartesianRobotProfile` types, resets the simulation origin to HOME, rebuilds the workspace, and regenerates the current script. The configured range must include `(0, 0, 0)` because HOME is fixed at the Cartesian origin.
+
+If the profile is valid but the current script exceeds its new limits, the profile remains active, the script error is shown, and the viewport displays a safe HOME preview. `Restore` reapplies the default teaching profile. Configuration remains in memory for the current Cartesian workspace session; profile files are not persisted yet.
 
 Print the built-in example script:
 

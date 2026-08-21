@@ -14,6 +14,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added compiled script statements that preserve positioning-mode directives alongside executable domain commands.
 - Added Cartesian playback snapshot format 3 with requested movement velocity and wait-duration metadata.
 - Added organized per-robot example files and Cartesian lessons for axis-limit errors, requested versus effective speed, jog-style sequencing, waits, and homing.
+- Added an in-memory Cartesian robot configuration panel for editing axis limits, maximum velocity, and maximum acceleration with immediate playback and workspace regeneration.
 
 ### Changed
 

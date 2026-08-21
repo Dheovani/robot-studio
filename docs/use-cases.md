@@ -383,6 +383,25 @@ Expected result:
 - each manual action reuses the selected parser and the same simulator;
 - invalid manual movements report the same domain validation errors as scripts.
 
+### Configure A Cartesian Robot Profile
+
+Actor: student or instructor.
+
+Goal: observe how physical axis limits, velocity, and acceleration change validation, workspace geometry, and playback.
+
+Current status: implemented for the Cartesian desktop workspace.
+
+Expected result:
+
+- the user edits X/Y/Z minimum, maximum, maximum velocity, and maximum acceleration values;
+- parsing uses invariant decimal notation and rejects blank, malformed, or non-finite values;
+- domain axis invariants reject invalid ranges and non-positive motion limits;
+- every accepted profile includes the fixed HOME position at `(0, 0, 0)`;
+- applying a profile resets simulation state to HOME and regenerates the current script;
+- workspace bounds, camera framing, motion planning, charts, and explanations consume the new profile;
+- an incompatible script remains editable while a safe HOME preview replaces stale playback;
+- restoring returns to the default Cartesian teaching profile.
+
 ### Execute A Direct Command In The Desktop App
 
 Actor: student.
