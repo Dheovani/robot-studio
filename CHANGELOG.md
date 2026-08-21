@@ -15,11 +15,14 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added Cartesian playback snapshot format 3 with requested movement velocity and wait-duration metadata.
 - Added organized per-robot example files and Cartesian lessons for axis-limit errors, requested versus effective speed, jog-style sequencing, waits, and homing.
 - Added an in-memory Cartesian robot configuration panel for editing axis limits, maximum velocity, and maximum acceleration with immediate playback and workspace regeneration.
+- Added Cartesian playback snapshot format 4 with exact per-command motion summaries, including profile shape, phase durations, peak velocity, acceleration, and involved axes.
+- Added acceleration-aware Cartesian movement explanations for triangular and trapezoidal profiles, limiting axes, phase timing, and the current motion phase.
 
 ### Changed
 
 - Kept introductory G-code intentionally limited to Cartesian-family robots; other robot families continue using Simple DSL until an appropriate standard mapping is selected.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
+- Changed Cartesian movement explanations to use exact command boundaries instead of estimating motion from fixed-interval playback frames.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

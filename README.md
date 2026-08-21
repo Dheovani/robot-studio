@@ -117,6 +117,8 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, `Drone`, and `6-DOF Industrial Arm` are available in version `1.1.0`.
 
+The Cartesian movement explanation panel identifies triangular and trapezoidal profiles, velocity and acceleration limits, phase durations, and the active playback phase using exact simulation metadata.
+
 ## Windows CLI And Core
 
 RobotStudio currently targets Windows because the desktop viewer uses WPF and the official release tooling is Windows-based. The CLI, domain, motion, simulation, scripting, hardware boundary, and tests are validated through the main solution.

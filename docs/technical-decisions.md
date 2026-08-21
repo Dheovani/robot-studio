@@ -64,6 +64,8 @@ Drone planning keeps independent profiles for 3D translation, roll/pitch attitud
 
 Cartesian playback snapshot format version 2 adds these motion metrics to each visual frame. The validator accepts both versions 1 and 2 so existing exported lessons remain usable; missing version 1 metrics deserialize to zero and no profile phase. New version 2 snapshots validate finite acceleration and finite, non-negative velocity. Future additions must follow the same explicit versioning and compatibility-test process.
 
+Cartesian playback snapshot format version 4 adds exact per-command motion summaries derived from simulation timeline boundaries. Each summary records start and end positions, involved axes, profile shape, effective velocity limit, peak velocity, acceleration, and phase durations. Didactic tooling consumes these summaries instead of estimating command metrics from fixed-interval playback frames, which may not coincide with command boundaries. Versions 1 through 3 remain valid without summaries.
+
 Motion planning uses a generic planner contract so future robot families can provide their own movement logic. The current planner implements that contract for the Cartesian position/profile pair.
 
 Advanced robotics physics is out of scope for now.
@@ -149,9 +151,9 @@ Future visual layers should consume `RobotVisualState` instead of reading low-le
 
 `CartesianViewportPlanner` derives an initial camera target, camera position, up direction, and clipping distances from the workspace bounds. This keeps first-load scene framing deterministic while leaving camera interaction and rendering technology for the future UI layer.
 
-Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately. Cartesian format version 3 adds requested movement velocity and wait-duration metadata while retaining validation compatibility with versions 1 and 2.
+Playback snapshots include `PlaybackSnapshotMetadata` with a format version, robot family, distance unit, time unit, and sample interval. Future UI and tooling should check this metadata before consuming snapshot contents so the export format can evolve deliberately. Cartesian format version 3 adds requested movement velocity and wait-duration metadata. Version 4 adds exact command motion summaries while retaining validation compatibility with versions 1 through 3.
 
-`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks supported metadata versions, required sections, frame/pose/scene-frame count consistency, non-negative duration, version 2 motion metrics, and version 3 command metadata.
+`PlaybackSnapshotValidator` validates exported playback snapshots before a UI or external tool consumes them. It checks supported metadata versions, required sections, frame/pose/scene-frame count consistency, non-negative duration, version 2 motion metrics, version 3 command metadata, and version 4 command motion summaries.
 
 ### Scripting
 

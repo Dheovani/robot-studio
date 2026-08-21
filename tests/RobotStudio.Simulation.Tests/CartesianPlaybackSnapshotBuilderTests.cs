@@ -14,7 +14,7 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
 
         var snapshot = builder.Build(profile, result, TimeSpan.FromSeconds(1));
 
-        Assert.Equal(3, snapshot.Metadata.FormatVersion);
+        Assert.Equal(4, snapshot.Metadata.FormatVersion);
         Assert.Equal("Cartesian", snapshot.Metadata.RobotFamily);
         Assert.Equal("Millimeters", snapshot.Metadata.DistanceUnit);
         Assert.Equal("Seconds", snapshot.Metadata.TimeUnit);
@@ -36,6 +36,14 @@ public sealed class CartesianPlaybackSnapshotBuilderTests
         Assert.Equal(MotionProfilePhase.Completed, snapshot.Frames[^1].MotionProfilePhase);
         Assert.Equal(0, snapshot.Frames[^1].VelocityMillimetersPerSecond);
         Assert.Equal(0, snapshot.Frames[^1].AccelerationMillimetersPerSecondSquared);
+        var motion = Assert.Single(snapshot.CommandMotions!);
+        Assert.Equal(0, motion.CommandIndex);
+        Assert.Equal(nameof(MoveToCommand), motion.CommandName);
+        Assert.Equal(new CartesianPosition(0, 0, 0), motion.StartPosition);
+        Assert.Equal(new CartesianPosition(100, 0, 0), motion.EndPosition);
+        Assert.Equal([AxisId.X], motion.InvolvedAxes);
+        Assert.Equal(MotionProfileShape.Trapezoidal, motion.ProfileShape);
+        Assert.Equal(50, motion.RequestedVelocityMillimetersPerSecond);
     }
 
     [Fact]

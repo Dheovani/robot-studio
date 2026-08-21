@@ -7,7 +7,7 @@ public sealed class PlaybackSnapshotMetadataTests
     {
         var metadata = PlaybackSnapshotMetadata.CreateCartesian(TimeSpan.FromMilliseconds(500));
 
-        Assert.Equal(3, metadata.FormatVersion);
+        Assert.Equal(4, metadata.FormatVersion);
         Assert.Equal("Cartesian", metadata.RobotFamily);
         Assert.Equal("Millimeters", metadata.DistanceUnit);
         Assert.Equal("Seconds", metadata.TimeUnit);

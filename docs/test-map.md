@@ -112,6 +112,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Scalar profile clamps sampling outside its time range and rejects invalid inputs.
 - [x] Cartesian planner uses the lowest acceleration limit among involved axes.
 - [x] Cartesian acceleration-aware duration exceeds the constant-velocity estimate.
+- [x] Cartesian didactic explanations distinguish triangular and trapezoidal profiles, speed caps, acceleration limits, current phases, waits, and stationary movement.
 - [x] XY plotter movement exposes an acceleration-aware profile.
 - [x] SCARA planning uses the lowest angular acceleration limit among involved joints.
 - [x] Simple articulated arm planning exposes an acceleration-aware angular profile.
@@ -220,7 +221,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Playback snapshot validation reports missing sections and inconsistent counts.
 - [x] Playback snapshot version 2 validates frame velocity and acceleration values.
 - [x] Playback snapshot version 3 validates requested velocity, wait duration, and metadata consistency across frames, poses, and scene frames.
-- [x] Playback snapshot validation remains compatible with version 1 and version 2 metadata.
+- [x] Playback snapshot version 4 validates exact per-command motion summaries and rejects missing or invalid summary data.
+- [x] Playback snapshot validation remains compatible with version 1, version 2, and version 3 metadata.
 - [x] Version 1 frames without motion metrics deserialize with compatible defaults.
 - [x] Differential drive simulator executes `HOME`.
 - [x] Differential drive simulator executes differential-drive move commands.

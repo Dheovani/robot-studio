@@ -37,7 +37,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 
 ## 4. Didactic Tools
 
-- [ ] Expand movement explanations for acceleration-aware plans.
+- [x] Expand movement explanations for acceleration-aware plans.
 - [x] Add lesson-friendly examples for invalid axis limits.
 - [x] Add examples for requested speed versus effective speed.
 - [x] Add examples for waits, homing, manual jogging, and command sequencing.

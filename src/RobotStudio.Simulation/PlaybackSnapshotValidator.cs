@@ -17,6 +17,7 @@ public sealed class PlaybackSnapshotValidator
         ValidateCounts(snapshot, errors);
         ValidateMotionMetrics(snapshot, errors);
         ValidateCommandMetadata(snapshot, errors);
+        ValidateCommandMotions(snapshot, errors);
 
         if (snapshot.TotalDuration < TimeSpan.Zero)
         {
@@ -185,4 +186,68 @@ public sealed class PlaybackSnapshotValidator
             }
         }
     }
+
+    private static void ValidateCommandMotions(
+        CartesianPlaybackSnapshot snapshot,
+        List<string> errors)
+    {
+        if (snapshot.Metadata?.FormatVersion < 4)
+        {
+            return;
+        }
+
+        if (snapshot.CommandMotions is null)
+        {
+            errors.Add("Snapshot command motion summaries are missing.");
+            return;
+        }
+
+        if (snapshot.CommandMotions.GroupBy(motion => motion.CommandIndex).Any(group => group.Count() > 1))
+        {
+            errors.Add("Snapshot command motion indexes must be unique.");
+        }
+
+        foreach (var motion in snapshot.CommandMotions)
+        {
+            if (motion.CommandIndex < 0 || string.IsNullOrWhiteSpace(motion.CommandName))
+            {
+                errors.Add("Snapshot command motion identity is invalid.");
+                return;
+            }
+
+            if (motion.InvolvedAxes is null ||
+                !IsFiniteNonNegative(motion.DistanceMillimeters) ||
+                !IsFiniteNonNegative(motion.VelocityLimitMillimetersPerSecond) ||
+                !IsFiniteNonNegative(motion.PeakVelocityMillimetersPerSecond) ||
+                !IsFiniteNonNegative(motion.AccelerationMillimetersPerSecondSquared) ||
+                motion.AccelerationDuration < TimeSpan.Zero ||
+                motion.ConstantVelocityDuration < TimeSpan.Zero ||
+                motion.DecelerationDuration < TimeSpan.Zero ||
+                motion.TotalDuration < TimeSpan.Zero)
+            {
+                errors.Add("Snapshot command motion metrics must be finite and non-negative.");
+                return;
+            }
+
+            var phaseDuration =
+                motion.AccelerationDuration +
+                motion.ConstantVelocityDuration +
+                motion.DecelerationDuration;
+            if (Math.Abs((phaseDuration - motion.TotalDuration).Ticks) > 2)
+            {
+                errors.Add($"Snapshot command motion duration is inconsistent for command {motion.CommandIndex}.");
+                return;
+            }
+
+            var isStationary = motion.ProfileShape == MotionProfileShape.Stationary;
+            if (isStationary != (motion.DistanceMillimeters == 0 && motion.InvolvedAxes.Count == 0))
+            {
+                errors.Add($"Snapshot command motion shape is inconsistent for command {motion.CommandIndex}.");
+                return;
+            }
+        }
+    }
+
+    private static bool IsFiniteNonNegative(double value) =>
+        double.IsFinite(value) && value >= 0;
 }

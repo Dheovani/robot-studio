@@ -9,7 +9,8 @@ public sealed record CartesianPlaybackSnapshot(
     IReadOnlyList<CartesianSceneFrame> SceneFrames,
     TimeSpan TotalDuration,
     bool Succeeded,
-    string? FailureMessage) : IRobotPlaybackSnapshot<RobotVisualState>
+    string? FailureMessage,
+    IReadOnlyList<CartesianCommandMotionSummary>? CommandMotions = null) : IRobotPlaybackSnapshot<RobotVisualState>
 {
     public int FrameCount => Frames.Count;
 

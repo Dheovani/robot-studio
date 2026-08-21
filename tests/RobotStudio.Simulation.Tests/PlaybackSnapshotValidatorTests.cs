@@ -34,7 +34,7 @@ public sealed class PlaybackSnapshotValidatorTests
         var snapshot = CreateSnapshot() with
         {
             Metadata = new PlaybackSnapshotMetadata(
-                FormatVersion: 4,
+                FormatVersion: 5,
                 RobotFamily: "Drone",
                 DistanceUnit: "Meters",
                 TimeUnit: "Milliseconds",
@@ -44,7 +44,7 @@ public sealed class PlaybackSnapshotValidatorTests
         var result = validator.Validate(snapshot);
 
         Assert.False(result.IsValid);
-        Assert.Contains("Unsupported snapshot format version: 4.", result.Errors);
+        Assert.Contains("Unsupported snapshot format version: 5.", result.Errors);
         Assert.Contains("Unsupported robot family: Drone.", result.Errors);
         Assert.Contains("Unsupported distance unit: Meters.", result.Errors);
         Assert.Contains("Unsupported time unit: Milliseconds.", result.Errors);
@@ -183,6 +183,47 @@ public sealed class PlaybackSnapshotValidatorTests
         Assert.Contains("Snapshot command metadata is inconsistent at frame 0.", result.Errors);
     }
 
+    [Fact]
+    public void Validate_WhenVersionThreeHasNoCommandMotionSummaries_ShouldRemainCompatible()
+    {
+        var snapshot = CreateSnapshot() with
+        {
+            Metadata = CreateSnapshot().Metadata with { FormatVersion = 3 },
+            CommandMotions = null
+        };
+
+        var result = new PlaybackSnapshotValidator().Validate(snapshot);
+
+        Assert.True(result.IsValid);
+    }
+
+    [Fact]
+    public void Validate_WhenVersionFourHasNoCommandMotionSummaries_ShouldReturnError()
+    {
+        var snapshot = CreateSnapshot() with { CommandMotions = null };
+
+        var result = new PlaybackSnapshotValidator().Validate(snapshot);
+
+        Assert.False(result.IsValid);
+        Assert.Contains("Snapshot command motion summaries are missing.", result.Errors);
+    }
+
+    [Fact]
+    public void Validate_WhenCommandMotionMetricsAreInvalid_ShouldReturnError()
+    {
+        var snapshot = CreateSnapshot();
+        var invalidMotion = snapshot.CommandMotions![0] with
+        {
+            PeakVelocityMillimetersPerSecond = double.NaN
+        };
+
+        var result = new PlaybackSnapshotValidator().Validate(
+            snapshot with { CommandMotions = [invalidMotion] });
+
+        Assert.False(result.IsValid);
+        Assert.Contains("Snapshot command motion metrics must be finite and non-negative.", result.Errors);
+    }
+
     private static CartesianPlaybackSnapshot CreateSnapshot()
     {
         var metadata = PlaybackSnapshotMetadata.CreateCartesian(TimeSpan.FromMilliseconds(500));
@@ -200,6 +241,23 @@ public sealed class PlaybackSnapshotValidatorTests
         var pose = new CartesianRobotPoseMapper().Map(frame);
         var sceneFrame = new CartesianSceneFrameMapper().Map(bounds, pose);
 
+        var motion = new CartesianCommandMotionSummary(
+            CommandIndex: 0,
+            CommandName: nameof(MoveToCommand),
+            StartPosition: new CartesianPosition(0, 0, 0),
+            EndPosition: new CartesianPosition(120, 80, 40),
+            InvolvedAxes: [AxisId.X, AxisId.Y, AxisId.Z],
+            DistanceMillimeters: Math.Sqrt(22400),
+            VelocityLimitMillimetersPerSecond: 80,
+            PeakVelocityMillimetersPerSecond: 80,
+            AccelerationMillimetersPerSecondSquared: 160,
+            ProfileShape: MotionProfileShape.Trapezoidal,
+            AccelerationDuration: TimeSpan.FromSeconds(0.5),
+            ConstantVelocityDuration: TimeSpan.FromSeconds(1),
+            DecelerationDuration: TimeSpan.FromSeconds(0.5),
+            TotalDuration: TimeSpan.FromSeconds(2),
+            RequestedVelocityMillimetersPerSecond: null);
+
         return new CartesianPlaybackSnapshot(
             metadata,
             bounds,
@@ -209,6 +267,7 @@ public sealed class PlaybackSnapshotValidatorTests
             [sceneFrame],
             TotalDuration: TimeSpan.Zero,
             Succeeded: true,
-            FailureMessage: null);
+            FailureMessage: null,
+            CommandMotions: [motion]);
     }
 }
