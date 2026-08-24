@@ -193,6 +193,10 @@ The desktop's optional G-code guide is a presentation-only interpretation built 
 
 The first desktop UI uses WPF and targets Windows. This keeps the first visual iteration package-free and focused on rendering the simulation contract already produced by `RobotStudio.Simulation`.
 
+`MainWindow` remains the WPF composition root, but its code-behind is organized as one partial class per cohesive responsibility: shell lifecycle, glossary, scripting, configuration, active commands and recovery, interactions, catalog and viewer configuration, playback, charts, family rendering, script infrastructure, and Cartesian rendering. `MainWindow.xaml.cs` owns only shared state, initialization, keyboard routing, and top-level playback/reset behavior. Shared brushes, styles, and non-behavioral templates live in `Styles/MainWindowStyles.xaml`. New behavior should be added to the matching partial file or a dedicated control/service instead of growing the root code-behind again.
+
+This partial-class split improves navigation and reviewability without pretending to remove the window's shared-state coupling. A future desktop architecture pass should extract each robot workspace into a dedicated control and presenter before adding substantially more workspace behavior. An architecture test currently limits production C# files to 1,000 lines so another oversized file is detected during normal test execution.
+
 The full solution is validated on Windows in CI. Earlier cross-platform validation was removed because the product and release tooling currently depend on Windows desktop technology.
 
 Architecture tests live in `RobotStudio.Architecture.Tests`. They read project files as XML and guard the allowed project reference map, the purity of `RobotStudio.Domain`, and the WPF-only desktop boundary. These tests are intentionally package-free so the architecture rules remain easy to inspect in class.

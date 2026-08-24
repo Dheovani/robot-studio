@@ -53,6 +53,8 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 
 ## 5. Testing And Quality
 
+- [x] Split the oversized WPF `MainWindow` code-behind into cohesive partial files and extract shared non-behavioral window resources.
+- [ ] Extract robot workspaces from `MainWindow.xaml` into dedicated controls and presenters when the next desktop architecture pass begins.
 - [ ] Add code coverage reporting when coverage goals are defined.
 - [ ] Add stricter analyzers when the coding standard becomes more mature.
 - [ ] Add package vulnerability scanning when external dependencies become more relevant.
