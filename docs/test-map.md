@@ -337,7 +337,14 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Classify `G90` and `G91` as positioning-mode lines in the desktop script gutter.
 - [x] Validate dedicated Cartesian G-code examples from the viewer's initial position.
 - [x] Preserve executable commands and typed `G90`/`G91` directives in the compiled statement sequence.
-- [x] Reject a non-Cartesian initial position supplied to the G-code compiler context.
+  - [x] Reject a non-Cartesian initial position supplied to the G-code compiler context.
+  - [x] Parse syntax into a semantic `GCodeProgram` before applying robot-specific position state.
+  - [x] Delegate semantic G-code programs through an injectable robot command mapper.
+  - [x] Preserve `G21` as a typed millimeter-unit directive and reject `G20` with a corrective message.
+  - [x] Classify `G21` as a unit directive in the desktop script gutter.
+  - [x] Emit deterministic `G21` and `G90` preambles when writing G-code.
+  - [x] Catalog Cartesian and XY mappings as available, kinematics-dependent mappings as planned, and mobile/aerial mappings as not applicable.
+  - [x] Reject an implicit mapping from G-code tool coordinates to articulated joint coordinates.
 - [x] Preserve Simple DSL commands as executable compiled statements.
 - [x] Carry requested movement velocity and wait duration through Cartesian timeline sampling and scene-frame mapping.
 

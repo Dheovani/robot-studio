@@ -43,3 +43,21 @@ public sealed record RobotScriptPositioningModeStatement : RobotScriptStatement
 
     public RobotScriptPositioningMode Mode { get; }
 }
+
+public sealed record RobotScriptUnitStatement : RobotScriptStatement
+{
+    public RobotScriptUnitStatement(
+        RobotCommandSource source,
+        RobotScriptUnit unit)
+        : base(source)
+    {
+        if (!Enum.IsDefined(unit))
+        {
+            throw new ArgumentOutOfRangeException(nameof(unit));
+        }
+
+        Unit = unit;
+    }
+
+    public RobotScriptUnit Unit { get; }
+}

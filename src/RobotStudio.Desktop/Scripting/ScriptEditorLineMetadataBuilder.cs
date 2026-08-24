@@ -38,6 +38,7 @@ public static class ScriptEditorLineMetadataBuilder
     {
         "HOME" or "G28" => ScriptEditorLineKind.Home,
         "MOVE" or "G1" => ScriptEditorLineKind.Move,
+        "G21" => ScriptEditorLineKind.UnitMode,
         "G90" or "G91" => ScriptEditorLineKind.PositioningMode,
         "WAIT" or "G4" => ScriptEditorLineKind.Wait,
         "" => ScriptEditorLineKind.Empty,

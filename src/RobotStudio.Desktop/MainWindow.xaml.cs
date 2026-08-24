@@ -6308,6 +6308,7 @@ public partial class MainWindow : Window
     {
         ScriptEditorLineKind.Home => Color.FromRgb(30, 64, 175),
         ScriptEditorLineKind.Move => Color.FromRgb(22, 101, 52),
+        ScriptEditorLineKind.UnitMode => Color.FromRgb(17, 94, 89),
         ScriptEditorLineKind.PositioningMode => Color.FromRgb(88, 28, 135),
         ScriptEditorLineKind.Wait => Color.FromRgb(133, 77, 14),
         ScriptEditorLineKind.Other => Color.FromRgb(127, 29, 29),
@@ -6318,6 +6319,7 @@ public partial class MainWindow : Window
     {
         ScriptEditorLineKind.Home => Color.FromRgb(191, 219, 254),
         ScriptEditorLineKind.Move => Color.FromRgb(187, 247, 208),
+        ScriptEditorLineKind.UnitMode => Color.FromRgb(153, 246, 228),
         ScriptEditorLineKind.PositioningMode => Color.FromRgb(233, 213, 255),
         ScriptEditorLineKind.Wait => Color.FromRgb(254, 240, 138),
         ScriptEditorLineKind.Other => Color.FromRgb(254, 202, 202),

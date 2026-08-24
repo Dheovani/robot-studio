@@ -1,13 +1,25 @@
 using System.Globalization;
 using System.Text;
 using System.Text.RegularExpressions;
-using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 
 namespace RobotStudio.Scripting;
 
 public sealed partial class GCodeParser : IRobotScriptDialect
 {
+    private readonly IGCodeCommandMapper commandMapper;
+
+    public GCodeParser()
+        : this(new CartesianGCodeCommandMapper())
+    {
+    }
+
+    public GCodeParser(IGCodeCommandMapper commandMapper)
+    {
+        ArgumentNullException.ThrowIfNull(commandMapper);
+        this.commandMapper = commandMapper;
+    }
+
     public RobotScriptDialectDescriptor Descriptor => RobotScriptDialects.GCode;
 
     public RobotCommandSequence Parse(
@@ -17,14 +29,15 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
     public RobotScriptCompilation Compile(
         string script,
-        RobotScriptParseContext? context = null)
+        RobotScriptParseContext? context = null) =>
+        commandMapper.Map(CompileProgram(script), context);
+
+    public GCodeProgram CompileProgram(string script)
     {
         ArgumentNullException.ThrowIfNull(script);
 
-        var statements = new List<RobotScriptStatement>();
+        var instructions = new List<GCodeInstruction>();
         var lines = script.Split(["\r\n", "\n"], StringSplitOptions.None);
-        var positioningMode = RobotScriptPositioningMode.Absolute;
-        CartesianPosition? currentPosition = ResolveInitialPosition(context);
 
         for (var index = 0; index < lines.Length; index++)
         {
@@ -37,35 +50,20 @@ public sealed partial class GCodeParser : IRobotScriptDialect
                 continue;
             }
 
-            var statement = ParseLine(
+            var instruction = ParseLine(
                 lineNumber,
                 sourceText,
-                commandText,
-                ref positioningMode,
-                ref currentPosition);
-            statements.Add(statement);
+                commandText);
+            instructions.Add(instruction);
         }
 
-        return new RobotScriptCompilation(statements);
+        return new GCodeProgram(instructions);
     }
 
-    private static CartesianPosition? ResolveInitialPosition(
-        RobotScriptParseContext? context) =>
-        context?.InitialPosition switch
-        {
-            null => null,
-            CartesianPosition position => position,
-            var position => throw new ArgumentException(
-                $"The G-code dialect requires a {nameof(CartesianPosition)} initial position, but received {position.GetType().Name}.",
-                nameof(context))
-        };
-
-    private static RobotScriptStatement ParseLine(
+    private static GCodeInstruction ParseLine(
         int lineNumber,
         string sourceText,
-        string commandText,
-        ref RobotScriptPositioningMode positioningMode,
-        ref CartesianPosition? currentPosition)
+        string commandText)
     {
         var words = Tokenize(lineNumber, sourceText, commandText);
         var commandIndex = words[0].Letter == 'N' ? 1 : 0;
@@ -77,7 +75,7 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
         if (commandIndex >= words.Count || words[commandIndex].Letter != 'G')
         {
-            throw new ScriptParseException(lineNumber, sourceText, "Expected a G-code command such as G28, G1, G4, G90, or G91.");
+            throw new ScriptParseException(lineNumber, sourceText, "Expected a G-code command such as G28, G1, G4, G21, G90, or G91.");
         }
 
         var code = ParseInteger(lineNumber, sourceText, words[commandIndex].Value, "G code");
@@ -85,54 +83,55 @@ public sealed partial class GCodeParser : IRobotScriptDialect
 
         if (code is 90 or 91)
         {
-            SetPositioningMode(
+            var mode = code == 90
+                ? RobotScriptPositioningMode.Absolute
+                : RobotScriptPositioningMode.Relative;
+            ValidateNoArguments(
                 lineNumber,
                 sourceText,
                 arguments,
-                code == 90 ? RobotScriptPositioningMode.Absolute : RobotScriptPositioningMode.Relative,
-                ref positioningMode);
-            return new RobotScriptPositioningModeStatement(
+                $"G{code} does not accept arguments.");
+            return new GCodePositioningModeInstruction(
                 CreateSource(lineNumber, sourceText),
-                positioningMode);
+                mode);
         }
 
-        RobotCommand command = code switch
+        if (code == 20)
         {
-            1 => ParseLinearMove(
+            throw new ScriptParseException(
                 lineNumber,
                 sourceText,
-                arguments,
-                positioningMode,
-                ref currentPosition),
-            4 => ParseDwell(lineNumber, sourceText, arguments),
-            28 => ParseHome(lineNumber, sourceText, arguments, ref currentPosition),
-            _ => throw new ScriptParseException(lineNumber, sourceText, $"Unsupported G-code command 'G{code}'. Supported commands are G28, G1, G4, G90, and G91.")
-        };
-
-        return new RobotScriptCommandStatement(command);
-    }
-
-    private static HomeCommand ParseHome(
-        int lineNumber,
-        string sourceText,
-        IReadOnlyCollection<GCodeWord> arguments,
-        ref CartesianPosition? currentPosition)
-    {
-        if (arguments.Count > 0)
-        {
-            throw new ScriptParseException(lineNumber, sourceText, "G28 does not accept axis arguments in the introductory RobotStudio dialect.");
+                "G20 inch units are not supported. RobotStudio uses millimeters; use G21 instead.");
         }
 
-        currentPosition = new CartesianPosition(0, 0, 0);
-        return new HomeCommand(CreateSource(lineNumber, sourceText));
+        return code switch
+        {
+            1 => ParseLinearMove(lineNumber, sourceText, arguments),
+            4 => ParseDwell(lineNumber, sourceText, arguments),
+            21 => ParseMillimeterUnits(lineNumber, sourceText, arguments),
+            28 => ParseHome(lineNumber, sourceText, arguments),
+            _ => throw new ScriptParseException(lineNumber, sourceText, $"Unsupported G-code command 'G{code}'. Supported commands are G28, G1, G4, G21, G90, and G91.")
+        };
     }
 
-    private static MoveToCommand ParseLinearMove(
+    private static GCodeHomeInstruction ParseHome(
         int lineNumber,
         string sourceText,
-        IReadOnlyCollection<GCodeWord> arguments,
-        RobotScriptPositioningMode positioningMode,
-        ref CartesianPosition? currentPosition)
+        IReadOnlyCollection<GCodeWord> arguments)
+    {
+        ValidateNoArguments(
+            lineNumber,
+            sourceText,
+            arguments,
+            "G28 does not accept axis arguments in the introductory RobotStudio dialect.");
+
+        return new GCodeHomeInstruction(CreateSource(lineNumber, sourceText));
+    }
+
+    private static GCodeLinearMoveInstruction ParseLinearMove(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyCollection<GCodeWord> arguments)
     {
         var values = BuildArgumentMap(lineNumber, sourceText, arguments, ['X', 'Y', 'Z', 'F']);
         if (!values.ContainsKey('X') && !values.ContainsKey('Y') && !values.ContainsKey('Z'))
@@ -140,90 +139,33 @@ public sealed partial class GCodeParser : IRobotScriptDialect
             throw new ScriptParseException(lineNumber, sourceText, "G1 requires at least one X, Y, or Z coordinate.");
         }
 
-        var targetPosition = positioningMode switch
-        {
-            RobotScriptPositioningMode.Absolute => ResolveAbsoluteTarget(
-                lineNumber,
-                sourceText,
-                values,
-                currentPosition),
-            RobotScriptPositioningMode.Relative => ResolveRelativeTarget(
-                lineNumber,
-                sourceText,
-                values,
-                currentPosition),
-            _ => throw new InvalidOperationException($"Unsupported G-code positioning mode: {positioningMode}.")
-        };
-        double? velocity = null;
+        double? feedRate = null;
 
         if (values.TryGetValue('F', out var feedRateText))
         {
-            var feedRate = ParseDouble(lineNumber, sourceText, feedRateText, "F feed rate");
+            feedRate = ParseDouble(lineNumber, sourceText, feedRateText, "F feed rate");
             if (feedRate <= 0)
             {
                 throw new ScriptParseException(lineNumber, sourceText, "G1 F feed rate must be greater than zero millimeters per minute.");
             }
-
-            velocity = feedRate / 60d;
         }
 
-        currentPosition = targetPosition;
-        return new MoveToCommand(
-            targetPosition,
-            velocity,
-            CreateSource(lineNumber, sourceText));
+        return new GCodeLinearMoveInstruction(
+            CreateSource(lineNumber, sourceText),
+            GetOptionalDouble(lineNumber, sourceText, values, 'X'),
+            GetOptionalDouble(lineNumber, sourceText, values, 'Y'),
+            GetOptionalDouble(lineNumber, sourceText, values, 'Z'),
+            feedRate);
     }
 
-    private static CartesianPosition ResolveAbsoluteTarget(
+    private static double? GetOptionalDouble(
         int lineNumber,
         string sourceText,
         IReadOnlyDictionary<char, string> values,
-        CartesianPosition? currentPosition)
-    {
-        if (currentPosition is null &&
-            (!values.ContainsKey('X') || !values.ContainsKey('Y') || !values.ContainsKey('Z')))
-        {
-            throw new ScriptParseException(
-                lineNumber,
-                sourceText,
-                "G1 with omitted axes requires a known initial Cartesian position, a previous complete G1 target, or G28.");
-        }
-
-        return new CartesianPosition(
-            GetCoordinate(lineNumber, sourceText, values, 'X', currentPosition?.X ?? 0),
-            GetCoordinate(lineNumber, sourceText, values, 'Y', currentPosition?.Y ?? 0),
-            GetCoordinate(lineNumber, sourceText, values, 'Z', currentPosition?.Z ?? 0));
-    }
-
-    private static CartesianPosition ResolveRelativeTarget(
-        int lineNumber,
-        string sourceText,
-        IReadOnlyDictionary<char, string> values,
-        CartesianPosition? currentPosition)
-    {
-        if (currentPosition is null)
-        {
-            throw new ScriptParseException(
-                lineNumber,
-                sourceText,
-                "G91 relative movement requires a known initial Cartesian position, a previous complete G1 target, or G28.");
-        }
-
-        return new CartesianPosition(
-            currentPosition.Value.X + GetCoordinate(lineNumber, sourceText, values, 'X', 0),
-            currentPosition.Value.Y + GetCoordinate(lineNumber, sourceText, values, 'Y', 0),
-            currentPosition.Value.Z + GetCoordinate(lineNumber, sourceText, values, 'Z', 0));
-    }
-
-    private static double GetCoordinate(
-        int lineNumber,
-        string sourceText,
-        IReadOnlyDictionary<char, string> values,
-        char letter,
-        double fallback) =>
+        char letter) =>
         values.TryGetValue(letter, out var value)
             ? ParseDouble(lineNumber, sourceText, value, letter.ToString())
-            : fallback;
+            : null;
 
     private static double GetRequiredDouble(
         int lineNumber,
@@ -240,22 +182,19 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         return ParseDouble(lineNumber, sourceText, value, letter.ToString());
     }
 
-    private static void SetPositioningMode(
+    private static GCodeUnitInstruction ParseMillimeterUnits(
         int lineNumber,
         string sourceText,
-        IReadOnlyCollection<GCodeWord> arguments,
-        RobotScriptPositioningMode mode,
-        ref RobotScriptPositioningMode positioningMode)
+        IReadOnlyCollection<GCodeWord> arguments)
     {
-        if (arguments.Count > 0)
-        {
-            throw new ScriptParseException(lineNumber, sourceText, $"G{(mode == RobotScriptPositioningMode.Absolute ? 90 : 91)} does not accept arguments.");
-        }
+        ValidateNoArguments(lineNumber, sourceText, arguments, "G21 does not accept arguments.");
 
-        positioningMode = mode;
+        return new GCodeUnitInstruction(
+            CreateSource(lineNumber, sourceText),
+            RobotScriptUnit.Millimeters);
     }
 
-    private static WaitCommand ParseDwell(
+    private static GCodeDwellInstruction ParseDwell(
         int lineNumber,
         string sourceText,
         IReadOnlyCollection<GCodeWord> arguments)
@@ -273,9 +212,21 @@ public sealed partial class GCodeParser : IRobotScriptDialect
             throw new ScriptParseException(lineNumber, sourceText, "G4 P dwell duration cannot be negative.");
         }
 
-        return new WaitCommand(
-            TimeSpan.FromMilliseconds(durationMilliseconds),
-            CreateSource(lineNumber, sourceText));
+        return new GCodeDwellInstruction(
+            CreateSource(lineNumber, sourceText),
+            TimeSpan.FromMilliseconds(durationMilliseconds));
+    }
+
+    private static void ValidateNoArguments(
+        int lineNumber,
+        string sourceText,
+        IReadOnlyCollection<GCodeWord> arguments,
+        string message)
+    {
+        if (arguments.Count > 0)
+        {
+            throw new ScriptParseException(lineNumber, sourceText, message);
+        }
     }
 
     private static IReadOnlyDictionary<char, string> BuildArgumentMap(

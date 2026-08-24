@@ -9,7 +9,9 @@ public static class GCodeWriter
     {
         ArgumentNullException.ThrowIfNull(sequence);
 
-        return string.Join(Environment.NewLine, sequence.Commands.Select(WriteCommand));
+        return string.Join(
+            Environment.NewLine,
+            new[] { "G21", "G90" }.Concat(sequence.Commands.Select(WriteCommand)));
     }
 
     private static string WriteCommand(RobotCommand command) => command switch

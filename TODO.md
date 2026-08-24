@@ -22,7 +22,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Replace the Cartesian-specific shared parse context with an extensible robot-position context and explicit compatibility validation.
 - [x] Preserve executable commands and non-executable modal directives in a compiled script representation.
 - [x] Carry requested-motion metadata through Cartesian simulation and playback so the desktop does not reparse isolated source lines.
-- [ ] Expand G-code beyond Cartesian motion only when a standard, robot-appropriate mapping is selected.
+- [x] Define the standard robot mapping policy: G-code describes TCP tool-space motion, Cartesian and XY mappings are available, articulated and parallel mappings require continuous Cartesian planning plus inverse kinematics, and mobile/aerial families retain robot-appropriate DSL commands.
 
 ## 3. Hardware Integration
 

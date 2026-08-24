@@ -7,6 +7,21 @@ namespace RobotStudio.Scripting.Tests;
 public sealed class GCodeParserTests
 {
     [Fact]
+    public void CompileProgram_WhenMoveOmitsAxes_ShouldPreserveToolSpaceIntentWithoutMapping()
+    {
+        var program = new GCodeParser().CompileProgram(
+            "G1 X10 F3000");
+
+        var move = Assert.IsType<GCodeLinearMoveInstruction>(
+            Assert.Single(program.Instructions));
+        Assert.Equal(10, move.XMillimeters);
+        Assert.Null(move.YMillimeters);
+        Assert.Null(move.ZMillimeters);
+        Assert.Equal(3000, move.FeedRateMillimetersPerMinute);
+        Assert.Equal(1, move.Source.LineNumber);
+    }
+
+    [Fact]
     public void Compile_WhenProgramContainsPositioningModes_ShouldPreserveDirectivesAndCommands()
     {
         var compilation = new GCodeParser().Compile(
@@ -30,6 +45,18 @@ public sealed class GCodeParserTests
             statement => Assert.IsType<MoveToCommand>(
                 Assert.IsType<RobotScriptCommandStatement>(statement).Command));
         Assert.Equal(2, compilation.Commands.Commands.Count);
+    }
+
+    [Fact]
+    public void Compile_WhenProgramDeclaresMillimeters_ShouldPreserveUnitDirective()
+    {
+        var compilation = new GCodeParser().Compile(
+            "G21\nG1 X10 Y20 Z5");
+
+        var unit = Assert.IsType<RobotScriptUnitStatement>(
+            compilation.Statements[0]);
+        Assert.Equal(RobotScriptUnit.Millimeters, unit.Unit);
+        Assert.Single(compilation.Commands.Commands);
     }
 
     [Fact]
@@ -204,6 +231,16 @@ public sealed class GCodeParserTests
     }
 
     [Fact]
+    public void Parse_WhenProgramRequestsInches_ShouldExplainMillimeterPolicy()
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new GCodeParser().Parse("G20"));
+
+        Assert.Contains("inch units are not supported", exception.Message);
+        Assert.Contains("use G21", exception.Message);
+    }
+
+    [Fact]
     public void Parse_WhenG4OmitsP_ShouldExplainDurationSyntax()
     {
         var exception = Assert.Throws<ScriptParseException>(() =>
@@ -218,7 +255,7 @@ public sealed class GCodeParserTests
         var exception = Assert.Throws<ScriptParseException>(() =>
             new GCodeParser().Parse("G92"));
 
-        Assert.Contains("Supported commands are G28, G1, G4, G90, and G91", exception.Message);
+        Assert.Contains("Supported commands are G28, G1, G4, G21, G90, and G91", exception.Message);
     }
 
     [Fact]
@@ -241,11 +278,13 @@ public sealed class GCodeParserTests
             """);
 
         var gCode = GCodeWriter.Write(source);
-        var result = new GCodeParser().Parse(gCode);
+        var result = new GCodeParser().Compile(gCode);
 
-        Assert.Equal("G28\r\nG1 X10 Y20 Z5 F6000\r\nG4 P500", gCode);
-        Assert.IsType<HomeCommand>(result.Commands[0]);
-        Assert.Equal(100, Assert.IsType<MoveToCommand>(result.Commands[1]).RequestedVelocityMillimetersPerSecond);
-        Assert.Equal(TimeSpan.FromMilliseconds(500), Assert.IsType<WaitCommand>(result.Commands[2]).Duration);
+        Assert.Equal("G21\r\nG90\r\nG28\r\nG1 X10 Y20 Z5 F6000\r\nG4 P500", gCode);
+        Assert.IsType<RobotScriptUnitStatement>(result.Statements[0]);
+        Assert.IsType<RobotScriptPositioningModeStatement>(result.Statements[1]);
+        Assert.IsType<HomeCommand>(result.Commands.Commands[0]);
+        Assert.Equal(100, Assert.IsType<MoveToCommand>(result.Commands.Commands[1]).RequestedVelocityMillimetersPerSecond);
+        Assert.Equal(TimeSpan.FromMilliseconds(500), Assert.IsType<WaitCommand>(result.Commands.Commands[2]).Duration);
     }
 }

@@ -18,10 +18,14 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added Cartesian playback snapshot format 4 with exact per-command motion summaries, including profile shape, phase durations, peak velocity, acceleration, and involved axes.
 - Added acceleration-aware Cartesian movement explanations for triangular and trapezoidal profiles, limiting axes, phase timing, and the current motion phase.
 - Added a searchable in-app robotics glossary with 48 terms, topic filters, related concepts, catalog and workspace access, and a `Ctrl+G` shortcut.
+- Added a semantic G-code program model and robot command mapping boundary so syntax, modal state, and robot-specific command generation evolve independently.
+- Added an explicit G-code compatibility catalog: Cartesian Robot and XY Plotter mappings are available, articulated and parallel mappings require future tool-path kinematics, and mobile/aerial mappings are intentionally not applicable.
+- Added `G21` millimeter declarations and clear rejection of unsupported `G20` inch mode.
 
 ### Changed
 
-- Kept introductory G-code intentionally limited to Cartesian-family robots; other robot families continue using Simple DSL until an appropriate standard mapping is selected.
+- Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
+- Changed generated G-code to include deterministic `G21` millimeter and `G90` absolute-positioning preambles.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
 - Changed Cartesian movement explanations to use exact command boundaries instead of estimating motion from fixed-interval playback frames.
 

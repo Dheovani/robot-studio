@@ -16,8 +16,9 @@ public static class RobotExampleCatalog
             WAIT 500
             """,
             """
-            G28
+            G21
             G90
+            G28
             G1 X120 Y80 Z40 F5400
             G4 P500
             """),
@@ -33,8 +34,9 @@ public static class RobotExampleCatalog
             WAIT 300
             """,
             """
-            G28
+            G21
             G90
+            G28
             G1 X80 Y40 Z0 F4200
             G91
             G1 X100 Y80 F4800
@@ -50,8 +52,9 @@ public static class RobotExampleCatalog
             MOVE X=320 Y=80 Z=40 SPEED=90
             """,
             """
-            G28
+            G21
             G90
+            G28
             G1 X320 Y80 Z40 F5400
             """,
             RobotExampleExpectedResult.ValidationError),
@@ -68,8 +71,9 @@ public static class RobotExampleCatalog
             WAIT 500
             """,
             """
-            G28
+            G21
             G90
+            G28
             G1 X120 Y0 Z0 F5400
             G1 X120 Y130 Z0 F8400
             G1 X120 Y130 Z100 F8400
@@ -91,6 +95,8 @@ public static class RobotExampleCatalog
             HOME
             """,
             """
+            G21
+            G90
             G28
             G4 P300
             G91

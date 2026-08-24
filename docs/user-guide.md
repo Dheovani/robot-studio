@@ -331,14 +331,16 @@ Current parser behavior:
 Introductory Cartesian G-code:
 
 ```gcode
-G28
+G21
 G90
+G28
 G1 X120 Y80 Z40 F5400
 G91
 G1 X20 Y-10
 G4 P500
 ```
 
+- `G21` explicitly selects millimeters; `G20` inch mode is rejected with a corrective message.
 - `G28` maps to homing.
 - `G90` selects absolute positioning and is the default mode.
 - `G91` selects relative positioning.
@@ -348,6 +350,10 @@ G4 P500
 - `N` line numbers, compact words, semicolon comments, and parenthesized comments are accepted.
 - Loading a `.gcode` or `.robot` file selects its matching dialect automatically; `.txt` keeps the current selection.
 - `G90` and `G91` do not create timeline movements themselves; they control how subsequent `G1` lines are resolved.
+- The generated G-code preamble uses `G21` and `G90` so units and positioning are explicit.
+- G-code coordinates describe TCP tool-space motion and never stand for joint numbers or actuators.
+- Cartesian Robot and XY Plotter mappings are available. SCARA, Delta, and articulated arms require future Cartesian path planning and inverse kinematics before accepting `G1` honestly.
+- Differential Drive and Drone use their robot-appropriate Simple DSL commands instead of a nonstandard G-code mapping.
 - Feed-rate retention, hardware execution, non-Cartesian mappings, and other G-codes are not part of this subset.
 
 ## Teaching Examples

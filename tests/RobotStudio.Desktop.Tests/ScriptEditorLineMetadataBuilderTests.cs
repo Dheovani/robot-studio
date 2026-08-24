@@ -89,4 +89,12 @@ public sealed class ScriptEditorLineMetadataBuilderTests
             metadata,
             line => Assert.Equal(ScriptEditorLineKind.PositioningMode, line.Kind));
     }
+
+    [Fact]
+    public void Build_WhenGCodeDeclaresMillimeters_ShouldClassifyUnitDirective()
+    {
+        var line = Assert.Single(ScriptEditorLineMetadataBuilder.Build("G21"));
+
+        Assert.Equal(ScriptEditorLineKind.UnitMode, line.Kind);
+    }
 }

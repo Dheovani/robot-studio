@@ -290,9 +290,11 @@ Expected result:
 - the student selects Simple DSL or G-code before validating or simulating;
 - local examples are presented in the selected dialect;
 - `HOME` and `G28`, `MOVE` and `G1`, and `WAIT` and `G4` produce the same domain command types;
+- `G21` makes the fixed millimeter unit explicit, while `G20` is rejected;
 - `G90` absolute and `G91` relative movements resolve to absolute domain targets using the viewer's initial position and prior G-code movements;
 - manual jog and direct console actions append syntax matching the selected dialect;
 - switching syntax does not duplicate domain, motion, or simulation rules.
+- selecting G-code never reinterprets tool-space coordinates as joints, wheels, or actuators for an incompatible robot family.
 
 ### Run A Selected Script Dialect In The CLI
 

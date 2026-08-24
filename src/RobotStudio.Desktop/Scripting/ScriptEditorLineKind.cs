@@ -5,6 +5,7 @@ public enum ScriptEditorLineKind
     Empty,
     Home,
     Move,
+    UnitMode,
     PositioningMode,
     Wait,
     Other
