@@ -101,6 +101,14 @@ public partial class MainWindow : Window
         }
             ? new GCodeParser(new SimpleArmGCodeCommandMapper(CreateSimpleArmProfile()))
             : simpleDslDialect;
+
+    private IRobotScriptDialect DeltaScriptDialect =>
+        DeltaScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
+        {
+            Id: RobotScriptDialectId.GCode
+        }
+            ? new GCodeParser(new DeltaGCodeCommandMapper(CreateDeltaProfile()))
+            : simpleDslDialect;
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -210,6 +218,9 @@ public partial class MainWindow : Window
         SimpleArmScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         SimpleArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        DeltaScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
+            .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
+        DeltaScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
         GlossaryCategoryComboBox.ItemsSource = new object[] { "All topics" }
             .Concat(Enum.GetValues<GlossaryCategory>().Cast<object>())
@@ -784,9 +795,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        DeltaScriptTextBox.Text = GetSelectedExampleScript(
-            DeltaExampleComboBox,
-            RobotViewerKind.DeltaThreeDimensional);
+        DeltaScriptTextBox.Text = GetSelectedDeltaExampleScript();
         deltaSnapshot = CreateDeltaSnapshot(DeltaScriptTextBox.Text, captureSession: true);
         DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
         DeltaTimeline.TickFrequency = 1;
@@ -1048,6 +1057,50 @@ public partial class MainWindow : Window
         SetSimpleArmScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
     }
 
+    private void DeltaScriptDialectComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded ||
+            activeViewerKind != RobotViewerKind.DeltaThreeDimensional ||
+            DeltaScriptDialectComboBox.SelectedItem is not RobotScriptDialectDescriptor descriptor)
+        {
+            return;
+        }
+
+        StopPlayback();
+        DeltaScriptTextBox.Text = GetSelectedDeltaExampleScript();
+
+        if (!TryCreateDeltaSnapshotFromScript(
+            DeltaScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            deltaSnapshot = null;
+            deltaSessionContext = null;
+            SetDeltaScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetDeltaScriptStatus(
+                "Script did not produce a Delta playback snapshot.",
+                Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        deltaSnapshot = nextSnapshot;
+        DeltaTimeline.Maximum = deltaSnapshot.FrameCount - 1;
+        DeltaTimeline.TickFrequency = 1;
+        RenderDeltaFrame(index: 0);
+        var dialectMessage = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code tool-space mode ready. G1 follows X/Y/Z through parallel inverse kinematics."
+            : "Simple DSL actuator-space mode ready.";
+        SetDeltaScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
+    }
+
     private void ApplyCartesianProfileButton_Click(
         object sender,
         RoutedEventArgs e) =>
@@ -1229,12 +1282,18 @@ public partial class MainWindow : Window
         LoadScriptInto(
             DeltaScriptTextBox,
             SetDeltaScriptStatus,
-            () => deltaSnapshot = null);
+            () => deltaSnapshot = null,
+            SelectDeltaDialectForFile);
 
     private void SaveDeltaScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        SaveScriptFrom(DeltaScriptTextBox, SetDeltaScriptStatus);
+        SaveScriptFrom(
+            DeltaScriptTextBox,
+            SetDeltaScriptStatus,
+            DeltaScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+                ? ".gcode"
+                : ScriptFileDefaultExtension);
 
     private void LoadDroneScriptButton_Click(
         object sender,
@@ -3043,12 +3102,15 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateDeltaProfile();
-        var commands = simpleDslDialect.Parse(script);
+        var initialActuators = new DeltaActuatorPosition(0, 0, 0);
+        var commands = DeltaScriptDialect.Parse(
+            script,
+            new RobotScriptParseContext(initialActuators));
         ValidateDeltaCommandSequence(commands, profile);
 
         var context = DeltaSimulationContext.Create(
             profile,
-            new DeltaActuatorPosition(AMillimeters: 0, BMillimeters: 0, CMillimeters: 0));
+            initialActuators);
         var result = new DeltaSimulator().Execute(context, commands);
         if (captureSession)
         {
@@ -3572,9 +3634,10 @@ public partial class MainWindow : Window
         ConfigureExampleSelector(
             DeltaExampleComboBox,
             RobotViewerKind.DeltaThreeDimensional);
-        DeltaScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.DeltaThreeDimensional);
+        DeltaScriptTextBox.Text = GetDeltaExampleScript(
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.DeltaThreeDimensional));
         SetDeltaScriptStatus(
-            "Edit DELTA actuator commands and simulate the parallel robot.",
+            "Choose actuator-space Simple DSL or tool-space G-code and simulate the parallel robot.",
             Color.FromRgb(148, 163, 184));
     }
 
@@ -3645,6 +3708,19 @@ public partial class MainWindow : Window
         SimpleArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
             ? example.GCodeScript ?? throw new InvalidOperationException(
                 $"Simple Arm example '{example.Name}' does not define a G-code program.")
+            : example.Script;
+
+    private string GetSelectedDeltaExampleScript()
+    {
+        var example = DeltaExampleComboBox.SelectedItem as RobotExample ??
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.DeltaThreeDimensional);
+        return GetDeltaExampleScript(example);
+    }
+
+    private string GetDeltaExampleScript(RobotExample example) =>
+        DeltaScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? example.GCodeScript ?? throw new InvalidOperationException(
+                $"Delta example '{example.Name}' does not define a G-code program.")
             : example.Script;
 
     private static void ConfigureExampleSelector(
@@ -5978,28 +6054,7 @@ public partial class MainWindow : Window
                 maximumAccelerationDegreesPerSecondSquared: 160));
 
     private static DeltaRobotProfile CreateDeltaProfile() =>
-        new(
-            baseRadiusMillimeters: 170,
-            toolZOffsetMillimeters: 60,
-            movingComponentCollisionRadiusMillimeters: 14,
-            actuatorA: new DeltaActuator(
-                DeltaActuatorId.A,
-                minimumMillimeters: 0,
-                maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 110,
-                maximumAccelerationMillimetersPerSecondSquared: 220),
-            actuatorB: new DeltaActuator(
-                DeltaActuatorId.B,
-                minimumMillimeters: 0,
-                maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 100,
-                maximumAccelerationMillimetersPerSecondSquared: 200),
-            actuatorC: new DeltaActuator(
-                DeltaActuatorId.C,
-                minimumMillimeters: 0,
-                maximumMillimeters: 120,
-                maximumVelocityMillimetersPerSecond: 90,
-                maximumAccelerationMillimetersPerSecondSquared: 180));
+        DeltaTeachingProfile.Create();
 
     private static DroneProfile CreateDroneProfile() =>
         new(
@@ -6329,6 +6384,19 @@ public partial class MainWindow : Window
         else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
         {
             SimpleArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        }
+    }
+
+    private void SelectDeltaDialectForFile(string fileName)
+    {
+        var extension = System.IO.Path.GetExtension(fileName);
+        if (extension.Equals(".gcode", StringComparison.OrdinalIgnoreCase))
+        {
+            DeltaScriptDialectComboBox.SelectedItem = RobotScriptDialects.GCode;
+        }
+        else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
+        {
+            DeltaScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         }
     }
 

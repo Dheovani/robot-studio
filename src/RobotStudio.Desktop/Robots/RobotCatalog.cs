@@ -220,6 +220,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
+                RobotCapability.GCode,
                 RobotCapability.ThreeDimensionalView,
                 RobotCapability.Playback,
                 RobotCapability.ForwardKinematics,

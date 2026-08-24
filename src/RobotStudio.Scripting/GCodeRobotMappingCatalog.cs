@@ -48,10 +48,10 @@ public static class GCodeRobotMappingCatalog
             GCodeRobotTarget.SimpleArticulatedArm,
             ['X', 'Y', 'A'],
             "X/Y/A pose paths use sampled linear planning and deterministic positive-bend inverse kinematics."),
-        Planned(
+        Available(
             GCodeRobotTarget.DeltaRobot,
             ['X', 'Y', 'Z'],
-            "Requires inverse kinematics and Cartesian tool-path planning for its parallel actuators."),
+            "X/Y/Z tool-space paths map through exact inverse kinematics to synchronized parallel actuators."),
         NotApplicable(
             GCodeRobotTarget.Drone,
             "CNC tool-space G-code does not represent flight attitude, dynamics, or navigation semantics clearly."),

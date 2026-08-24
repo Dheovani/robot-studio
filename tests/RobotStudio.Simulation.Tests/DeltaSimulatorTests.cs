@@ -7,6 +7,51 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class DeltaSimulatorTests
 {
     [Fact]
+    public void Execute_WhenCommandIsLinearToolMove_ShouldCreateOneContinuousTimelineInterval()
+    {
+        var target = new DeltaToolPose(0, -45, -60);
+        var source = new RobotCommandSource(2, "G1 X0 Y-45 Z-60 F4200");
+        var result = new DeltaSimulator().Execute(
+            DeltaSimulationContext.Create(CreateProfile(), new DeltaActuatorPosition(0, 0, 0)),
+            new RobotCommandSequence([new DeltaLinearMoveCommand(target, 70, source)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(3, result.Timeline.Count);
+        Assert.NotNull(result.Timeline[1].CartesianMotionPlan);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        var finalPose = new DeltaKinematics().Forward(
+            result.FinalContext.RobotProfile,
+            result.FinalContext.CurrentActuators);
+        Assert.Equal(target.XMillimeters, finalPose.XMillimeters, precision: 6);
+        Assert.Equal(target.YMillimeters, finalPose.YMillimeters, precision: 6);
+        Assert.Equal(target.ZMillimeters, finalPose.ZMillimeters, precision: 6);
+        Assert.All(
+            result.Timeline.Where(step => step.CommandIndex == 0),
+            step => Assert.Equal(source, step.CommandSource));
+    }
+
+    [Fact]
+    public void Playback_WhenCommandIsLinearToolMove_ShouldKeepTcpOnRequestedLine()
+    {
+        var start = new DeltaToolPose(0, 0, 0);
+        var target = new DeltaToolPose(0, -45, -60);
+        var result = new DeltaSimulator().Execute(
+            DeltaSimulationContext.Create(CreateProfile(), new DeltaActuatorPosition(0, 0, 0)),
+            new RobotCommandSequence([new DeltaLinearMoveCommand(target, 70)]));
+
+        var playback = new DeltaPlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(10));
+
+        Assert.All(
+            playback.Frames.Where(frame => frame.State == RobotState.Moving),
+            frame => Assert.InRange(
+                CrossProductMagnitude(start, target, frame.ToolPose),
+                0,
+                0.000_001));
+    }
+
+    [Fact]
     public void Execute_WhenParallelMechanismPathIsObstructed_ShouldFaultWithoutMoving()
     {
         var start = new DeltaActuatorPosition(0, 0, 0);
@@ -101,4 +146,21 @@ public sealed class DeltaSimulatorTests
             actuatorA: new DeltaActuator(DeltaActuatorId.A, 0, 180, 120, 240),
             actuatorB: new DeltaActuator(DeltaActuatorId.B, 0, 180, 100, 200),
             actuatorC: new DeltaActuator(DeltaActuatorId.C, 0, 180, 90, 180));
+
+    private static double CrossProductMagnitude(
+        DeltaToolPose lineStart,
+        DeltaToolPose lineEnd,
+        DeltaToolPose point)
+    {
+        var lineX = lineEnd.XMillimeters - lineStart.XMillimeters;
+        var lineY = lineEnd.YMillimeters - lineStart.YMillimeters;
+        var lineZ = lineEnd.ZMillimeters - lineStart.ZMillimeters;
+        var pointX = point.XMillimeters - lineStart.XMillimeters;
+        var pointY = point.YMillimeters - lineStart.YMillimeters;
+        var pointZ = point.ZMillimeters - lineStart.ZMillimeters;
+        var crossX = (lineY * pointZ) - (lineZ * pointY);
+        var crossY = (lineZ * pointX) - (lineX * pointZ);
+        var crossZ = (lineX * pointY) - (lineY * pointX);
+        return Math.Sqrt((crossX * crossX) + (crossY * crossY) + (crossZ * crossZ));
+    }
 }

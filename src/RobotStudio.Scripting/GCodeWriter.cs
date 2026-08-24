@@ -20,6 +20,7 @@ public static class GCodeWriter
         MoveToCommand move => WriteMove(move),
         ScaraLinearMoveCommand move => WriteScaraMove(move),
         SimpleArmLinearMoveCommand move => WriteSimpleArmMove(move),
+        DeltaLinearMoveCommand move => WriteDeltaMove(move),
         WaitCommand wait => $"G4 P{FormatNumber(wait.Duration.TotalMilliseconds)}",
         _ => throw new NotSupportedException($"G-code output does not support {command.GetType().Name}.")
     };
@@ -53,6 +54,18 @@ public static class GCodeWriter
             $"G1 X{FormatNumber(command.TargetToolPose.X)} " +
             $"Y{FormatNumber(command.TargetToolPose.Y)} " +
             $"A{FormatNumber(command.TargetToolPose.OrientationDegrees)}";
+
+        return command.RequestedToolVelocityMillimetersPerSecond is { } velocity
+            ? $"{result} F{FormatNumber(velocity * 60d)}"
+            : result;
+    }
+
+    private static string WriteDeltaMove(DeltaLinearMoveCommand command)
+    {
+        var result =
+            $"G1 X{FormatNumber(command.TargetToolPose.XMillimeters)} " +
+            $"Y{FormatNumber(command.TargetToolPose.YMillimeters)} " +
+            $"Z{FormatNumber(command.TargetToolPose.ZMillimeters)}";
 
         return command.RequestedToolVelocityMillimetersPerSecond is { } velocity
             ? $"{result} F{FormatNumber(velocity * 60d)}"

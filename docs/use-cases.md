@@ -347,6 +347,23 @@ Expected result:
 - unsupported `B/C`, nonzero Z movement, unreachable poses, and incompatible starting configurations produce explanatory errors;
 - both dialects feed the same deterministic Simple Arm simulator and playback viewer.
 
+### Compare Delta Actuator Space And Tool Space
+
+Actor: student.
+
+Goal: compare direct parallel-actuator commands with linear TCP trajectories on the same Delta mechanism.
+
+Current status: implemented in the Delta Robot desktop workspace.
+
+Expected result:
+
+- Simple DSL `DELTA A/B/C` commands continue to move explicit actuators;
+- G-code `G1 X/Y/Z` commands describe TCP destinations rather than actuator aliases;
+- exact inverse kinematics resolves every sampled tool position without numerical iteration;
+- actuator velocity, acceleration, physical limits, and collision checks constrain or reject the complete path;
+- orientation words, unreachable positions, and incompatible starting contexts produce explanatory errors;
+- both dialects feed the same deterministic Delta simulator and playback viewer.
+
 ### Study Cartesian Validation And Sequencing Examples
 
 Actor: student.

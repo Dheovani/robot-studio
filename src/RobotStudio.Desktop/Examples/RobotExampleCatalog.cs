@@ -246,6 +246,14 @@ public static class RobotExampleCatalog
             DELTA A=30 B=60 C=90 SPEED=80
             DELTA A=80 B=40 C=20 SPEED=70
             WAIT 500
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X0 Y-45 Z0 F4200
+            G1 X11.547 Y50 Z13.333 F3900
+            G4 P500
             """),
 
         new(
@@ -258,6 +266,15 @@ public static class RobotExampleCatalog
             DELTA A=30 B=90 C=50 SPEED=75
             DELTA A=80 B=35 C=95 SPEED=70
             WAIT 400
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X0 Y0 Z10 F4200
+            G1 X23.094 Y-40 Z3.333 F3600
+            G1 X-34.641 Y15 Z-10 F3300
+            G4 P400
             """),
 
         new(

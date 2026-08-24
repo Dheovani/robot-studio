@@ -4,6 +4,7 @@ using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Exceptions;
+using RobotStudio.Domain.Parallel;
 using RobotStudio.Scripting;
 using RobotStudio.Simulation;
 
@@ -83,6 +84,39 @@ public sealed class RobotExampleCatalogTests
             "examples",
             "simple-arm",
             "basic.gcode");
+
+        Assert.Equal(
+            Normalize(example.GCodeScript!),
+            Normalize(File.ReadAllText(path)));
+    }
+
+    [Fact]
+    public void DeltaExamples_WithGCode_ShouldProduceSuccessfulToolSpacePlayback()
+    {
+        var profile = CreateDeltaProfile();
+        var initialActuators = new DeltaActuatorPosition(0, 0, 0);
+        var parser = new GCodeParser(new DeltaGCodeCommandMapper(profile));
+
+        foreach (var example in RobotExampleCatalog.GetFor(RobotViewerKind.DeltaThreeDimensional))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(example.GCodeScript));
+            var commands = parser.Parse(
+                example.GCodeScript!,
+                new RobotScriptParseContext(initialActuators));
+            var result = new DeltaSimulator().Execute(
+                DeltaSimulationContext.Create(profile, initialActuators),
+                commands);
+
+            Assert.True(result.Succeeded, result.Failure?.Message);
+            Assert.Contains(commands.Commands, command => command is DeltaLinearMoveCommand);
+        }
+    }
+
+    [Fact]
+    public void DeltaBasicGCodeFile_ShouldMatchDesktopCatalog()
+    {
+        var example = RobotExampleCatalog.GetDefaultFor(RobotViewerKind.DeltaThreeDimensional);
+        var path = Path.Combine(FindRepositoryRoot(), "examples", "delta", "basic.gcode");
 
         Assert.Equal(
             Normalize(example.GCodeScript!),
@@ -299,6 +333,9 @@ public sealed class RobotExampleCatalogTests
             baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
             shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
             elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
+
+    private static DeltaRobotProfile CreateDeltaProfile() =>
+        DeltaTeachingProfile.Create();
 
     private static string Normalize(string text) =>
         text.Replace("\r\n", "\n", StringComparison.Ordinal).Trim();

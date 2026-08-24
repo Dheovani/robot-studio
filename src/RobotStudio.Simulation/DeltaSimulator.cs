@@ -8,36 +8,52 @@ namespace RobotStudio.Simulation;
 public sealed class DeltaSimulator
 {
     private readonly DeltaMotionPlanner motionPlanner;
+    private readonly DeltaCartesianMotionPlanner cartesianMotionPlanner;
     private readonly DeltaKinematics kinematics;
     private readonly SpatialSimulationEnvironment environment;
 
     public DeltaSimulator()
-        : this(new DeltaMotionPlanner(), new DeltaKinematics(), SpatialSimulationEnvironment.Empty)
+        : this(
+            new DeltaMotionPlanner(),
+            new DeltaCartesianMotionPlanner(),
+            new DeltaKinematics(),
+            SpatialSimulationEnvironment.Empty)
     {
     }
 
     public DeltaSimulator(SpatialSimulationEnvironment environment)
-        : this(new DeltaMotionPlanner(), new DeltaKinematics(), environment)
+        : this(
+            new DeltaMotionPlanner(),
+            new DeltaCartesianMotionPlanner(),
+            new DeltaKinematics(),
+            environment)
     {
     }
 
     public DeltaSimulator(
         DeltaMotionPlanner motionPlanner,
         DeltaKinematics kinematics)
-        : this(motionPlanner, kinematics, SpatialSimulationEnvironment.Empty)
+        : this(
+            motionPlanner,
+            new DeltaCartesianMotionPlanner(kinematics),
+            kinematics,
+            SpatialSimulationEnvironment.Empty)
     {
     }
 
     public DeltaSimulator(
         DeltaMotionPlanner motionPlanner,
+        DeltaCartesianMotionPlanner cartesianMotionPlanner,
         DeltaKinematics kinematics,
         SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(cartesianMotionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
         ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
+        this.cartesianMotionPlanner = cartesianMotionPlanner;
         this.kinematics = kinematics;
         this.environment = environment;
     }
@@ -96,6 +112,7 @@ public sealed class DeltaSimulator
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
             ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             DeltaMoveActuatorsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
+            DeltaLinearMoveCommand linearMoveCommand => ExecuteLinearMove(context, linearMoveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
@@ -189,6 +206,62 @@ public sealed class DeltaSimulator
         return completedContext;
     }
 
+    private DeltaSimulationContext ExecuteLinearMove(
+        DeltaSimulationContext context,
+        DeltaLinearMoveCommand command,
+        int commandIndex,
+        List<DeltaSimulationStep> timeline)
+    {
+        var motionPlan = cartesianMotionPlanner.PlanLinearMove(
+            context.CurrentActuators,
+            command.TargetToolPose,
+            context.RobotProfile,
+            command.RequestedToolVelocityMillimetersPerSecond);
+        var movingContext = TransitionTo(context, RobotState.Moving);
+
+        if (motionPlan.IsStationary)
+        {
+            timeline.Add(CreateStep(
+                movingContext,
+                "Delta linear tool move started.",
+                commandIndex,
+                nameof(DeltaLinearMoveCommand),
+                command.Source));
+            var stationaryContext = movingContext with { State = RobotState.Completed };
+            timeline.Add(CreateStep(
+                stationaryContext,
+                "Delta linear tool move completed without displacement.",
+                commandIndex,
+                nameof(DeltaLinearMoveCommand),
+                command.Source));
+            return stationaryContext;
+        }
+
+        EnsureCartesianPathIsClear(context, motionPlan);
+        timeline.Add(CreateStep(
+            movingContext,
+            "Delta linear tool move started.",
+            commandIndex,
+            nameof(DeltaLinearMoveCommand),
+            command.Source,
+            motionPlan.ToolMotionProfile,
+            motionPlan));
+
+        var completedContext = movingContext with
+        {
+            CurrentActuators = motionPlan.Segments[^1].EndActuators,
+            State = RobotState.Completed,
+            ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
+        };
+        timeline.Add(CreateStep(
+            completedContext,
+            "Delta linear tool move completed.",
+            commandIndex,
+            nameof(DeltaLinearMoveCommand),
+            command.Source));
+        return completedContext;
+    }
+
     private static DeltaSimulationContext TransitionTo(
         DeltaSimulationContext context,
         RobotState nextState)
@@ -208,13 +281,32 @@ public sealed class DeltaSimulator
         }
     }
 
+    private void EnsureCartesianPathIsClear(
+        DeltaSimulationContext context,
+        DeltaCartesianMotionPlan motionPlan)
+    {
+        foreach (var segment in motionPlan.Segments)
+        {
+            var collision = DeltaMechanismCollisionDetector.FindFirstCollision(
+                segment.StartActuators,
+                segment.EndActuators,
+                context.RobotProfile,
+                environment);
+            if (collision is not null)
+            {
+                throw new SpatialPathObstructedException("Delta Robot", collision);
+            }
+        }
+    }
+
     private DeltaSimulationStep CreateStep(
         DeltaSimulationContext context,
         string description,
         int? commandIndex = null,
         string? commandName = null,
         RobotCommandSource? commandSource = null,
-        TrapezoidalMotionProfile? motionProfile = null) =>
+        TrapezoidalMotionProfile? motionProfile = null,
+        DeltaCartesianMotionPlan? cartesianMotionPlan = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -225,7 +317,8 @@ public sealed class DeltaSimulator
             commandName,
             commandSource)
         {
-            MotionProfile = motionProfile
+            MotionProfile = motionProfile,
+            CartesianMotionPlan = cartesianMotionPlan
         };
 
     private static string GetCommandName(RobotCommand command) => command switch
@@ -233,6 +326,7 @@ public sealed class DeltaSimulator
         HomeCommand => nameof(HomeCommand),
         ResetFaultCommand => nameof(ResetFaultCommand),
         DeltaMoveActuatorsCommand => nameof(DeltaMoveActuatorsCommand),
+        DeltaLinearMoveCommand => nameof(DeltaLinearMoveCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name
     };

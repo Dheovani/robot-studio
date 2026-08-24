@@ -47,6 +47,29 @@ public sealed class DeltaRobotProfileTests
     }
 
     [Fact]
+    public void Inverse_WhenPoseComesFromActuators_ShouldRecoverActuators()
+    {
+        var profile = CreateProfile();
+        var kinematics = new DeltaKinematics();
+        var expected = new DeltaActuatorPosition(30, 60, 90);
+
+        var result = kinematics.Inverse(profile, kinematics.Forward(profile, expected));
+
+        Assert.Equal(expected.AMillimeters, result.AMillimeters, precision: 6);
+        Assert.Equal(expected.BMillimeters, result.BMillimeters, precision: 6);
+        Assert.Equal(expected.CMillimeters, result.CMillimeters, precision: 6);
+    }
+
+    [Fact]
+    public void Inverse_WhenPoseRequiresActuatorOutsideLimits_ShouldThrow()
+    {
+        Assert.Throws<InvalidRobotCommandException>(() =>
+            new DeltaKinematics().Inverse(
+                CreateProfile(),
+                new DeltaToolPose(0, 0, 20)));
+    }
+
+    [Fact]
     public void Validate_WhenDeltaCommandTargetIsOutsideLimits_ShouldThrow()
     {
         var profile = CreateProfile();

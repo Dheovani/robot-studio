@@ -13,7 +13,7 @@ public sealed class RobotCatalogTests
             .ToArray();
 
         Assert.Equal(
-            ["Cartesian Robot", "XY Plotter", "SCARA Robot", "Simple Articulated Arm"],
+            ["Cartesian Robot", "XY Plotter", "SCARA Robot", "Simple Articulated Arm", "Delta Robot"],
             gCodeTemplates);
     }
 

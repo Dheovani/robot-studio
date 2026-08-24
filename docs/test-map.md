@@ -363,6 +363,12 @@ This document maps expected automated tests to project behavior. It should be up
   - [x] Reject nonzero Simple Arm Z movement, unsupported B/C orientation, and incompatible position contexts.
   - [x] Plan and sample Simple Arm linear tool poses under one continuous joint-limited progress profile.
   - [x] Validate every desktop Simple Arm G-code example through parser, mapper, simulator, and playback inputs.
+  - [x] Round-trip Delta actuator positions through forward and exact inverse kinematics.
+  - [x] Map Delta `G1 X/Y/Z` into `DeltaLinearMoveCommand` while preserving feed rate and source metadata.
+  - [x] Resolve Delta absolute and relative tool positions from actuator-derived context and HOME.
+  - [x] Reject Delta orientation words and incompatible position contexts.
+  - [x] Plan and sample Delta linear TCP paths under one continuous actuator-limited profile.
+  - [x] Validate every desktop Delta G-code example through parser, mapper, simulator, and playback inputs.
 
 ## `RobotStudio.Hardware.Tests`
 

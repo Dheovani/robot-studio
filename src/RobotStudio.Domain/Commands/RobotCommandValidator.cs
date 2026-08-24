@@ -185,6 +185,10 @@ public static class RobotCommandValidator
                 profile.ValidatePosition(moveCommand.TargetActuators);
                 return;
 
+            case DeltaLinearMoveCommand linearMoveCommand:
+                _ = new DeltaKinematics().Inverse(profile, linearMoveCommand.TargetToolPose);
+                return;
+
             default:
                 throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
         }

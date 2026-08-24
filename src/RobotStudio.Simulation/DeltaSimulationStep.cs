@@ -16,4 +16,6 @@ public sealed record DeltaSimulationStep(
     RobotCommandSource? CommandSource = null)
 {
     public TrapezoidalMotionProfile? MotionProfile { get; init; }
+
+    public DeltaCartesianMotionPlan? CartesianMotionPlan { get; init; }
 }

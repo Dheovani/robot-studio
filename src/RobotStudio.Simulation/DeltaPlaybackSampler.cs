@@ -1,4 +1,5 @@
 using RobotStudio.Domain.Parallel;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -47,17 +48,16 @@ public sealed class DeltaPlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = MotionProfileTimelineSampler.CalculateProgress(
-                    current.MotionProfile,
-                    current.Time,
-                    next.Time,
+                var (actuators, toolPose) = SampleMovement(
+                    result.InitialContext.RobotProfile,
+                    current,
+                    next,
                     time);
-                var actuators = Interpolate(current.Actuators, next.Actuators, progress);
                 frames.Add(new DeltaPlaybackFrame(
                     time,
                     current.State,
                     actuators,
-                    kinematics.Forward(result.InitialContext.RobotProfile, actuators),
+                    toolPose,
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -72,6 +72,34 @@ public sealed class DeltaPlaybackSampler
             result.FinalContext.ElapsedTime,
             result.Succeeded,
             result.Failure?.Message);
+    }
+
+    private (DeltaActuatorPosition Actuators, DeltaToolPose ToolPose) SampleMovement(
+        DeltaRobotProfile profile,
+        DeltaSimulationStep current,
+        DeltaSimulationStep next,
+        TimeSpan time)
+    {
+        if (current.CartesianMotionPlan is
+            {
+                ToolMotionProfile: not null
+            } cartesianPlan)
+        {
+            var sample = cartesianPlan.ToolMotionProfile.SampleAt(time - current.Time);
+            var toolPose = DeltaCartesianMotionPlanner.Interpolate(
+                cartesianPlan.StartToolPose,
+                cartesianPlan.EndToolPose,
+                sample.Progress);
+            return (kinematics.Inverse(profile, toolPose), toolPose);
+        }
+
+        var progress = MotionProfileTimelineSampler.CalculateProgress(
+            current.MotionProfile,
+            current.Time,
+            next.Time,
+            time);
+        var actuators = Interpolate(current.Actuators, next.Actuators, progress);
+        return (actuators, kinematics.Forward(profile, actuators));
     }
 
     private DeltaPlaybackFrame CreateFrame(

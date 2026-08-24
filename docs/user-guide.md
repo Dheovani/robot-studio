@@ -69,7 +69,7 @@ Opening the SCARA robot renders a 3D articulated robot viewer with reachable wor
 
 Opening the Simple Articulated Arm renders a 3D three-joint arm viewer with reachable workspace, volumetric base, base joint, shoulder, elbow, tool point, tool orientation, planned path, current joint angles, current tool pose, command name, camera orbit, zoom, and timeline controls. Its coordinated playback respects angular velocity and acceleration limits. The viewer switches between Simple DSL `HOME`/`ARM`/`WAIT` joint-space lessons and G-code `G1 X/Y/A` tool-pose lessons, with local examples for both dialects.
 
-Opening the Delta Robot renders a 3D simplified parallel robot viewer with a triangular frame, three vertical actuators, moving carriages, parallel links, platform/TCP, reachable workspace, planned path, current actuator positions, current tool pose, command name, camera orbit, zoom, and timeline controls. Its three linear actuators move with one synchronized acceleration-aware profile. The viewer includes a Delta DSL editor for `HOME`, `DELTA`, and `WAIT` commands, plus a local example selector.
+Opening the Delta Robot renders a 3D simplified parallel robot viewer with a triangular frame, three vertical actuators, moving carriages, parallel links, platform/TCP, reachable workspace, planned path, current actuator positions, current tool pose, command name, camera orbit, zoom, and timeline controls. Its three linear actuators move with one synchronized acceleration-aware profile. The viewer switches between Simple DSL `HOME`/`DELTA`/`WAIT` actuator-space lessons and G-code `G1 X/Y/Z` tool-space lessons, with local examples for both dialects.
 
 Opening the Drone renders a 3D aerial robot viewer with flight-volume boundaries, ground grid, drone body, rotor arms, attitude and heading indicators, planned path, current X/Y/Z position, current roll/pitch/yaw, command name, camera orbit, zoom, and timeline controls. Translation, roll/pitch attitude, and yaw use independent but time-synchronized acceleration-aware profiles. This remains a simplified deterministic teaching model rather than an aerodynamic or flight-control simulation. The viewer includes a Drone DSL editor for `HOME`, `DRONE`, and `WAIT` commands, plus a local example selector.
 
@@ -355,6 +355,7 @@ G4 P500
 - Cartesian Robot and XY Plotter mappings are available through direct linear axes.
 - SCARA accepts planar `G1 X/Y` and optional `Z0`. It follows a sampled linear TCP path using deterministic elbow-down inverse kinematics; use `HOME`/`G28` or an elbow-down pose before tool-space movement.
 - Simple Articulated Arm accepts planar `G1 X/Y/A` and optional `Z0`. `A` controls TCP orientation in degrees, while `B/C` are rejected. Use `HOME`/`G28` or a positive-bend pose before tool-space movement.
+- Delta Robot accepts `G1 X/Y/Z`. Exact inverse kinematics converts each TCP target into synchronized actuator positions; `A/B/C` orientation words are rejected by the current position-only model.
 - Delta, Simple Articulated Arm, and 6-DOF Industrial Arm still require suitable inverse kinematics and Cartesian path planning before accepting `G1`.
 - Differential Drive and Drone use their robot-appropriate Simple DSL commands instead of a nonstandard G-code mapping.
 - Feed-rate retention, hardware execution, remaining robot mappings, and other G-codes are not part of this subset.
@@ -369,7 +370,7 @@ Standalone scripts are grouped by robot model under `examples/`. The Cartesian d
 
 An intentional validation failure is a teaching asset, not an executable success example. Its catalog metadata and automated tests record that expectation explicitly.
 
-The SCARA and Simple Articulated Arm workspaces offer Simple DSL and G-code examples. Simple DSL `SCARA SHOULDER/ELBOW` and `ARM BASE/SHOULDER/ELBOW` commands teach joint-space movement. Their G-code examples teach TCP tool-space movement through inverse kinematics, including planar tool orientation with `A` for the Simple Arm. The `G-code` capability badge appears only on robot cards with an executable mapping.
+The SCARA, Simple Articulated Arm, and Delta workspaces offer Simple DSL and G-code examples. Simple DSL commands teach direct joint or actuator movement. Their G-code examples teach TCP tool-space movement through inverse kinematics, including planar tool orientation with `A` for the Simple Arm and synchronized parallel-actuator movement for Delta. The `G-code` capability badge appears only on robot cards with an executable mapping.
 
 The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 

@@ -19,4 +19,31 @@ public sealed class DeltaKinematics
 
         return new DeltaToolPose(x, y, z);
     }
+
+    public DeltaActuatorPosition Inverse(
+        DeltaRobotProfile profile,
+        DeltaToolPose pose)
+    {
+        ArgumentNullException.ThrowIfNull(profile);
+
+        if (!double.IsFinite(pose.XMillimeters) ||
+            !double.IsFinite(pose.YMillimeters) ||
+            !double.IsFinite(pose.ZMillimeters))
+        {
+            throw new ArgumentException(
+                "Delta target tool coordinates must be finite values.",
+                nameof(pose));
+        }
+
+        var averageActuatorPosition = profile.ToolZOffsetMillimeters - pose.ZMillimeters;
+        var actuators = new DeltaActuatorPosition(
+            averageActuatorPosition + ((2d / 3d) * pose.YMillimeters),
+            averageActuatorPosition - (pose.YMillimeters / 3d) +
+                ((SqrtThree / 2d) * pose.XMillimeters),
+            averageActuatorPosition - (pose.YMillimeters / 3d) -
+                ((SqrtThree / 2d) * pose.XMillimeters));
+
+        profile.ValidatePosition(actuators);
+        return actuators;
+    }
 }

@@ -1641,8 +1641,16 @@
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
-                        <TextBlock Text="Example"
+                        <TextBlock Text="Dialect"
                                    Margin="0,10,0,4"
+                                   Foreground="#94A3B8" />
+                        <ComboBox x:Name="DeltaScriptDialectComboBox"
+                                  Margin="0,0,0,8"
+                                  DisplayMemberPath="Name"
+                                  ToolTip="Choose actuator-space Simple DSL or X/Y/Z tool-space G-code for the Delta Robot."
+                                  SelectionChanged="DeltaScriptDialectComboBox_SelectionChanged" />
+                        <TextBlock Text="Example"
+                                   Margin="0,0,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="DeltaExampleComboBox"
                                   Margin="0,0,0,8" />
