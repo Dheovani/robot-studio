@@ -1,4 +1,5 @@
 using RobotStudio.Domain.Articulated;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -47,17 +48,16 @@ public sealed class SimpleArmPlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = MotionProfileTimelineSampler.CalculateProgress(
-                    current.MotionProfile,
-                    current.Time,
-                    next.Time,
+                var (joints, toolPose) = SampleMovement(
+                    result.InitialContext.RobotProfile,
+                    current,
+                    next,
                     time);
-                var joints = Interpolate(current.Joints, next.Joints, progress);
                 frames.Add(new SimpleArmPlaybackFrame(
                     time,
                     current.State,
                     joints,
-                    kinematics.Forward(result.InitialContext.RobotProfile, joints),
+                    toolPose,
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -72,6 +72,34 @@ public sealed class SimpleArmPlaybackSampler
             result.FinalContext.ElapsedTime,
             result.Succeeded,
             result.Failure?.Message);
+    }
+
+    private (SimpleArmJointPosition Joints, SimpleArmToolPose ToolPose) SampleMovement(
+        SimpleArmRobotProfile profile,
+        SimpleArmSimulationStep current,
+        SimpleArmSimulationStep next,
+        TimeSpan time)
+    {
+        if (current.CartesianMotionPlan is
+            {
+                ProgressMotionProfile: not null
+            } cartesianPlan)
+        {
+            var sample = cartesianPlan.ProgressMotionProfile.SampleAt(time - current.Time);
+            var toolPose = SimpleArmCartesianMotionPlanner.Interpolate(
+                cartesianPlan.StartToolPose,
+                cartesianPlan.EndToolPose,
+                sample.Progress);
+            return (kinematics.InversePositiveBend(profile, toolPose), toolPose);
+        }
+
+        var progress = MotionProfileTimelineSampler.CalculateProgress(
+            current.MotionProfile,
+            current.Time,
+            next.Time,
+            time);
+        var joints = Interpolate(current.Joints, next.Joints, progress);
+        return (joints, kinematics.Forward(profile, joints));
     }
 
     private SimpleArmPlaybackFrame CreateFrame(

@@ -7,6 +7,51 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class SimpleArmSimulatorTests
 {
     [Fact]
+    public void Execute_WhenCommandIsLinearToolMove_ShouldCreateOneContinuousTimelineInterval()
+    {
+        var target = new SimpleArmToolPose(180, 80, 20);
+        var source = new RobotCommandSource(2, "G1 X180 Y80 A20 F3600");
+        var result = new SimpleArmSimulator().Execute(
+            SimpleArmSimulationContext.Create(CreateProfile(), new SimpleArmJointPosition(0, 0, 0)),
+            new RobotCommandSequence([new SimpleArmLinearMoveCommand(target, 60, source)]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(3, result.Timeline.Count);
+        Assert.NotNull(result.Timeline[1].CartesianMotionPlan);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        var finalPose = new SimpleArmKinematics().Forward(
+            result.FinalContext.RobotProfile,
+            result.FinalContext.CurrentJoints);
+        Assert.Equal(target.X, finalPose.X, precision: 6);
+        Assert.Equal(target.Y, finalPose.Y, precision: 6);
+        Assert.Equal(target.OrientationDegrees, finalPose.OrientationDegrees, precision: 6);
+        Assert.All(
+            result.Timeline.Where(step => step.CommandIndex == 0),
+            step => Assert.Equal(source, step.CommandSource));
+    }
+
+    [Fact]
+    public void Playback_WhenCommandIsLinearToolMove_ShouldKeepTcpOnRequestedLine()
+    {
+        var start = new SimpleArmToolPose(270, 0, 0);
+        var target = new SimpleArmToolPose(180, 80, 20);
+        var result = new SimpleArmSimulator().Execute(
+            SimpleArmSimulationContext.Create(CreateProfile(), new SimpleArmJointPosition(0, 0, 0)),
+            new RobotCommandSequence([new SimpleArmLinearMoveCommand(target, 60)]));
+
+        var playback = new SimpleArmPlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(10));
+
+        Assert.All(
+            playback.Frames.Where(frame => frame.State == RobotState.Moving),
+            frame => Assert.InRange(
+                CrossProduct(start, target, frame.ToolPose),
+                -0.000_001,
+                0.000_001));
+    }
+
+    [Fact]
     public void Execute_WhenSpatialLinkPathIsObstructed_ShouldFaultWithoutMoving()
     {
         var start = new SimpleArmJointPosition(0, 0, 0);
@@ -115,4 +160,11 @@ public sealed class SimpleArmSimulatorTests
             baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
             shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
             elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
+
+    private static double CrossProduct(
+        SimpleArmToolPose lineStart,
+        SimpleArmToolPose lineEnd,
+        SimpleArmToolPose point) =>
+        ((lineEnd.X - lineStart.X) * (point.Y - lineStart.Y)) -
+        ((lineEnd.Y - lineStart.Y) * (point.X - lineStart.X));
 }

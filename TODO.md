@@ -22,9 +22,9 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Replace the Cartesian-specific shared parse context with an extensible robot-position context and explicit compatibility validation.
 - [x] Preserve executable commands and non-executable modal directives in a compiled script representation.
 - [x] Carry requested-motion metadata through Cartesian simulation and playback so the desktop does not reparse isolated source lines.
-- [x] Define the standard robot mapping policy: G-code describes TCP tool-space motion, Cartesian and XY mappings are available, articulated and parallel mappings require continuous Cartesian planning plus inverse kinematics, and mobile/aerial families retain robot-appropriate DSL commands.
+- [x] Define the standard robot mapping policy: G-code describes TCP tool-space motion, each non-Cartesian mapping requires continuous Cartesian planning plus inverse kinematics, and mobile/aerial families retain robot-appropriate DSL commands.
 - [x] Add SCARA G-code with planar `G1 X/Y`, deterministic elbow-down inverse kinematics, sampled path validation, one continuous TCP motion profile, simulation playback, desktop dialect selection, examples, and catalog capability metadata.
-- [ ] Add Simple Articulated Arm G-code after implementing deterministic pose inverse kinematics and linear TCP planning.
+- [x] Add Simple Articulated Arm G-code with planar `G1 X/Y/A`, deterministic positive-bend inverse kinematics, continuous tool-pose planning and playback, desktop dialect selection, examples, and catalog capability metadata.
 - [ ] Add Delta Robot G-code after implementing inverse kinematics and linear TCP planning for its parallel actuators.
 - [ ] Add 6-DOF Industrial Arm G-code after implementing full-pose inverse kinematics, configuration selection, and linear TCP planning.
 - [x] Keep Differential Drive and Drone G-code unavailable and omit the capability badge because CNC tool-space semantics do not fit their motion models.

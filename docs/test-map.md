@@ -357,6 +357,12 @@ This document maps expected automated tests to project behavior. It should be up
   - [x] Limit requested SCARA TCP feed and acceleration using the participating joint constraints.
   - [x] Validate every desktop SCARA G-code example through parser, mapper, simulator, and playback inputs.
   - [x] Expose the `G-code` catalog capability only for robot mappings that are currently executable.
+  - [x] Preserve `A/B/C` orientation words in the semantic G-code program while requiring each robot mapper to accept or reject them explicitly.
+  - [x] Map Simple Arm `G1 X/Y/A` into `SimpleArmLinearMoveCommand` while preserving feed rate and source metadata.
+  - [x] Resolve Simple Arm absolute and relative tool poses from joint-derived context and HOME.
+  - [x] Reject nonzero Simple Arm Z movement, unsupported B/C orientation, and incompatible position contexts.
+  - [x] Plan and sample Simple Arm linear tool poses under one continuous joint-limited progress profile.
+  - [x] Validate every desktop Simple Arm G-code example through parser, mapper, simulator, and playback inputs.
 
 ## `RobotStudio.Hardware.Tests`
 

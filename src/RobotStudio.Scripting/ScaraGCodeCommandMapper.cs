@@ -141,6 +141,13 @@ public sealed class ScaraGCodeCommandMapper : IGCodeCommandMapper
 
     private static void EnsurePlanarMove(GCodeLinearMoveInstruction move)
     {
+        if (move.ADegrees is not null || move.BDegrees is not null || move.CDegrees is not null)
+        {
+            throw CreateMappingException(
+                move,
+                "This SCARA model does not control TCP orientation and rejects A, B, and C words.");
+        }
+
         if (move.ZMillimeters is { } z && Math.Abs(z) > PlanarToleranceMillimeters)
         {
             throw CreateMappingException(

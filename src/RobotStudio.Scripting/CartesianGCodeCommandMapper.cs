@@ -42,6 +42,7 @@ public sealed class CartesianGCodeCommandMapper : IGCodeCommandMapper
                     break;
 
                 case GCodeLinearMoveInstruction move:
+                    EnsurePositionOnly(move);
                     currentPosition = ResolveTarget(move, positioningMode, currentPosition);
                     statements.Add(new RobotScriptCommandStatement(
                         new MoveToCommand(
@@ -121,4 +122,14 @@ public sealed class CartesianGCodeCommandMapper : IGCodeCommandMapper
         GCodeInstruction instruction,
         string message) =>
         new(instruction.Source.LineNumber, instruction.Source.Text, message);
+
+    private static void EnsurePositionOnly(GCodeLinearMoveInstruction move)
+    {
+        if (move.ADegrees is not null || move.BDegrees is not null || move.CDegrees is not null)
+        {
+            throw CreateMappingException(
+                move,
+                "The Cartesian Robot and XY Plotter mappings do not support A, B, or C orientation words.");
+        }
+    }
 }

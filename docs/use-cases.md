@@ -329,6 +329,24 @@ Expected result:
 - unreachable points, nonzero Z movement, and incompatible starting configurations produce explanatory errors;
 - both dialects feed the same deterministic SCARA simulator and playback viewer.
 
+### Compare Simple Arm Joint Space And Tool-Pose Space
+
+Actor: student.
+
+Goal: compare direct three-joint commands with a linear TCP pose trajectory on the same articulated arm.
+
+Current status: implemented in the Simple Articulated Arm desktop workspace.
+
+Expected result:
+
+- Simple DSL `ARM BASE/SHOULDER/ELBOW` commands continue to move explicit joints;
+- G-code `G1 X/Y/A` commands describe planar TCP position and orientation rather than joint aliases;
+- `A` is measured in degrees and follows the shortest normalized orientation path;
+- deterministic positive-bend inverse kinematics resolves each sampled tool pose;
+- joint velocity, acceleration, physical limits, and collision checks constrain or reject the complete path;
+- unsupported `B/C`, nonzero Z movement, unreachable poses, and incompatible starting configurations produce explanatory errors;
+- both dialects feed the same deterministic Simple Arm simulator and playback viewer.
+
 ### Study Cartesian Validation And Sequencing Examples
 
 Actor: student.

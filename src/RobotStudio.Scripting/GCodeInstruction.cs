@@ -9,7 +9,10 @@ public sealed record GCodeLinearMoveInstruction(
     double? XMillimeters,
     double? YMillimeters,
     double? ZMillimeters,
-    double? FeedRateMillimetersPerMinute) : GCodeInstruction(Source);
+    double? FeedRateMillimetersPerMinute,
+    double? ADegrees = null,
+    double? BDegrees = null,
+    double? CDegrees = null) : GCodeInstruction(Source);
 
 public sealed record GCodeDwellInstruction(
     RobotCommandSource Source,

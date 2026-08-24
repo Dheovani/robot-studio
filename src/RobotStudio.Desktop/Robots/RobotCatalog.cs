@@ -178,7 +178,8 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
-                RobotCapability.TwoDimensionalView,
+                RobotCapability.GCode,
+                RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
                 RobotCapability.ForwardKinematics,

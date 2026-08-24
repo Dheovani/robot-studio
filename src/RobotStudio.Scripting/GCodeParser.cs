@@ -133,10 +133,18 @@ public sealed partial class GCodeParser : IRobotScriptDialect
         string sourceText,
         IReadOnlyCollection<GCodeWord> arguments)
     {
-        var values = BuildArgumentMap(lineNumber, sourceText, arguments, ['X', 'Y', 'Z', 'F']);
-        if (!values.ContainsKey('X') && !values.ContainsKey('Y') && !values.ContainsKey('Z'))
+        var values = BuildArgumentMap(lineNumber, sourceText, arguments, ['X', 'Y', 'Z', 'A', 'B', 'C', 'F']);
+        if (!values.ContainsKey('X') &&
+            !values.ContainsKey('Y') &&
+            !values.ContainsKey('Z') &&
+            !values.ContainsKey('A') &&
+            !values.ContainsKey('B') &&
+            !values.ContainsKey('C'))
         {
-            throw new ScriptParseException(lineNumber, sourceText, "G1 requires at least one X, Y, or Z coordinate.");
+            throw new ScriptParseException(
+                lineNumber,
+                sourceText,
+                "G1 requires at least one X, Y, Z, A, B, or C coordinate.");
         }
 
         double? feedRate = null;
@@ -155,7 +163,10 @@ public sealed partial class GCodeParser : IRobotScriptDialect
             GetOptionalDouble(lineNumber, sourceText, values, 'X'),
             GetOptionalDouble(lineNumber, sourceText, values, 'Y'),
             GetOptionalDouble(lineNumber, sourceText, values, 'Z'),
-            feedRate);
+            feedRate,
+            GetOptionalDouble(lineNumber, sourceText, values, 'A'),
+            GetOptionalDouble(lineNumber, sourceText, values, 'B'),
+            GetOptionalDouble(lineNumber, sourceText, values, 'C'));
     }
 
     private static double? GetOptionalDouble(

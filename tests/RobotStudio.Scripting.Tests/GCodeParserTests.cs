@@ -17,8 +17,31 @@ public sealed class GCodeParserTests
         Assert.Equal(10, move.XMillimeters);
         Assert.Null(move.YMillimeters);
         Assert.Null(move.ZMillimeters);
+        Assert.Null(move.ADegrees);
         Assert.Equal(3000, move.FeedRateMillimetersPerMinute);
         Assert.Equal(1, move.Source.LineNumber);
+    }
+
+    [Fact]
+    public void CompileProgram_WhenMoveContainsOrientation_ShouldPreservePoseWords()
+    {
+        var move = Assert.IsType<GCodeLinearMoveInstruction>(Assert.Single(
+            new GCodeParser().CompileProgram("G1 X180 Y80 A30 F3600").Instructions));
+
+        Assert.Equal(180, move.XMillimeters);
+        Assert.Equal(80, move.YMillimeters);
+        Assert.Equal(30, move.ADegrees);
+        Assert.Null(move.BDegrees);
+        Assert.Null(move.CDegrees);
+    }
+
+    [Fact]
+    public void Compile_WhenCartesianMoveContainsOrientation_ShouldRejectUnsupportedWords()
+    {
+        var exception = Assert.Throws<ScriptParseException>(() =>
+            new GCodeParser().Compile("G1 X10 Y20 Z5 A30"));
+
+        Assert.Contains("do not support A, B, or C", exception.Message);
     }
 
     [Fact]

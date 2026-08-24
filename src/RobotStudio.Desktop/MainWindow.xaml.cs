@@ -93,6 +93,14 @@ public partial class MainWindow : Window
         }
             ? new GCodeParser(new ScaraGCodeCommandMapper(CreateScaraProfile()))
             : simpleDslDialect;
+
+    private IRobotScriptDialect SimpleArmScriptDialect =>
+        SimpleArmScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
+        {
+            Id: RobotScriptDialectId.GCode
+        }
+            ? new GCodeParser(new SimpleArmGCodeCommandMapper(CreateSimpleArmProfile()))
+            : simpleDslDialect;
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -199,6 +207,9 @@ public partial class MainWindow : Window
         ScaraScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         ScaraScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        SimpleArmScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
+            .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
+        SimpleArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
         GlossaryCategoryComboBox.ItemsSource = new object[] { "All topics" }
             .Concat(Enum.GetValues<GlossaryCategory>().Cast<object>())
@@ -719,9 +730,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        SimpleArmScriptTextBox.Text = GetSelectedExampleScript(
-            SimpleArmExampleComboBox,
-            RobotViewerKind.SimpleArmThreeDimensional);
+        SimpleArmScriptTextBox.Text = GetSelectedSimpleArmExampleScript();
         simpleArmSnapshot = CreateSimpleArmSnapshot(SimpleArmScriptTextBox.Text, captureSession: true);
         SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
         SimpleArmTimeline.TickFrequency = 1;
@@ -995,6 +1004,50 @@ public partial class MainWindow : Window
         SetScaraScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
     }
 
+    private void SimpleArmScriptDialectComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded ||
+            activeViewerKind != RobotViewerKind.SimpleArmThreeDimensional ||
+            SimpleArmScriptDialectComboBox.SelectedItem is not RobotScriptDialectDescriptor descriptor)
+        {
+            return;
+        }
+
+        StopPlayback();
+        SimpleArmScriptTextBox.Text = GetSelectedSimpleArmExampleScript();
+
+        if (!TryCreateSimpleArmSnapshotFromScript(
+            SimpleArmScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            simpleArmSnapshot = null;
+            simpleArmSessionContext = null;
+            SetSimpleArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetSimpleArmScriptStatus(
+                "Script did not produce a Simple Arm playback snapshot.",
+                Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        simpleArmSnapshot = nextSnapshot;
+        SimpleArmTimeline.Maximum = simpleArmSnapshot.FrameCount - 1;
+        SimpleArmTimeline.TickFrequency = 1;
+        RenderSimpleArmFrame(index: 0);
+        var dialectMessage = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code tool-pose mode ready. G1 follows X/Y/A with positive-bend IK."
+            : "Simple DSL joint-space mode ready.";
+        SetSimpleArmScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
+    }
+
     private void ApplyCartesianProfileButton_Click(
         object sender,
         RoutedEventArgs e) =>
@@ -1157,12 +1210,18 @@ public partial class MainWindow : Window
         LoadScriptInto(
             SimpleArmScriptTextBox,
             SetSimpleArmScriptStatus,
-            () => simpleArmSnapshot = null);
+            () => simpleArmSnapshot = null,
+            SelectSimpleArmDialectForFile);
 
     private void SaveSimpleArmScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        SaveScriptFrom(SimpleArmScriptTextBox, SetSimpleArmScriptStatus);
+        SaveScriptFrom(
+            SimpleArmScriptTextBox,
+            SetSimpleArmScriptStatus,
+            SimpleArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+                ? ".gcode"
+                : ScriptFileDefaultExtension);
 
     private void LoadDeltaScriptButton_Click(
         object sender,
@@ -2959,12 +3018,15 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateSimpleArmProfile();
-        var commands = simpleDslDialect.Parse(script);
+        var initialJoints = new SimpleArmJointPosition(0, 0, 0);
+        var commands = SimpleArmScriptDialect.Parse(
+            script,
+            new RobotScriptParseContext(initialJoints));
         ValidateSimpleArmCommandSequence(commands, profile);
 
         var context = SimpleArmSimulationContext.Create(
             profile,
-            new SimpleArmJointPosition(BaseDegrees: 0, ShoulderDegrees: 0, ElbowDegrees: 0));
+            initialJoints);
         var result = new SimpleArmSimulator().Execute(context, commands);
         if (captureSession)
         {
@@ -3496,11 +3558,12 @@ public partial class MainWindow : Window
     private void ConfigureSimpleArmViewer()
     {
         ConfigureExampleSelector(
-            SimpleArmExampleComboBox,
+        SimpleArmExampleComboBox,
             RobotViewerKind.SimpleArmThreeDimensional);
-        SimpleArmScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.SimpleArmThreeDimensional);
+        SimpleArmScriptTextBox.Text = GetSimpleArmExampleScript(
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.SimpleArmThreeDimensional));
         SetSimpleArmScriptStatus(
-            "Edit ARM joint commands and simulate the articulated arm.",
+            "Choose joint-space Simple DSL or tool-pose G-code and simulate the articulated arm.",
             Color.FromRgb(148, 163, 184));
     }
 
@@ -3569,6 +3632,19 @@ public partial class MainWindow : Window
         ScaraScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
             ? example.GCodeScript ?? throw new InvalidOperationException(
                 $"SCARA example '{example.Name}' does not define a G-code program.")
+            : example.Script;
+
+    private string GetSelectedSimpleArmExampleScript()
+    {
+        var example = SimpleArmExampleComboBox.SelectedItem as RobotExample ??
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.SimpleArmThreeDimensional);
+        return GetSimpleArmExampleScript(example);
+    }
+
+    private string GetSimpleArmExampleScript(RobotExample example) =>
+        SimpleArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? example.GCodeScript ?? throw new InvalidOperationException(
+                $"Simple Arm example '{example.Name}' does not define a G-code program.")
             : example.Script;
 
     private static void ConfigureExampleSelector(
@@ -6240,6 +6316,19 @@ public partial class MainWindow : Window
         else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
         {
             ScaraScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        }
+    }
+
+    private void SelectSimpleArmDialectForFile(string fileName)
+    {
+        var extension = System.IO.Path.GetExtension(fileName);
+        if (extension.Equals(".gcode", StringComparison.OrdinalIgnoreCase))
+        {
+            SimpleArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.GCode;
+        }
+        else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
+        {
+            SimpleArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         }
     }
 

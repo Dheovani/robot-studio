@@ -52,6 +52,44 @@ public sealed class RobotExampleCatalogTests
     }
 
     [Fact]
+    public void SimpleArmExamples_WithGCode_ShouldProduceSuccessfulToolPosePlayback()
+    {
+        var profile = CreateSimpleArmProfile();
+        var initialJoints = new SimpleArmJointPosition(0, 0, 0);
+        var parser = new GCodeParser(new SimpleArmGCodeCommandMapper(profile));
+
+        foreach (var example in RobotExampleCatalog.GetFor(RobotViewerKind.SimpleArmThreeDimensional))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(example.GCodeScript));
+            var commands = parser.Parse(
+                example.GCodeScript!,
+                new RobotScriptParseContext(initialJoints));
+            var result = new SimpleArmSimulator().Execute(
+                SimpleArmSimulationContext.Create(profile, initialJoints),
+                commands);
+
+            Assert.True(result.Succeeded, result.Failure?.Message);
+            Assert.Contains(commands.Commands, command => command is SimpleArmLinearMoveCommand);
+        }
+    }
+
+    [Fact]
+    public void SimpleArmBasicGCodeFile_ShouldMatchDesktopCatalog()
+    {
+        var example = RobotExampleCatalog.GetDefaultFor(
+            RobotViewerKind.SimpleArmThreeDimensional);
+        var path = Path.Combine(
+            FindRepositoryRoot(),
+            "examples",
+            "simple-arm",
+            "basic.gcode");
+
+        Assert.Equal(
+            Normalize(example.GCodeScript!),
+            Normalize(File.ReadAllText(path)));
+    }
+
+    [Fact]
     public void All_ShouldExposeExamplesForEachOpenableViewer()
     {
         var openableViewerKinds = RobotCatalog.Templates
@@ -251,6 +289,16 @@ public sealed class RobotExampleCatalogTests
             linkCollisionRadiusMillimeters: 12,
             shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
             elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
+
+    private static SimpleArmRobotProfile CreateSimpleArmProfile() =>
+        new(
+            firstLinkLengthMillimeters: 120,
+            secondLinkLengthMillimeters: 90,
+            thirdLinkLengthMillimeters: 60,
+            linkCollisionRadiusMillimeters: 10,
+            baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
+            shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
+            elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
 
     private static string Normalize(string text) =>
         text.Replace("\r\n", "\n", StringComparison.Ordinal).Trim();

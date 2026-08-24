@@ -23,6 +23,7 @@ public sealed class GCodeRobotMappingTests
     [InlineData(GCodeRobotTarget.CartesianRobot)]
     [InlineData(GCodeRobotTarget.XYPlotter)]
     [InlineData(GCodeRobotTarget.ScaraRobot)]
+    [InlineData(GCodeRobotTarget.SimpleArticulatedArm)]
     public void Catalog_WhenMappingIsImplemented_ShouldMarkOnlyCartesianFamilyAvailable(
         GCodeRobotTarget target)
     {
@@ -33,7 +34,6 @@ public sealed class GCodeRobotMappingTests
     }
 
     [Theory]
-    [InlineData(GCodeRobotTarget.SimpleArticulatedArm)]
     [InlineData(GCodeRobotTarget.DeltaRobot)]
     [InlineData(GCodeRobotTarget.IndustrialArm6Dof)]
     public void Catalog_WhenToolSpaceKinematicsAreRequired_ShouldMarkMappingPlanned(

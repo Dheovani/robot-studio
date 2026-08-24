@@ -8,36 +8,52 @@ namespace RobotStudio.Simulation;
 public sealed class SimpleArmSimulator
 {
     private readonly SimpleArmMotionPlanner motionPlanner;
+    private readonly SimpleArmCartesianMotionPlanner cartesianMotionPlanner;
     private readonly SimpleArmKinematics kinematics;
     private readonly SpatialSimulationEnvironment environment;
 
     public SimpleArmSimulator()
-        : this(new SimpleArmMotionPlanner(), new SimpleArmKinematics(), SpatialSimulationEnvironment.Empty)
+        : this(
+            new SimpleArmMotionPlanner(),
+            new SimpleArmCartesianMotionPlanner(),
+            new SimpleArmKinematics(),
+            SpatialSimulationEnvironment.Empty)
     {
     }
 
     public SimpleArmSimulator(SpatialSimulationEnvironment environment)
-        : this(new SimpleArmMotionPlanner(), new SimpleArmKinematics(), environment)
+        : this(
+            new SimpleArmMotionPlanner(),
+            new SimpleArmCartesianMotionPlanner(),
+            new SimpleArmKinematics(),
+            environment)
     {
     }
 
     public SimpleArmSimulator(
         SimpleArmMotionPlanner motionPlanner,
         SimpleArmKinematics kinematics)
-        : this(motionPlanner, kinematics, SpatialSimulationEnvironment.Empty)
+        : this(
+            motionPlanner,
+            new SimpleArmCartesianMotionPlanner(kinematics),
+            kinematics,
+            SpatialSimulationEnvironment.Empty)
     {
     }
 
     public SimpleArmSimulator(
         SimpleArmMotionPlanner motionPlanner,
+        SimpleArmCartesianMotionPlanner cartesianMotionPlanner,
         SimpleArmKinematics kinematics,
         SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(cartesianMotionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
         ArgumentNullException.ThrowIfNull(environment);
 
         this.motionPlanner = motionPlanner;
+        this.cartesianMotionPlanner = cartesianMotionPlanner;
         this.kinematics = kinematics;
         this.environment = environment;
     }
@@ -96,6 +112,7 @@ public sealed class SimpleArmSimulator
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
             ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             SimpleArmMoveJointsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
+            SimpleArmLinearMoveCommand linearMoveCommand => ExecuteLinearMove(context, linearMoveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
@@ -189,6 +206,63 @@ public sealed class SimpleArmSimulator
         return completedContext;
     }
 
+    private SimpleArmSimulationContext ExecuteLinearMove(
+        SimpleArmSimulationContext context,
+        SimpleArmLinearMoveCommand command,
+        int commandIndex,
+        List<SimpleArmSimulationStep> timeline)
+    {
+        var motionPlan = cartesianMotionPlanner.PlanLinearMove(
+            context.CurrentJoints,
+            command.TargetToolPose,
+            context.RobotProfile,
+            command.RequestedToolVelocityMillimetersPerSecond);
+        var movingContext = TransitionTo(context, RobotState.Moving);
+
+        if (motionPlan.IsStationary)
+        {
+            timeline.Add(CreateStep(
+                movingContext,
+                "Simple arm linear tool move started.",
+                commandIndex,
+                nameof(SimpleArmLinearMoveCommand),
+                command.Source));
+            var stationaryContext = movingContext with { State = RobotState.Completed };
+            timeline.Add(CreateStep(
+                stationaryContext,
+                "Simple arm linear tool move completed without displacement.",
+                commandIndex,
+                nameof(SimpleArmLinearMoveCommand),
+                command.Source));
+            return stationaryContext;
+        }
+
+        EnsureCartesianPathIsClear(context, motionPlan);
+        timeline.Add(CreateStep(
+            movingContext,
+            "Simple arm linear tool move started.",
+            commandIndex,
+            nameof(SimpleArmLinearMoveCommand),
+            command.Source,
+            motionPlan.ProgressMotionProfile,
+            motionPlan));
+
+        var completedContext = movingContext with
+        {
+            CurrentJoints = motionPlan.Segments[^1].EndJoints,
+            State = RobotState.Completed,
+            ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
+        };
+        timeline.Add(CreateStep(
+            completedContext,
+            "Simple arm linear tool move completed.",
+            commandIndex,
+            nameof(SimpleArmLinearMoveCommand),
+            command.Source));
+
+        return completedContext;
+    }
+
     private static SimpleArmSimulationContext TransitionTo(
         SimpleArmSimulationContext context,
         RobotState nextState)
@@ -208,13 +282,32 @@ public sealed class SimpleArmSimulator
         }
     }
 
+    private void EnsureCartesianPathIsClear(
+        SimpleArmSimulationContext context,
+        SimpleArmCartesianMotionPlan motionPlan)
+    {
+        foreach (var segment in motionPlan.Segments)
+        {
+            var collision = SimpleArmLinkCollisionDetector.FindFirstCollision(
+                segment.StartJoints,
+                segment.EndJoints,
+                context.RobotProfile,
+                environment);
+            if (collision is not null)
+            {
+                throw new SpatialPathObstructedException("Simple Articulated Arm", collision);
+            }
+        }
+    }
+
     private SimpleArmSimulationStep CreateStep(
         SimpleArmSimulationContext context,
         string description,
         int? commandIndex = null,
         string? commandName = null,
         RobotCommandSource? commandSource = null,
-        TrapezoidalMotionProfile? motionProfile = null) =>
+        TrapezoidalMotionProfile? motionProfile = null,
+        SimpleArmCartesianMotionPlan? cartesianMotionPlan = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -225,7 +318,8 @@ public sealed class SimpleArmSimulator
             commandName,
             commandSource)
         {
-            MotionProfile = motionProfile
+            MotionProfile = motionProfile,
+            CartesianMotionPlan = cartesianMotionPlan
         };
 
     private static string GetCommandName(RobotCommand command) => command switch
@@ -233,6 +327,7 @@ public sealed class SimpleArmSimulator
         HomeCommand => nameof(HomeCommand),
         ResetFaultCommand => nameof(ResetFaultCommand),
         SimpleArmMoveJointsCommand => nameof(SimpleArmMoveJointsCommand),
+        SimpleArmLinearMoveCommand => nameof(SimpleArmLinearMoveCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name
     };

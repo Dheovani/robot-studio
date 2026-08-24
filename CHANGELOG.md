@@ -22,6 +22,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an explicit G-code compatibility catalog: Cartesian Robot and XY Plotter mappings are available, articulated and parallel mappings require future tool-path kinematics, and mobile/aerial mappings are intentionally not applicable.
 - Added `G21` millimeter declarations and clear rejection of unsupported `G20` inch mode.
 - Added SCARA tool-space G-code with planar `G1 X/Y`, deterministic elbow-down inverse kinematics, continuous acceleration-aware linear TCP playback, desktop dialect selection, and local examples.
+- Added Simple Articulated Arm tool-pose G-code with planar `G1 X/Y/A`, deterministic positive-bend inverse kinematics, continuous joint-limited playback, desktop dialect selection, and local examples.
 - Added `G-code` capability badges only to robot cards with an executable mapping.
 
 ### Changed

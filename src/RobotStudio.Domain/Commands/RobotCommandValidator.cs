@@ -135,6 +135,12 @@ public static class RobotCommandValidator
                 profile.ValidatePosition(moveCommand.TargetJoints);
                 return;
 
+            case SimpleArmLinearMoveCommand linearMoveCommand:
+                _ = new SimpleArmKinematics().InversePositiveBend(
+                    profile,
+                    linearMoveCommand.TargetToolPose);
+                return;
+
             default:
                 throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
         }

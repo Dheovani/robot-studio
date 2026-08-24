@@ -44,10 +44,10 @@ public static class GCodeRobotMappingCatalog
             GCodeRobotTarget.ScaraRobot,
             ['X', 'Y'],
             "X/Y tool-space paths use sampled linear planning and deterministic elbow-down inverse kinematics."),
-        Planned(
+        Available(
             GCodeRobotTarget.SimpleArticulatedArm,
-            ['X', 'Y', 'Z', 'A', 'B', 'C'],
-            "Requires inverse kinematics and Cartesian tool-path planning before G1 can remain linear."),
+            ['X', 'Y', 'A'],
+            "X/Y/A pose paths use sampled linear planning and deterministic positive-bend inverse kinematics."),
         Planned(
             GCodeRobotTarget.DeltaRobot,
             ['X', 'Y', 'Z'],

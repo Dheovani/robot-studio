@@ -64,6 +64,31 @@ public sealed class SimpleArmRobotProfileTests
     }
 
     [Fact]
+    public void InversePositiveBend_WhenPoseComesFromPositiveBendJoints_ShouldRecoverJoints()
+    {
+        var profile = CreateProfile();
+        var kinematics = new SimpleArmKinematics();
+        var expected = new SimpleArmJointPosition(10, 60, -30);
+
+        var result = kinematics.InversePositiveBend(
+            profile,
+            kinematics.Forward(profile, expected));
+
+        Assert.Equal(expected.BaseDegrees, result.BaseDegrees, precision: 6);
+        Assert.Equal(expected.ShoulderDegrees, result.ShoulderDegrees, precision: 6);
+        Assert.Equal(expected.ElbowDegrees, result.ElbowDegrees, precision: 6);
+    }
+
+    [Fact]
+    public void InversePositiveBend_WhenPoseIsUnreachable_ShouldThrow()
+    {
+        Assert.Throws<InvalidRobotCommandException>(() =>
+            new SimpleArmKinematics().InversePositiveBend(
+                CreateProfile(),
+                new SimpleArmToolPose(500, 0, 0)));
+    }
+
+    [Fact]
     public void Validate_WhenSimpleArmCommandTargetIsOutsideLimits_ShouldThrow()
     {
         var profile = CreateProfile();

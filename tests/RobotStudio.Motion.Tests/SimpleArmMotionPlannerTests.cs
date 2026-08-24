@@ -6,6 +6,60 @@ namespace RobotStudio.Motion.Tests;
 public sealed class SimpleArmMotionPlannerTests
 {
     [Fact]
+    public void PlanLinearMove_WhenPoseIsReachable_ShouldCreateContinuousSampledPosePlan()
+    {
+        var target = new SimpleArmToolPose(180, 80, 20);
+
+        var plan = new SimpleArmCartesianMotionPlanner().PlanLinearMove(
+            new SimpleArmJointPosition(0, 0, 0),
+            target,
+            CreateProfile(),
+            requestedToolVelocityMillimetersPerSecond: 60);
+
+        Assert.False(plan.IsStationary);
+        Assert.NotNull(plan.ProgressMotionProfile);
+        Assert.True(plan.Segments.Count > 1);
+        Assert.Equal(target, plan.EndToolPose);
+        Assert.All(
+            plan.Segments,
+            segment =>
+            {
+                Assert.InRange(
+                    Distance(segment.StartToolPose, segment.EndToolPose),
+                    0,
+                    SimpleArmCartesianMotionPlanner.DefaultMaximumToolSegmentLengthMillimeters + 0.000_001);
+                Assert.InRange(
+                    CrossProduct(plan.StartToolPose, target, segment.EndToolPose),
+                    -0.000_001,
+                    0.000_001);
+            });
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenPoseIsUnreachable_ShouldThrow()
+    {
+        Assert.Throws<InvalidRobotCommandException>(() =>
+            new SimpleArmCartesianMotionPlanner().PlanLinearMove(
+                new SimpleArmJointPosition(0, 0, 0),
+                new SimpleArmToolPose(500, 0, 0),
+                CreateProfile()));
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenRequestedFeedIsHigh_ShouldUseJointLimitedProgress()
+    {
+        var plan = new SimpleArmCartesianMotionPlanner().PlanLinearMove(
+            new SimpleArmJointPosition(0, 0, 0),
+            new SimpleArmToolPose(180, 80, 20),
+            CreateProfile(),
+            requestedToolVelocityMillimetersPerSecond: 10_000);
+
+        Assert.NotNull(plan.ProgressMotionProfile);
+        Assert.True(plan.ProgressMotionProfile.MaximumVelocity < 10_000 / plan.ToolDistanceMillimeters);
+        Assert.True(plan.TotalDuration > TimeSpan.Zero);
+    }
+
+    [Fact]
     public void PlanMove_WhenMovementIsValid_ShouldReturnPlan()
     {
         var planner = new SimpleArmMotionPlanner();
@@ -69,4 +123,18 @@ public sealed class SimpleArmMotionPlannerTests
             baseJoint: new SimpleArmJoint(SimpleArmJointId.Base, -180, 180, 100, 200),
             shoulderJoint: new SimpleArmJoint(SimpleArmJointId.Shoulder, -120, 120, 90, 180),
             elbowJoint: new SimpleArmJoint(SimpleArmJointId.Elbow, -150, 150, 80, 160));
+
+    private static double Distance(SimpleArmToolPose start, SimpleArmToolPose end)
+    {
+        var deltaX = end.X - start.X;
+        var deltaY = end.Y - start.Y;
+        return Math.Sqrt((deltaX * deltaX) + (deltaY * deltaY));
+    }
+
+    private static double CrossProduct(
+        SimpleArmToolPose lineStart,
+        SimpleArmToolPose lineEnd,
+        SimpleArmToolPose point) =>
+        ((lineEnd.X - lineStart.X) * (point.Y - lineStart.Y)) -
+        ((lineEnd.Y - lineStart.Y) * (point.X - lineStart.X));
 }

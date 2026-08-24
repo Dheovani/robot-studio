@@ -206,6 +206,14 @@ public static class RobotExampleCatalog
             ARM BASE=45 SHOULDER=30 ELBOW=-20 SPEED=80
             ARM BASE=90 SHOULDER=-40 ELBOW=70 SPEED=70
             WAIT 500
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X210 Y60 A15 F3600
+            G1 X170 Y100 A30 F3300
+            G4 P500
             """),
 
         new(
@@ -218,6 +226,15 @@ public static class RobotExampleCatalog
             ARM BASE=65 SHOULDER=50 ELBOW=-60 SPEED=80
             ARM BASE=110 SHOULDER=-20 ELBOW=80 SPEED=65
             WAIT 400
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X220 Y-40 A-10 F3600
+            G1 X180 Y-90 A-25 F3300
+            G1 X200 Y20 A10 F3000
+            G4 P400
             """),
 
         new(
