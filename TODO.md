@@ -23,6 +23,11 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Preserve executable commands and non-executable modal directives in a compiled script representation.
 - [x] Carry requested-motion metadata through Cartesian simulation and playback so the desktop does not reparse isolated source lines.
 - [x] Define the standard robot mapping policy: G-code describes TCP tool-space motion, Cartesian and XY mappings are available, articulated and parallel mappings require continuous Cartesian planning plus inverse kinematics, and mobile/aerial families retain robot-appropriate DSL commands.
+- [x] Add SCARA G-code with planar `G1 X/Y`, deterministic elbow-down inverse kinematics, sampled path validation, one continuous TCP motion profile, simulation playback, desktop dialect selection, examples, and catalog capability metadata.
+- [ ] Add Simple Articulated Arm G-code after implementing deterministic pose inverse kinematics and linear TCP planning.
+- [ ] Add Delta Robot G-code after implementing inverse kinematics and linear TCP planning for its parallel actuators.
+- [ ] Add 6-DOF Industrial Arm G-code after implementing full-pose inverse kinematics, configuration selection, and linear TCP planning.
+- [x] Keep Differential Drive and Drone G-code unavailable and omit the capability badge because CNC tool-space semantics do not fit their motion models.
 
 ## 3. Hardware Integration
 
@@ -36,6 +41,8 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [ ] Add Arduino or ESP32 firmware examples only after the protocol is stable.
 
 ## 4. Didactic Tools
+
+Do not begin the remaining Milestone 4 work until every applicable G-code mapping in Milestone 2 is complete and every non-applicable family is explicitly represented.
 
 - [x] Expand movement explanations for acceleration-aware plans.
 - [x] Add lesson-friendly examples for invalid axis limits.

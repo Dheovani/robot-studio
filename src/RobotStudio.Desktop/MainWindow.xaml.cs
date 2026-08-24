@@ -85,6 +85,14 @@ public partial class MainWindow : Window
         }
             ? gCodeDialect
             : simpleDslDialect;
+
+    private IRobotScriptDialect ScaraScriptDialect =>
+        ScaraScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
+        {
+            Id: RobotScriptDialectId.GCode
+        }
+            ? new GCodeParser(new ScaraGCodeCommandMapper(CreateScaraProfile()))
+            : simpleDslDialect;
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -188,6 +196,9 @@ public partial class MainWindow : Window
         ScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         ScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        ScaraScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
+            .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
+        ScaraScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
         GlossaryCategoryComboBox.ItemsSource = new object[] { "All topics" }
             .Concat(Enum.GetValues<GlossaryCategory>().Cast<object>())
@@ -637,9 +648,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        ScaraScriptTextBox.Text = GetSelectedExampleScript(
-            ScaraExampleComboBox,
-            RobotViewerKind.ScaraThreeDimensional);
+        ScaraScriptTextBox.Text = GetSelectedScaraExampleScript();
         scaraSnapshot = CreateScaraSnapshot(ScaraScriptTextBox.Text, captureSession: true);
         ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
         ScaraTimeline.TickFrequency = 1;
@@ -942,6 +951,50 @@ public partial class MainWindow : Window
         SetScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
     }
 
+    private void ScaraScriptDialectComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded ||
+            activeViewerKind != RobotViewerKind.ScaraThreeDimensional ||
+            ScaraScriptDialectComboBox.SelectedItem is not RobotScriptDialectDescriptor descriptor)
+        {
+            return;
+        }
+
+        StopPlayback();
+        ScaraScriptTextBox.Text = GetSelectedScaraExampleScript();
+
+        if (!TryCreateScaraSnapshotFromScript(
+            ScaraScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            scaraSnapshot = null;
+            scaraSessionContext = null;
+            SetScaraScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        if (nextSnapshot is null)
+        {
+            SetScaraScriptStatus(
+                "Script did not produce a SCARA playback snapshot.",
+                Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        scaraSnapshot = nextSnapshot;
+        ScaraTimeline.Maximum = scaraSnapshot.FrameCount - 1;
+        ScaraTimeline.TickFrequency = 1;
+        RenderScaraFrame(index: 0);
+        var dialectMessage = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code tool-space mode ready. G1 follows X/Y with elbow-down IK."
+            : "Simple DSL joint-space mode ready.";
+        SetScaraScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
+    }
+
     private void ApplyCartesianProfileButton_Click(
         object sender,
         RoutedEventArgs e) =>
@@ -1085,12 +1138,18 @@ public partial class MainWindow : Window
         LoadScriptInto(
             ScaraScriptTextBox,
             SetScaraScriptStatus,
-            () => scaraSnapshot = null);
+            () => scaraSnapshot = null,
+            SelectScaraDialectForFile);
 
     private void SaveScaraScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        SaveScriptFrom(ScaraScriptTextBox, SetScaraScriptStatus);
+        SaveScriptFrom(
+            ScaraScriptTextBox,
+            SetScaraScriptStatus,
+            ScaraScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+                ? ".gcode"
+                : ScriptFileDefaultExtension);
 
     private void LoadSimpleArmScriptButton_Click(
         object sender,
@@ -2875,12 +2934,15 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateScaraProfile();
-        var commands = simpleDslDialect.Parse(script);
+        var initialJoints = new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0);
+        var commands = ScaraScriptDialect.Parse(
+            script,
+            new RobotScriptParseContext(initialJoints));
         ValidateScaraCommandSequence(commands, profile);
 
         var context = ScaraSimulationContext.Create(
             profile,
-            new ScaraJointPosition(ShoulderDegrees: 0, ElbowDegrees: 0));
+            initialJoints);
         var result = new ScaraSimulator().Execute(context, commands);
         if (captureSession)
         {
@@ -3424,9 +3486,10 @@ public partial class MainWindow : Window
         ConfigureExampleSelector(
             ScaraExampleComboBox,
             RobotViewerKind.ScaraThreeDimensional);
-        ScaraScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.ScaraThreeDimensional);
+        ScaraScriptTextBox.Text = GetScaraExampleScript(
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.ScaraThreeDimensional));
         SetScaraScriptStatus(
-            "Edit SCARA joint commands and simulate the articulated robot.",
+            "Choose joint-space Simple DSL or tool-space G-code and simulate the articulated robot.",
             Color.FromRgb(148, 163, 184));
     }
 
@@ -3493,6 +3556,19 @@ public partial class MainWindow : Window
     private string ConvertCartesianExampleForSelectedDialect(RobotExample example) =>
         CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
             ? example.GCodeScript ?? GCodeWriter.Write(simpleDslDialect.Parse(example.Script))
+            : example.Script;
+
+    private string GetSelectedScaraExampleScript()
+    {
+        var example = ScaraExampleComboBox.SelectedItem as RobotExample ??
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.ScaraThreeDimensional);
+        return GetScaraExampleScript(example);
+    }
+
+    private string GetScaraExampleScript(RobotExample example) =>
+        ScaraScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? example.GCodeScript ?? throw new InvalidOperationException(
+                $"SCARA example '{example.Name}' does not define a G-code program.")
             : example.Script;
 
     private static void ConfigureExampleSelector(
@@ -6154,6 +6230,19 @@ public partial class MainWindow : Window
         }
     }
 
+    private void SelectScaraDialectForFile(string fileName)
+    {
+        var extension = System.IO.Path.GetExtension(fileName);
+        if (extension.Equals(".gcode", StringComparison.OrdinalIgnoreCase))
+        {
+            ScaraScriptDialectComboBox.SelectedItem = RobotScriptDialects.GCode;
+        }
+        else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
+        {
+            ScaraScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        }
+    }
+
     private void SaveScriptFrom(
         TextBox source,
         Action<string, Color> setStatus,
@@ -6354,6 +6443,7 @@ public partial class MainWindow : Window
     {
         RobotCapability.Simulation => "simulation",
         RobotCapability.Dsl => "DSL",
+        RobotCapability.GCode => "G-code",
         RobotCapability.ThreeDimensionalView => "3D view",
         RobotCapability.TwoDimensionalView => "2D view",
         RobotCapability.ManualControl => "manual control",

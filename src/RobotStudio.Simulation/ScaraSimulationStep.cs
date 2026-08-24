@@ -16,4 +16,6 @@ public sealed record ScaraSimulationStep(
     RobotCommandSource? CommandSource)
 {
     public TrapezoidalMotionProfile? MotionProfile { get; init; }
+
+    public ScaraCartesianMotionPlan? CartesianMotionPlan { get; init; }
 }

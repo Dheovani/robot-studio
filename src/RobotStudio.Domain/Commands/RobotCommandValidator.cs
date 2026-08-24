@@ -106,6 +106,12 @@ public static class RobotCommandValidator
                 profile.ValidatePosition(moveCommand.TargetJoints);
                 return;
 
+            case ScaraLinearMoveCommand linearMoveCommand:
+                _ = new ScaraKinematics().InverseElbowDown(
+                    profile,
+                    linearMoveCommand.TargetToolPose);
+                return;
+
             default:
                 throw new InvalidRobotCommandException($"Unsupported robot command type: {command.GetType().Name}.");
         }

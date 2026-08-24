@@ -45,7 +45,7 @@ G4 P500
 
 `G21` explicitly selects the project's millimeter unit; inch mode (`G20`) is rejected. `G90` selects absolute positioning and `G91` selects relative positioning. Omitted axes retain their current coordinate in absolute mode and represent zero displacement in relative mode. `F` is millimeters per minute and `G4 P` is milliseconds. The parser resolves both positioning modes into absolute `MoveToCommand` targets before validation and simulation, so the rest of the system remains independent of G-code.
 
-RobotStudio treats G-code coordinates as TCP tool-space coordinates, never as aliases for physical joints. Cartesian Robot and XY Plotter mappings are available. SCARA, Delta, and articulated-arm mappings remain future work until they can preserve a genuinely linear TCP path through inverse kinematics; Differential Drive and Drone use their robot-appropriate Simple DSL commands instead.
+RobotStudio treats G-code coordinates as TCP tool-space coordinates, never as aliases for physical joints. Cartesian Robot and XY Plotter map coordinates directly. SCARA supports planar `G1 X/Y` through deterministic elbow-down inverse kinematics and a sampled linear TCP path. Delta, Simple Articulated Arm, and 6-DOF Industrial Arm mappings remain future work until their inverse kinematics can preserve the same meaning; Differential Drive and Drone use their robot-appropriate Simple DSL commands instead.
 
 `RESET` acknowledges a fault when execution resumes from a failed simulation context. It returns the logical state to `Idle` while preserving the robot's physical state and elapsed simulation time; `HOME` remains the recovery option that physically returns the robot to its family-specific origin.
 

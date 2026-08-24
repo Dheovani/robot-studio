@@ -345,8 +345,18 @@ This document maps expected automated tests to project behavior. It should be up
   - [x] Emit deterministic `G21` and `G90` preambles when writing G-code.
   - [x] Catalog Cartesian and XY mappings as available, kinematics-dependent mappings as planned, and mobile/aerial mappings as not applicable.
   - [x] Reject an implicit mapping from G-code tool coordinates to articulated joint coordinates.
+  - [x] Map planar SCARA `G1 X/Y` into `ScaraLinearMoveCommand` while preserving feed rate and source metadata.
+  - [x] Resolve SCARA absolute and relative coordinates from joint-derived TCP context and HOME.
+  - [x] Reject nonzero SCARA Z movement and incompatible position contexts.
 - [x] Preserve Simple DSL commands as executable compiled statements.
-- [x] Carry requested movement velocity and wait duration through Cartesian timeline sampling and scene-frame mapping.
+  - [x] Carry requested movement velocity and wait duration through Cartesian timeline sampling and scene-frame mapping.
+  - [x] Plan SCARA tool-space lines with collinear waypoints no more than 2 mm apart.
+  - [x] Reject unreachable SCARA tool targets and non-elbow-down starting configurations.
+  - [x] Simulate a SCARA Cartesian command under one continuous TCP profile and reach the requested target without timeline stops at internal waypoints.
+  - [x] Keep every sampled SCARA playback TCP position on the requested Cartesian line.
+  - [x] Limit requested SCARA TCP feed and acceleration using the participating joint constraints.
+  - [x] Validate every desktop SCARA G-code example through parser, mapper, simulator, and playback inputs.
+  - [x] Expose the `G-code` catalog capability only for robot mappings that are currently executable.
 
 ## `RobotStudio.Hardware.Tests`
 

@@ -352,7 +352,9 @@ G4 P500
 - `G90` and `G91` do not create timeline movements themselves; they control how subsequent `G1` lines are resolved.
 - The generated G-code preamble uses `G21` and `G90` so units and positioning are explicit.
 - G-code coordinates describe TCP tool-space motion and never stand for joint numbers or actuators.
-- Cartesian Robot and XY Plotter mappings are available. SCARA, Delta, and articulated arms require future Cartesian path planning and inverse kinematics before accepting `G1` honestly.
+- Cartesian Robot and XY Plotter mappings are available through direct linear axes.
+- SCARA accepts planar `G1 X/Y` and optional `Z0`. It follows a sampled linear TCP path using deterministic elbow-down inverse kinematics; use `HOME`/`G28` or an elbow-down pose before tool-space movement.
+- Delta, Simple Articulated Arm, and 6-DOF Industrial Arm still require suitable inverse kinematics and Cartesian path planning before accepting `G1`.
 - Differential Drive and Drone use their robot-appropriate Simple DSL commands instead of a nonstandard G-code mapping.
 - Feed-rate retention, hardware execution, non-Cartesian mappings, and other G-codes are not part of this subset.
 
@@ -365,6 +367,8 @@ Standalone scripts are grouped by robot model under `examples/`. The Cartesian d
 - `Jog, wait, and home sequence` mirrors small manual jog actions, pauses without movement, and returns to the origin.
 
 An intentional validation failure is a teaching asset, not an executable success example. Its catalog metadata and automated tests record that expectation explicitly.
+
+The SCARA workspace also offers Simple DSL and G-code examples. Simple DSL `SCARA SHOULDER/ELBOW` commands teach joint-space movement; G-code `G1 X/Y` commands teach TCP tool-space movement through inverse kinematics. The `G-code` capability badge appears only on robot cards with an executable mapping.
 
 The desktop app preserves the latest typed simulation context for the active robot. `Reset Fault` starts a recovery playback from a faulted context without changing pose, joints, actuator state, odometry, attitude, or elapsed time. `HOME` starts a physical homing playback from the same preserved context and remains available from every state.
 

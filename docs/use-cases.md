@@ -312,6 +312,23 @@ Expected result:
 - validation, simulation, playback, and snapshot export consume the resolved `IRobotScriptDialect`;
 - unsupported dialect names and malformed options return clear argument errors.
 
+### Compare SCARA Joint Space And Tool Space
+
+Actor: student.
+
+Goal: compare direct joint commands with a Cartesian TCP trajectory on the same articulated mechanism.
+
+Current status: implemented in the SCARA desktop workspace.
+
+Expected result:
+
+- Simple DSL `SCARA SHOULDER/ELBOW` commands continue to move explicit joints;
+- G-code `G1 X/Y` commands describe planar TCP destinations rather than joint aliases;
+- `F` requests TCP speed in millimeters per minute;
+- the planner samples the straight TCP line and applies elbow-down inverse kinematics at each waypoint;
+- unreachable points, nonzero Z movement, and incompatible starting configurations produce explanatory errors;
+- both dialects feed the same deterministic SCARA simulator and playback viewer.
+
 ### Study Cartesian Validation And Sequencing Examples
 
 Actor: student.

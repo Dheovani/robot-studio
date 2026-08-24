@@ -5,6 +5,19 @@ namespace RobotStudio.Desktop.Tests;
 public sealed class RobotCatalogTests
 {
     [Fact]
+    public void Templates_WithAvailableGCodeMapping_ShouldExposeCapabilityBadge()
+    {
+        var gCodeTemplates = RobotCatalog.Templates
+            .Where(template => template.Capabilities.Contains(RobotCapability.GCode))
+            .Select(template => template.Name)
+            .ToArray();
+
+        Assert.Equal(
+            ["Cartesian Robot", "XY Plotter", "SCARA Robot"],
+            gCodeTemplates);
+    }
+
+    [Fact]
     public void Templates_ShouldContainCartesianRobot()
     {
         Assert.Contains(

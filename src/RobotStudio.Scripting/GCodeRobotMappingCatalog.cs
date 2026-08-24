@@ -40,10 +40,10 @@ public static class GCodeRobotMappingCatalog
         NotApplicable(
             GCodeRobotTarget.DifferentialDriveRobot,
             "CNC tool-space G-code does not represent wheel motion, heading, or odometry clearly."),
-        Planned(
+        Available(
             GCodeRobotTarget.ScaraRobot,
             ['X', 'Y'],
-            "Requires continuous Cartesian path planning, inverse kinematics, and a deterministic elbow configuration."),
+            "X/Y tool-space paths use sampled linear planning and deterministic elbow-down inverse kinematics."),
         Planned(
             GCodeRobotTarget.SimpleArticulatedArm,
             ['X', 'Y', 'Z', 'A', 'B', 'C'],

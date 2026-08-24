@@ -8,6 +8,7 @@ namespace RobotStudio.Simulation;
 public sealed class ScaraSimulator
 {
     private readonly ScaraMotionPlanner motionPlanner;
+    private readonly ScaraCartesianMotionPlanner cartesianMotionPlanner;
     private readonly ScaraKinematics kinematics;
     private readonly PlanarSimulationEnvironment environment;
     private readonly double maximumCollisionJointStepDegrees;
@@ -15,6 +16,7 @@ public sealed class ScaraSimulator
     public ScaraSimulator()
         : this(
             new ScaraMotionPlanner(),
+            new ScaraCartesianMotionPlanner(),
             new ScaraKinematics(),
             PlanarSimulationEnvironment.Empty,
             ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
@@ -24,6 +26,7 @@ public sealed class ScaraSimulator
     public ScaraSimulator(PlanarSimulationEnvironment environment)
         : this(
             new ScaraMotionPlanner(),
+            new ScaraCartesianMotionPlanner(),
             new ScaraKinematics(),
             environment,
             ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
@@ -35,6 +38,7 @@ public sealed class ScaraSimulator
         ScaraKinematics kinematics)
         : this(
             motionPlanner,
+            new ScaraCartesianMotionPlanner(kinematics),
             kinematics,
             PlanarSimulationEnvironment.Empty,
             ScaraLinkCollisionDetector.DefaultMaximumJointStepDegrees)
@@ -43,11 +47,13 @@ public sealed class ScaraSimulator
 
     public ScaraSimulator(
         ScaraMotionPlanner motionPlanner,
+        ScaraCartesianMotionPlanner cartesianMotionPlanner,
         ScaraKinematics kinematics,
         PlanarSimulationEnvironment environment,
         double maximumCollisionJointStepDegrees)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(cartesianMotionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
         ArgumentNullException.ThrowIfNull(environment);
 
@@ -59,6 +65,7 @@ public sealed class ScaraSimulator
         }
 
         this.motionPlanner = motionPlanner;
+        this.cartesianMotionPlanner = cartesianMotionPlanner;
         this.kinematics = kinematics;
         this.environment = environment;
         this.maximumCollisionJointStepDegrees = maximumCollisionJointStepDegrees;
@@ -118,6 +125,7 @@ public sealed class ScaraSimulator
             HomeCommand homeCommand => ExecuteHome(context, homeCommand, commandIndex, timeline),
             ResetFaultCommand resetCommand => ExecuteResetFault(context, resetCommand, commandIndex, timeline),
             ScaraMoveJointsCommand moveCommand => ExecuteMove(context, moveCommand, commandIndex, timeline),
+            ScaraLinearMoveCommand linearMoveCommand => ExecuteLinearMove(context, linearMoveCommand, commandIndex, timeline),
             WaitCommand waitCommand => ExecuteWait(context, waitCommand, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
@@ -191,6 +199,64 @@ public sealed class ScaraSimulator
         return completedContext;
     }
 
+    private ScaraSimulationContext ExecuteLinearMove(
+        ScaraSimulationContext context,
+        ScaraLinearMoveCommand command,
+        int commandIndex,
+        List<ScaraSimulationStep> timeline)
+    {
+        var motionPlan = cartesianMotionPlanner.PlanLinearMove(
+            context.CurrentJoints,
+            command.TargetToolPose,
+            context.RobotProfile,
+            command.RequestedToolVelocityMillimetersPerSecond);
+        var movingContext = TransitionTo(context, RobotState.Moving);
+
+        if (motionPlan.IsStationary)
+        {
+            timeline.Add(CreateStep(
+                movingContext,
+                "SCARA linear tool move started.",
+                commandIndex,
+                nameof(ScaraLinearMoveCommand),
+                command.Source));
+            var stationaryContext = movingContext with { State = RobotState.Completed };
+            timeline.Add(CreateStep(
+                stationaryContext,
+                "SCARA linear tool move completed without displacement.",
+                commandIndex,
+                nameof(ScaraLinearMoveCommand),
+                command.Source));
+            return stationaryContext;
+        }
+
+        EnsureCartesianPathIsClear(context, motionPlan);
+
+        timeline.Add(CreateStep(
+            movingContext,
+            "SCARA linear tool move started.",
+            commandIndex,
+            nameof(ScaraLinearMoveCommand),
+            command.Source,
+            motionPlan.ToolMotionProfile,
+            motionPlan));
+
+        var completedContext = movingContext with
+        {
+            CurrentJoints = motionPlan.Segments[^1].EndJoints,
+            State = RobotState.Completed,
+            ElapsedTime = movingContext.ElapsedTime + motionPlan.TotalDuration
+        };
+        timeline.Add(CreateStep(
+            completedContext,
+            "SCARA linear tool move completed.",
+            commandIndex,
+            nameof(ScaraLinearMoveCommand),
+            command.Source));
+
+        return completedContext;
+    }
+
     private ScaraSimulationContext ExecuteWait(
         ScaraSimulationContext context,
         WaitCommand command,
@@ -237,13 +303,34 @@ public sealed class ScaraSimulator
         }
     }
 
+    private void EnsureCartesianPathIsClear(
+        ScaraSimulationContext context,
+        ScaraCartesianMotionPlan motionPlan)
+    {
+        foreach (var segment in motionPlan.Segments)
+        {
+            var collision = ScaraLinkCollisionDetector.FindFirstCollision(
+                segment.StartJoints,
+                segment.EndJoints,
+                context.RobotProfile,
+                environment,
+                maximumCollisionJointStepDegrees);
+
+            if (collision is not null)
+            {
+                throw new ScaraPathObstructedException(collision);
+            }
+        }
+    }
+
     private ScaraSimulationStep CreateStep(
         ScaraSimulationContext context,
         string description,
         int? commandIndex = null,
         string? commandName = null,
         RobotCommandSource? commandSource = null,
-        TrapezoidalMotionProfile? motionProfile = null) =>
+        TrapezoidalMotionProfile? motionProfile = null,
+        ScaraCartesianMotionPlan? cartesianMotionPlan = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -254,7 +341,8 @@ public sealed class ScaraSimulator
             commandName,
             commandSource)
         {
-            MotionProfile = motionProfile
+            MotionProfile = motionProfile,
+            CartesianMotionPlan = cartesianMotionPlan
         };
 
     private static string GetCommandName(RobotCommand command) => command switch
@@ -262,6 +350,7 @@ public sealed class ScaraSimulator
         HomeCommand => nameof(HomeCommand),
         ResetFaultCommand => nameof(ResetFaultCommand),
         ScaraMoveJointsCommand => nameof(ScaraMoveJointsCommand),
+        ScaraLinearMoveCommand => nameof(ScaraLinearMoveCommand),
         WaitCommand => nameof(WaitCommand),
         _ => command.GetType().Name
     };

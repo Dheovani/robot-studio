@@ -8,6 +8,59 @@ namespace RobotStudio.Simulation.Tests;
 public sealed class ScaraSimulatorTests
 {
     [Fact]
+    public void Execute_WhenCommandIsLinearToolMove_ShouldCreateOneContinuousTimelineInterval()
+    {
+        var profile = CreateProfile();
+        var target = new ScaraToolPose(X: 220, Y: 80);
+        var source = new RobotCommandSource(2, "G1 X220 Y80 F4800");
+        var result = new ScaraSimulator().Execute(
+            ScaraSimulationContext.Create(profile, new ScaraJointPosition(0, 0)),
+            new RobotCommandSequence(
+            [
+                new ScaraLinearMoveCommand(
+                    target,
+                    requestedToolVelocityMillimetersPerSecond: 80,
+                    source)
+            ]));
+
+        Assert.True(result.Succeeded);
+        Assert.Equal(RobotState.Completed, result.FinalContext.State);
+        var finalPose = new ScaraKinematics().Forward(
+            profile,
+            result.FinalContext.CurrentJoints);
+        Assert.Equal(target.X, finalPose.X, precision: 6);
+        Assert.Equal(target.Y, finalPose.Y, precision: 6);
+        Assert.Equal(3, result.Timeline.Count);
+        Assert.NotNull(result.Timeline[1].CartesianMotionPlan);
+        Assert.NotNull(result.Timeline[1].MotionProfile);
+        Assert.All(
+            result.Timeline.Where(step => step.CommandIndex == 0),
+            step => Assert.Equal(source, step.CommandSource));
+    }
+
+    [Fact]
+    public void Playback_WhenCommandIsLinearToolMove_ShouldKeepTcpOnRequestedLine()
+    {
+        var profile = CreateProfile();
+        var start = new ScaraToolPose(300, 0);
+        var target = new ScaraToolPose(220, 80);
+        var result = new ScaraSimulator().Execute(
+            ScaraSimulationContext.Create(profile, new ScaraJointPosition(0, 0)),
+            new RobotCommandSequence([new ScaraLinearMoveCommand(target, 80)]));
+
+        var playback = new ScaraPlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(10));
+
+        Assert.All(
+            playback.Frames.Where(frame => frame.State == RobotState.Moving),
+            frame => Assert.InRange(
+                CrossProduct(start, target, frame.ToolPose),
+                -0.000_001,
+                0.000_001));
+    }
+
+    [Fact]
     public void Execute_WhenLinkPathCrossesObstacle_ShouldFaultWithoutMoving()
     {
         var environment = new PlanarSimulationEnvironment(
@@ -182,4 +235,11 @@ public sealed class ScaraSimulatorTests
             linkCollisionRadiusMillimeters: 12,
             shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
             elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
+
+    private static double CrossProduct(
+        ScaraToolPose lineStart,
+        ScaraToolPose lineEnd,
+        ScaraToolPose point) =>
+        ((lineEnd.X - lineStart.X) * (point.Y - lineStart.Y)) -
+        ((lineEnd.Y - lineStart.Y) * (point.X - lineStart.X));
 }

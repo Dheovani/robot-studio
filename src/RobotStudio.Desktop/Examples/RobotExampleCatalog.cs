@@ -166,6 +166,14 @@ public static class RobotExampleCatalog
             SCARA SHOULDER=45 ELBOW=30 SPEED=80
             SCARA SHOULDER=80 ELBOW=-40 SPEED=70
             WAIT 500
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X220 Y80 F4800
+            G1 X160 Y180 F4200
+            G4 P500
             """),
 
         new(
@@ -178,6 +186,15 @@ public static class RobotExampleCatalog
             SCARA SHOULDER=35 ELBOW=-80 SPEED=75
             SCARA SHOULDER=70 ELBOW=20 SPEED=70
             WAIT 400
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X220 Y60 F4500
+            G1 X160 Y160 F4500
+            G1 X210 Y100 F4200
+            G4 P400
             """),
 
         new(

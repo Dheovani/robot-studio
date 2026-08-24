@@ -1399,8 +1399,16 @@
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
-                        <TextBlock Text="Example"
+                        <TextBlock Text="Dialect"
                                    Margin="0,10,0,4"
+                                   Foreground="#94A3B8" />
+                        <ComboBox x:Name="ScaraScriptDialectComboBox"
+                                  Margin="0,0,0,8"
+                                  DisplayMemberPath="Name"
+                                  ToolTip="Choose joint-space Simple DSL or tool-space G-code for the SCARA robot."
+                                  SelectionChanged="ScaraScriptDialectComboBox_SelectionChanged" />
+                        <TextBlock Text="Example"
+                                   Margin="0,0,0,4"
                                    Foreground="#94A3B8" />
                         <ComboBox x:Name="ScaraExampleComboBox"
                                   Margin="0,0,0,8" />

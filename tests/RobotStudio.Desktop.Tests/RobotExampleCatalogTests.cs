@@ -1,5 +1,6 @@
 using RobotStudio.Desktop.Examples;
 using RobotStudio.Desktop.Robots;
+using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Cartesian;
 using RobotStudio.Domain.Commands;
 using RobotStudio.Domain.Exceptions;
@@ -10,6 +11,46 @@ namespace RobotStudio.Desktop.Tests;
 
 public sealed class RobotExampleCatalogTests
 {
+    [Fact]
+    public void ScaraExamples_WithGCode_ShouldProduceSuccessfulToolSpacePlayback()
+    {
+        var profile = CreateScaraProfile();
+        var initialJoints = new ScaraJointPosition(0, 0);
+        var parser = new GCodeParser(new ScaraGCodeCommandMapper(profile));
+
+        foreach (var example in RobotExampleCatalog.GetFor(RobotViewerKind.ScaraThreeDimensional))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(example.GCodeScript));
+            var commands = parser.Parse(
+                example.GCodeScript!,
+                new RobotScriptParseContext(initialJoints));
+            var result = new ScaraSimulator().Execute(
+                ScaraSimulationContext.Create(profile, initialJoints),
+                commands);
+
+            Assert.True(result.Succeeded, result.Failure?.Message);
+            Assert.Contains(
+                commands.Commands,
+                command => command is ScaraLinearMoveCommand);
+        }
+    }
+
+    [Fact]
+    public void ScaraBasicGCodeFile_ShouldMatchDesktopCatalog()
+    {
+        var example = RobotExampleCatalog.GetDefaultFor(
+            RobotViewerKind.ScaraThreeDimensional);
+        var path = Path.Combine(
+            FindRepositoryRoot(),
+            "examples",
+            "scara",
+            "basic.gcode");
+
+        Assert.Equal(
+            Normalize(example.GCodeScript!),
+            Normalize(File.ReadAllText(path)));
+    }
+
     [Fact]
     public void All_ShouldExposeExamplesForEachOpenableViewer()
     {
@@ -202,6 +243,14 @@ public sealed class RobotExampleCatalogTests
             new Axis(AxisId.X, 0, 300, 120, 240),
             new Axis(AxisId.Y, 0, 200, 100, 200),
             new Axis(AxisId.Z, 0, 150, 80, 160));
+
+    private static ScaraRobotProfile CreateScaraProfile() =>
+        new(
+            firstLinkLengthMillimeters: 180,
+            secondLinkLengthMillimeters: 120,
+            linkCollisionRadiusMillimeters: 12,
+            shoulderJoint: new ScaraJoint(ScaraJointId.Shoulder, -180, 180, 120, 240),
+            elbowJoint: new ScaraJoint(ScaraJointId.Elbow, -150, 150, 100, 200));
 
     private static string Normalize(string text) =>
         text.Replace("\r\n", "\n", StringComparison.Ordinal).Trim();

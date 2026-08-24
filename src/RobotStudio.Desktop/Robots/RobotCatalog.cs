@@ -50,6 +50,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
+                RobotCapability.GCode,
                 RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
@@ -71,6 +72,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
+                RobotCapability.GCode,
                 RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,
@@ -153,6 +155,7 @@ public static class RobotCatalog
             [
                 RobotCapability.Simulation,
                 RobotCapability.Dsl,
+                RobotCapability.GCode,
                 RobotCapability.ThreeDimensionalView,
                 RobotCapability.ManualControl,
                 RobotCapability.Playback,

@@ -1,4 +1,5 @@
 using RobotStudio.Domain.Articulated;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -47,17 +48,16 @@ public sealed class ScaraPlaybackSampler
 
             for (var time = current.Time; time < next.Time; time += interval)
             {
-                var progress = MotionProfileTimelineSampler.CalculateProgress(
-                    current.MotionProfile,
-                    current.Time,
-                    next.Time,
+                var (joints, toolPose) = SampleMovement(
+                    result.InitialContext.RobotProfile,
+                    current,
+                    next,
                     time);
-                var joints = ScaraJointInterpolation.Interpolate(current.Joints, next.Joints, progress);
                 frames.Add(new ScaraPlaybackFrame(
                     time,
                     current.State,
                     joints,
-                    kinematics.Forward(result.InitialContext.RobotProfile, joints),
+                    toolPose,
                     current.CommandIndex,
                     current.CommandName,
                     current.CommandSource));
@@ -73,6 +73,42 @@ public sealed class ScaraPlaybackSampler
             result.Succeeded,
             result.Failure?.Message);
     }
+
+    private (ScaraJointPosition Joints, ScaraToolPose ToolPose) SampleMovement(
+        ScaraRobotProfile profile,
+        ScaraSimulationStep current,
+        ScaraSimulationStep next,
+        TimeSpan time)
+    {
+        if (current.CartesianMotionPlan is
+            {
+                ToolMotionProfile: not null
+            } cartesianPlan)
+        {
+            var sample = cartesianPlan.ToolMotionProfile.SampleAt(time - current.Time);
+            var toolPose = Interpolate(
+                cartesianPlan.StartToolPose,
+                cartesianPlan.EndToolPose,
+                sample.Progress);
+            return (kinematics.InverseElbowDown(profile, toolPose), toolPose);
+        }
+
+        var progress = MotionProfileTimelineSampler.CalculateProgress(
+            current.MotionProfile,
+            current.Time,
+            next.Time,
+            time);
+        var joints = ScaraJointInterpolation.Interpolate(current.Joints, next.Joints, progress);
+        return (joints, kinematics.Forward(profile, joints));
+    }
+
+    private static ScaraToolPose Interpolate(
+        ScaraToolPose start,
+        ScaraToolPose end,
+        double progress) =>
+        new(
+            start.X + ((end.X - start.X) * progress),
+            start.Y + ((end.Y - start.Y) * progress));
 
     private ScaraPlaybackFrame CreateFrame(
         ScaraRobotProfile profile,

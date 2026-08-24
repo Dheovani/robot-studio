@@ -22,6 +22,7 @@ public sealed class GCodeRobotMappingTests
     [Theory]
     [InlineData(GCodeRobotTarget.CartesianRobot)]
     [InlineData(GCodeRobotTarget.XYPlotter)]
+    [InlineData(GCodeRobotTarget.ScaraRobot)]
     public void Catalog_WhenMappingIsImplemented_ShouldMarkOnlyCartesianFamilyAvailable(
         GCodeRobotTarget target)
     {
@@ -32,7 +33,6 @@ public sealed class GCodeRobotMappingTests
     }
 
     [Theory]
-    [InlineData(GCodeRobotTarget.ScaraRobot)]
     [InlineData(GCodeRobotTarget.SimpleArticulatedArm)]
     [InlineData(GCodeRobotTarget.DeltaRobot)]
     [InlineData(GCodeRobotTarget.IndustrialArm6Dof)]

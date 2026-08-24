@@ -4,6 +4,7 @@ public enum RobotCapability
 {
     Simulation,
     Dsl,
+    GCode,
     ThreeDimensionalView,
     TwoDimensionalView,
     ManualControl,
