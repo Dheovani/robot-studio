@@ -16,12 +16,21 @@
                 <TextBlock Text="Mechanical showcase proof of concept"
                            Style="{DynamicResource ViewerSubtitleStyle}" />
             </StackPanel>
-            <Button DockPanel.Dock="Right"
-                    Width="96"
-                    Style="{DynamicResource ViewerToolbarButtonStyle}"
-                    Content="Robots"
-                    ToolTip="Return to the robot catalog."
-                    Click="BackButton_Click" />
+            <StackPanel DockPanel.Dock="Right"
+                        HorizontalAlignment="Right"
+                        Orientation="Horizontal">
+                <Button Style="{DynamicResource ViewerToolbarButtonStyle}"
+                        Content="Robots"
+                        ToolTip="Return to the robot catalog."
+                        Click="BackButton_Click" />
+                <Button x:Name="HeaderPlayButton"
+                        Style="{DynamicResource ViewerToolbarButtonStyle}"
+                        Content="Play"
+                        Click="PlayButton_Click" />
+                <Button Style="{DynamicResource ViewerToolbarButtonStyle}"
+                        Content="Reset"
+                        Click="ResetButton_Click" />
+            </StackPanel>
         </DockPanel>
 
         <Grid Grid.Row="1" Margin="16,0,16,16">
@@ -31,12 +40,18 @@
                 <ColumnDefinition Width="320" />
             </Grid.ColumnDefinitions>
 
-            <Border Grid.Column="0"
+            <Border x:Name="ShowcaseViewportHost"
+                    Grid.Column="0"
                     ClipToBounds="True"
+                    Cursor="Hand"
                     Background="#0B1220"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
-                    CornerRadius="4">
+                    CornerRadius="4"
+                    MouseLeftButtonDown="ShowcaseViewportHost_MouseLeftButtonDown"
+                    MouseLeftButtonUp="ShowcaseViewportHost_MouseLeftButtonUp"
+                    MouseMove="ShowcaseViewportHost_MouseMove"
+                    MouseWheel="ShowcaseViewportHost_MouseWheel">
                 <hx:Viewport3DX x:Name="ShowcaseViewport"
                                BackgroundColor="#0B1220"
                                EnableMouseButtonHitTest="True"
@@ -44,8 +59,8 @@
                                FXAALevel="Low"
                                ModelUpDirection="0,0,1"
                                ShowCoordinateSystem="True"
-                               ShowViewCube="True"
-                               UseDefaultGestures="True">
+                               ShowViewCube="False"
+                               UseDefaultGestures="False">
                     <hx:AmbientLight3D Color="#667085" />
                     <hx:DirectionalLight3D Color="White" Direction="-1,-1,-2" />
                     <hx:DirectionalLight3D Color="#93C5FD" Direction="1,0,-1" />
@@ -60,7 +75,6 @@
                     CornerRadius="4">
                 <Grid>
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
                         <RowDefinition Height="Auto" />
@@ -79,29 +93,7 @@
                               DisplayMemberPath="Name"
                               SelectionChanged="DemonstrationComboBox_SelectionChanged" />
 
-                    <Grid Grid.Row="2">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                            <ColumnDefinition Width="*" />
-                        </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0"
-                                Margin="0,0,4,0"
-                                Content="Play"
-                                Click="PlayButton_Click" />
-                        <Button Grid.Column="1"
-                                Margin="4,0"
-                                Style="{DynamicResource SecondaryButtonStyle}"
-                                Content="Pause"
-                                Click="PauseButton_Click" />
-                        <Button Grid.Column="2"
-                                Margin="4,0,0,0"
-                                Style="{DynamicResource SecondaryButtonStyle}"
-                                Content="Reset"
-                                Click="ResetButton_Click" />
-                    </Grid>
-
-                    <StackPanel Grid.Row="3" Margin="0,12,0,18">
+                    <StackPanel Grid.Row="2" Margin="0,2,0,18">
                         <ProgressBar x:Name="DemonstrationProgressBar"
                                      Height="6"
                                      Minimum="0"
@@ -112,7 +104,7 @@
                                    Text="0 / 0 s" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="4">
+                    <StackPanel Grid.Row="3">
                         <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
                                    FontSize="18"
                                    FontWeight="SemiBold"

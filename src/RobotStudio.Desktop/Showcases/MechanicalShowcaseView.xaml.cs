@@ -2,6 +2,7 @@ using System.Diagnostics;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using System.Windows.Threading;
@@ -9,6 +10,7 @@ using HelixToolkit.Geometry;
 using HelixToolkit.Maths;
 using HelixToolkit.SharpDX;
 using HelixToolkit.Wpf.SharpDX;
+using RobotStudio.Desktop.Rendering;
 using RobotStudio.Visualization;
 using MediaColor = System.Windows.Media.Color;
 using MeshGeometry3D = HelixToolkit.SharpDX.MeshGeometry3D;
@@ -18,13 +20,20 @@ namespace RobotStudio.Desktop.Showcases;
 public partial class MechanicalShowcaseView : UserControl
 {
     private const float MillimetersPerSceneUnit = 100;
+    private const double InitialAzimuthDegrees = 48;
+    private const double InitialElevationDegrees = 28;
+    private const double InitialCameraDistance = 17;
+
+    private static readonly Point3D CameraTarget = new(0, 0, 2.3);
 
     private readonly MechanicalShowcaseDefinition showcase = CartesianMechanicalShowcaseDefinition.Create();
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> normalMaterials = [];
     private readonly DefaultEffectsManager effectsManager = new();
+    private readonly HelixToolkit.Wpf.SharpDX.PerspectiveCamera camera = new();
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
     private readonly Stopwatch stopwatch = new();
+    private readonly ViewportOrbitInteractionState orbitInteraction = new();
     private readonly PhongMaterial selectionMaterial = Material(
         diffuse: new Color4(1f, 0.72f, 0.12f, 1f),
         specular: new Color4(1f, 0.9f, 0.55f, 1f),
@@ -32,21 +41,17 @@ public partial class MechanicalShowcaseView : UserControl
 
     private TimeSpan playbackOffset;
     private RobotPartId? selectedPartId;
+    private double cameraAzimuthDegrees = InitialAzimuthDegrees;
+    private double cameraElevationDegrees = InitialElevationDegrees;
+    private double cameraDistance = InitialCameraDistance;
 
     public MechanicalShowcaseView()
     {
         InitializeComponent();
 
         ShowcaseViewport.EffectsManager = effectsManager;
-        ShowcaseViewport.Camera = new HelixToolkit.Wpf.SharpDX.PerspectiveCamera
-        {
-            Position = new Point3D(10, 12, 9),
-            LookDirection = new Vector3D(-10, -12, -6),
-            UpDirection = new Vector3D(0, 0, 1),
-            NearPlaneDistance = 0.05,
-            FarPlaneDistance = 500,
-            FieldOfView = 45
-        };
+        ShowcaseViewport.Camera = camera;
+        ApplyCamera();
 
         BuildScene();
         DemonstrationComboBox.ItemsSource = showcase.Demonstrations;
@@ -242,6 +247,12 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
+        if (stopwatch.IsRunning)
+        {
+            PauseDemonstration();
+            return;
+        }
+
         if (playbackOffset >= demonstration.Duration)
         {
             playbackOffset = TimeSpan.Zero;
@@ -251,12 +262,15 @@ public partial class MechanicalShowcaseView : UserControl
         {
             stopwatch.Restart();
             timer.Start();
+            HeaderPlayButton.Content = "Pause";
         }
     }
 
-    private void PauseButton_Click(object sender, RoutedEventArgs e) => PauseDemonstration();
-
-    private void ResetButton_Click(object sender, RoutedEventArgs e) => ResetDemonstration();
+    private void ResetButton_Click(object sender, RoutedEventArgs e)
+    {
+        ResetDemonstration();
+        ResetCamera();
+    }
 
     private void DemonstrationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
         ResetDemonstration();
@@ -270,6 +284,7 @@ public partial class MechanicalShowcaseView : UserControl
 
         stopwatch.Reset();
         timer.Stop();
+        HeaderPlayButton.Content = "Play";
     }
 
     private void ResetDemonstration()
@@ -277,7 +292,72 @@ public partial class MechanicalShowcaseView : UserControl
         stopwatch.Reset();
         timer.Stop();
         playbackOffset = TimeSpan.Zero;
+        HeaderPlayButton.Content = "Play";
         ApplyDemonstrationTime(TimeSpan.Zero);
+    }
+
+    private void ShowcaseViewportHost_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
+        orbitInteraction.BeginDrag(ShowcaseViewportHost, ShowcaseViewport, e);
+
+    private void ShowcaseViewportHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
+        orbitInteraction.EndDrag(ShowcaseViewportHost, e);
+
+    private void ShowcaseViewportHost_MouseMove(object sender, MouseEventArgs e)
+    {
+        if (!orbitInteraction.TryGetDragDelta(ShowcaseViewport, e, out var deltaX, out var deltaY))
+        {
+            return;
+        }
+
+        cameraAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(
+            cameraAzimuthDegrees - (deltaX * 0.35));
+        cameraElevationDegrees = Math.Clamp(
+            cameraElevationDegrees + (deltaY * 0.25),
+            5,
+            85);
+        ApplyCamera();
+        e.Handled = true;
+    }
+
+    private void ShowcaseViewportHost_MouseWheel(object sender, MouseWheelEventArgs e)
+    {
+        if (!Keyboard.Modifiers.HasFlag(ModifierKeys.Control))
+        {
+            return;
+        }
+
+        cameraDistance = Math.Clamp(
+            cameraDistance * (e.Delta > 0 ? 0.9 : 1.1),
+            8,
+            32);
+        ApplyCamera();
+        e.Handled = true;
+    }
+
+    private void ApplyCamera()
+    {
+        var reference = OrbitCameraFactory.Create(new OrbitCameraSettings(
+            CameraTarget,
+            cameraAzimuthDegrees,
+            cameraElevationDegrees,
+            cameraDistance,
+            FieldOfView: 45,
+            NearPlaneDistance: 0.05,
+            FarPlaneDistance: 500));
+        camera.Position = reference.Position;
+        camera.LookDirection = reference.LookDirection;
+        camera.UpDirection = reference.UpDirection;
+        camera.FieldOfView = reference.FieldOfView;
+        camera.NearPlaneDistance = reference.NearPlaneDistance;
+        camera.FarPlaneDistance = reference.FarPlaneDistance;
+    }
+
+    private void ResetCamera()
+    {
+        cameraAzimuthDegrees = InitialAzimuthDegrees;
+        cameraElevationDegrees = InitialElevationDegrees;
+        cameraDistance = InitialCameraDistance;
+        ApplyCamera();
     }
 
     private void BackButton_Click(object sender, RoutedEventArgs e)
