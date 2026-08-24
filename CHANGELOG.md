@@ -33,6 +33,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 ### Changed
 
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
+- Changed the Cartesian mechanical showcase into a recognizable desktop-machine arrangement with a Y-moving work platform, an X tool carriage, and a synchronized dual-column Z gantry.
 - Changed generated G-code to include deterministic `G21` millimeter and `G90` absolute-positioning preambles.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
 - Changed Cartesian movement explanations to use exact command boundaries instead of estimating motion from fixed-interval playback frames.
@@ -42,6 +43,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.
 - Fixed the mechanical showcase header layout and moved playback actions into the same top-toolbar pattern used by simulation workspaces.
 - Fixed mechanical-showcase camera navigation with full-viewport drag orbit, bounded elevation, predictable reset, and removal of the unstable view cube.
+- Fixed the mechanical showcase opening with empty component details by selecting the machine base initially.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

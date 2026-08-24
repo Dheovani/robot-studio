@@ -597,3 +597,4 @@ Expected current behavior:
 - validates mechanical demonstration timelines, stable component-pose sets, interpolation, clamping, and hierarchical world-transform composition;
 - keeps HelixToolkit references confined to the Windows desktop project and keeps `RobotStudio.Visualization` package-free and platform-neutral;
 - exposes the Cartesian Robot as the only catalog model with the current mechanical-showcase proof of concept.
+- verifies that the Cartesian showcase uses a practical three-axis desktop-machine hierarchy and models dual Z motors and lead screws as one synchronized logical gantry.
