@@ -8,16 +8,25 @@ namespace RobotStudio.Simulation;
 public sealed class IndustrialArmSimulator
 {
     private readonly IndustrialArmMotionPlanner motionPlanner;
+    private readonly IndustrialArmCartesianMotionPlanner cartesianMotionPlanner;
     private readonly IndustrialArmKinematics kinematics;
     private readonly SpatialSimulationEnvironment environment;
 
     public IndustrialArmSimulator()
-        : this(new IndustrialArmMotionPlanner(), new IndustrialArmKinematics(), SpatialSimulationEnvironment.Empty)
+        : this(
+            new IndustrialArmMotionPlanner(),
+            new IndustrialArmCartesianMotionPlanner(),
+            new IndustrialArmKinematics(),
+            SpatialSimulationEnvironment.Empty)
     {
     }
 
     public IndustrialArmSimulator(SpatialSimulationEnvironment environment)
-        : this(new IndustrialArmMotionPlanner(), new IndustrialArmKinematics(), environment)
+        : this(
+            new IndustrialArmMotionPlanner(),
+            new IndustrialArmCartesianMotionPlanner(),
+            new IndustrialArmKinematics(),
+            environment)
     {
     }
 
@@ -25,11 +34,26 @@ public sealed class IndustrialArmSimulator
         IndustrialArmMotionPlanner motionPlanner,
         IndustrialArmKinematics kinematics,
         SpatialSimulationEnvironment environment)
+        : this(
+            motionPlanner,
+            new IndustrialArmCartesianMotionPlanner(kinematics),
+            kinematics,
+            environment)
+    {
+    }
+
+    public IndustrialArmSimulator(
+        IndustrialArmMotionPlanner motionPlanner,
+        IndustrialArmCartesianMotionPlanner cartesianMotionPlanner,
+        IndustrialArmKinematics kinematics,
+        SpatialSimulationEnvironment environment)
     {
         ArgumentNullException.ThrowIfNull(motionPlanner);
+        ArgumentNullException.ThrowIfNull(cartesianMotionPlanner);
         ArgumentNullException.ThrowIfNull(kinematics);
         ArgumentNullException.ThrowIfNull(environment);
         this.motionPlanner = motionPlanner;
+        this.cartesianMotionPlanner = cartesianMotionPlanner;
         this.kinematics = kinematics;
         this.environment = environment;
     }
@@ -78,9 +102,62 @@ public sealed class IndustrialArmSimulator
             HomeCommand => ExecuteMove(context, IndustrialArmJointPosition.Home, null, RobotState.Homing, command, commandIndex, timeline),
             ResetFaultCommand reset => ExecuteResetFault(context, reset, commandIndex, timeline),
             IndustrialArmMoveJointsCommand move => ExecuteMove(context, move.TargetJoints, move.RequestedJointVelocityDegreesPerSecond, RobotState.Moving, command, commandIndex, timeline),
+            IndustrialArmLinearMoveCommand move => ExecuteLinearMove(context, move, commandIndex, timeline),
             WaitCommand wait => ExecuteWait(context, wait, commandIndex, timeline),
             _ => throw new InvalidOperationException($"Unsupported robot command type: {command.GetType().Name}.")
         };
+    }
+
+    private IndustrialArmSimulationContext ExecuteLinearMove(
+        IndustrialArmSimulationContext context,
+        IndustrialArmLinearMoveCommand command,
+        int commandIndex,
+        List<IndustrialArmSimulationStep> timeline)
+    {
+        var plan = cartesianMotionPlanner.PlanLinearMove(
+            context.CurrentJoints,
+            command.TargetToolPose,
+            context.RobotProfile,
+            command.RequestedToolVelocityMillimetersPerSecond,
+            command.Configuration);
+
+        foreach (var segment in plan.Segments)
+        {
+            var collision = IndustrialArmLinkCollisionDetector.FindFirstCollision(
+                segment.StartJoints,
+                segment.EndJoints,
+                context.RobotProfile,
+                environment);
+            if (collision is not null)
+            {
+                throw new SpatialPathObstructedException("6-DOF Industrial Arm", collision);
+            }
+        }
+
+        var activeContext = TransitionTo(context, RobotState.Moving);
+        timeline.Add(CreateStep(
+            activeContext,
+            $"{nameof(IndustrialArmLinearMoveCommand)} started.",
+            commandIndex,
+            nameof(IndustrialArmLinearMoveCommand),
+            command.Source,
+            plan.ProgressMotionProfile,
+            plan));
+        var completed = activeContext with
+        {
+            CurrentJoints = plan.Segments.LastOrDefault()?.EndJoints ?? context.CurrentJoints,
+            State = RobotState.Completed,
+            ElapsedTime = activeContext.ElapsedTime + plan.TotalDuration
+        };
+        timeline.Add(CreateStep(
+            completed,
+            $"{nameof(IndustrialArmLinearMoveCommand)} completed.",
+            commandIndex,
+            nameof(IndustrialArmLinearMoveCommand),
+            command.Source,
+            plan.ProgressMotionProfile,
+            plan));
+        return completed;
     }
 
     private IndustrialArmSimulationContext ExecuteResetFault(
@@ -156,7 +233,8 @@ public sealed class IndustrialArmSimulator
         int? commandIndex = null,
         string? commandName = null,
         RobotCommandSource? commandSource = null,
-        TrapezoidalMotionProfile? motionProfile = null) =>
+        TrapezoidalMotionProfile? motionProfile = null,
+        IndustrialArmCartesianMotionPlan? cartesianMotionPlan = null) =>
         new(
             context.ElapsedTime,
             context.State,
@@ -167,6 +245,7 @@ public sealed class IndustrialArmSimulator
             commandName,
             commandSource)
         {
-            MotionProfile = motionProfile
+            MotionProfile = motionProfile,
+            CartesianMotionPlan = cartesianMotionPlan
         };
 }

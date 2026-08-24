@@ -55,10 +55,10 @@ public static class GCodeRobotMappingCatalog
         NotApplicable(
             GCodeRobotTarget.Drone,
             "CNC tool-space G-code does not represent flight attitude, dynamics, or navigation semantics clearly."),
-        Planned(
+        Available(
             GCodeRobotTarget.IndustrialArm6Dof,
             ['X', 'Y', 'Z', 'A', 'B', 'C'],
-            "Requires full pose inverse kinematics, configuration selection, and Cartesian tool-path planning.")
+            "Full X/Y/Z/A/B/C poses use deterministic positive-elbow, wrist-neutral inverse kinematics within the introductory arm topology.")
     ];
 
     public static GCodeRobotMappingDescriptor Get(GCodeRobotTarget target) =>
@@ -69,12 +69,6 @@ public static class GCodeRobotMappingCatalog
         IReadOnlyList<char> words,
         string rationale) =>
         new(target, GCodeRobotMappingStatus.Available, words, rationale);
-
-    private static GCodeRobotMappingDescriptor Planned(
-        GCodeRobotTarget target,
-        IReadOnlyList<char> words,
-        string rationale) =>
-        new(target, GCodeRobotMappingStatus.Planned, words, rationale);
 
     private static GCodeRobotMappingDescriptor NotApplicable(
         GCodeRobotTarget target,

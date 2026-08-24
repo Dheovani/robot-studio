@@ -11,4 +11,4 @@ The Cartesian directory also contains focused teaching scenarios:
 - `jog-wait-home`: small jog-style moves, waits, sequencing, and homing.
 - `manual-jogging.md`: guided desktop activity using HOME, jog buttons, and the command console.
 
-The `.robot` files use the Simple DSL. The `.gcode` files use the introductory Cartesian G-code subset. The invalid-axis example is expected to fail validation.
+The `.robot` files use the Simple DSL. The `.gcode` files use the introductory robot-mapped G-code subset. The SCARA, Simple Arm, Delta, and Industrial Arm directories include tool-space G-code examples validated against the same profiles used by the desktop app. The Cartesian invalid-axis example is expected to fail validation.

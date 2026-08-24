@@ -115,6 +115,64 @@ public sealed class IndustrialArmSimulatorTests
             new IndustrialArmPlaybackSampler().Sample(result, TimeSpan.Zero));
     }
 
+    [Fact]
+    public void Execute_WhenSequenceContainsLinearToolMove_ShouldCompleteAtTargetPose()
+    {
+        var profile = CreateProfile();
+        var target = new IndustrialArmToolPose(300, 0, 180, 20, 10, 0);
+        var result = new IndustrialArmSimulator().Execute(
+            IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home),
+            new RobotCommandSequence([new IndustrialArmLinearMoveCommand(target, 70)]));
+
+        Assert.True(result.Succeeded, result.Failure?.Message);
+        var actual = new IndustrialArmKinematics().Forward(profile, result.FinalContext.CurrentJoints);
+        Assert.Equal(target.XMillimeters, actual.XMillimeters, precision: 6);
+        Assert.Equal(target.YMillimeters, actual.YMillimeters, precision: 6);
+        Assert.Equal(target.ZMillimeters, actual.ZMillimeters, precision: 6);
+        Assert.Equal(target.RollDegrees, actual.RollDegrees, precision: 6);
+        Assert.Equal(target.PitchDegrees, actual.PitchDegrees, precision: 6);
+        Assert.Equal(target.YawDegrees, actual.YawDegrees, precision: 6);
+        Assert.NotNull(result.Timeline[1].CartesianMotionPlan);
+    }
+
+    [Fact]
+    public void Sample_WhenLinearToolMoveExecutes_ShouldKeepMovingFramesOnStraightPath()
+    {
+        var profile = CreateProfile();
+        var start = new IndustrialArmKinematics().Forward(profile, IndustrialArmJointPosition.Home);
+        var target = new IndustrialArmToolPose(300, 0, 180, 20, 10, 0);
+        var result = new IndustrialArmSimulator().Execute(
+            IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home),
+            new RobotCommandSequence([new IndustrialArmLinearMoveCommand(target, 70)]));
+
+        var snapshot = new IndustrialArmPlaybackSampler().Sample(
+            result,
+            TimeSpan.FromMilliseconds(20));
+
+        Assert.All(
+            snapshot.Frames.Where(frame => frame.State == RobotState.Moving),
+            frame => AssertPointOnLine(start, target, frame.ToolPose));
+    }
+
+    private static void AssertPointOnLine(
+        IndustrialArmToolPose start,
+        IndustrialArmToolPose end,
+        IndustrialArmToolPose point)
+    {
+        var dx = end.XMillimeters - start.XMillimeters;
+        var dy = end.YMillimeters - start.YMillimeters;
+        var dz = end.ZMillimeters - start.ZMillimeters;
+        var px = point.XMillimeters - start.XMillimeters;
+        var py = point.YMillimeters - start.YMillimeters;
+        var pz = point.ZMillimeters - start.ZMillimeters;
+        var crossMagnitude = Math.Sqrt(
+            Math.Pow((py * dz) - (pz * dy), 2) +
+            Math.Pow((pz * dx) - (px * dz), 2) +
+            Math.Pow((px * dy) - (py * dx), 2));
+
+        Assert.InRange(crossMagnitude, 0, 0.001);
+    }
+
     private static IndustrialArmRobotProfile CreateProfile() =>
         new(
             100,

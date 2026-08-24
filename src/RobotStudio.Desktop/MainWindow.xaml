@@ -396,7 +396,8 @@
                                        FontWeight="SemiBold"
                                        Text="Robot Catalog" />
                         </Border>
-                        <Button Height="34"
+                        <Button Width="88"
+                                Height="34"
                                 Margin="8,0,0,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
                                 Content="Glossary"
@@ -1867,6 +1868,12 @@
 
                             <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                             <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
+                            <TextBlock Text="Dialect" Margin="0,10,0,4" Foreground="#94A3B8" />
+                            <ComboBox x:Name="IndustrialArmScriptDialectComboBox"
+                                      Margin="0,0,0,8"
+                                      DisplayMemberPath="Name"
+                                      ToolTip="Choose joint-space Simple DSL or X/Y/Z/A/B/C tool-pose G-code for the 6-DOF Industrial Arm."
+                                      SelectionChanged="IndustrialArmScriptDialectComboBox_SelectionChanged" />
                             <TextBlock Text="Example" Margin="0,10,0,4" Foreground="#94A3B8" />
                             <ComboBox x:Name="IndustrialArmExampleComboBox" Margin="0,0,0,8" />
                             <TextBox x:Name="IndustrialArmScriptTextBox"

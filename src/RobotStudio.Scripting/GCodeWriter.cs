@@ -21,6 +21,7 @@ public static class GCodeWriter
         ScaraLinearMoveCommand move => WriteScaraMove(move),
         SimpleArmLinearMoveCommand move => WriteSimpleArmMove(move),
         DeltaLinearMoveCommand move => WriteDeltaMove(move),
+        IndustrialArmLinearMoveCommand move => WriteIndustrialArmMove(move),
         WaitCommand wait => $"G4 P{FormatNumber(wait.Duration.TotalMilliseconds)}",
         _ => throw new NotSupportedException($"G-code output does not support {command.GetType().Name}.")
     };
@@ -66,6 +67,21 @@ public static class GCodeWriter
             $"G1 X{FormatNumber(command.TargetToolPose.XMillimeters)} " +
             $"Y{FormatNumber(command.TargetToolPose.YMillimeters)} " +
             $"Z{FormatNumber(command.TargetToolPose.ZMillimeters)}";
+
+        return command.RequestedToolVelocityMillimetersPerSecond is { } velocity
+            ? $"{result} F{FormatNumber(velocity * 60d)}"
+            : result;
+    }
+
+    private static string WriteIndustrialArmMove(IndustrialArmLinearMoveCommand command)
+    {
+        var result =
+            $"G1 X{FormatNumber(command.TargetToolPose.XMillimeters)} " +
+            $"Y{FormatNumber(command.TargetToolPose.YMillimeters)} " +
+            $"Z{FormatNumber(command.TargetToolPose.ZMillimeters)} " +
+            $"A{FormatNumber(command.TargetToolPose.RollDegrees)} " +
+            $"B{FormatNumber(command.TargetToolPose.PitchDegrees)} " +
+            $"C{FormatNumber(command.TargetToolPose.YawDegrees)}";
 
         return command.RequestedToolVelocityMillimetersPerSecond is { } velocity
             ? $"{result} F{FormatNumber(velocity * 60d)}"

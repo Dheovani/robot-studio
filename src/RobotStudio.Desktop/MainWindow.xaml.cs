@@ -109,6 +109,14 @@ public partial class MainWindow : Window
         }
             ? new GCodeParser(new DeltaGCodeCommandMapper(CreateDeltaProfile()))
             : simpleDslDialect;
+
+    private IRobotScriptDialect IndustrialArmScriptDialect =>
+        IndustrialArmScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
+        {
+            Id: RobotScriptDialectId.GCode
+        }
+            ? new GCodeParser(new IndustrialArmGCodeCommandMapper(CreateIndustrialArmProfile()))
+            : simpleDslDialect;
     private CartesianRobotProfile profile = CreateCartesianProfile();
     private XYPlotterProfile? xyPlotterProfile;
     private CartesianPosition initialPosition = new(X: 40, Y: 30, Z: 20);
@@ -221,6 +229,9 @@ public partial class MainWindow : Window
         DeltaScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         DeltaScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        IndustrialArmScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
+            .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
+        IndustrialArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         ScriptEditorTextBox.Text = GetCartesianExampleScript(RobotViewerKind.CartesianThreeDimensional);
         GlossaryCategoryComboBox.ItemsSource = new object[] { "All topics" }
             .Concat(Enum.GetValues<GlossaryCategory>().Cast<object>())
@@ -900,9 +911,7 @@ public partial class MainWindow : Window
         RoutedEventArgs e)
     {
         StopPlayback();
-        IndustrialArmScriptTextBox.Text = GetSelectedExampleScript(
-            IndustrialArmExampleComboBox,
-            RobotViewerKind.IndustrialArmThreeDimensional);
+        IndustrialArmScriptTextBox.Text = GetSelectedIndustrialArmExampleScript();
         industrialArmSnapshot = CreateIndustrialArmSnapshot(
             IndustrialArmScriptTextBox.Text,
             captureSession: true);
@@ -910,6 +919,41 @@ public partial class MainWindow : Window
         IndustrialArmTimeline.TickFrequency = 1;
         RenderIndustrialArmFrame(index: 0);
         SetIndustrialArmScriptStatus("Loaded the selected industrial arm example.", Color.FromRgb(74, 222, 128));
+    }
+
+    private void IndustrialArmScriptDialectComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded ||
+            activeViewerKind != RobotViewerKind.IndustrialArmThreeDimensional ||
+            IndustrialArmScriptDialectComboBox.SelectedItem is not RobotScriptDialectDescriptor descriptor)
+        {
+            return;
+        }
+
+        StopPlayback();
+        IndustrialArmScriptTextBox.Text = GetSelectedIndustrialArmExampleScript();
+        if (!TryCreateIndustrialArmSnapshotFromScript(
+            IndustrialArmScriptTextBox.Text,
+            out var nextSnapshot,
+            out var message,
+            captureSession: true))
+        {
+            industrialArmSnapshot = null;
+            industrialArmSessionContext = null;
+            SetIndustrialArmScriptStatus(message, Color.FromRgb(248, 113, 113));
+            return;
+        }
+
+        industrialArmSnapshot = nextSnapshot;
+        IndustrialArmTimeline.Maximum = industrialArmSnapshot!.FrameCount - 1;
+        IndustrialArmTimeline.TickFrequency = 1;
+        RenderIndustrialArmFrame(index: 0);
+        var dialectMessage = descriptor.Id == RobotScriptDialectId.GCode
+            ? "G-code tool-pose mode ready. G1 follows X/Y/Z/A/B/C with deterministic inverse kinematics."
+            : "Simple DSL joint-space mode ready.";
+        SetIndustrialArmScriptStatus($"{dialectMessage} {message}", Color.FromRgb(74, 222, 128));
     }
 
     private void LoadCartesianExampleButton_Click(
@@ -1314,12 +1358,18 @@ public partial class MainWindow : Window
         LoadScriptInto(
             IndustrialArmScriptTextBox,
             SetIndustrialArmScriptStatus,
-            () => industrialArmSnapshot = null);
+            () => industrialArmSnapshot = null,
+            SelectIndustrialArmDialectForFile);
 
     private void SaveIndustrialArmScriptButton_Click(
         object sender,
         RoutedEventArgs e) =>
-        SaveScriptFrom(IndustrialArmScriptTextBox, SetIndustrialArmScriptStatus);
+        SaveScriptFrom(
+            IndustrialArmScriptTextBox,
+            SetIndustrialArmScriptStatus,
+            IndustrialArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+                ? ".gcode"
+                : ScriptFileDefaultExtension);
 
     private void LoadActiveScript()
     {
@@ -3153,7 +3203,9 @@ public partial class MainWindow : Window
         bool captureSession = false)
     {
         var profile = CreateIndustrialArmProfile();
-        var commands = simpleDslDialect.Parse(script);
+        var commands = IndustrialArmScriptDialect.Parse(
+            script,
+            new RobotScriptParseContext(IndustrialArmJointPosition.Home));
         ValidateIndustrialArmCommandSequence(commands, profile);
         var context = IndustrialArmSimulationContext.Create(profile, IndustrialArmJointPosition.Home);
         var result = new IndustrialArmSimulator().Execute(context, commands);
@@ -3657,9 +3709,10 @@ public partial class MainWindow : Window
         ConfigureExampleSelector(
             IndustrialArmExampleComboBox,
             RobotViewerKind.IndustrialArmThreeDimensional);
-        IndustrialArmScriptTextBox.Text = GetDefaultExampleScript(RobotViewerKind.IndustrialArmThreeDimensional);
+        IndustrialArmScriptTextBox.Text = GetIndustrialArmExampleScript(
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.IndustrialArmThreeDimensional));
         SetIndustrialArmScriptStatus(
-            "Edit ARM6 joint commands and simulate the industrial arm.",
+            "Choose joint-space Simple DSL or tool-pose G-code and simulate the industrial arm.",
             Color.FromRgb(148, 163, 184));
     }
 
@@ -3721,6 +3774,19 @@ public partial class MainWindow : Window
         DeltaScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
             ? example.GCodeScript ?? throw new InvalidOperationException(
                 $"Delta example '{example.Name}' does not define a G-code program.")
+            : example.Script;
+
+    private string GetSelectedIndustrialArmExampleScript()
+    {
+        var example = IndustrialArmExampleComboBox.SelectedItem as RobotExample ??
+            RobotExampleCatalog.GetDefaultFor(RobotViewerKind.IndustrialArmThreeDimensional);
+        return GetIndustrialArmExampleScript(example);
+    }
+
+    private string GetIndustrialArmExampleScript(RobotExample example) =>
+        IndustrialArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode
+            ? example.GCodeScript ?? throw new InvalidOperationException(
+                $"Industrial Arm example '{example.Name}' does not define a G-code program.")
             : example.Script;
 
     private static void ConfigureExampleSelector(
@@ -6074,21 +6140,7 @@ public partial class MainWindow : Window
             maximumAttitudeAccelerationDegreesPerSecondSquared: 360);
 
     private static IndustrialArmRobotProfile CreateIndustrialArmProfile() =>
-        new(
-            baseHeightMillimeters: 110,
-            upperArmLengthMillimeters: 180,
-            forearmLengthMillimeters: 140,
-            wristLengthMillimeters: 80,
-            linkCollisionRadiusMillimeters: 12,
-            joints:
-            [
-                new(IndustrialArmJointId.J1Base, -180, 180, 120, 240),
-                new(IndustrialArmJointId.J2Shoulder, -120, 120, 100, 200),
-                new(IndustrialArmJointId.J3Elbow, -150, 150, 90, 180),
-                new(IndustrialArmJointId.J4WristRoll, -180, 180, 160, 320),
-                new(IndustrialArmJointId.J5WristPitch, -120, 120, 110, 220),
-                new(IndustrialArmJointId.J6ToolRoll, -360, 360, 200, 400)
-            ]);
+        IndustrialArmTeachingProfile.Create();
 
     private void ValidateCommandSequence(
         RobotCommandSequence commands,
@@ -6397,6 +6449,19 @@ public partial class MainWindow : Window
         else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
         {
             DeltaScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
+        }
+    }
+
+    private void SelectIndustrialArmDialectForFile(string fileName)
+    {
+        var extension = System.IO.Path.GetExtension(fileName);
+        if (extension.Equals(".gcode", StringComparison.OrdinalIgnoreCase))
+        {
+            IndustrialArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.GCode;
+        }
+        else if (extension.Equals(".robot", StringComparison.OrdinalIgnoreCase))
+        {
+            IndustrialArmScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
         }
     }
 

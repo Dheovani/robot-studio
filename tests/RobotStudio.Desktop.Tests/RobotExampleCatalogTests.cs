@@ -124,6 +124,44 @@ public sealed class RobotExampleCatalogTests
     }
 
     [Fact]
+    public void IndustrialArmExamples_WithGCode_ShouldProduceSuccessfulToolPosePlayback()
+    {
+        var profile = IndustrialArmTeachingProfile.Create();
+        var initialJoints = IndustrialArmJointPosition.Home;
+        var parser = new GCodeParser(new IndustrialArmGCodeCommandMapper(profile));
+
+        foreach (var example in RobotExampleCatalog.GetFor(RobotViewerKind.IndustrialArmThreeDimensional))
+        {
+            Assert.False(string.IsNullOrWhiteSpace(example.GCodeScript));
+            var commands = parser.Parse(
+                example.GCodeScript!,
+                new RobotScriptParseContext(initialJoints));
+            var result = new IndustrialArmSimulator().Execute(
+                IndustrialArmSimulationContext.Create(profile, initialJoints),
+                commands);
+
+            Assert.True(result.Succeeded, result.Failure?.Message);
+            Assert.Contains(commands.Commands, command => command is IndustrialArmLinearMoveCommand);
+        }
+    }
+
+    [Fact]
+    public void IndustrialArmBasicGCodeFile_ShouldMatchDesktopCatalog()
+    {
+        var example = RobotExampleCatalog.GetDefaultFor(
+            RobotViewerKind.IndustrialArmThreeDimensional);
+        var path = Path.Combine(
+            FindRepositoryRoot(),
+            "examples",
+            "industrial-arm",
+            "basic.gcode");
+
+        Assert.Equal(
+            Normalize(example.GCodeScript!),
+            Normalize(File.ReadAllText(path)));
+    }
+
+    [Fact]
     public void All_ShouldExposeExamplesForEachOpenableViewer()
     {
         var openableViewerKinds = RobotCatalog.Templates

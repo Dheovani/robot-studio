@@ -587,3 +587,8 @@ Expected current behavior:
 - renders workspace limits as a visible boundary instead of an opaque block over the robot;
 - shows a didactic state panel with state, position, command, source line, time, and frame number;
 - updates the displayed frame, time, and state while playing.
+- validates 6-DOF Industrial Arm forward/inverse kinematics round trips and rejects incompatible TCP yaw;
+- samples linear 6-DOF TCP plans under joint velocity and acceleration constraints;
+- maps absolute and relative `G1 X/Y/Z/A/B/C` programs and round-trips generated G-code;
+- keeps moving industrial-arm playback frames on the planned straight TCP path;
+- executes every desktop industrial-arm G-code example against the shared teaching profile and keeps the packaged example synchronized with the catalog.

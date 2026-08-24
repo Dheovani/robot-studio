@@ -82,6 +82,34 @@ public sealed class IndustrialArmRobotProfileTests
         Assert.Equal(120, maximumDelta);
     }
 
+    [Fact]
+    public void Inverse_WhenPoseUsesSupportedConfiguration_ShouldRecoverJointPosition()
+    {
+        var profile = CreateProfile();
+        var expected = new IndustrialArmJointPosition(0, -20, 80, 0, -50, 20);
+        var kinematics = new IndustrialArmKinematics();
+
+        var actual = kinematics.Inverse(profile, kinematics.Forward(profile, expected));
+
+        Assert.Equal(expected.J1Degrees, actual.J1Degrees, precision: 6);
+        Assert.Equal(expected.J2Degrees, actual.J2Degrees, precision: 6);
+        Assert.Equal(expected.J3Degrees, actual.J3Degrees, precision: 6);
+        Assert.Equal(expected.J4Degrees, actual.J4Degrees, precision: 6);
+        Assert.Equal(expected.J5Degrees, actual.J5Degrees, precision: 6);
+        Assert.Equal(expected.J6Degrees, actual.J6Degrees, precision: 6);
+    }
+
+    [Fact]
+    public void Inverse_WhenYawConflictsWithToolPosition_ShouldExplainCoupling()
+    {
+        var pose = new IndustrialArmToolPose(300, 0, 180, 0, 0, 30);
+
+        var exception = Assert.Throws<InvalidRobotCommandException>(() =>
+            new IndustrialArmKinematics().Inverse(CreateProfile(), pose));
+
+        Assert.Contains("couples TCP yaw C", exception.Message);
+    }
+
     internal static IndustrialArmRobotProfile CreateProfile() =>
         new(
             baseHeightMillimeters: 100,

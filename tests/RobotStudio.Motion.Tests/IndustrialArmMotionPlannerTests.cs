@@ -72,6 +72,66 @@ public sealed class IndustrialArmMotionPlannerTests
                 requestedJointVelocityDegreesPerSecond: 0));
     }
 
+    [Fact]
+    public void PlanLinearMove_WhenToolPoseIsReachable_ShouldSampleStraightPath()
+    {
+        var target = new IndustrialArmToolPose(300, 0, 180, 20, 10, 0);
+
+        var plan = new IndustrialArmCartesianMotionPlanner().PlanLinearMove(
+            IndustrialArmJointPosition.Home,
+            target,
+            CreateProfile(),
+            requestedToolVelocityMillimetersPerSecond: 70);
+
+        Assert.False(plan.IsStationary);
+        Assert.True(plan.TotalDuration > TimeSpan.Zero);
+        Assert.Equal(target, plan.EndToolPose);
+        Assert.All(
+            plan.Segments,
+            segment => Assert.InRange(
+                Distance(segment.StartToolPose, segment.EndToolPose),
+                0,
+                IndustrialArmCartesianMotionPlanner.DefaultMaximumToolSegmentLengthMillimeters + 0.000_001));
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenFeedIsVeryHigh_ShouldRemainJointLimited()
+    {
+        var planner = new IndustrialArmCartesianMotionPlanner();
+        var profile = CreateProfile();
+        var target = new IndustrialArmToolPose(300, 0, 180, 20, 10, 0);
+
+        var unrestricted = planner.PlanLinearMove(
+            IndustrialArmJointPosition.Home,
+            target,
+            profile);
+        var requested = planner.PlanLinearMove(
+            IndustrialArmJointPosition.Home,
+            target,
+            profile,
+            requestedToolVelocityMillimetersPerSecond: 100_000);
+
+        Assert.Equal(unrestricted.TotalDuration, requested.TotalDuration);
+    }
+
+    [Fact]
+    public void PlanLinearMove_WhenPoseViolatesYawCoupling_ShouldThrow()
+    {
+        Assert.Throws<InvalidRobotCommandException>(() =>
+            new IndustrialArmCartesianMotionPlanner().PlanLinearMove(
+                IndustrialArmJointPosition.Home,
+                new IndustrialArmToolPose(300, 0, 180, 0, 0, 20),
+                CreateProfile()));
+    }
+
+    private static double Distance(IndustrialArmToolPose start, IndustrialArmToolPose end)
+    {
+        var x = end.XMillimeters - start.XMillimeters;
+        var y = end.YMillimeters - start.YMillimeters;
+        var z = end.ZMillimeters - start.ZMillimeters;
+        return Math.Sqrt((x * x) + (y * y) + (z * z));
+    }
+
     private static IndustrialArmRobotProfile CreateProfile() =>
         new(
             100,

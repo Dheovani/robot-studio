@@ -26,7 +26,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Add SCARA G-code with planar `G1 X/Y`, deterministic elbow-down inverse kinematics, sampled path validation, one continuous TCP motion profile, simulation playback, desktop dialect selection, examples, and catalog capability metadata.
 - [x] Add Simple Articulated Arm G-code with planar `G1 X/Y/A`, deterministic positive-bend inverse kinematics, continuous tool-pose planning and playback, desktop dialect selection, examples, and catalog capability metadata.
 - [x] Add Delta Robot G-code with `G1 X/Y/Z`, exact inverse kinematics, synchronized parallel-actuator constraints, continuous linear TCP playback, desktop dialect selection, examples, and catalog capability metadata.
-- [ ] Add 6-DOF Industrial Arm G-code after implementing full-pose inverse kinematics, configuration selection, and linear TCP planning.
+- [x] Add 6-DOF Industrial Arm G-code with `G1 X/Y/Z/A/B/C`, deterministic positive-elbow/wrist-neutral inverse kinematics, continuous full-pose planning and playback, desktop dialect selection, examples, and catalog capability metadata.
 - [x] Keep Differential Drive and Drone G-code unavailable and omit the capability badge because CNC tool-space semantics do not fit their motion models.
 
 ## 3. Hardware Integration
@@ -42,7 +42,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 
 ## 4. Didactic Tools
 
-Do not begin the remaining Milestone 4 work until every applicable G-code mapping in Milestone 2 is complete and every non-applicable family is explicitly represented.
+The Milestone 2 mapping gate is complete: every applicable implemented family has an executable mapping, while Differential Drive and Drone are explicitly non-applicable.
 
 - [x] Expand movement explanations for acceleration-aware plans.
 - [x] Add lesson-friendly examples for invalid axis limits.

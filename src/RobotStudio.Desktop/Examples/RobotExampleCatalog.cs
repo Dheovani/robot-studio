@@ -311,6 +311,14 @@ public static class RobotExampleCatalog
             ARM6 J1=-25 J2=45 J3=-30 J4=-45 J5=15 J6=180 SPEED=70
             WAIT 500
             HOME
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X300 Y0 Z180 A20 B10 C0 F4200
+            G4 P500
+            G28
             """),
 
         new(
@@ -323,6 +331,14 @@ public static class RobotExampleCatalog
             ARM6 J1=20 J2=35 J3=-55 J4=90 J5=-20 J6=120 SPEED=65
             ARM6 J1=20 J2=35 J3=-55 J4=-90 J5=20 J6=-120 SPEED=65
             WAIT 400
+            """,
+            """
+            G21
+            G90
+            G28
+            G1 X280 Y0 Z210 A-20 B20 C0 F3600
+            G1 X320 Y0 Z170 A25 B5 C0 F3000
+            G4 P400
             """)
     ];
 

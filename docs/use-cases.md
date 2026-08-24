@@ -364,6 +364,23 @@ Expected result:
 - orientation words, unreachable positions, and incompatible starting contexts produce explanatory errors;
 - both dialects feed the same deterministic Delta simulator and playback viewer.
 
+### Compare Industrial Arm Joint Space And Tool Space
+
+Actor: student or instructor.
+
+Goal: compare explicit six-joint commands with linear full-pose TCP trajectories on the same arm.
+
+Current status: implemented in the 6-DOF Industrial Arm desktop workspace.
+
+Expected result:
+
+- Simple DSL `ARM6 J1...J6...` commands continue to move explicit joints;
+- G-code `G1 X/Y/Z/A/B/C` commands describe TCP position plus roll, pitch, and yaw;
+- deterministic positive-elbow/wrist-neutral inverse kinematics resolves every sampled pose;
+- joint velocity, acceleration, physical limits, and collision checks constrain or reject the complete path;
+- poses that conflict with the introductory yaw/position coupling produce an explanatory error;
+- both dialects feed the same deterministic simulator, playback sampler, and 3D viewer.
+
 ### Study Cartesian Validation And Sequencing Examples
 
 Actor: student.

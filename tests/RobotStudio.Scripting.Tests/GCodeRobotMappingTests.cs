@@ -25,24 +25,14 @@ public sealed class GCodeRobotMappingTests
     [InlineData(GCodeRobotTarget.ScaraRobot)]
     [InlineData(GCodeRobotTarget.SimpleArticulatedArm)]
     [InlineData(GCodeRobotTarget.DeltaRobot)]
-    public void Catalog_WhenMappingIsImplemented_ShouldMarkOnlyCartesianFamilyAvailable(
+    [InlineData(GCodeRobotTarget.IndustrialArm6Dof)]
+    public void Catalog_WhenMappingIsImplemented_ShouldMarkAvailable(
         GCodeRobotTarget target)
     {
         var mapping = GCodeRobotMappingCatalog.Get(target);
 
         Assert.Equal(GCodeRobotMappingStatus.Available, mapping.Status);
         Assert.NotEmpty(mapping.ToolSpaceWords);
-    }
-
-    [Theory]
-    [InlineData(GCodeRobotTarget.IndustrialArm6Dof)]
-    public void Catalog_WhenToolSpaceKinematicsAreRequired_ShouldMarkMappingPlanned(
-        GCodeRobotTarget target)
-    {
-        var mapping = GCodeRobotMappingCatalog.Get(target);
-
-        Assert.Equal(GCodeRobotMappingStatus.Planned, mapping.Status);
-        Assert.Contains("Requires", mapping.Rationale);
     }
 
     [Theory]

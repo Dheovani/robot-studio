@@ -1,4 +1,5 @@
 using RobotStudio.Domain.Articulated;
+using RobotStudio.Motion;
 
 namespace RobotStudio.Simulation;
 
@@ -35,7 +36,15 @@ public sealed class IndustrialArmPlaybackSampler
                     current.Time,
                     next.Time,
                     time);
-                var joints = Interpolate(current.Joints, next.Joints, progress);
+                var joints = current.CartesianMotionPlan is { } cartesianPlan
+                    ? kinematics.Inverse(
+                        result.InitialContext.RobotProfile,
+                        IndustrialArmCartesianMotionPlanner.Interpolate(
+                            cartesianPlan.StartToolPose,
+                            cartesianPlan.EndToolPose,
+                            progress),
+                        cartesianPlan.Configuration)
+                    : Interpolate(current.Joints, next.Joints, progress);
                 frames.Add(new IndustrialArmPlaybackFrame(
                     time,
                     current.State,

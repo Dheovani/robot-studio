@@ -16,4 +16,6 @@ public sealed record IndustrialArmSimulationStep(
     RobotCommandSource? CommandSource = null)
 {
     public TrapezoidalMotionProfile? MotionProfile { get; init; }
+
+    public IndustrialArmCartesianMotionPlan? CartesianMotionPlan { get; init; }
 }
