@@ -2,7 +2,7 @@
 
 ## Status
 
-This document specifies **Milestone 9: Advanced 3D Visualization and Realistic Robot Rendering**. It is future work. It does not authorize renderer integration, package installation, model import, or changes to the current schematic viewers during the present development phase.
+This document specifies **Milestone 6: Advanced 3D Visualization and Realistic Robot Rendering**. Milestone 6 is the current development focus. Renderer integration must begin only after its product boundary, asset strategy, and library evaluation are explicitly settled.
 
 `TODO.md` is the authoritative checklist for milestone progress. This document records the architectural constraints and intended outcome behind that checklist.
 
@@ -10,34 +10,59 @@ This document specifies **Milestone 9: Advanced 3D Visualization and Realistic R
 
 RobotStudio currently uses intentionally simple geometry, strong axis colors, grids, workspace bounds, paths, labels, and other schematic elements. That renderer has lasting pedagogical value and must remain available.
 
-Milestone 9 adds a second visualization path for detailed robot models, mechanical parts, richer materials, lighting, shadows, textures, and PBR rendering where appropriate. Realism must improve student understanding and engagement without hiding coordinate systems, robot topology, motion constraints, or the relationship between commands and physical movement.
+Milestone 6 adds a second visualization path for detailed robot models, mechanical parts, richer materials, lighting, shadows, textures, and PBR rendering where appropriate. This path is a mechanical showcase: it identifies components, explains how they relate, and uses short predefined movements to demonstrate the mechanism. It is not a replacement script executor or a second full simulation engine. Realism must improve student understanding and engagement without hiding coordinate systems, robot topology, or the relationship between components and physical movement.
 
 ## Visualization Modes
 
 The future desktop application must support three composable modes:
 
-1. **Schematic / Didactic**: the existing style, optimized for mathematical and mechanical clarity.
-2. **Realistic**: detailed models, proportions, materials, lighting, and environments.
-3. **Realistic + Educational Overlays**: realistic models combined with axes, coordinate systems, workspace limits, trajectories, labels, selected-part highlights, and future collision bounds.
+1. **Schematic / Didactic Simulation**: the existing executable workspace, optimized for commands, planning, deterministic playback, mathematical clarity, and technical overlays.
+2. **Realistic Mechanical Showcase**: detailed models, proportions, materials, lighting, component inspection, and short fixed demonstrations of mechanical operation.
+3. **Realistic + Educational Overlays**: realistic models combined with relevant coordinate systems, labels, selected-part highlights, movement relationships, and other teaching aids.
 
-Mode switching must not restart or alter the simulation. Overlays should be independent scene layers so the same teaching aid can be reused across compatible renderers.
+The exact navigation between simulation and showcase remains a product decision for the first Milestone 6 increment. Entering the showcase must not alter a retained simulation session. Overlays should be independent scene layers so compatible teaching aids can be reused.
+
+The catalog will initially expose two distinct actions for available robots: `Open Simulator` and `Explore Mechanics`. A later usability evaluation may add an internal switch, but the two experiences must remain conceptually distinct and must not crowd the simulation workspace with showcase-only controls.
+
+## Visual And Interaction Direction
+
+The target is stylized technical realism rather than photorealism, branded reproduction, or manufacturing-grade CAD. RobotStudio models must be original, generic teaching models with mechanically plausible proportions, recognizable assemblies, appropriately differentiated metal, plastic, rubber, cable, and fastener details, and convincing joint or actuator behavior. Assets must not copy manufacturer branding, trade dress, labels, or proprietary product geometry.
+
+Visual fidelity may approach a polished industrial product presentation where it improves understanding, but matching photographic reference quality is not a requirement. Geometry detail, texture resolution, materials, lighting, shadows, and effects must remain subordinate to educational clarity, maintainability, loading cost, and performance on representative student computers. A complete factory cell is not required for every robot; contextual equipment should be included only when it explains operation, scale, mounting, safety, or interaction with the environment.
+
+User freedom in the realistic showcase is intentionally limited. Users may inspect the model, control the camera, select semantic components, choose a curated demonstration, and use the educational viewing aids supplied for that model. They do not edit geometry or author arbitrary realistic animations.
+
+Each robot may use the most legible internal-view technique for its mechanism:
+
+- selective shell transparency when internal and external relationships remain clear;
+- a curated cutaway when overlapping transparent surfaces would obscure the mechanism;
+- a controlled exploded view when assembly order or connection between parts is the lesson.
+
+These are authored teaching views, not unrestricted CAD editing tools.
 
 ## Architectural Boundary
 
 The deterministic simulation is the source of truth. Renderers only consume simulation state and must never define robot position by moving a graphical object.
 
 ```txt
-Domain and deterministic simulation
-              |
-              v
-Renderer-neutral state, poses, and semantic part identifiers
-              |
-       +------+------+
-       |             |
-       v             v
-Schematic renderer   Realistic renderer
-       \             /
-        +---- overlays
+Domain, motion, and deterministic simulation
+                    |
+                    v
+        Schematic rendering adapter
+                    |
+                    v
+           Schematic renderer
+
+Showcase definition and curated demonstration
+                    |
+                    v
+ Presentation-only component pose controller
+                    |
+                    v
+           Realistic renderer
+
+Both rendering paths may compose compatible educational overlays.
+Neither rendering path writes state back into the simulator.
 ```
 
 The layers have distinct responsibilities:
@@ -47,7 +72,7 @@ The layers have distinct responsibilities:
 - `RobotStudio.Simulation` owns deterministic timelines and renderer-neutral robot state or component poses. It must not reference WPF, HelixToolkit, Stride, GPU resources, meshes, materials, or cameras.
 - `RobotStudio.Desktop` owns renderers, scene graphs, assets, cameras, lighting, materials, interpolation for display, hit testing, and overlays.
 
-The existing Cartesian scene primitives remain valid inputs for its schematic renderer. They must not become the universal contract for realistic rendering or for every robot topology. Milestone 9 should introduce small renderer-neutral pose/component contracts or adapters only after examining the needs shared by the existing Cartesian, mobile, articulated, parallel, and aerial models.
+The existing Cartesian scene primitives remain valid inputs for its schematic renderer. They must not become the universal contract for realistic rendering or for every robot topology. Milestone 6 should introduce small renderer-neutral pose/component contracts or adapters only after examining the needs shared by the existing Cartesian, mobile, articulated, parallel, and aerial models.
 
 Simulation ticks and rendering frames must remain independent. Rendering may interpolate between immutable simulation samples for visual smoothness, but interpolation must not mutate deterministic results or feed visual state back into the simulator.
 
@@ -60,7 +85,7 @@ The current architecture already provides useful boundaries for this milestone:
 - Shared playback contracts expose family-specific deterministic frames without forcing every robot into Cartesian coordinates.
 - `RobotStudio.Desktop.Rendering` already centralizes basic camera, lighting, mesh, and pointer-interaction helpers.
 
-Milestone 9 must address these constraints before realistic rendering grows across robot families:
+Milestone 6 must address these constraints before realistic rendering grows across robot families:
 
 - `MainWindow.xaml.cs` currently coordinates playback and contains robot-specific scene construction for multiple families. Renderer selection, scene composition, and viewport lifecycle need dedicated desktop services or presenters before a second renderer is integrated.
 - Cartesian playback includes schematic `CartesianSceneFrame` primitives, while other viewers compose their geometry directly from family-specific playback frames. The project needs a deliberate adapter boundary instead of promoting either approach into a universal realistic-rendering contract.
@@ -75,11 +100,13 @@ Each selectable visual node must map to a stable RobotStudio semantic part ident
 
 The visual hierarchy describes how a model is displayed; domain and simulation types continue to describe how the robot behaves.
 
+Semantic metadata should also describe each inspectable component's teaching name, mechanical purpose, parent or connected parts, movement type, and relevant demonstration. This educational information must not be embedded only in mesh node names or UI event handlers.
+
 ## Asset Direction
 
 glTF 2.0 is the preferred interoperable format, with `.glb` favored for packaged application assets when convenient. RobotStudio must not depend on proprietary model formats.
 
-Visual data belongs in the model asset. RobotStudio-specific semantics may use separate, versioned metadata that maps asset nodes to axes, joints, links, tools, transform rules, and other stable identifiers. The exact manifest schema is intentionally deferred until Milestone 9 so current examples do not become accidental contracts.
+Visual data belongs in the model asset. RobotStudio-specific semantics may use separate, versioned metadata that maps asset nodes to axes, joints, links, tools, transform rules, and other stable identifiers. The exact manifest schema is intentionally deferred until Milestone 6 evaluates a real proof-of-concept asset so illustrative examples do not become accidental contracts.
 
 Future asset loading must validate versions and required semantic mappings, report failures clearly, and cache reusable models, meshes, textures, and materials.
 
@@ -94,11 +121,13 @@ RobotStudio must use rendering technology that remains available without paid li
 | Veldrid | Low-level fallback, not preferred | MIT-licensed and flexible, but would require RobotStudio to own substantially more rendering infrastructure than this educational robotics application should normally maintain. |
 | Ab4d.SharpEngine | Rejected as the default | Technically suitable, but potential commercial licensing requirements conflict with the zero-license-cost dependency policy and could make future distribution choices conditional. |
 
-Package health, licensing, framework compatibility, platform support, and maintenance status must be revalidated when Milestone 9 begins. No dependency is introduced by this planning decision.
+Package health, licensing, framework compatibility, platform support, and maintenance status must be revalidated before the first Milestone 6 renderer proof of concept. No dependency is introduced by this initial scope-alignment decision.
+
+The current revalidation selects `HelixToolkit.Wpf.SharpDX` 3.1.2 as the proof-of-concept candidate while retaining Stride as the first alternative. This is a provisional implementation choice rather than permanent approval. The evidence, risks, asset pipeline, and acceptance criteria are recorded in [Renderer And Asset Pipeline Evaluation](renderer-evaluation.md).
 
 ## Performance Direction
 
-Milestone 9 must evaluate:
+Milestone 6 must evaluate:
 
 - scene graph organization and incremental transform updates;
 - GPU-side rendering and resource lifetime;
@@ -115,7 +144,7 @@ The renderer should update component transforms for each frame instead of rebuil
 
 The realistic renderer must continue to teach coordinate systems, axes, joints, workspace, trajectories, end-effector position, robot topology, and the physical effect of commands. Selection and overlays must provide technical context, not merely decoration.
 
-The implementation is successful only if students can switch between abstraction and realism while observing the same deterministic simulation.
+The implementation is successful only if students can distinguish executable simulation from mechanical demonstration, move between both without losing their simulation session, and understand how realistic components produce the abstract motion shown by the simulator.
 
 ## Non-Goals
 
@@ -130,13 +159,17 @@ The current planning task does not include:
 
 ## Completion Criteria
 
-Milestone 9 is complete only when:
+Milestone 6 is complete only when:
 
 - schematic visualization remains fully available;
-- realistic and overlay-composed modes consume the same deterministic simulation results;
+- the realistic showcase uses explicit renderer-neutral component poses or animation state and never treats mesh transforms as domain state;
+- predefined showcase demonstrations remain presentation-only and cannot mutate an active deterministic simulation session;
 - no domain, motion, or simulation project depends on a rendering library;
-- at least one existing robot uses a validated glTF/GLB-based visual hierarchy;
+- all eight currently available models have an original realistic mechanical showcase: Cartesian Robot, XY Plotter, Differential Drive Robot, SCARA Robot, Simple Articulated Arm, Delta Robot, Drone, and 6-DOF Industrial Arm;
+- every showcase uses a validated glTF/GLB-based visual hierarchy or another explicitly approved open asset representation selected during the renderer proof of concept;
 - selectable visual components resolve to RobotStudio semantic identifiers;
 - simulation timing remains independent from rendering frame timing;
 - the selected dependency satisfies the zero-license-cost policy;
 - architecture, asset validation, selection mapping, and rendering smoke tests protect the new boundaries.
+
+Milestone completion is capability-based rather than calendar-based. The next product release requires the selected work from Milestones 2 through 6 to be genuinely complete. Milestone 7 robot-family expansion remains a candidate for a later release and does not block that release.

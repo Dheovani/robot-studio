@@ -59,7 +59,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.CartesianThreeDimensional,
-                "Cartesian 3D Viewer")),
+                "Cartesian 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "cartesian-intro-mechanical",
+                "Cartesian Mechanical Showcase")),
 
         new(
             Id: "xy-plotter",
@@ -339,6 +342,14 @@ public static class RobotCatalog
 
         return template.Status == RobotAvailabilityStatus.Available &&
                template.Viewer.Kind != RobotViewerKind.None;
+    }
+
+    public static bool CanExploreMechanics(RobotTemplate template)
+    {
+        ArgumentNullException.ThrowIfNull(template);
+
+        return template.Status == RobotAvailabilityStatus.Available &&
+               template.MechanicalShowcase is not null;
     }
 
     private static RobotViewerDescriptor PlannedViewer() =>

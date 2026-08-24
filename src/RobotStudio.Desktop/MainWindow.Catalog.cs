@@ -297,6 +297,11 @@ public partial class MainWindow
             card.LostKeyboardFocus += (_, _) => ApplyRobotCardVisualState(card, template, isHighlighted: false);
             card.PreviewMouseLeftButtonUp += (_, e) =>
             {
+                if (e.OriginalSource is DependencyObject source && IsInsideButton(source))
+                {
+                    return;
+                }
+
                 e.Handled = true;
                 OpenRobot(template);
             };
@@ -383,15 +388,39 @@ public partial class MainWindow
     {
         if (canOpen)
         {
-            var button = new Button
+            var actions = new Grid
             {
                 Height = 36,
-                Margin = new Thickness(0, 12, 0, 0),
-                Content = "Open Robot",
+                Margin = new Thickness(0, 12, 0, 0)
+            };
+            actions.ColumnDefinitions.Add(new ColumnDefinition());
+
+            var simulatorButton = new Button
+            {
+                Content = "Open Simulator",
                 Tag = template
             };
-            button.Click += OpenRobotButton_Click;
-            return button;
+            simulatorButton.Click += OpenRobotButton_Click;
+            actions.Children.Add(simulatorButton);
+
+            if (RobotCatalog.CanExploreMechanics(template))
+            {
+                actions.ColumnDefinitions.Add(new ColumnDefinition());
+                simulatorButton.Margin = new Thickness(0, 0, 5, 0);
+
+                var showcaseButton = new Button
+                {
+                    Margin = new Thickness(5, 0, 0, 0),
+                    Style = (Style)FindResource("SecondaryButtonStyle"),
+                    Content = "Explore Mechanics",
+                    Tag = template
+                };
+                showcaseButton.Click += ExploreMechanicsButton_Click;
+                Grid.SetColumn(showcaseButton, 1);
+                actions.Children.Add(showcaseButton);
+            }
+
+            return actions;
         }
 
         var status = new TextBlock
@@ -574,6 +603,36 @@ public partial class MainWindow
         EnsureCartesianSnapshot();
         RenderFrame(index: 0);
     }
+
+    private void OpenMechanicalShowcase(RobotTemplate template)
+    {
+        if (!RobotCatalog.CanExploreMechanics(template))
+        {
+            return;
+        }
+
+        StopPlayback();
+        RobotSelectionView.Visibility = Visibility.Collapsed;
+        CartesianMechanicalShowcaseView.Visibility = Visibility.Visible;
+    }
+
+    private static bool IsInsideButton(DependencyObject source)
+    {
+        for (var current = source; current is not null; current = GetElementParent(current))
+        {
+            if (current is Button)
+            {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private static DependencyObject? GetElementParent(DependencyObject element) =>
+        element is Visual or Visual3D
+            ? VisualTreeHelper.GetParent(element)
+            : LogicalTreeHelper.GetParent(element);
 
     private void ConfigureActiveViewer(RobotViewerKind viewerKind)
     {

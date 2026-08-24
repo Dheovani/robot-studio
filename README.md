@@ -271,8 +271,9 @@ When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact
 - `src/RobotStudio.Simulation`: deterministic command execution, sampling, playback snapshots, visual states, and scene frames.
 - `src/RobotStudio.Scripting`: Simple DSL plus semantic G-code parsing and robot-specific command mapping exposed through a shared dialect contract.
 - `src/RobotStudio.Hardware`: future hardware integration boundary contracts and planned prototype metadata.
+- `src/RobotStudio.Visualization`: renderer-neutral visual-model hierarchies, semantic robot parts, component poses, and curated mechanical demonstrations.
 - `src/RobotStudio.Cli`: terminal entry point for examples, validation, simulation, playback, and snapshot export.
-- `src/RobotStudio.Desktop`: WPF desktop app for robot selection and visual robot simulation.
+- `src/RobotStudio.Desktop`: WPF desktop app for robot selection, schematic simulation, and isolated mechanical showcases.
 - `tests`: xUnit test projects for domain, motion, simulation, scripting, hardware boundaries, and desktop metadata/tooling.
 - `docs`: product, architecture, use case, testing, CI, and user documentation.
 

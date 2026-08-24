@@ -27,6 +27,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added Delta Robot tool-space G-code with `G1 X/Y/Z`, exact inverse kinematics, synchronized actuator constraints, continuous linear TCP playback, desktop dialect selection, and local examples.
 - Added 6-DOF Industrial Arm tool-pose G-code with `G1 X/Y/Z/A/B/C`, deterministic positive-elbow/wrist-neutral inverse kinematics, joint-constrained linear playback, desktop dialect selection, and local examples.
 - Added `G-code` capability badges only to robot cards with an executable mapping.
+- Added the first Cartesian mechanical-showcase prototype with a retained 3D scene, curated motion, semantic component selection, highlighting, and educational part inspection alongside the existing schematic simulator.
+- Added renderer-neutral visual-model, robot-part hierarchy, component-pose, demonstration, sampling, and transform-resolution contracts in a dedicated visualization project.
 
 ### Changed
 

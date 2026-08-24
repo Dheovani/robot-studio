@@ -300,6 +300,7 @@ public partial class MainWindow
         DeltaViewerView.Visibility = Visibility.Collapsed;
         DroneViewerView.Visibility = Visibility.Collapsed;
         IndustrialArmViewerView.Visibility = Visibility.Collapsed;
+        CartesianMechanicalShowcaseView.Visibility = Visibility.Collapsed;
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -311,6 +312,22 @@ public partial class MainWindow
         {
             OpenRobot(template);
         }
+    }
+
+    private void ExploreMechanicsButton_Click(
+        object sender,
+        RoutedEventArgs e)
+    {
+        if (sender is Button { Tag: RobotTemplate template })
+        {
+            OpenMechanicalShowcase(template);
+        }
+    }
+
+    private void MechanicalShowcase_BackRequested(object? sender, EventArgs e)
+    {
+        CartesianMechanicalShowcaseView.Visibility = Visibility.Collapsed;
+        RobotSelectionView.Visibility = Visibility.Visible;
     }
 
     private void ValidateScriptButton_Click(

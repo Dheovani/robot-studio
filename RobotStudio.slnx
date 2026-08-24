@@ -7,6 +7,7 @@
     <Project Path="src/RobotStudio.Motion/RobotStudio.Motion.csproj" />
     <Project Path="src/RobotStudio.Scripting/RobotStudio.Scripting.csproj" />
     <Project Path="src/RobotStudio.Simulation/RobotStudio.Simulation.csproj" />
+    <Project Path="src/RobotStudio.Visualization/RobotStudio.Visualization.csproj" />
   </Folder>
   <Folder Name="/tests/">
     <Project Path="tests/RobotStudio.Architecture.Tests/RobotStudio.Architecture.Tests.csproj" />
@@ -17,5 +18,6 @@
     <Project Path="tests/RobotStudio.Motion.Tests/RobotStudio.Motion.Tests.csproj" />
     <Project Path="tests/RobotStudio.Scripting.Tests/RobotStudio.Scripting.Tests.csproj" />
     <Project Path="tests/RobotStudio.Simulation.Tests/RobotStudio.Simulation.Tests.csproj" />
+    <Project Path="tests/RobotStudio.Visualization.Tests/RobotStudio.Visualization.Tests.csproj" />
   </Folder>
 </Solution>

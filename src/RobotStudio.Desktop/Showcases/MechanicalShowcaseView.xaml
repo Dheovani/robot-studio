@@ -1,0 +1,162 @@
+<UserControl x:Class="RobotStudio.Desktop.Showcases.MechanicalShowcaseView"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:hx="http://helix-toolkit.org/wpf/SharpDX"
+             Background="{DynamicResource AppBackgroundBrush}">
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto" />
+            <RowDefinition Height="*" />
+        </Grid.RowDefinitions>
+
+        <DockPanel Grid.Row="0" Style="{DynamicResource ViewerHeaderStyle}">
+            <StackPanel DockPanel.Dock="Left">
+                <TextBlock Text="Cartesian Robot"
+                           Style="{DynamicResource ViewerTitleStyle}" />
+                <TextBlock Text="Mechanical showcase proof of concept"
+                           Style="{DynamicResource ViewerSubtitleStyle}" />
+            </StackPanel>
+            <Button DockPanel.Dock="Right"
+                    Width="96"
+                    Style="{DynamicResource ViewerToolbarButtonStyle}"
+                    Content="Robots"
+                    ToolTip="Return to the robot catalog."
+                    Click="BackButton_Click" />
+        </DockPanel>
+
+        <Grid Grid.Row="1" Margin="16,0,16,16">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" MinWidth="420" />
+                <ColumnDefinition Width="12" />
+                <ColumnDefinition Width="320" />
+            </Grid.ColumnDefinitions>
+
+            <Border Grid.Column="0"
+                    ClipToBounds="True"
+                    Background="#0B1220"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <hx:Viewport3DX x:Name="ShowcaseViewport"
+                               BackgroundColor="#0B1220"
+                               EnableMouseButtonHitTest="True"
+                               EnableSwapChainRendering="False"
+                               FXAALevel="Low"
+                               ModelUpDirection="0,0,1"
+                               ShowCoordinateSystem="True"
+                               ShowViewCube="True"
+                               UseDefaultGestures="True">
+                    <hx:AmbientLight3D Color="#667085" />
+                    <hx:DirectionalLight3D Color="White" Direction="-1,-1,-2" />
+                    <hx:DirectionalLight3D Color="#93C5FD" Direction="1,0,-1" />
+                </hx:Viewport3DX>
+            </Border>
+
+            <Border Grid.Column="2"
+                    Padding="16"
+                    Background="{DynamicResource PanelBackgroundBrush}"
+                    BorderBrush="{DynamicResource BorderBrush}"
+                    BorderThickness="1"
+                    CornerRadius="4">
+                <Grid>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="Auto" />
+                        <RowDefinition Height="*" />
+                    </Grid.RowDefinitions>
+
+                    <TextBlock Grid.Row="0"
+                               Foreground="{DynamicResource PrimaryTextBrush}"
+                               FontSize="18"
+                               FontWeight="SemiBold"
+                               Text="Demonstration" />
+
+                    <ComboBox x:Name="DemonstrationComboBox"
+                              Grid.Row="1"
+                              Margin="0,10,0,10"
+                              DisplayMemberPath="Name"
+                              SelectionChanged="DemonstrationComboBox_SelectionChanged" />
+
+                    <Grid Grid.Row="2">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0"
+                                Margin="0,0,4,0"
+                                Content="Play"
+                                Click="PlayButton_Click" />
+                        <Button Grid.Column="1"
+                                Margin="4,0"
+                                Style="{DynamicResource SecondaryButtonStyle}"
+                                Content="Pause"
+                                Click="PauseButton_Click" />
+                        <Button Grid.Column="2"
+                                Margin="4,0,0,0"
+                                Style="{DynamicResource SecondaryButtonStyle}"
+                                Content="Reset"
+                                Click="ResetButton_Click" />
+                    </Grid>
+
+                    <StackPanel Grid.Row="3" Margin="0,12,0,18">
+                        <ProgressBar x:Name="DemonstrationProgressBar"
+                                     Height="6"
+                                     Minimum="0"
+                                     Maximum="1" />
+                        <TextBlock x:Name="DemonstrationTimeText"
+                                   Margin="0,6,0,0"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Text="0 / 0 s" />
+                    </StackPanel>
+
+                    <StackPanel Grid.Row="4">
+                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
+                                   FontSize="18"
+                                   FontWeight="SemiBold"
+                                   Text="Selected component" />
+                        <TextBlock x:Name="PartNameText"
+                                   Margin="0,12,0,0"
+                                   Foreground="#93C5FD"
+                                   FontSize="16"
+                                   FontWeight="SemiBold"
+                                   Text="Select a robot component" />
+                        <TextBlock x:Name="PartKindText"
+                                   Margin="0,3,0,0"
+                                   Foreground="{DynamicResource MutedTextBrush}" />
+                        <TextBlock x:Name="PartRelationshipText"
+                                   Margin="0,3,0,0"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Margin="0,16,0,4"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   FontWeight="SemiBold"
+                                   Text="Function" />
+                        <TextBlock x:Name="PartFunctionText"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   TextWrapping="Wrap" />
+                        <TextBlock Margin="0,16,0,4"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   FontWeight="SemiBold"
+                                   Text="Movement" />
+                        <TextBlock x:Name="PartMovementText"
+                                   Foreground="{DynamicResource SecondaryTextBrush}"
+                                   TextWrapping="Wrap" />
+                        <Border Margin="0,20,0,0"
+                                Padding="10"
+                                Background="#182235"
+                                BorderBrush="{DynamicResource BorderBrush}"
+                                BorderThickness="1"
+                                CornerRadius="4">
+                            <TextBlock Foreground="{DynamicResource MutedTextBrush}"
+                                       TextWrapping="Wrap"
+                                       Text="Visual model: procedural technical prototype" />
+                        </Border>
+                    </StackPanel>
+                </Grid>
+            </Border>
+        </Grid>
+    </Grid>
+</UserControl>

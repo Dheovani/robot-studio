@@ -593,3 +593,7 @@ Expected current behavior:
 - builds line-by-line G-code explanations for units, absolute/relative modes, homing, robot-specific linear movement, feed rate, and dwell while ignoring comments and unknown commands;
 - keeps moving industrial-arm playback frames on the planned straight TCP path;
 - executes every desktop industrial-arm G-code example against the shared teaching profile and keeps the packaged example synchronized with the catalog.
+- validates renderer-neutral robot-part hierarchies, including duplicate identifiers, missing parents, cycles, and disconnected structures;
+- validates mechanical demonstration timelines, stable component-pose sets, interpolation, clamping, and hierarchical world-transform composition;
+- keeps HelixToolkit references confined to the Windows desktop project and keeps `RobotStudio.Visualization` package-free and platform-neutral;
+- exposes the Cartesian Robot as the only catalog model with the current mechanical-showcase proof of concept.

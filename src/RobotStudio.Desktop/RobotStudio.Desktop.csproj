@@ -4,6 +4,7 @@
     <ProjectReference Include="..\RobotStudio.Domain\RobotStudio.Domain.csproj" />
     <ProjectReference Include="..\RobotStudio.Scripting\RobotStudio.Scripting.csproj" />
     <ProjectReference Include="..\RobotStudio.Simulation\RobotStudio.Simulation.csproj" />
+    <ProjectReference Include="..\RobotStudio.Visualization\RobotStudio.Visualization.csproj" />
   </ItemGroup>
 
   <PropertyGroup>
@@ -18,6 +19,10 @@
 
   <ItemGroup>
     <Resource Include="Assets\RobotStudio.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="HelixToolkit.Wpf.SharpDX" Version="3.1.2" />
   </ItemGroup>
 
 </Project>

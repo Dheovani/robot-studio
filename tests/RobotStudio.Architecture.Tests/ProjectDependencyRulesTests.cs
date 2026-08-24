@@ -13,7 +13,8 @@ public sealed class ProjectDependencyRulesTests
             ["RobotStudio.Scripting"] = ["RobotStudio.Domain", "RobotStudio.Motion"],
             ["RobotStudio.Hardware"] = ["RobotStudio.Domain"],
             ["RobotStudio.Cli"] = ["RobotStudio.Domain", "RobotStudio.Scripting", "RobotStudio.Simulation"],
-            ["RobotStudio.Desktop"] = ["RobotStudio.Domain", "RobotStudio.Scripting", "RobotStudio.Simulation"]
+            ["RobotStudio.Desktop"] = ["RobotStudio.Domain", "RobotStudio.Scripting", "RobotStudio.Simulation", "RobotStudio.Visualization"],
+            ["RobotStudio.Visualization"] = []
         };
 
     [Fact]
@@ -84,6 +85,39 @@ public sealed class ProjectDependencyRulesTests
         Assert.True(HasProperty(desktopProjectPath, "UseWPF", "true"));
     }
 
+    [Fact]
+    public void RenderingPackages_ShouldRemainConfinedToDesktopProject()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var sourceProjects = EnumerateSourceProjects(repositoryRoot).ToArray();
+
+        var projectsWithRenderingPackages = sourceProjects
+            .Where(projectPath => ReadPackageReferences(projectPath)
+                .Any(package => package.StartsWith("HelixToolkit", StringComparison.OrdinalIgnoreCase)))
+            .Select(GetProjectName)
+            .ToArray();
+
+        Assert.Equal(["RobotStudio.Desktop"], projectsWithRenderingPackages);
+    }
+
+    [Fact]
+    public void VisualizationProject_ShouldRemainRendererNeutral()
+    {
+        var repositoryRoot = FindRepositoryRoot();
+        var projectPath = Path.Combine(
+            repositoryRoot,
+            "src",
+            "RobotStudio.Visualization",
+            "RobotStudio.Visualization.csproj");
+        var document = XDocument.Load(projectPath);
+
+        Assert.Empty(ReadProjectReferences(projectPath));
+        Assert.Empty(ReadPackageReferences(projectPath));
+        Assert.DoesNotContain(
+            document.Descendants("TargetFramework").Select(element => element.Value),
+            framework => framework.Contains("windows", StringComparison.OrdinalIgnoreCase));
+    }
+
     [Theory]
     [InlineData(@"..\RobotStudio.Domain\RobotStudio.Domain.csproj")]
     [InlineData("../RobotStudio.Domain/RobotStudio.Domain.csproj")]
@@ -114,6 +148,15 @@ public sealed class ProjectDependencyRulesTests
             .Select(include => Path.GetFullPath(Path.Combine(projectDirectory, include)))
             .ToArray();
     }
+
+    private static IReadOnlyList<string> ReadPackageReferences(string projectPath) =>
+        XDocument
+            .Load(projectPath)
+            .Descendants("PackageReference")
+            .Select(reference => reference.Attribute("Include")?.Value)
+            .Where(include => !string.IsNullOrWhiteSpace(include))
+            .Select(include => include!)
+            .ToArray();
 
     private static IEnumerable<string> EnumerateSourceProjects(string repositoryRoot) =>
         Directory

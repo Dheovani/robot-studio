@@ -8,4 +8,5 @@ public sealed record RobotTemplate(
     RobotComplexityLevel Complexity,
     string Description,
     IReadOnlyList<RobotCapability> Capabilities,
-    RobotViewerDescriptor Viewer);
+    RobotViewerDescriptor Viewer,
+    MechanicalShowcaseDescriptor? MechanicalShowcase = null);

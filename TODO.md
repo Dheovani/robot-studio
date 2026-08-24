@@ -62,20 +62,23 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 
 ## 6. Advanced 3D Visualization And Realistic Robot Rendering
 
-Milestone 6 is future work. Its architecture and implementation constraints are specified in [Advanced 3D Visualization](docs/advanced-3d-visualization.md). Do not add a rendering dependency before this milestone begins and its library evaluation is revalidated.
-
-- [ ] Revalidate renderer capabilities, maintenance status, platform support, and licenses; investigate the appropriate HelixToolkit integration first if WPF remains the desktop framework.
-- [ ] Define renderer-neutral visual-state, component-pose, semantic part identifier, and robot visual-model contracts without adding graphics-library types to Domain, Motion, or Simulation.
+- [x] Revalidate renderer capabilities, maintenance status, platform support, licenses, and asset tooling; select stable `HelixToolkit.Wpf.SharpDX` 3.1.2 provisionally for the isolated WPF proof of concept.
+- [x] Define the product boundary and initial catalog navigation between `Open Simulator` and `Explore Mechanics`; evaluate an internal switch only after the separate experiences are usable.
+- [x] Define renderer-neutral component-pose, semantic part identifier, hierarchical robot visual-model, demonstration, sampling, and transform-resolution contracts in `RobotStudio.Visualization` without graphics-library types.
+- [x] Define and test a presentation-only keyframe demonstration controller for fixed mechanical animations without making rendered meshes the source of robot state.
 - [ ] Extract robot-specific schematic scene composition and viewport lifecycle code from `MainWindow.xaml.cs` behind desktop rendering interfaces.
 - [ ] Define a versioned asset manifest direction that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without locking the project into a premature schema.
 - [ ] Implement model loading, asset validation, caching, mesh and material reuse, and deterministic failure reporting for missing or incompatible assets.
 - [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
+- [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
 - [ ] Add visualization mode selection for schematic, realistic, and realistic with educational overlays.
-- [ ] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
+- [x] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
 - [ ] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
 - [ ] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
 - [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
 - [ ] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
+- [ ] Deliver original realistic showcases for all currently available models: Cartesian, XY Plotter, Differential Drive, SCARA, Simple Articulated Arm, Delta, Drone, and 6-DOF Industrial Arm.
+- [ ] Treat Milestone 6 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 6 scope is complete.
 
 ## 7. Future Robot Family Expansion
 
