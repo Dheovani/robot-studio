@@ -585,6 +585,8 @@
                                        TextWrapping="Wrap"
                                        Text="Choose a dialect, edit the script, and validate it before simulation." />
 
+                            <viewers:GCodeExplanationPanel x:Name="CartesianGCodeExplanationPanel" />
+
                             <ContentControl ContentTemplate="{StaticResource ViewerRecoveryActionsTemplate}" />
 
                             <TextBlock x:Name="CurrentScriptLineText"
@@ -1414,13 +1416,16 @@
                         <ComboBox x:Name="ScaraExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="ScaraScriptTextBox"
-                                 Style="{StaticResource ViewerScriptEditorStyle}" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}"
+                                 TextChanged="GCodeScriptTextBox_TextChanged" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="ScaraScriptStatusText"
                                    Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit SCARA joint commands and simulate the articulated robot." />
+
+                        <viewers:GCodeExplanationPanel x:Name="ScaraGCodeExplanationPanel" />
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
@@ -1535,13 +1540,16 @@
                         <ComboBox x:Name="SimpleArmExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="SimpleArmScriptTextBox"
-                                 Style="{StaticResource ViewerScriptEditorStyle}" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}"
+                                 TextChanged="GCodeScriptTextBox_TextChanged" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="SimpleArmScriptStatusText"
                                    Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit ARM joint commands and simulate the articulated arm." />
+
+                        <viewers:GCodeExplanationPanel x:Name="SimpleArmGCodeExplanationPanel" />
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
@@ -1656,13 +1664,16 @@
                         <ComboBox x:Name="DeltaExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DeltaScriptTextBox"
-                                 Style="{StaticResource ViewerScriptEditorStyle}" />
+                                 Style="{StaticResource ViewerScriptEditorStyle}"
+                                 TextChanged="GCodeScriptTextBox_TextChanged" />
 
                         <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
 
                         <TextBlock x:Name="DeltaScriptStatusText"
                                    Style="{StaticResource ViewerHelpTextStyle}"
                                    Text="Edit DELTA actuator commands and simulate the parallel robot." />
+
+                        <viewers:GCodeExplanationPanel x:Name="DeltaGCodeExplanationPanel" />
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Movement Explanation"
@@ -1877,11 +1888,13 @@
                             <TextBlock Text="Example" Margin="0,10,0,4" Foreground="#94A3B8" />
                             <ComboBox x:Name="IndustrialArmExampleComboBox" Margin="0,0,0,8" />
                             <TextBox x:Name="IndustrialArmScriptTextBox"
-                                     Style="{StaticResource ViewerScriptEditorStyle}" />
+                                     Style="{StaticResource ViewerScriptEditorStyle}"
+                                     TextChanged="GCodeScriptTextBox_TextChanged" />
                             <ContentControl ContentTemplate="{StaticResource ViewerScriptActionsTemplate}" />
                             <TextBlock x:Name="IndustrialArmScriptStatusText"
                                        Style="{StaticResource ViewerHelpTextStyle}"
                                        Text="Edit ARM6 joint commands and simulate the industrial arm." />
+                            <viewers:GCodeExplanationPanel x:Name="IndustrialArmGCodeExplanationPanel" />
                             <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                             <TextBlock Text="Movement Explanation" Margin="0,0,0,8" Style="{StaticResource ViewerSectionHeadingStyle}" />
                             <TextBlock x:Name="IndustrialArmMovementExplanationText" Style="{StaticResource ViewerHelpTextStyle}" />

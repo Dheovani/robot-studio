@@ -49,7 +49,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Add examples for requested speed versus effective speed.
 - [x] Add examples for waits, homing, manual jogging, and command sequencing.
 - [x] Add glossary entries for technical robotics terms.
-- [ ] Add optional inline explanations for future G-code commands.
+- [x] Add optional line-by-line explanations for supported G-code commands, modal state, coordinates, feed rate, homing, and dwell behavior.
 
 ## 5. Testing And Quality
 

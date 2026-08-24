@@ -185,6 +185,8 @@ The 6-DOF Industrial Arm maps `G1 X/Y/Z/A/B/C` to a full TCP pose: `A`, `B`, and
 
 `GCodeWriter` converts supported domain command sequences into this subset. It is used to present equivalent desktop teaching examples without duplicating simulation rules.
 
+The desktop's optional G-code guide is a presentation-only interpretation built from source lines and `GCodeRobotMappingCatalog` metadata. It does not modify scripts, execute commands, or replace parser validation. A shared control presents the same line-by-line concepts in every G-code-capable workspace while adapting coordinate explanations to each robot mapping.
+
 `RobotScriptDialectResolver` centralizes command-line dialect selection. An explicit `dsl` or `gcode` request takes precedence; otherwise `.gcode` selects G-code and all other extensions retain the backward-compatible Simple DSL default. The resolver returns `IRobotScriptDialect`, so the CLI's validation, simulation, playback, and export paths remain independent of concrete parser classes.
 
 ### UI And Visualization

@@ -239,6 +239,7 @@ public partial class MainWindow : Window
         GlossaryCategoryComboBox.SelectedIndex = 0;
         RefreshGlossaryEntries();
         RefreshScriptEditorGutter();
+        RefreshGCodeExplanations();
         BuildRobotSelectionCards();
     }
 
@@ -2882,8 +2883,16 @@ public partial class MainWindow : Window
 
     private void ScriptEditorTextBox_TextChanged(
         object sender,
-        TextChangedEventArgs e) =>
+        TextChangedEventArgs e)
+    {
         RefreshScriptEditorGutter();
+        RefreshGCodeExplanations();
+    }
+
+    private void GCodeScriptTextBox_TextChanged(
+        object sender,
+        TextChangedEventArgs e) =>
+        RefreshGCodeExplanations();
 
     private void ScriptEditorTextBox_ScrollChanged(
         object sender,
@@ -3608,7 +3617,44 @@ public partial class MainWindow : Window
         }
 
         RefreshScriptEditorGutter();
+        RefreshGCodeExplanations();
         UpdateSessionRecoveryControls();
+    }
+
+    private void RefreshGCodeExplanations()
+    {
+        if (CartesianGCodeExplanationPanel is null ||
+            ScaraGCodeExplanationPanel is null ||
+            SimpleArmGCodeExplanationPanel is null ||
+            DeltaGCodeExplanationPanel is null ||
+            IndustrialArmGCodeExplanationPanel is null)
+        {
+            return;
+        }
+
+        var cartesianTarget = activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional
+            ? GCodeRobotTarget.XYPlotter
+            : GCodeRobotTarget.CartesianRobot;
+        CartesianGCodeExplanationPanel.SetContext(
+            CartesianScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode,
+            ScriptEditorTextBox.Text,
+            cartesianTarget);
+        ScaraGCodeExplanationPanel.SetContext(
+            ScaraScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode,
+            ScaraScriptTextBox.Text,
+            GCodeRobotTarget.ScaraRobot);
+        SimpleArmGCodeExplanationPanel.SetContext(
+            SimpleArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode,
+            SimpleArmScriptTextBox.Text,
+            GCodeRobotTarget.SimpleArticulatedArm);
+        DeltaGCodeExplanationPanel.SetContext(
+            DeltaScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode,
+            DeltaScriptTextBox.Text,
+            GCodeRobotTarget.DeltaRobot);
+        IndustrialArmGCodeExplanationPanel.SetContext(
+            IndustrialArmScriptDialect.Descriptor.Id == RobotScriptDialectId.GCode,
+            IndustrialArmScriptTextBox.Text,
+            GCodeRobotTarget.IndustrialArm6Dof);
     }
 
     private void ConfigureCartesianViewer()

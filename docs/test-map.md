@@ -590,5 +590,6 @@ Expected current behavior:
 - validates 6-DOF Industrial Arm forward/inverse kinematics round trips and rejects incompatible TCP yaw;
 - samples linear 6-DOF TCP plans under joint velocity and acceleration constraints;
 - maps absolute and relative `G1 X/Y/Z/A/B/C` programs and round-trips generated G-code;
+- builds line-by-line G-code explanations for units, absolute/relative modes, homing, robot-specific linear movement, feed rate, and dwell while ignoring comments and unknown commands;
 - keeps moving industrial-arm playback frames on the planned straight TCP path;
 - executes every desktop industrial-arm G-code example against the shared teaching profile and keeps the packaged example synchronized with the catalog.

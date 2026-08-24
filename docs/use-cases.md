@@ -295,6 +295,7 @@ Expected result:
 - manual jog and direct console actions append syntax matching the selected dialect;
 - switching syntax does not duplicate domain, motion, or simulation rules.
 - selecting G-code never reinterprets tool-space coordinates as joints, wheels, or actuators for an incompatible robot family.
+- the optional line guide explains each supported G-code command, the active absolute or relative mode, and the coordinates available for the selected robot without modifying the script.
 
 ### Run A Selected Script Dialect In The CLI
 

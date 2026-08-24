@@ -12,6 +12,7 @@ The project is intentionally educational. It is designed to help students unders
 - Validate physical axis limits for position, velocity, and acceleration.
 - Observe acceleration-aware movement across every available robot family using triangular or trapezoidal velocity profiles.
 - Consult a searchable in-app robotics glossary covering fundamentals, motion, kinematics, simulation, programming, and safety.
+- Expand an optional line-by-line G-code guide that explains units, positioning modes, homing, tool-space coordinates, feed rate, and dwell commands for the active robot.
 - Model Cartesian workspace obstacles and reject linear paths that intersect them before simulated movement begins.
 - Detect Differential Drive collisions using the robot's circular body footprint rather than treating its center as a dimensionless point.
 - Detect SCARA collisions against both physical links throughout sampled joint-space movement, not only at the final TCP position.

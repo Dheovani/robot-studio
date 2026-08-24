@@ -351,6 +351,7 @@ G4 P500
 - Loading a `.gcode` or `.robot` file selects its matching dialect automatically; `.txt` keeps the current selection.
 - `G90` and `G91` do not create timeline movements themselves; they control how subsequent `G1` lines are resolved.
 - The generated G-code preamble uses `G21` and `G90` so units and positioning are explicit.
+- Select `Explain G-code lines` below a G-code editor to show or hide explanations for each supported line. The guide follows script edits and distinguishes robot-specific coordinates without changing the program.
 - G-code coordinates describe TCP tool-space motion and never stand for joint numbers or actuators.
 - Cartesian Robot and XY Plotter mappings are available through direct linear axes.
 - SCARA accepts planar `G1 X/Y` and optional `Z0`. It follows a sampled linear TCP path using deterministic elbow-down inverse kinematics; use `HOME`/`G28` or an elbow-down pose before tool-space movement.
