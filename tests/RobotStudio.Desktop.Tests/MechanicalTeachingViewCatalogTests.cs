@@ -77,7 +77,6 @@ public sealed class MechanicalTeachingViewCatalogTests
     [InlineData(RobotPartKind.Base)]
     [InlineData(RobotPartKind.Structure)]
     [InlineData(RobotPartKind.Carriage)]
-    [InlineData(RobotPartKind.Controller)]
     public void ShouldGhost_WhenPartCanObscureDriveComponents_ShouldReturnTrue(RobotPartKind kind)
     {
         Assert.True(MechanicalTeachingViewCatalog.ShouldGhost(kind));
@@ -87,9 +86,46 @@ public sealed class MechanicalTeachingViewCatalogTests
     [InlineData(RobotPartKind.Motor)]
     [InlineData(RobotPartKind.Transmission)]
     [InlineData(RobotPartKind.Rail)]
+    [InlineData(RobotPartKind.Controller)]
     [InlineData(RobotPartKind.Tool)]
     public void ShouldGhost_WhenPartExplainsTheDriveSystem_ShouldReturnFalse(RobotPartKind kind)
     {
         Assert.False(MechanicalTeachingViewCatalog.ShouldGhost(kind));
+    }
+
+    [Fact]
+    public void CanSelect_WhenGhostedStructureIsInDriveSystemView_ShouldReturnFalse()
+    {
+        Assert.False(MechanicalTeachingViewCatalog.CanSelect(
+            RobotPartKind.Structure,
+            true,
+            MechanicalTeachingViewMode.DriveSystem));
+    }
+
+    [Fact]
+    public void CanSelect_WhenInternalComponentIsBehindGhostedStructure_ShouldReturnTrue()
+    {
+        Assert.True(MechanicalTeachingViewCatalog.CanSelect(
+            RobotPartKind.Motor,
+            true,
+            MechanicalTeachingViewMode.DriveSystem));
+    }
+
+    [Fact]
+    public void CanSelect_WhenStructureIsInAssembledView_ShouldReturnTrue()
+    {
+        Assert.True(MechanicalTeachingViewCatalog.CanSelect(
+            RobotPartKind.Structure,
+            true,
+            MechanicalTeachingViewMode.Assembled));
+    }
+
+    [Fact]
+    public void CanSelect_WhenPartIsNotSelectable_ShouldReturnFalse()
+    {
+        Assert.False(MechanicalTeachingViewCatalog.CanSelect(
+            RobotPartKind.Motor,
+            false,
+            MechanicalTeachingViewMode.DriveSystem));
     }
 }

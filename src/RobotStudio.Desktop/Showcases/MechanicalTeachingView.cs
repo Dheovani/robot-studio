@@ -83,6 +83,12 @@ internal static class MechanicalTeachingViewCatalog
     public static bool ShouldGhost(RobotPartKind kind) =>
         kind is RobotPartKind.Base or
             RobotPartKind.Structure or
-            RobotPartKind.Carriage or
-            RobotPartKind.Controller;
+            RobotPartKind.Carriage;
+
+    public static bool CanSelect(
+        RobotPartKind kind,
+        bool isSelectable,
+        MechanicalTeachingViewMode mode) =>
+        isSelectable &&
+        (mode != MechanicalTeachingViewMode.DriveSystem || !ShouldGhost(kind));
 }

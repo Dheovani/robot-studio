@@ -60,6 +60,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Fixed mechanical-showcase camera navigation with full-viewport drag orbit, bounded elevation, predictable reset, and removal of the unstable view cube.
 - Fixed the mechanical showcase opening with empty component details by selecting the generic process tool initially.
 - Fixed the Cartesian mechanical showcase front orientation and made its key light follow the orbit camera so inspectable components remain readable from different angles.
+- Fixed transparent exterior parts intercepting component selection in the mechanical showcase drive-system layer.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

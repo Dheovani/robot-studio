@@ -400,15 +400,17 @@ public partial class MechanicalShowcaseView : UserControl
         IReadOnlyList<MeshGeometryModel3D> models)
     {
         var part = showcase.Model.GetPart(partId);
-        var isDriveView = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
-        {
-            Mode: MechanicalTeachingViewMode.DriveSystem
-        };
+        var viewMode = SelectedTeachingViewMode();
+        var isDriveView = viewMode == MechanicalTeachingViewMode.DriveSystem;
         var isGhosted = isDriveView && MechanicalTeachingViewCatalog.ShouldGhost(part.Kind);
         var isSelected = selectedPartId == partId;
 
         foreach (var model in models)
         {
+            model.IsHitTestVisible = MechanicalTeachingViewCatalog.CanSelect(
+                part.Kind,
+                part.IsSelectable,
+                viewMode);
             model.IsTransparent = isGhosted;
             model.Material = SelectMaterial(
                 model,
@@ -533,17 +535,20 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
-        var isDriveView = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
+        var viewMode = SelectedTeachingViewMode();
+        var isDriveView = viewMode == MechanicalTeachingViewMode.DriveSystem;
+        foreach (var (partId, nodes) in importedScene.NodesByPart)
         {
-            Mode: MechanicalTeachingViewMode.DriveSystem
-        };
-        if (isDriveView)
-        {
-            foreach (var (partId, nodes) in importedScene.NodesByPart)
+            var part = showcase.Model.GetPart(partId);
+            var isGhosted = isDriveView && MechanicalTeachingViewCatalog.ShouldGhost(part.Kind);
+            var isHitTestVisible = MechanicalTeachingViewCatalog.CanSelect(
+                part.Kind,
+                part.IsSelectable,
+                viewMode);
+            foreach (var materialNode in nodes.OfType<MaterialGeometryNode>())
             {
-                var part = showcase.Model.GetPart(partId);
-                var isGhosted = MechanicalTeachingViewCatalog.ShouldGhost(part.Kind);
-                foreach (var materialNode in nodes.OfType<MaterialGeometryNode>())
+                materialNode.IsHitTestVisible = isHitTestVisible;
+                if (isDriveView)
                 {
                     materialNode.IsTransparent = isGhosted;
                     materialNode.Material = isGhosted
@@ -569,6 +574,11 @@ public partial class MechanicalShowcaseView : UserControl
                 : importedSelectionMaterial;
         }
     }
+
+    private MechanicalTeachingViewMode SelectedTeachingViewMode() =>
+        TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption option
+            ? option.Mode
+            : MechanicalTeachingViewMode.Assembled;
 
     private MaterialCore? ImportedDriveMaterial(
         RobotPartKind kind,
