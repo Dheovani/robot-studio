@@ -42,9 +42,12 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added XY Plotter rectangular-path, isolated-axis, and staged-assembly demonstrations together with assembled, drive-system, motion-axis, and exploded layers.
 - Added an original round service-robot Differential Drive showcase with independent drive units, encoders, support caster, controller, battery, range sensor, and a packaged semantic GLB.
 - Added Differential Drive square-route, bidirectional turning, body-frame, drive-system cutaway, and staged-assembly teaching views.
+- Added an original SCARA mechanical showcase with a packaged semantic GLB, shoulder and elbow servo chain, vertical spindle, parallel gripper, selectable components, and a procedural fallback scene.
+- Added SCARA pick-and-place, individual-joint, drive-system, joint/tool-axis, and staged-assembly teaching views with pivot-correct articulated motion.
 
 ### Changed
 
+- Refined the SCARA mechanical model with a compact pedestal, continuous light-colored link covers, a larger wrist housing, a blue vertical spindle, and a metal parallel gripper based on a recognizable industrial SCARA arrangement.
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
 - Changed the Cartesian mechanical showcase into a recognizable desktop-machine arrangement with a Y-moving work platform, an X tool carriage, and a synchronized dual-column Z gantry.
 - Changed mechanical-showcase fallback geometry, assets, overlays, layers, and initial selection from control-owned Cartesian assumptions into model presentation data ready for additional robot families.
@@ -55,6 +58,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Fixed
 
+- Fixed SCARA mechanical links separating between demonstration keyframes by recomputing revolute-joint pivot compensation after rotation interpolation.
 - Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.
 - Fixed the mechanical showcase header layout and moved playback actions into the same top-toolbar pattern used by simulation workspaces.
 - Fixed mechanical-showcase camera navigation with full-viewport drag orbit, bounded elevation, predictable reset, and removal of the unstable view cube.

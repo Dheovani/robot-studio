@@ -417,6 +417,24 @@ Expected result:
 - `Ctrl+G` opens or closes the glossary and `Escape` closes it;
 - the same definitions remain available in `docs/glossary.md` outside the application.
 
+### Explore SCARA Mechanical Relationships
+
+Actor: student or instructor.
+
+Goal: connect SCARA joint-space concepts to recognizable motors, links, reductions, and a vertical tool mechanism.
+
+Current status: implemented in the SCARA mechanical showcase.
+
+Expected result:
+
+- the robot catalog opens the mechanical showcase independently from the schematic simulator;
+- the assembled model presents a pedestal-mounted two-link SCARA with a vertical spindle and parallel gripper;
+- the pick-and-place cycle coordinates shoulder rotation, relative elbow rotation, and vertical tool travel;
+- the individual-joint demonstration isolates each degree of freedom;
+- the drive-system layer exposes selectable motors, transmissions, internal links, and the controller through transparent covers;
+- the joint/tool-axis layer identifies the planar work frame and moving Z axis;
+- the assembly sequence joins the mechanism in mechanical order without changing simulation state.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

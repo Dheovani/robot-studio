@@ -28,6 +28,10 @@ internal sealed record MechanicalExplodedPartOffset(
     RobotPartId PartId,
     Vector3 TranslationMillimeters);
 
+internal sealed record MechanicalRevoluteJointPivot(
+    RobotPartId PartId,
+    Vector3 PivotMillimeters);
+
 internal sealed record MechanicalTeachingViewOption(
     MechanicalTeachingViewMode Mode,
     string Name,

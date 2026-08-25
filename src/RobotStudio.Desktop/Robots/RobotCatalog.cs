@@ -174,7 +174,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.ScaraThreeDimensional,
-                "SCARA 3D Viewer")),
+                "SCARA 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "scara-mechanical",
+                "SCARA Mechanical Showcase")),
 
         new(
             Id: "simple-articulated-arm",

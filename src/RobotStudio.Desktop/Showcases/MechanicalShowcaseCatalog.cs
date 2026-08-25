@@ -7,7 +7,8 @@ internal static class MechanicalShowcaseCatalog
         {
             ["cartesian-intro-mechanical"] = CartesianMechanicalShowcaseDefinition.CreatePresentation,
             ["xy-plotter-mechanical"] = XYPlotterMechanicalShowcaseDefinition.CreatePresentation,
-            ["differential-drive-mechanical"] = DifferentialDriveMechanicalShowcaseDefinition.CreatePresentation
+            ["differential-drive-mechanical"] = DifferentialDriveMechanicalShowcaseDefinition.CreatePresentation,
+            ["scara-mechanical"] = ScaraMechanicalShowcaseDefinition.CreatePresentation
         };
 
     public static IReadOnlyList<string> ModelIds { get; } = Factories.Keys.ToArray();

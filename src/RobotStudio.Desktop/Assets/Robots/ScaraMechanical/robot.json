@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "modelId": "scara-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_shoulder-motor", "partId": "shoulder-motor" },
+    { "nodeName": "RS_shoulder-transmission", "partId": "shoulder-transmission" },
+    { "nodeName": "RS_first-link", "partId": "first-link" },
+    { "nodeName": "RS_first-link-cover", "partId": "first-link-cover" },
+    { "nodeName": "RS_elbow-joint", "partId": "elbow-joint" },
+    { "nodeName": "RS_elbow-motor", "partId": "elbow-motor" },
+    { "nodeName": "RS_second-link", "partId": "second-link" },
+    { "nodeName": "RS_second-link-cover", "partId": "second-link-cover" },
+    { "nodeName": "RS_z-motor", "partId": "z-motor" },
+    { "nodeName": "RS_z-actuator", "partId": "z-actuator" },
+    { "nodeName": "RS_tool", "partId": "tool" }
+  ]
+}

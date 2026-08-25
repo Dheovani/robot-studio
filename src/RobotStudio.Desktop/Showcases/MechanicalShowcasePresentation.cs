@@ -1,3 +1,4 @@
+using System.Numerics;
 using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Showcases;
@@ -14,7 +15,8 @@ internal sealed class MechanicalShowcasePresentation
         IEnumerable<MechanicalTeachingViewOption> viewOptions,
         IEnumerable<MechanicalMotionAxisGuide> motionAxes,
         IEnumerable<MechanicalExplodedPartOffset> explodedOffsets,
-        IEnumerable<MechanicalScenePrimitive> fallbackPrimitives)
+        IEnumerable<MechanicalScenePrimitive> fallbackPrimitives,
+        IEnumerable<MechanicalRevoluteJointPivot>? revoluteJointPivots = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
@@ -109,6 +111,16 @@ internal sealed class MechanicalShowcasePresentation
                 nameof(fallbackPrimitives));
         }
 
+        var pivotArray = revoluteJointPivots?.ToArray() ?? [];
+        if (pivotArray.Select(pivot => pivot.PartId).Distinct().Count() != pivotArray.Length ||
+            pivotArray.Any(pivot => !partIds.Contains(pivot.PartId)) ||
+            pivotArray.Any(pivot => !IsFinite(pivot.PivotMillimeters)))
+        {
+            throw new ArgumentException(
+                "Revolute joint pivots must be finite and reference unique visual parts.",
+                nameof(revoluteJointPivots));
+        }
+
         ModelId = modelId;
         Title = title;
         Subtitle = subtitle;
@@ -119,6 +131,7 @@ internal sealed class MechanicalShowcasePresentation
         MotionAxes = Array.AsReadOnly(axisArray);
         ExplodedOffsets = Array.AsReadOnly(offsetArray);
         FallbackPrimitives = Array.AsReadOnly(primitiveArray);
+        RevoluteJointPivots = Array.AsReadOnly(pivotArray);
     }
 
     public string ModelId { get; }
@@ -140,4 +153,9 @@ internal sealed class MechanicalShowcasePresentation
     public IReadOnlyList<MechanicalExplodedPartOffset> ExplodedOffsets { get; }
 
     public IReadOnlyList<MechanicalScenePrimitive> FallbackPrimitives { get; }
+
+    public IReadOnlyList<MechanicalRevoluteJointPivot> RevoluteJointPivots { get; }
+
+    private static bool IsFinite(Vector3 value) =>
+        float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);
 }

@@ -460,7 +460,10 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
-        var demonstrationPoses = MechanicalDemonstrationSampler.Sample(demonstration, time);
+        var sampledPoses = MechanicalDemonstrationSampler.Sample(demonstration, time);
+        var demonstrationPoses = MechanicalRevoluteJointPoseComposer.Compose(
+            sampledPoses,
+            presentation.RevoluteJointPivots);
         var viewMode = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption option
             ? option.Mode
             : MechanicalTeachingViewMode.Assembled;

@@ -12,10 +12,10 @@ public sealed class RobotCatalogTests
             .ToArray();
 
         Assert.Equal(
-            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot"],
+            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot", "SCARA Robot"],
             showcaseTemplates.Select(template => template.Name));
         Assert.Equal(
-            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical"],
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical"],
             showcaseTemplates.Select(template => template.MechanicalShowcase?.ModelId));
     }
 

@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara] <output.glb>");
     return 1;
 }
 
@@ -18,6 +18,7 @@ var asset = modelId switch
     "cartesian" => CartesianAsset.Create(),
     "xy-plotter" => XYPlotterAsset.Create(),
     "differential-drive" => DifferentialDriveAsset.Create(),
+    "scara" => ScaraAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -269,6 +270,92 @@ internal static class DifferentialDriveAsset
         asset.Cylinder(wheelId, new(0, outerY - direction * 0.36f, 1.05f), new(0, outerY + direction * 0.36f, 1.05f), 1.08f, rubberMaterial);
         asset.Cylinder(wheelId, new(0, outerY - direction * 0.4f, 1.05f), new(0, outerY + direction * 0.4f, 1.05f), 0.46f, steelMaterial);
         asset.Cylinder(wheelId, new(0, outerY - direction * 0.43f, 1.05f), new(0, outerY + direction * 0.43f, 1.05f), 0.2f, accentMaterial);
+    }
+}
+
+internal static class ScaraAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("SCARA Mechanical Showcase");
+        var dark = asset.Material("Graphite mechanism", 0.035f, 0.045f, 0.06f, 0.58f, 0.3f);
+        var frame = asset.Material("Cast aluminum", 0.42f, 0.46f, 0.5f, 0.78f, 0.25f);
+        var steel = asset.Material("Machined steel", 0.62f, 0.67f, 0.73f, 0.9f, 0.18f);
+        var shell = asset.Material("Technical polymer shell", 0.9f, 0.91f, 0.92f, 0.08f, 0.42f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var motor = asset.Material("Servo motor", 0.12f, 0.15f, 0.2f, 0.66f, 0.3f);
+        var copper = asset.Material("Transmission copper", 0.72f, 0.3f, 0.07f, 0.7f, 0.25f);
+        var tool = asset.Material("Tool steel", 0.32f, 0.38f, 0.44f, 0.88f, 0.18f);
+        var indicator = asset.Material(
+            "Status indicator",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.18f,
+            0.22f,
+            emissive: new(0.02f, 0.3f, 0.55f));
+
+        asset.Part("base");
+        asset.Box("base", new(0, 0, 0.16f), new(2.4f, 2.15f, 0.32f), dark);
+        asset.Box("base", new(0, 0, 1.85f), new(1.78f, 1.62f, 3.38f), shell);
+        asset.Box("base", new(-0.58f, 0, 3.45f), new(0.62f, 1.76f, 0.72f), shell);
+        asset.Disc("base", new(0, 0, 3.55f), new(0, 0, 4.28f), 1.02f, shell);
+        asset.Box("base", new(-0.88f, 0, 0.2f), new(0.42f, 2.35f, 0.24f), dark);
+        asset.Box("base", new(0.88f, 0, 0.2f), new(0.42f, 2.35f, 0.24f), dark);
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(0, 0, 2.15f), new(1.38f, 1.18f, 1.15f), blue);
+        asset.Box("controller", new(-0.73f, 0, 2.15f), new(0.08f, 0.7f, 0.5f), indicator);
+
+        asset.Part("shoulder-motor", "base");
+        asset.Disc("shoulder-motor", new(0, 0, 3.45f), new(0, 0, 4.15f), 0.58f, motor);
+        asset.Cylinder("shoulder-motor", new(0, 0, 4.02f), new(0, 0, 4.38f), 0.28f, steel);
+
+        asset.Part("shoulder-transmission", "base");
+        asset.Disc("shoulder-transmission", new(0, 0, 4.02f), new(0, 0, 4.34f), 0.72f, copper);
+        asset.Disc("shoulder-transmission", new(0, 0, 4.3f), new(0, 0, 4.52f), 0.54f, steel);
+
+        asset.Part("first-link", "base");
+        asset.Box("first-link", new(1.62f, 0, 4.48f), new(3.25f, 0.55f, 0.34f), frame);
+        asset.Disc("first-link", new(0, 0, 4.28f), new(0, 0, 4.68f), 0.72f, frame);
+
+        asset.Part("first-link-cover", "first-link");
+        asset.Box("first-link-cover", new(1.62f, 0, 4.72f), new(3.05f, 1.14f, 0.82f), shell);
+        asset.Disc("first-link-cover", new(0.18f, 0, 4.3f), new(0.18f, 0, 5.14f), 0.6f, shell);
+        asset.Disc("first-link-cover", new(3.1f, 0, 4.3f), new(3.1f, 0, 5.14f), 0.6f, shell);
+
+        asset.Part("elbow-joint", "first-link");
+        asset.Disc("elbow-joint", new(3.25f, 0, 4.16f), new(3.25f, 0, 4.84f), 0.62f, steel);
+        asset.Disc("elbow-joint", new(3.25f, 0, 4.75f), new(3.25f, 0, 5.05f), 0.72f, steel);
+
+        asset.Part("elbow-motor", "elbow-joint");
+        asset.Disc("elbow-motor", new(3.25f, 0, 4.55f), new(3.25f, 0, 5.28f), 0.42f, motor);
+        asset.Cylinder("elbow-motor", new(3.25f, 0, 4.42f), new(3.25f, 0, 4.78f), 0.24f, copper);
+
+        asset.Part("second-link", "elbow-joint");
+        asset.Box("second-link", new(4.72f, 0, 4.42f), new(2.95f, 0.48f, 0.3f), frame);
+
+        asset.Part("second-link-cover", "second-link");
+        asset.Box("second-link-cover", new(4.62f, 0, 4.74f), new(2.55f, 1.18f, 0.9f), shell);
+        asset.Disc("second-link-cover", new(3.4f, 0, 4.29f), new(3.4f, 0, 5.19f), 0.59f, shell);
+        asset.Box("second-link-cover", new(5.82f, 0, 5.02f), new(1.18f, 1.48f, 1.58f), shell);
+        asset.Disc("second-link-cover", new(6.12f, 0, 4.22f), new(6.12f, 0, 5.78f), 0.65f, shell);
+
+        asset.Part("z-motor", "second-link");
+        asset.Disc("z-motor", new(6.15f, 0, 4.52f), new(6.15f, 0, 5.34f), 0.42f, motor);
+        asset.Box("z-motor", new(6.15f, 0, 5.42f), new(0.58f, 0.58f, 0.2f), dark);
+
+        asset.Part("z-actuator", "second-link");
+        asset.Cylinder("z-actuator", new(6.15f, 0, 2.35f), new(6.15f, 0, 5.15f), 0.34f, blue);
+        asset.Cylinder("z-actuator", new(6.15f, 0, 2.58f), new(6.15f, 0, 4.92f), 0.16f, steel);
+
+        asset.Part("tool", "z-actuator");
+        asset.Disc("tool", new(6.15f, 0, 2.04f), new(6.15f, 0, 2.5f), 0.46f, dark);
+        asset.Box("tool", new(6.15f, -0.31f, 1.72f), new(0.2f, 0.18f, 0.74f), tool);
+        asset.Box("tool", new(6.15f, 0.31f, 1.72f), new(0.2f, 0.18f, 0.74f), tool);
+        asset.Box("tool", new(6.15f, 0, 2.02f), new(0.62f, 0.76f, 0.2f), steel);
+
+        return asset;
     }
 }
 

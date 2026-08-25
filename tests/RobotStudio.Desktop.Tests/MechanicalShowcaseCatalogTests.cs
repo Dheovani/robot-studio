@@ -15,6 +15,14 @@ public sealed class MechanicalShowcaseCatalogTests
     }
 
     [Fact]
+    public void ModelIds_ShouldExposeEveryImplementedMechanicalShowcase()
+    {
+        Assert.Equal(
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical"],
+            MechanicalShowcaseCatalog.ModelIds);
+    }
+
+    [Fact]
     public void Create_WhenModelIsUnknown_ShouldThrowClearException()
     {
         var exception = Assert.Throws<KeyNotFoundException>(() =>
