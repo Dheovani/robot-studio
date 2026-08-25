@@ -61,6 +61,8 @@ The desktop app opens a WPF window with a robot selection screen. The Cartesian 
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
+The Cartesian catalog card also opens a separate mechanical showcase through `Explore Mechanics`. In this view, drag with the left mouse button to orbit, drag with the middle mouse button or `Shift` + left mouse button to pan, and use `Ctrl` + mouse wheel to zoom. `Reset` restores the demonstration and a camera framing calculated from the packaged model. The `View layer` selector switches between the assembled machine and the drive-system inspection layer without replacing the schematic simulator.
+
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, overlay controls, and local example selector.
 
 Opening the differential drive robot renders a 2D mobile robot viewer with workspace grid, playback path, robot body, wheels, heading indicator, current pose, command name, and timeline controls. Translation and rotation execute sequentially with independent velocity and acceleration limits. The movement explanation shows ideal accumulated travel and rotation for the left and right wheels. This odometry is deterministic and does not yet model encoder noise or wheel slip. The viewer includes a mobile DSL editor for `HOME`, `DRIVE`, and `WAIT` commands, plus a local example selector.

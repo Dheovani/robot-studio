@@ -48,8 +48,8 @@
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
-                    MouseLeftButtonDown="ShowcaseViewportHost_MouseLeftButtonDown"
-                    MouseLeftButtonUp="ShowcaseViewportHost_MouseLeftButtonUp"
+                    MouseDown="ShowcaseViewportHost_MouseDown"
+                    MouseUp="ShowcaseViewportHost_MouseUp"
                     MouseMove="ShowcaseViewportHost_MouseMove"
                     MouseWheel="ShowcaseViewportHost_MouseWheel">
                 <hx:Viewport3DX x:Name="ShowcaseViewport"

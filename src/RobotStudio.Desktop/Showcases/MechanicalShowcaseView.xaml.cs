@@ -28,8 +28,9 @@ public partial class MechanicalShowcaseView : UserControl
     private const double InitialAzimuthDegrees = -48;
     private const double InitialElevationDegrees = 28;
     private const double InitialCameraDistance = 18;
+    private const double CameraFieldOfViewDegrees = 45;
 
-    private static readonly Point3D CameraTarget = new(0, 0, 3.4);
+    private static readonly Point3D InitialCameraTarget = new(0, 0, 3.4);
 
     private readonly MechanicalShowcaseDefinition showcase = CartesianMechanicalShowcaseDefinition.Create();
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
@@ -96,6 +97,9 @@ public partial class MechanicalShowcaseView : UserControl
     private double cameraAzimuthDegrees = InitialAzimuthDegrees;
     private double cameraElevationDegrees = InitialElevationDegrees;
     private double cameraDistance = InitialCameraDistance;
+    private Point3D cameraTarget = InitialCameraTarget;
+    private Point3D fittedCameraTarget = InitialCameraTarget;
+    private double fittedCameraDistance = InitialCameraDistance;
 
     public MechanicalShowcaseView()
     {
@@ -185,6 +189,7 @@ public partial class MechanicalShowcaseView : UserControl
                 "robot.json");
             var package = new RobotVisualAssetPackageLoader().Load(manifestPath, showcase.Model);
             importedScene = new HelixRobotVisualAssetImporter().Import(package);
+            FitCameraToImportedScene();
 
             foreach (var materialNode in importedScene.NodesByPart.Values
                          .SelectMany(nodes => nodes)
@@ -203,6 +208,32 @@ public partial class MechanicalShowcaseView : UserControl
             Debug.WriteLine($"Mechanical showcase asset fallback: {exception.Message}");
             importedScene = null;
         }
+    }
+
+    private void FitCameraToImportedScene()
+    {
+        if (importedScene is null)
+        {
+            return;
+        }
+
+        TreeTraverser.ForceUpdateTransformsAndBounds(importedScene.Root);
+        var bounds = importedScene.Root.BoundsWithTransform;
+        var center = (bounds.Minimum + bounds.Maximum) / 2;
+        var radius = (bounds.Maximum - bounds.Minimum).Length() / 2;
+        if (!float.IsFinite(radius) || radius <= 0)
+        {
+            return;
+        }
+
+        fittedCameraTarget = new Point3D(center.X, center.Y, center.Z);
+        fittedCameraDistance = Math.Clamp(
+            OrbitCameraInteractionMath.FitDistance(radius, CameraFieldOfViewDegrees),
+            8,
+            32);
+        cameraTarget = fittedCameraTarget;
+        cameraDistance = fittedCameraDistance;
+        ApplyCamera();
     }
 
     private void AddGrid()
@@ -613,11 +644,28 @@ public partial class MechanicalShowcaseView : UserControl
         ApplyDemonstrationTime(TimeSpan.Zero);
     }
 
-    private void ShowcaseViewportHost_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) =>
-        orbitInteraction.BeginDrag(ShowcaseViewportHost, ShowcaseViewport, e);
+    private void ShowcaseViewportHost_MouseDown(object sender, MouseButtonEventArgs e)
+    {
+        var mode = e.ChangedButton switch
+        {
+            MouseButton.Middle => ViewportDragMode.Pan,
+            MouseButton.Left when Keyboard.Modifiers.HasFlag(ModifierKeys.Shift) => ViewportDragMode.Pan,
+            MouseButton.Left => ViewportDragMode.Orbit,
+            _ => (ViewportDragMode?)null
+        };
+        if (mode is ViewportDragMode dragMode)
+        {
+            orbitInteraction.BeginDrag(ShowcaseViewportHost, ShowcaseViewport, e, dragMode);
+        }
+    }
 
-    private void ShowcaseViewportHost_MouseLeftButtonUp(object sender, MouseButtonEventArgs e) =>
-        orbitInteraction.EndDrag(ShowcaseViewportHost, e);
+    private void ShowcaseViewportHost_MouseUp(object sender, MouseButtonEventArgs e)
+    {
+        if (e.ChangedButton is MouseButton.Left or MouseButton.Middle)
+        {
+            orbitInteraction.EndDrag(ShowcaseViewportHost, e);
+        }
+    }
 
     private void ShowcaseViewportHost_MouseMove(object sender, MouseEventArgs e)
     {
@@ -626,12 +674,28 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
-        cameraAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(
-            cameraAzimuthDegrees - (deltaX * 0.35));
-        cameraElevationDegrees = Math.Clamp(
-            cameraElevationDegrees + (deltaY * 0.25),
-            5,
-            85);
+        if (orbitInteraction.Mode == ViewportDragMode.Pan)
+        {
+            cameraTarget = OrbitCameraInteractionMath.PanTarget(
+                cameraTarget,
+                camera.LookDirection,
+                camera.UpDirection,
+                cameraDistance,
+                camera.FieldOfView,
+                ShowcaseViewport.ActualHeight,
+                deltaX,
+                deltaY);
+        }
+        else
+        {
+            cameraAzimuthDegrees = OrbitCameraFactory.NormalizeDegrees(
+                cameraAzimuthDegrees - (deltaX * 0.35));
+            cameraElevationDegrees = Math.Clamp(
+                cameraElevationDegrees + (deltaY * 0.25),
+                5,
+                85);
+        }
+
         ApplyCamera();
         e.Handled = true;
     }
@@ -654,11 +718,11 @@ public partial class MechanicalShowcaseView : UserControl
     private void ApplyCamera()
     {
         var reference = OrbitCameraFactory.Create(new OrbitCameraSettings(
-            CameraTarget,
+            cameraTarget,
             cameraAzimuthDegrees,
             cameraElevationDegrees,
             cameraDistance,
-            FieldOfView: 45,
+            FieldOfView: CameraFieldOfViewDegrees,
             NearPlaneDistance: 0.05,
             FarPlaneDistance: 500));
         camera.Position = reference.Position;
@@ -677,7 +741,8 @@ public partial class MechanicalShowcaseView : UserControl
     {
         cameraAzimuthDegrees = InitialAzimuthDegrees;
         cameraElevationDegrees = InitialElevationDegrees;
-        cameraDistance = InitialCameraDistance;
+        cameraTarget = fittedCameraTarget;
+        cameraDistance = fittedCameraDistance;
         ApplyCamera();
     }
 

@@ -30,7 +30,7 @@ The target is stylized technical realism rather than photorealism, branded repro
 
 Visual fidelity may approach a polished industrial product presentation where it improves understanding, but matching photographic reference quality is not a requirement. Geometry detail, texture resolution, materials, lighting, shadows, and effects must remain subordinate to educational clarity, maintainability, loading cost, and performance on representative student computers. A complete factory cell is not required for every robot; contextual equipment should be included only when it explains operation, scale, mounting, safety, or interaction with the environment.
 
-User freedom in the realistic showcase is intentionally limited. Users may inspect the model, control the camera, select semantic components, choose a curated demonstration, and use the educational viewing aids supplied for that model. They do not edit geometry or author arbitrary realistic animations.
+User freedom in the realistic showcase is intentionally limited. Users may inspect the model, orbit and pan the camera, zoom, restore model-aware framing, select semantic components, choose a curated demonstration, and use the educational viewing aids supplied for that model. Camera interaction remains a desktop presentation concern and does not alter robot state. Users do not edit geometry or author arbitrary realistic animations.
 
 Each robot may use the most legible internal-view technique for its mechanism:
 

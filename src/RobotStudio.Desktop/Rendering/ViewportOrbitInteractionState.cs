@@ -3,21 +3,31 @@ using System.Windows.Input;
 
 namespace RobotStudio.Desktop.Rendering;
 
+internal enum ViewportDragMode
+{
+    Orbit,
+    Pan
+}
+
 internal sealed class ViewportOrbitInteractionState
 {
     private bool isDragging;
     private Point lastPosition;
 
+    public ViewportDragMode Mode { get; private set; }
+
     public void BeginDrag(
         FrameworkElement host,
         IInputElement coordinateElement,
-        MouseButtonEventArgs e)
+        MouseButtonEventArgs e,
+        ViewportDragMode mode = ViewportDragMode.Orbit)
     {
         ArgumentNullException.ThrowIfNull(host);
         ArgumentNullException.ThrowIfNull(coordinateElement);
         ArgumentNullException.ThrowIfNull(e);
 
         isDragging = true;
+        Mode = mode;
         lastPosition = e.GetPosition(coordinateElement);
         host.CaptureMouse();
         host.Cursor = Cursors.SizeAll;
