@@ -92,7 +92,7 @@ The Cartesian Robot is the first vertical slice. The proof of concept must remai
 
 The proof of concept is rejected or triggers a Stride comparison if it cannot provide acceptable material readability, stable WPF interaction, predictable resource disposal, or adequate performance without renderer-specific workarounds spreading through the desktop application.
 
-The initial vertical slice now provides a retained procedural scene, semantic component selection, highlighting, a component inspector, hierarchical transform updates, and a curated demonstration. This proves the application boundary and interaction flow. It does not satisfy the GLB loading, PBR asset, internal-view, material-validation, or complete lifecycle acceptance criteria, so the proof of concept remains in progress.
+The initial vertical slice now provides a retained procedural scene, semantic component selection, highlighting, a component inspector, hierarchical transform updates, a curated demonstration, and an internal drive-system teaching view using order-independent transparency. This proves the application boundary, interaction flow, and initial cutaway direction. It does not satisfy the GLB loading, PBR asset, representative material-validation, or complete lifecycle acceptance criteria, so the proof of concept remains in progress.
 
 ## Sources
 

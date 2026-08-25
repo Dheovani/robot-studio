@@ -29,6 +29,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added `G-code` capability badges only to robot cards with an executable mapping.
 - Added the first Cartesian mechanical-showcase prototype with a retained 3D scene, curated motion, semantic component selection, highlighting, and educational part inspection alongside the existing schematic simulator.
 - Added renderer-neutral visual-model, robot-part hierarchy, component-pose, demonstration, sampling, and transform-resolution contracts in a dedicated visualization project.
+- Added assembled and drive-system teaching views to the Cartesian mechanical showcase, using transparency and technical highlighting to expose rails, belts, lead screws, and motors without rebuilding the scene.
 
 ### Changed
 

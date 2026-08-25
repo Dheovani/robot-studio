@@ -29,6 +29,7 @@ public partial class MechanicalShowcaseView : UserControl
     private readonly MechanicalShowcaseDefinition showcase = CartesianMechanicalShowcaseDefinition.Create();
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> normalMaterials = [];
+    private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> transparentMaterials = [];
     private readonly DefaultEffectsManager effectsManager = new();
     private readonly HelixToolkit.Wpf.SharpDX.PerspectiveCamera camera = new();
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
@@ -38,6 +39,22 @@ public partial class MechanicalShowcaseView : UserControl
         diffuse: new Color4(1f, 0.72f, 0.12f, 1f),
         specular: new Color4(1f, 0.9f, 0.55f, 1f),
         shininess: 90);
+    private readonly PhongMaterial transparentSelectionMaterial = Material(
+        diffuse: new Color4(1f, 0.72f, 0.12f, 0.32f),
+        specular: new Color4(1f, 0.9f, 0.55f, 0.32f),
+        shininess: 90);
+    private readonly PhongMaterial driveMotorMaterial = Material(
+        diffuse: new Color4(0.95f, 0.38f, 0.08f, 1f),
+        specular: new Color4(1f, 0.82f, 0.55f, 1f),
+        shininess: 95);
+    private readonly PhongMaterial driveTransmissionMaterial = Material(
+        diffuse: new Color4(0.95f, 0.72f, 0.08f, 1f),
+        specular: new Color4(1f, 0.92f, 0.55f, 1f),
+        shininess: 80);
+    private readonly PhongMaterial driveRailMaterial = Material(
+        diffuse: new Color4(0.18f, 0.72f, 0.9f, 1f),
+        specular: new Color4(0.75f, 0.95f, 1f, 1f),
+        shininess: 110);
 
     private TimeSpan playbackOffset;
     private RobotPartId? selectedPartId;
@@ -54,6 +71,8 @@ public partial class MechanicalShowcaseView : UserControl
         ApplyCamera();
 
         BuildScene();
+        TeachingViewComboBox.ItemsSource = MechanicalTeachingViewCatalog.Options;
+        TeachingViewComboBox.SelectedIndex = 0;
         SelectPart(showcase.Model.RootPartId);
         DemonstrationComboBox.ItemsSource = showcase.Demonstrations;
         DemonstrationComboBox.SelectedIndex = 0;
@@ -163,6 +182,7 @@ public partial class MechanicalShowcaseView : UserControl
 
         models.Add(model);
         normalMaterials.Add(model, material);
+        transparentMaterials.Add(model, TransparentMaterial(material));
         ShowcaseViewport.Items.Add(model);
     }
 
@@ -170,17 +190,12 @@ public partial class MechanicalShowcaseView : UserControl
     {
         if (selectedPartId is RobotPartId previousId && modelsByPart.TryGetValue(previousId, out var previousModels))
         {
-            foreach (var model in previousModels)
-            {
-                model.Material = normalMaterials[model];
-            }
+            selectedPartId = null;
+            ApplyPartAppearance(previousId, previousModels);
         }
 
         selectedPartId = partId;
-        foreach (var model in modelsByPart[partId])
-        {
-            model.Material = selectionMaterial;
-        }
+        ApplyPartAppearance(partId, modelsByPart[partId]);
 
         var part = showcase.Model.GetPart(partId);
         PartNameText.Text = part.Name;
@@ -191,6 +206,80 @@ public partial class MechanicalShowcaseView : UserControl
         PartFunctionText.Text = part.Function;
         PartMovementText.Text = part.Movement;
     }
+
+    private void TeachingViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        if (TeachingViewComboBox.SelectedItem is not MechanicalTeachingViewOption option)
+        {
+            return;
+        }
+
+        TeachingViewDescriptionText.Text = option.Description;
+        ApplyTeachingView();
+    }
+
+    private void ApplyTeachingView()
+    {
+        foreach (var (partId, models) in modelsByPart)
+        {
+            ApplyPartAppearance(partId, models);
+        }
+    }
+
+    private void ApplyPartAppearance(
+        RobotPartId partId,
+        IReadOnlyList<MeshGeometryModel3D> models)
+    {
+        var part = showcase.Model.GetPart(partId);
+        var isDriveView = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
+        {
+            Mode: MechanicalTeachingViewMode.DriveSystem
+        };
+        var isGhosted = isDriveView && MechanicalTeachingViewCatalog.ShouldGhost(part.Kind);
+        var isSelected = selectedPartId == partId;
+
+        foreach (var model in models)
+        {
+            model.IsTransparent = isGhosted;
+            model.Material = SelectMaterial(
+                model,
+                part.Kind,
+                isDriveView,
+                isGhosted,
+                isSelected);
+        }
+    }
+
+    private PhongMaterial SelectMaterial(
+        MeshGeometryModel3D model,
+        RobotPartKind kind,
+        bool isDriveView,
+        bool isGhosted,
+        bool isSelected)
+    {
+        if (isSelected)
+        {
+            return isGhosted ? transparentSelectionMaterial : selectionMaterial;
+        }
+
+        return isGhosted
+            ? transparentMaterials[model]
+            : GetOpaqueMaterial(model, kind, isDriveView);
+    }
+
+    private PhongMaterial GetOpaqueMaterial(
+        MeshGeometryModel3D model,
+        RobotPartKind kind,
+        bool isDriveView) =>
+        isDriveView
+            ? kind switch
+            {
+                RobotPartKind.Motor => driveMotorMaterial,
+                RobotPartKind.Transmission => driveTransmissionMaterial,
+                RobotPartKind.Rail => driveRailMaterial,
+                _ => normalMaterials[model]
+            }
+            : normalMaterials[model];
 
     private void ApplyDemonstrationTime(TimeSpan time)
     {
@@ -234,8 +323,24 @@ public partial class MechanicalShowcaseView : UserControl
             DiffuseColor = diffuse,
             SpecularColor = specular,
             SpecularShininess = shininess,
-            AmbientColor = new Color4(diffuse.Red * 0.25f, diffuse.Green * 0.25f, diffuse.Blue * 0.25f, 1)
+            AmbientColor = new Color4(
+                diffuse.Red * 0.25f,
+                diffuse.Green * 0.25f,
+                diffuse.Blue * 0.25f,
+                diffuse.Alpha)
         };
+
+    private static PhongMaterial TransparentMaterial(PhongMaterial source)
+    {
+        const float opacity = 0.14f;
+        var diffuse = source.DiffuseColor;
+        var specular = source.SpecularColor;
+
+        return Material(
+            new Color4(diffuse.Red, diffuse.Green, diffuse.Blue, opacity),
+            new Color4(specular.Red, specular.Green, specular.Blue, opacity),
+            source.SpecularShininess);
+    }
 
     private void Timer_Tick(object? sender, EventArgs e)
     {
