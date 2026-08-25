@@ -36,6 +36,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added model-aware camera framing and viewport pan to the Cartesian mechanical showcase, with middle-button or `Shift` + left-button dragging.
 - Added a Cartesian mechanical-showcase motion-axis layer with color-coded X/Y/Z direction guides that remain synchronized with their corresponding moving assemblies.
 - Added a selectable Cartesian axis-by-axis mechanical demonstration with independent Y, X, and Z phases and contextual descriptions for each showcase sequence.
+- Added a controlled exploded-assembly layer with a staged assembly sequence that joins the Cartesian controller, moving bed, Z gantry, X carriage, and tool while preserving semantic hierarchy and selection.
 
 ### Changed
 

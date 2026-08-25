@@ -68,16 +68,33 @@ public sealed class CartesianMechanicalShowcaseDefinitionTests
     }
 
     [Fact]
-    public void Create_ShouldOfferCoordinatedAndIndividualAxisDemonstrations()
+    public void Create_ShouldOfferAxisAndAssemblyDemonstrations()
     {
         var showcase = CartesianMechanicalShowcaseDefinition.Create();
 
         Assert.Equal(
-            ["coordinated-axis-tour", "individual-axis-inspection"],
+            ["coordinated-axis-tour", "individual-axis-inspection", "assembly-sequence"],
             showcase.Demonstrations.Select(demonstration => demonstration.Id));
         Assert.All(
             showcase.Demonstrations,
             demonstration => Assert.False(string.IsNullOrWhiteSpace(demonstration.Description)));
+    }
+
+    [Fact]
+    public void AssemblySequence_ShouldJoinOneAdditionalAssemblyPerPhase()
+    {
+        var showcase = CartesianMechanicalShowcaseDefinition.Create();
+        var demonstration = showcase.Demonstrations.Single(item => item.Id == "assembly-sequence");
+        var expectedJoinedCounts = new[] { 0, 1, 2, 3, 4, 5, 5 };
+
+        Assert.Equal(TimeSpan.FromSeconds(9), demonstration.Duration);
+        Assert.Equal(expectedJoinedCounts.Length, demonstration.Keyframes.Count);
+        for (var index = 0; index < demonstration.Keyframes.Count; index++)
+        {
+            var joinedCount = demonstration.Keyframes[index].ComponentPoses.Count(pose =>
+                pose.TranslationMillimeters != Vector3.Zero);
+            Assert.Equal(expectedJoinedCounts[index], joinedCount);
+        }
     }
 
     [Fact]

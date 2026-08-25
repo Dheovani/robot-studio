@@ -595,13 +595,16 @@ Expected current behavior:
 - executes every desktop industrial-arm G-code example against the shared teaching profile and keeps the packaged example synchronized with the catalog.
 - validates renderer-neutral robot-part hierarchies, including duplicate identifiers, missing parents, cycles, and disconnected structures;
 - validates mechanical demonstration timelines, stable component-pose sets, interpolation, clamping, and hierarchical world-transform composition;
-- verifies that the Cartesian showcase exposes coordinated and individual-axis demonstrations, provides descriptions for both, returns to neutral between phases, and moves only the intended Y, X, or Z assembly during each isolated phase.
+- verifies that the Cartesian showcase exposes coordinated, individual-axis, and staged assembly demonstrations, provides descriptions, returns to neutral between axis phases, and moves only the intended Y, X, or Z assembly during each isolated phase.
 - keeps HelixToolkit references confined to the Windows desktop project and keeps `RobotStudio.Visualization` package-free and platform-neutral;
 - exposes the Cartesian Robot as the only catalog model with the current mechanical-showcase proof of concept.
 - verifies that the Cartesian showcase uses a practical three-axis desktop-machine hierarchy and models dual Z motors and lead screws as one synchronized logical gantry.
-- verifies that the mechanical showcase exposes assembled, drive-system, and motion-axis layers, ghosts only components that may obscure the drive system, and defines three non-zero X/Y/Z guides with a semantic gantry attachment for the moving X guide.
+- verifies that the mechanical showcase exposes assembled, drive-system, motion-axis, and exploded-assembly layers, ghosts only components that may obscure the drive system, defines three non-zero X/Y/Z guides with a semantic gantry attachment for the moving X guide, and assigns unique non-zero exploded offsets.
+- validates that assembled pose composition preserves demonstration poses, exploded composition adds offsets to existing or initially stationary semantic parts without altering unrelated components, and the completed assembly sequence returns every separated part to its authored pose.
 - manually verifies that all view layers retain the packaged GLB, that the drive-system view exposes highlighted mechanisms through semantic transparency, and that selecting a ghosted structure preserves the cutaway.
 - manually verifies that the motion-axis layer composes readable X/Y/Z arrows over the retained GLB and keeps the X guide aligned with the animated Z gantry.
+- verifies that motion layers offer the coordinated and individual-axis tours while the exploded layer offers only its dedicated assembly sequence.
+- manually verifies that reset separates the major assemblies, assembly playback joins them in mechanical order, and semantic hit testing and highlighting remain available throughout the sequence.
 - manually verifies that the demonstration selector shows the individual-axis sequence and its description, resets the timeline on selection, and returns the machine to its initial pose after all three phases.
 - validates camera-plane pan direction, empty-viewport handling, fit-to-model margin, and invalid fit inputs without requiring a live renderer.
 - manually verifies full-viewport orbit, middle-button and `Shift` + left-button pan, `Ctrl` + mouse-wheel zoom, and reset to model-derived framing in the mechanical showcase.

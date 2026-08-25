@@ -12,12 +12,49 @@ public sealed class MechanicalTeachingViewCatalogTests
             [
                 MechanicalTeachingViewMode.Assembled,
                 MechanicalTeachingViewMode.DriveSystem,
-                MechanicalTeachingViewMode.MotionAxes
+                MechanicalTeachingViewMode.MotionAxes,
+                MechanicalTeachingViewMode.ExplodedAssembly
             ],
             MechanicalTeachingViewCatalog.Options.Select(option => option.Mode));
         Assert.All(
             MechanicalTeachingViewCatalog.Options,
             option => Assert.False(string.IsNullOrWhiteSpace(option.Description)));
+    }
+
+    [Fact]
+    public void ExplodedOffsets_ShouldSeparateUniquePartsByNonZeroTranslations()
+    {
+        Assert.Equal(
+            MechanicalTeachingViewCatalog.ExplodedOffsets.Count,
+            MechanicalTeachingViewCatalog.ExplodedOffsets.Select(item => item.PartId).Distinct().Count());
+        Assert.All(
+            MechanicalTeachingViewCatalog.ExplodedOffsets,
+            item => Assert.NotEqual(System.Numerics.Vector3.Zero, item.TranslationMillimeters));
+    }
+
+    [Fact]
+    public void GetDemonstrationIds_WhenLayerUsesRobotMotion_ShouldReturnAxisTours()
+    {
+        var modes = new[]
+        {
+            MechanicalTeachingViewMode.Assembled,
+            MechanicalTeachingViewMode.DriveSystem,
+            MechanicalTeachingViewMode.MotionAxes
+        };
+
+        Assert.All(
+            modes,
+            mode => Assert.Equal(
+                ["coordinated-axis-tour", "individual-axis-inspection"],
+                MechanicalTeachingViewCatalog.GetDemonstrationIds(mode)));
+    }
+
+    [Fact]
+    public void GetDemonstrationIds_WhenLayerIsExploded_ShouldReturnAssemblySequence()
+    {
+        Assert.Equal(
+            ["assembly-sequence"],
+            MechanicalTeachingViewCatalog.GetDemonstrationIds(MechanicalTeachingViewMode.ExplodedAssembly));
     }
 
     [Fact]

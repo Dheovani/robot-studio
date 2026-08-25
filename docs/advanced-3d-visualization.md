@@ -42,6 +42,8 @@ Each robot may use the most legible internal-view technique for its mechanism:
 - a curated cutaway when overlapping transparent surfaces would obscure the mechanism;
 - a controlled exploded view when assembly order or connection between parts is the lesson.
 
+The Cartesian vertical slice implements both transparency and controlled separation. Its `Exploded assembly` layer offsets the controller and major X/Y/Z assemblies while retaining the semantic parent-child hierarchy. This layer exposes a dedicated staged assembly sequence: reset restores the separated inspection pose, while playback joins the controller, platform, gantry, carriage, and tool in mechanical order. Demonstration poses are composed with the exploded offsets before world transforms are resolved, so every joined part converges exactly to its authored pose and child rails, transmissions, carriages, and tools continue following their owning assembly. Returning to another layer removes the offsets without rebuilding or modifying the GLB.
+
 These are authored teaching views, not unrestricted CAD editing tools.
 
 ## Architectural Boundary

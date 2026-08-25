@@ -7,7 +7,8 @@ internal enum MechanicalTeachingViewMode
 {
     Assembled,
     DriveSystem,
-    MotionAxes
+    MotionAxes,
+    ExplodedAssembly
 }
 
 internal enum MechanicalMotionAxis
@@ -22,6 +23,10 @@ internal sealed record MechanicalMotionAxisGuide(
     Vector3 Start,
     Vector3 End,
     RobotPartId? AttachedPartId = null);
+
+internal sealed record MechanicalExplodedPartOffset(
+    RobotPartId PartId,
+    Vector3 TranslationMillimeters);
 
 internal sealed record MechanicalTeachingViewOption(
     MechanicalTeachingViewMode Mode,
@@ -43,7 +48,11 @@ internal static class MechanicalTeachingViewCatalog
         new(
             MechanicalTeachingViewMode.MotionAxes,
             "Motion axes",
-            "Directional overlays identify the machine motion: X in red, Y in green, and Z in blue.")
+            "Directional overlays identify the machine motion: X in red, Y in green, and Z in blue."),
+        new(
+            MechanicalTeachingViewMode.ExplodedAssembly,
+            "Exploded assembly",
+            "Controlled offsets separate the major assemblies while preserving their parent-child relationships and animation.")
     ];
 
     public static IReadOnlyList<MechanicalMotionAxisGuide> MotionAxes { get; } =
@@ -56,6 +65,23 @@ internal static class MechanicalTeachingViewCatalog
         new(MechanicalMotionAxis.Y, new(-3.35f, -3.35f, 1.75f), new(-3.35f, 1.85f, 1.75f)),
         new(MechanicalMotionAxis.Z, new(-4.7f, 2.65f, 1.1f), new(-4.7f, 2.65f, 7.45f))
     ];
+
+    public static IReadOnlyList<MechanicalExplodedPartOffset> ExplodedOffsets { get; } =
+    [
+        new(new RobotPartId("controller"), new Vector3(100, -60, 30)),
+        new(new RobotPartId("y-bed-carriage"), new Vector3(0, -130, 70)),
+        new(new RobotPartId("z-gantry"), new Vector3(0, 0, 100)),
+        new(new RobotPartId("x-tool-carriage"), new Vector3(120, 0, 0)),
+        new(new RobotPartId("tool"), new Vector3(0, -60, -40))
+    ];
+
+    public static Vector3 GetExplodedOffset(RobotPartId partId) =>
+        ExplodedOffsets.FirstOrDefault(item => item.PartId == partId)?.TranslationMillimeters ?? Vector3.Zero;
+
+    public static IReadOnlyList<string> GetDemonstrationIds(MechanicalTeachingViewMode mode) =>
+        mode == MechanicalTeachingViewMode.ExplodedAssembly
+            ? ["assembly-sequence"]
+            : ["coordinated-axis-tour", "individual-axis-inspection"];
 
     public static bool ShouldGhost(RobotPartKind kind) =>
         kind is RobotPartKind.Base or

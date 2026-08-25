@@ -116,7 +116,24 @@ internal static class CartesianMechanicalShowcaseDefinition
                 Frame(12, toolCarriageId, 0, movingBedId, 0, zGantryId, 0)
             ]);
 
-        return new MechanicalShowcaseDefinition(model, [coordinatedAxisTour, individualAxisInspection]);
+        var assemblySequence = new MechanicalDemonstrationDefinition(
+            "assembly-sequence",
+            "Assembly sequence",
+            "Joins the separated controller, platform, gantry, carriage, and tool in mechanical order.",
+            TimeSpan.FromSeconds(9),
+            [
+                AssemblyFrame(0),
+                AssemblyFrame(1.5, "controller"),
+                AssemblyFrame(3, "controller", "y-bed-carriage"),
+                AssemblyFrame(4.5, "controller", "y-bed-carriage", "z-gantry"),
+                AssemblyFrame(6, "controller", "y-bed-carriage", "z-gantry", "x-tool-carriage"),
+                AssemblyFrame(7.5, "controller", "y-bed-carriage", "z-gantry", "x-tool-carriage", "tool"),
+                AssemblyFrame(9, "controller", "y-bed-carriage", "z-gantry", "x-tool-carriage", "tool")
+            ]);
+
+        return new MechanicalShowcaseDefinition(
+            model,
+            [coordinatedAxisTour, individualAxisInspection, assemblySequence]);
     }
 
     private static RobotPartDefinition Part(
@@ -163,4 +180,22 @@ internal static class CartesianMechanicalShowcaseDefinition
             new Vector3(xMillimeters, yMillimeters, zMillimeters),
             Quaternion.Identity,
             Vector3.One);
+
+    private static MechanicalKeyframe AssemblyFrame(double seconds, params string[] joinedPartIds)
+    {
+        var joined = joinedPartIds.ToHashSet(StringComparer.Ordinal);
+        return new MechanicalKeyframe(
+            TimeSpan.FromSeconds(seconds),
+            MechanicalTeachingViewCatalog.ExplodedOffsets.Select(offset =>
+            {
+                var translation = joined.Contains(offset.PartId.Value)
+                    ? -offset.TranslationMillimeters
+                    : Vector3.Zero;
+                return new RobotComponentPose(
+                    offset.PartId,
+                    translation,
+                    Quaternion.Identity,
+                    Vector3.One);
+            }));
+    }
 }

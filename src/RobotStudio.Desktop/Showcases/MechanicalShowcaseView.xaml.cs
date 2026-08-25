@@ -115,8 +115,6 @@ public partial class MechanicalShowcaseView : UserControl
         TeachingViewComboBox.ItemsSource = MechanicalTeachingViewCatalog.Options;
         TeachingViewComboBox.SelectedIndex = 0;
         SelectPart(showcase.Model.Parts.Single(part => part.Kind == RobotPartKind.Tool).Id);
-        DemonstrationComboBox.ItemsSource = showcase.Demonstrations;
-        DemonstrationComboBox.SelectedIndex = 0;
         timer.Tick += Timer_Tick;
         Unloaded += MechanicalShowcaseView_Unloaded;
         ResetDemonstration();
@@ -358,8 +356,23 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
+        PauseDemonstration();
+        ApplyDemonstrationOptions(option.Mode);
         TeachingViewDescriptionText.Text = option.Description;
         ApplyTeachingView();
+        ApplyDemonstrationTime(CurrentDemonstrationTime());
+    }
+
+    private void ApplyDemonstrationOptions(MechanicalTeachingViewMode mode)
+    {
+        var previousId = SelectedDemonstration?.Id;
+        var allowedIds = MechanicalTeachingViewCatalog.GetDemonstrationIds(mode);
+        var demonstrations = showcase.Demonstrations
+            .Where(demonstration => allowedIds.Contains(demonstration.Id, StringComparer.Ordinal))
+            .ToArray();
+        DemonstrationComboBox.ItemsSource = demonstrations;
+        DemonstrationComboBox.SelectedItem = demonstrations.FirstOrDefault(
+            demonstration => demonstration.Id == previousId) ?? demonstrations[0];
     }
 
     private void ApplyTeachingView()
@@ -455,7 +468,11 @@ public partial class MechanicalShowcaseView : UserControl
             return;
         }
 
-        var poses = MechanicalDemonstrationSampler.Sample(demonstration, time);
+        var demonstrationPoses = MechanicalDemonstrationSampler.Sample(demonstration, time);
+        var viewMode = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption option
+            ? option.Mode
+            : MechanicalTeachingViewMode.Assembled;
+        var poses = MechanicalTeachingPoseComposer.Compose(showcase.Model, demonstrationPoses, viewMode);
         var transforms = RobotComponentPoseResolver.ResolveWorldTransforms(showcase.Model, poses);
         foreach (var (partId, models) in modelsByPart)
         {
@@ -478,6 +495,14 @@ public partial class MechanicalShowcaseView : UserControl
 
         DemonstrationProgressBar.Value = Math.Clamp(time.TotalSeconds / demonstration.Duration.TotalSeconds, 0, 1);
         DemonstrationTimeText.Text = $"{time.TotalSeconds:0.0} / {demonstration.Duration.TotalSeconds:0.0} s";
+    }
+
+    private TimeSpan CurrentDemonstrationTime()
+    {
+        var time = playbackOffset + (stopwatch.IsRunning ? stopwatch.Elapsed : TimeSpan.Zero);
+        return SelectedDemonstration is { } demonstration && time > demonstration.Duration
+            ? demonstration.Duration
+            : time;
     }
 
     private void ApplyImportedPoses(IReadOnlyList<RobotComponentPose> poses)
