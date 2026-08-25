@@ -604,6 +604,8 @@ Expected current behavior:
 - manually verifies that all view layers retain the packaged GLB, that the drive-system view exposes highlighted mechanisms through semantic transparency, and that selecting a ghosted structure preserves the cutaway.
 - manually verifies that the motion-axis layer composes readable X/Y/Z arrows over the retained GLB and keeps the X guide aligned with the animated Z gantry.
 - verifies that motion layers offer the coordinated and individual-axis tours while the exploded layer offers only its dedicated assembly sequence.
+- verifies that every robot-catalog mechanical-showcase descriptor resolves through the desktop showcase catalog, unknown model ids fail clearly, and the Cartesian presentation packages only known semantic parts and assigns every demonstration to a view layer.
+- validates presentation consistency before rendering, including matching model ids, local asset-directory names, initial selection, unique view modes, demonstration references, attached overlay parts, exploded offsets, and semantic fallback geometry.
 - manually verifies that reset separates the major assemblies, assembly playback joins them in mechanical order, and semantic hit testing and highlighting remain available throughout the sequence.
 - manually verifies that the demonstration selector shows the individual-axis sequence and its description, resets the timeline on selection, and returns the machine to its initial pose after all three phases.
 - validates camera-plane pan direction, empty-viewport handling, fit-to-model margin, and invalid fit inputs without requiring a live renderer.

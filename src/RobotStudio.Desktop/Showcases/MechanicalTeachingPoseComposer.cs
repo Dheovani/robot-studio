@@ -7,10 +7,12 @@ internal static class MechanicalTeachingPoseComposer
     public static IReadOnlyList<RobotComponentPose> Compose(
         RobotVisualModelDefinition model,
         IEnumerable<RobotComponentPose> demonstrationPoses,
-        MechanicalTeachingViewMode mode)
+        MechanicalTeachingViewMode mode,
+        IEnumerable<MechanicalExplodedPartOffset> explodedOffsets)
     {
         ArgumentNullException.ThrowIfNull(model);
         ArgumentNullException.ThrowIfNull(demonstrationPoses);
+        ArgumentNullException.ThrowIfNull(explodedOffsets);
 
         var poseByPart = demonstrationPoses.ToDictionary(pose => pose.PartId);
         if (mode != MechanicalTeachingViewMode.ExplodedAssembly)
@@ -18,6 +20,7 @@ internal static class MechanicalTeachingPoseComposer
             return poseByPart.Values.ToArray();
         }
 
+        var offsetByPart = explodedOffsets.ToDictionary(offset => offset.PartId);
         return model.Parts
             .Select(part =>
             {
@@ -25,7 +28,8 @@ internal static class MechanicalTeachingPoseComposer
                 return pose with
                 {
                     TranslationMillimeters = pose.TranslationMillimeters +
-                                              MechanicalTeachingViewCatalog.GetExplodedOffset(part.Id)
+                                              (offsetByPart.GetValueOrDefault(part.Id)?.TranslationMillimeters ??
+                                               System.Numerics.Vector3.Zero)
                 };
             })
             .ToArray();

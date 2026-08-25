@@ -37,11 +37,13 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added a Cartesian mechanical-showcase motion-axis layer with color-coded X/Y/Z direction guides that remain synchronized with their corresponding moving assemblies.
 - Added a selectable Cartesian axis-by-axis mechanical demonstration with independent Y, X, and Z phases and contextual descriptions for each showcase sequence.
 - Added a controlled exploded-assembly layer with a staged assembly sequence that joins the Cartesian controller, moving bed, Z gantry, X carriage, and tool while preserving semantic hierarchy and selection.
+- Added a data-driven mechanical-showcase catalog that resolves robot cards to validated presentation definitions and creates renderer views on demand.
 
 ### Changed
 
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
 - Changed the Cartesian mechanical showcase into a recognizable desktop-machine arrangement with a Y-moving work platform, an X tool carriage, and a synchronized dual-column Z gantry.
+- Changed mechanical-showcase fallback geometry, assets, overlays, layers, and initial selection from control-owned Cartesian assumptions into model presentation data ready for additional robot families.
 - Changed the Cartesian drive-system teaching view to use the same packaged GLB as the assembled view, with semantic transparency and technical highlighting instead of switching back to procedural geometry.
 - Changed generated G-code to include deterministic `G21` millimeter and `G90` absolute-positioning preambles.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.

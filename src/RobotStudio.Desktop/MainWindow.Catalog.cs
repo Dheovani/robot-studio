@@ -13,6 +13,7 @@ using RobotStudio.Desktop.Profiles;
 using RobotStudio.Desktop.Rendering;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
+using RobotStudio.Desktop.Showcases;
 using RobotStudio.Desktop.Viewers;
 using RobotStudio.Domain;
 using RobotStudio.Domain.Aerial;
@@ -28,6 +29,8 @@ namespace RobotStudio.Desktop;
 
 public partial class MainWindow
 {
+    private MechanicalShowcaseView? activeMechanicalShowcaseView;
+
     private void UpdateStatePanel(CartesianSceneFrame sceneFrame)
     {
         if (snapshot is null)
@@ -611,9 +614,30 @@ public partial class MainWindow
             return;
         }
 
+        var descriptor = template.MechanicalShowcase!;
+        var presentation = MechanicalShowcaseCatalog.Create(descriptor.ModelId);
+        CloseMechanicalShowcase();
+
+        var view = new MechanicalShowcaseView(presentation);
+        view.BackRequested += MechanicalShowcase_BackRequested;
+        activeMechanicalShowcaseView = view;
+        MechanicalShowcaseHost.Content = view;
+
         StopPlayback();
         RobotSelectionView.Visibility = Visibility.Collapsed;
-        CartesianMechanicalShowcaseView.Visibility = Visibility.Visible;
+        MechanicalShowcaseHost.Visibility = Visibility.Visible;
+    }
+
+    private void CloseMechanicalShowcase()
+    {
+        if (activeMechanicalShowcaseView is not null)
+        {
+            activeMechanicalShowcaseView.BackRequested -= MechanicalShowcase_BackRequested;
+            activeMechanicalShowcaseView = null;
+        }
+
+        MechanicalShowcaseHost.Content = null;
+        MechanicalShowcaseHost.Visibility = Visibility.Collapsed;
     }
 
     private static bool IsInsideButton(DependencyObject source)

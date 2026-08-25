@@ -26,6 +26,8 @@ The catalog will initially expose two distinct actions for available robots: `Op
 
 The Cartesian vertical slice implements the first complete selection path: `Open Simulator` retains the schematic executable workspace, `Explore Mechanics` opens the assembled realistic model, and the showcase `Motion axes` layer composes color-coded X/Y/Z direction guides over that same retained model. The overlay is an independent presentation layer and does not change the GLB hierarchy, component poses, or deterministic simulation state.
 
+Mechanical showcase navigation is model-driven. A robot card references a stable showcase model id, the desktop showcase catalog resolves that id to a validated presentation, and the main window creates the shared viewport on demand. A presentation packages its renderer-neutral visual model and demonstrations with desktop-owned asset location, title, view layers, motion guides, exploded offsets, initial selection, and semantic fallback primitives. This prevents the shared viewport from selecting the Cartesian model internally and provides a controlled extension point for later robot families.
+
 ## Visual And Interaction Direction
 
 The target is stylized technical realism rather than photorealism, branded reproduction, or manufacturing-grade CAD. RobotStudio models must be original, generic teaching models with mechanically plausible proportions, recognizable assemblies, appropriately differentiated metal, plastic, rubber, cable, and fastener details, and convincing joint or actuator behavior. Assets must not copy manufacturer branding, trade dress, labels, or proprietary product geometry.

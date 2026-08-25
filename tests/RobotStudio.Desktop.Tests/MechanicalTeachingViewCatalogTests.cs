@@ -33,7 +33,7 @@ public sealed class MechanicalTeachingViewCatalogTests
     }
 
     [Fact]
-    public void GetDemonstrationIds_WhenLayerUsesRobotMotion_ShouldReturnAxisTours()
+    public void Options_WhenLayerUsesRobotMotion_ShouldReferenceAxisTours()
     {
         var modes = new[]
         {
@@ -46,15 +46,17 @@ public sealed class MechanicalTeachingViewCatalogTests
             modes,
             mode => Assert.Equal(
                 ["coordinated-axis-tour", "individual-axis-inspection"],
-                MechanicalTeachingViewCatalog.GetDemonstrationIds(mode)));
+                MechanicalTeachingViewCatalog.Options.Single(option => option.Mode == mode).DemonstrationIds));
     }
 
     [Fact]
-    public void GetDemonstrationIds_WhenLayerIsExploded_ShouldReturnAssemblySequence()
+    public void Options_WhenLayerIsExploded_ShouldReferenceAssemblySequence()
     {
         Assert.Equal(
             ["assembly-sequence"],
-            MechanicalTeachingViewCatalog.GetDemonstrationIds(MechanicalTeachingViewMode.ExplodedAssembly));
+            MechanicalTeachingViewCatalog.Options
+                .Single(option => option.Mode == MechanicalTeachingViewMode.ExplodedAssembly)
+                .DemonstrationIds);
     }
 
     [Fact]

@@ -300,7 +300,7 @@ public partial class MainWindow
         DeltaViewerView.Visibility = Visibility.Collapsed;
         DroneViewerView.Visibility = Visibility.Collapsed;
         IndustrialArmViewerView.Visibility = Visibility.Collapsed;
-        CartesianMechanicalShowcaseView.Visibility = Visibility.Collapsed;
+        CloseMechanicalShowcase();
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
@@ -326,7 +326,7 @@ public partial class MainWindow
 
     private void MechanicalShowcase_BackRequested(object? sender, EventArgs e)
     {
-        CartesianMechanicalShowcaseView.Visibility = Visibility.Collapsed;
+        CloseMechanicalShowcase();
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 

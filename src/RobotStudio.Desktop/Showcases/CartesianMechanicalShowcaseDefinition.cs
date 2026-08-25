@@ -5,6 +5,22 @@ namespace RobotStudio.Desktop.Showcases;
 
 internal static class CartesianMechanicalShowcaseDefinition
 {
+    public static MechanicalShowcasePresentation CreatePresentation()
+    {
+        var showcase = Create();
+        return new MechanicalShowcasePresentation(
+            showcase.Model.Id,
+            "Cartesian Robot",
+            "Mechanical operation and component relationships",
+            "CartesianMechanical",
+            showcase,
+            new RobotPartId("tool"),
+            MechanicalTeachingViewCatalog.Options,
+            MechanicalTeachingViewCatalog.MotionAxes,
+            MechanicalTeachingViewCatalog.ExplodedOffsets,
+            CartesianMechanicalFallbackScene.Create());
+    }
+
     public static MechanicalShowcaseDefinition Create()
     {
         var baseId = new RobotPartId("base");

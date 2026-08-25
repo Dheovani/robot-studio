@@ -9,16 +9,17 @@ public sealed class MechanicalTeachingPoseComposerTests
     [Fact]
     public void Compose_WhenLayerIsAssembled_ShouldPreserveDemonstrationPoses()
     {
-        var showcase = CartesianMechanicalShowcaseDefinition.Create();
+        var presentation = CartesianMechanicalShowcaseDefinition.CreatePresentation();
         var poses = new[]
         {
             Pose("x-tool-carriage", new Vector3(80, 0, 0))
         };
 
         var composed = MechanicalTeachingPoseComposer.Compose(
-            showcase.Model,
+            presentation.Showcase.Model,
             poses,
-            MechanicalTeachingViewMode.Assembled);
+            MechanicalTeachingViewMode.Assembled,
+            presentation.ExplodedOffsets);
 
         Assert.Equal(poses, composed);
     }
@@ -26,7 +27,7 @@ public sealed class MechanicalTeachingPoseComposerTests
     [Fact]
     public void Compose_WhenLayerIsExploded_ShouldAddOffsetsAndPreserveHierarchyInputs()
     {
-        var showcase = CartesianMechanicalShowcaseDefinition.Create();
+        var presentation = CartesianMechanicalShowcaseDefinition.CreatePresentation();
         var poses = new[]
         {
             Pose("x-tool-carriage", new Vector3(80, 0, 0)),
@@ -34,9 +35,10 @@ public sealed class MechanicalTeachingPoseComposerTests
         };
 
         var composed = MechanicalTeachingPoseComposer.Compose(
-                showcase.Model,
+                presentation.Showcase.Model,
                 poses,
-                MechanicalTeachingViewMode.ExplodedAssembly)
+                MechanicalTeachingViewMode.ExplodedAssembly,
+                presentation.ExplodedOffsets)
             .ToDictionary(pose => pose.PartId);
 
         Assert.Equal(
@@ -56,14 +58,15 @@ public sealed class MechanicalTeachingPoseComposerTests
     [Fact]
     public void Compose_WhenAssemblySequenceFinishes_ShouldReturnEveryPartToItsAuthoredPose()
     {
-        var showcase = CartesianMechanicalShowcaseDefinition.Create();
-        var demonstration = showcase.Demonstrations.Single(item => item.Id == "assembly-sequence");
+        var presentation = CartesianMechanicalShowcaseDefinition.CreatePresentation();
+        var demonstration = presentation.Showcase.Demonstrations.Single(item => item.Id == "assembly-sequence");
         var finalPoses = MechanicalDemonstrationSampler.Sample(demonstration, demonstration.Duration);
 
         var composed = MechanicalTeachingPoseComposer.Compose(
-            showcase.Model,
+            presentation.Showcase.Model,
             finalPoses,
-            MechanicalTeachingViewMode.ExplodedAssembly);
+            MechanicalTeachingViewMode.ExplodedAssembly,
+            presentation.ExplodedOffsets);
 
         Assert.All(
             composed,

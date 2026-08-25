@@ -11,9 +11,9 @@
 
         <DockPanel Grid.Row="0" Style="{DynamicResource ViewerHeaderStyle}">
             <StackPanel DockPanel.Dock="Left">
-                <TextBlock Text="Cartesian Robot"
+                <TextBlock x:Name="ShowcaseTitleText"
                            Style="{DynamicResource ViewerTitleStyle}" />
-                <TextBlock Text="Mechanical showcase proof of concept"
+                <TextBlock x:Name="ShowcaseSubtitleText"
                            Style="{DynamicResource ViewerSubtitleStyle}" />
             </StackPanel>
             <StackPanel DockPanel.Dock="Right"

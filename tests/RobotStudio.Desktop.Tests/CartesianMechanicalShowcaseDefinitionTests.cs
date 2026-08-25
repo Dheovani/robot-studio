@@ -9,6 +9,22 @@ namespace RobotStudio.Desktop.Tests;
 public sealed class CartesianMechanicalShowcaseDefinitionTests
 {
     [Fact]
+    public void CreatePresentation_ShouldPackageEveryRendererInputForTheCartesianModel()
+    {
+        var presentation = CartesianMechanicalShowcaseDefinition.CreatePresentation();
+        var partIds = presentation.Showcase.Model.Parts.Select(part => part.Id).ToHashSet();
+
+        Assert.Equal("cartesian-intro-mechanical", presentation.ModelId);
+        Assert.Equal("Cartesian Robot", presentation.Title);
+        Assert.Equal("CartesianMechanical", presentation.AssetDirectoryName);
+        Assert.Contains(presentation.InitiallySelectedPartId, partIds);
+        Assert.All(presentation.FallbackPrimitives, primitive => Assert.Contains(primitive.PartId, partIds));
+        Assert.Equal(
+            presentation.Showcase.Demonstrations.Select(demonstration => demonstration.Id).Order(),
+            presentation.ViewOptions.SelectMany(option => option.DemonstrationIds).Distinct().Order());
+    }
+
+    [Fact]
     public void PackagedAsset_ShouldImportEverySelectableSemanticPart()
     {
         var showcase = CartesianMechanicalShowcaseDefinition.Create();

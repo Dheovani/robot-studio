@@ -32,7 +32,8 @@ public partial class MechanicalShowcaseView : UserControl
 
     private static readonly Point3D InitialCameraTarget = new(0, 0, 3.4);
 
-    private readonly MechanicalShowcaseDefinition showcase = CartesianMechanicalShowcaseDefinition.Create();
+    private readonly MechanicalShowcasePresentation presentation;
+    private readonly MechanicalShowcaseDefinition showcase;
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
     private readonly Dictionary<MeshGeometryModel3D, RobotPartId?> motionAxisModels = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> normalMaterials = [];
@@ -102,19 +103,25 @@ public partial class MechanicalShowcaseView : UserControl
     private Point3D fittedCameraTarget = InitialCameraTarget;
     private double fittedCameraDistance = InitialCameraDistance;
 
-    public MechanicalShowcaseView()
+    internal MechanicalShowcaseView(MechanicalShowcasePresentation presentation)
     {
+        ArgumentNullException.ThrowIfNull(presentation);
+        this.presentation = presentation;
+        showcase = presentation.Showcase;
+
         InitializeComponent();
 
+        ShowcaseTitleText.Text = presentation.Title;
+        ShowcaseSubtitleText.Text = presentation.Subtitle;
         ShowcaseViewport.EffectsManager = effectsManager;
         ShowcaseViewport.Camera = camera;
         ShowcaseViewport.MouseDown3D += ShowcaseViewport_MouseDown3D;
         ApplyCamera();
 
         BuildScene();
-        TeachingViewComboBox.ItemsSource = MechanicalTeachingViewCatalog.Options;
+        TeachingViewComboBox.ItemsSource = presentation.ViewOptions;
         TeachingViewComboBox.SelectedIndex = 0;
-        SelectPart(showcase.Model.Parts.Single(part => part.Kind == RobotPartKind.Tool).Id);
+        SelectPart(presentation.InitiallySelectedPartId);
         timer.Tick += Timer_Tick;
         Unloaded += MechanicalShowcaseView_Unloaded;
         ResetDemonstration();
@@ -135,7 +142,7 @@ public partial class MechanicalShowcaseView : UserControl
 
     private void AddMotionAxisOverlays()
     {
-        foreach (var guide in MechanicalTeachingViewCatalog.MotionAxes)
+        foreach (var guide in presentation.MotionAxes)
         {
             var color = guide.Axis switch
             {
@@ -161,46 +168,28 @@ public partial class MechanicalShowcaseView : UserControl
 
     private void BuildProceduralScene()
     {
-        var frame = Material(new Color4(0.28f, 0.32f, 0.38f, 1), new Color4(0.85f, 0.9f, 0.98f, 1), 115);
-        var darkMetal = Material(new Color4(0.08f, 0.1f, 0.14f, 1), new Color4(0.5f, 0.56f, 0.65f, 1), 100);
-        var steel = Material(new Color4(0.48f, 0.54f, 0.62f, 1), new Color4(0.95f, 0.98f, 1f, 1), 125);
-        var accent = Material(new Color4(0.06f, 0.34f, 0.72f, 1), new Color4(0.5f, 0.78f, 1f, 1), 85);
-        var bed = Material(new Color4(0.16f, 0.19f, 0.24f, 1), new Color4(0.65f, 0.72f, 0.8f, 1), 95);
-        var motor = Material(new Color4(0.12f, 0.14f, 0.18f, 1), new Color4(0.75f, 0.8f, 0.9f, 1), 110);
-        var belt = Material(new Color4(0.035f, 0.04f, 0.05f, 1), new Color4(0.2f, 0.22f, 0.25f, 1), 45);
-        var tool = Material(new Color4(0.9f, 0.32f, 0.06f, 1), new Color4(1f, 0.8f, 0.5f, 1), 90);
-
-        AddBox("base", new Vector3(0, 0, 0.25f), new Vector3(9.5f, 8, 0.5f), darkMetal);
-        AddBox("base", new Vector3(-4.25f, -3.5f, 0.05f), new Vector3(0.65f, 0.65f, 0.3f), darkMetal);
-        AddBox("base", new Vector3(4.25f, -3.5f, 0.05f), new Vector3(0.65f, 0.65f, 0.3f), darkMetal);
-        AddBox("controller", new Vector3(3.55f, -3.2f, 0.95f), new Vector3(1.7f, 1.1f, 1.25f), accent);
-
-        AddBox("left-y-rail", new Vector3(-2.45f, -0.45f, 0.78f), new Vector3(0.22f, 5.8f, 0.22f), steel);
-        AddBox("right-y-rail", new Vector3(2.45f, -0.45f, 0.78f), new Vector3(0.22f, 5.8f, 0.22f), steel);
-        AddCylinder("y-motor", new Vector3(0, -3.65f, 0.78f), new Vector3(0, -3.05f, 0.78f), 0.42f, motor);
-        AddBox("y-belt", new Vector3(0, -0.45f, 0.82f), new Vector3(0.12f, 5.7f, 0.1f), belt);
-        AddBox("y-bed-carriage", new Vector3(0, -0.8f, 1.02f), new Vector3(6.7f, 5.5f, 0.35f), frame);
-        AddBox("build-plate", new Vector3(0, -0.8f, 1.27f), new Vector3(6.3f, 5.1f, 0.16f), bed);
-
-        AddBox("left-frame-column", new Vector3(-4.05f, 2.65f, 4.35f), new Vector3(0.5f, 0.55f, 7.2f), frame);
-        AddBox("right-frame-column", new Vector3(4.05f, 2.65f, 4.35f), new Vector3(0.5f, 0.55f, 7.2f), frame);
-        AddBox("top-frame-beam", new Vector3(0, 2.65f, 7.95f), new Vector3(8.6f, 0.55f, 0.5f), frame);
-        AddCylinder("left-z-guide", new Vector3(-3.7f, 2.4f, 1.05f), new Vector3(-3.7f, 2.4f, 7.55f), 0.11f, steel);
-        AddCylinder("right-z-guide", new Vector3(3.7f, 2.4f, 1.05f), new Vector3(3.7f, 2.4f, 7.55f), 0.11f, steel);
-        AddCylinder("left-z-screw", new Vector3(-3.45f, 2.8f, 1.1f), new Vector3(-3.45f, 2.8f, 7.55f), 0.09f, steel);
-        AddCylinder("right-z-screw", new Vector3(3.45f, 2.8f, 1.1f), new Vector3(3.45f, 2.8f, 7.55f), 0.09f, steel);
-        AddCylinder("left-z-motor", new Vector3(-3.45f, 2.8f, 0.65f), new Vector3(-3.45f, 2.8f, 1.15f), 0.38f, motor);
-        AddCylinder("right-z-motor", new Vector3(3.45f, 2.8f, 0.65f), new Vector3(3.45f, 2.8f, 1.15f), 0.38f, motor);
-
-        AddBox("z-gantry", new Vector3(0, 2.5f, 5.4f), new Vector3(8.2f, 0.62f, 0.62f), accent);
-        AddBox("z-gantry", new Vector3(-3.7f, 2.5f, 5.4f), new Vector3(0.75f, 0.9f, 0.9f), frame);
-        AddBox("z-gantry", new Vector3(3.7f, 2.5f, 5.4f), new Vector3(0.75f, 0.9f, 0.9f), frame);
-        AddBox("x-rail", new Vector3(0, 2.15f, 5.4f), new Vector3(7.25f, 0.18f, 0.22f), steel);
-        AddBox("x-belt", new Vector3(0, 2.02f, 5.65f), new Vector3(7.1f, 0.1f, 0.1f), belt);
-        AddCylinder("x-motor", new Vector3(-4.2f, 2.5f, 5.4f), new Vector3(-3.7f, 2.5f, 5.4f), 0.4f, motor);
-        AddBox("x-tool-carriage", new Vector3(-1.6f, 1.92f, 5.35f), new Vector3(0.9f, 0.75f, 1.05f), accent);
-        AddBox("tool", new Vector3(-1.6f, 1.65f, 4.65f), new Vector3(0.62f, 0.62f, 0.5f), darkMetal);
-        AddCylinder("tool", new Vector3(-1.6f, 1.65f, 4.45f), new Vector3(-1.6f, 1.65f, 3.9f), 0.16f, tool);
+        var materials = CreateFallbackMaterials();
+        foreach (var primitive in presentation.FallbackPrimitives)
+        {
+            var material = materials[primitive.MaterialRole];
+            switch (primitive)
+            {
+                case MechanicalBoxPrimitive box:
+                    AddBox(box.PartId, box.Center, box.Size, material);
+                    break;
+                case MechanicalCylinderPrimitive cylinder:
+                    AddCylinder(
+                        cylinder.PartId,
+                        cylinder.Start,
+                        cylinder.End,
+                        cylinder.Radius,
+                        material);
+                    break;
+                default:
+                    throw new InvalidOperationException(
+                        $"Unsupported fallback primitive '{primitive.GetType().Name}'.");
+            }
+        }
     }
 
     private void TryLoadImportedScene()
@@ -211,7 +200,7 @@ public partial class MechanicalShowcaseView : UserControl
                 AppContext.BaseDirectory,
                 "Assets",
                 "Robots",
-                "CartesianMechanical",
+                presentation.AssetDirectoryName,
                 "robot.json");
             var package = new RobotVisualAssetPackageLoader().Load(manifestPath, showcase.Model);
             importedScene = new HelixRobotVisualAssetImporter().Import(package);
@@ -285,15 +274,15 @@ public partial class MechanicalShowcaseView : UserControl
         }
     }
 
-    private void AddBox(string partId, Vector3 center, Vector3 size, PhongMaterial material)
+    private void AddBox(RobotPartId partId, Vector3 center, Vector3 size, PhongMaterial material)
     {
         var builder = new MeshBuilder();
         builder.AddBox(center, size.X, size.Y, size.Z);
-        AddModel(new RobotPartId(partId), builder.ToMeshGeometry3D(), material);
+        AddModel(partId, builder.ToMeshGeometry3D(), material);
     }
 
     private void AddCylinder(
-        string partId,
+        RobotPartId partId,
         Vector3 start,
         Vector3 end,
         float radius,
@@ -301,7 +290,7 @@ public partial class MechanicalShowcaseView : UserControl
     {
         var builder = new MeshBuilder();
         builder.AddCylinder(start, end, radius, 32, true, true);
-        AddModel(new RobotPartId(partId), builder.ToMeshGeometry3D(), material);
+        AddModel(partId, builder.ToMeshGeometry3D(), material);
     }
 
     private void AddModel(RobotPartId partId, MeshGeometry3D geometry, PhongMaterial material)
@@ -366,7 +355,8 @@ public partial class MechanicalShowcaseView : UserControl
     private void ApplyDemonstrationOptions(MechanicalTeachingViewMode mode)
     {
         var previousId = SelectedDemonstration?.Id;
-        var allowedIds = MechanicalTeachingViewCatalog.GetDemonstrationIds(mode);
+        var selectedView = presentation.ViewOptions.Single(option => option.Mode == mode);
+        var allowedIds = selectedView.DemonstrationIds;
         var demonstrations = showcase.Demonstrations
             .Where(demonstration => allowedIds.Contains(demonstration.Id, StringComparer.Ordinal))
             .ToArray();
@@ -472,7 +462,11 @@ public partial class MechanicalShowcaseView : UserControl
         var viewMode = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption option
             ? option.Mode
             : MechanicalTeachingViewMode.Assembled;
-        var poses = MechanicalTeachingPoseComposer.Compose(showcase.Model, demonstrationPoses, viewMode);
+        var poses = MechanicalTeachingPoseComposer.Compose(
+            showcase.Model,
+            demonstrationPoses,
+            viewMode,
+            presentation.ExplodedOffsets);
         var transforms = RobotComponentPoseResolver.ResolveWorldTransforms(showcase.Model, poses);
         foreach (var (partId, models) in modelsByPart)
         {
@@ -599,6 +593,43 @@ public partial class MechanicalShowcaseView : UserControl
             source.M44);
         return new MatrixTransform3D(matrix);
     }
+
+    private static IReadOnlyDictionary<MechanicalMaterialRole, PhongMaterial> CreateFallbackMaterials() =>
+        new Dictionary<MechanicalMaterialRole, PhongMaterial>
+        {
+            [MechanicalMaterialRole.Frame] = Material(
+                new Color4(0.28f, 0.32f, 0.38f, 1),
+                new Color4(0.85f, 0.9f, 0.98f, 1),
+                115),
+            [MechanicalMaterialRole.DarkMetal] = Material(
+                new Color4(0.08f, 0.1f, 0.14f, 1),
+                new Color4(0.5f, 0.56f, 0.65f, 1),
+                100),
+            [MechanicalMaterialRole.Steel] = Material(
+                new Color4(0.48f, 0.54f, 0.62f, 1),
+                new Color4(0.95f, 0.98f, 1f, 1),
+                125),
+            [MechanicalMaterialRole.Accent] = Material(
+                new Color4(0.06f, 0.34f, 0.72f, 1),
+                new Color4(0.5f, 0.78f, 1f, 1),
+                85),
+            [MechanicalMaterialRole.Platform] = Material(
+                new Color4(0.16f, 0.19f, 0.24f, 1),
+                new Color4(0.65f, 0.72f, 0.8f, 1),
+                95),
+            [MechanicalMaterialRole.Motor] = Material(
+                new Color4(0.12f, 0.14f, 0.18f, 1),
+                new Color4(0.75f, 0.8f, 0.9f, 1),
+                110),
+            [MechanicalMaterialRole.Transmission] = Material(
+                new Color4(0.035f, 0.04f, 0.05f, 1),
+                new Color4(0.2f, 0.22f, 0.25f, 1),
+                45),
+            [MechanicalMaterialRole.Tool] = Material(
+                new Color4(0.9f, 0.32f, 0.06f, 1),
+                new Color4(1f, 0.8f, 0.5f, 1),
+                90)
+        };
 
     private static PhongMaterial Material(Color4 diffuse, Color4 specular, float shininess) =>
         new()

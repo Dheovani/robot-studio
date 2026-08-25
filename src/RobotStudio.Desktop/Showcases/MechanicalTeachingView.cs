@@ -31,7 +31,8 @@ internal sealed record MechanicalExplodedPartOffset(
 internal sealed record MechanicalTeachingViewOption(
     MechanicalTeachingViewMode Mode,
     string Name,
-    string Description);
+    string Description,
+    IReadOnlyList<string> DemonstrationIds);
 
 internal static class MechanicalTeachingViewCatalog
 {
@@ -40,19 +41,23 @@ internal static class MechanicalTeachingViewCatalog
         new(
             MechanicalTeachingViewMode.Assembled,
             "Assembled machine",
-            "Packaged technical model with its assembled components and authored materials."),
+            "Packaged technical model with its assembled components and authored materials.",
+            ["coordinated-axis-tour", "individual-axis-inspection"]),
         new(
             MechanicalTeachingViewMode.DriveSystem,
             "Drive system",
-            "The packaged model becomes transparent around its highlighted rails, belts, lead screws, and motors."),
+            "The packaged model becomes transparent around its highlighted rails, belts, lead screws, and motors.",
+            ["coordinated-axis-tour", "individual-axis-inspection"]),
         new(
             MechanicalTeachingViewMode.MotionAxes,
             "Motion axes",
-            "Directional overlays identify the machine motion: X in red, Y in green, and Z in blue."),
+            "Directional overlays identify the machine motion: X in red, Y in green, and Z in blue.",
+            ["coordinated-axis-tour", "individual-axis-inspection"]),
         new(
             MechanicalTeachingViewMode.ExplodedAssembly,
             "Exploded assembly",
-            "Controlled offsets separate the major assemblies while preserving their parent-child relationships and animation.")
+            "Controlled offsets separate the major assemblies while preserving their parent-child relationships and animation.",
+            ["assembly-sequence"])
     ];
 
     public static IReadOnlyList<MechanicalMotionAxisGuide> MotionAxes { get; } =
@@ -74,14 +79,6 @@ internal static class MechanicalTeachingViewCatalog
         new(new RobotPartId("x-tool-carriage"), new Vector3(120, 0, 0)),
         new(new RobotPartId("tool"), new Vector3(0, -60, -40))
     ];
-
-    public static Vector3 GetExplodedOffset(RobotPartId partId) =>
-        ExplodedOffsets.FirstOrDefault(item => item.PartId == partId)?.TranslationMillimeters ?? Vector3.Zero;
-
-    public static IReadOnlyList<string> GetDemonstrationIds(MechanicalTeachingViewMode mode) =>
-        mode == MechanicalTeachingViewMode.ExplodedAssembly
-            ? ["assembly-sequence"]
-            : ["coordinated-axis-tour", "individual-axis-inspection"];
 
     public static bool ShouldGhost(RobotPartKind kind) =>
         kind is RobotPartKind.Base or
