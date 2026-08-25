@@ -675,8 +675,11 @@ public partial class MechanicalShowcaseView : UserControl
         ResetCamera();
     }
 
-    private void DemonstrationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e) =>
+    private void DemonstrationComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+    {
+        DemonstrationDescriptionText.Text = SelectedDemonstration?.Description ?? string.Empty;
         ResetDemonstration();
+    }
 
     private void PauseDemonstration()
     {

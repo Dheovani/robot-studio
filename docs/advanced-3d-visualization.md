@@ -34,6 +34,8 @@ Visual fidelity may approach a polished industrial product presentation where it
 
 User freedom in the realistic showcase is intentionally limited. Users may inspect the model, orbit and pan the camera, zoom, restore model-aware framing, select semantic components, choose a curated demonstration, and use the educational viewing aids supplied for that model. Camera interaction remains a desktop presentation concern and does not alter robot state. Users do not edit geometry or author arbitrary realistic animations.
 
+The Cartesian showcase offers both a coordinated practical tour and an individual-axis inspection. The latter moves Y, X, and Z in separate phases and returns each mechanism before the next phase begins, making component inheritance and physical constraints easier to inspect. Demonstration descriptions are shown with the selector, while every sequence remains presentation-only.
+
 Each robot may use the most legible internal-view technique for its mechanism:
 
 - selective shell transparency when internal and external relationships remain clear;

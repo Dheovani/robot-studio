@@ -88,7 +88,7 @@ internal static class CartesianMechanicalShowcaseDefinition
                     "Follows the combined X and Z mechanism above the Y-moving work surface.")
             ]);
 
-        var demonstration = new MechanicalDemonstrationDefinition(
+        var coordinatedAxisTour = new MechanicalDemonstrationDefinition(
             "coordinated-axis-tour",
             "Practical axis tour",
             "Moves the bed, tool carriage, and synchronized gantry before returning every axis home.",
@@ -101,7 +101,22 @@ internal static class CartesianMechanicalShowcaseDefinition
                 Frame(8, toolCarriageId, 0, movingBedId, 0, zGantryId, 0)
             ]);
 
-        return new MechanicalShowcaseDefinition(model, [demonstration]);
+        var individualAxisInspection = new MechanicalDemonstrationDefinition(
+            "individual-axis-inspection",
+            "Individual axis inspection",
+            "Moves and returns Y, X, and Z separately so each mechanical relationship can be inspected.",
+            TimeSpan.FromSeconds(12),
+            [
+                Frame(0, toolCarriageId, 0, movingBedId, 0, zGantryId, 0),
+                Frame(2, toolCarriageId, 0, movingBedId, 160, zGantryId, 0),
+                Frame(4, toolCarriageId, 0, movingBedId, 0, zGantryId, 0),
+                Frame(6, toolCarriageId, 260, movingBedId, 0, zGantryId, 0),
+                Frame(8, toolCarriageId, 0, movingBedId, 0, zGantryId, 0),
+                Frame(10, toolCarriageId, 0, movingBedId, 0, zGantryId, -120),
+                Frame(12, toolCarriageId, 0, movingBedId, 0, zGantryId, 0)
+            ]);
+
+        return new MechanicalShowcaseDefinition(model, [coordinatedAxisTour, individualAxisInspection]);
     }
 
     private static RobotPartDefinition Part(

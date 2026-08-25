@@ -105,6 +105,9 @@
                                   Margin="0,10,0,10"
                                   DisplayMemberPath="Name"
                                   SelectionChanged="DemonstrationComboBox_SelectionChanged" />
+                        <TextBlock x:Name="DemonstrationDescriptionText"
+                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   TextWrapping="Wrap" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="2" Margin="0,2,0,18">
