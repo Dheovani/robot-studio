@@ -67,8 +67,8 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Define renderer-neutral component-pose, semantic part identifier, hierarchical robot visual-model, demonstration, sampling, and transform-resolution contracts in `RobotStudio.Visualization` without graphics-library types.
 - [x] Define and test a presentation-only keyframe demonstration controller for fixed mechanical animations without making rendered meshes the source of robot state.
 - [ ] Extract robot-specific schematic scene composition and viewport lifecycle code from `MainWindow.xaml.cs` behind desktop rendering interfaces.
-- [ ] Define a versioned asset manifest direction that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without locking the project into a premature schema.
-- [ ] Implement model loading, asset validation, caching, mesh and material reuse, and deterministic failure reporting for missing or incompatible assets.
+- [x] Define and test a minimal version 1 asset manifest that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without placing materials, animation, or renderer concerns in the contract.
+- [ ] Complete GLB scene import plus mesh/material resource reuse; package discovery, manifest validation, deterministic file errors, and package caching are implemented.
 - [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
 - [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
 - [ ] Add visualization mode selection for schematic, realistic, and realistic with educational overlays.

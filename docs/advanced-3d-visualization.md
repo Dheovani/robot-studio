@@ -90,7 +90,7 @@ Milestone 6 must address these constraints before realistic rendering grows acro
 - `MainWindow.xaml.cs` currently coordinates playback and contains robot-specific scene construction for multiple families. Renderer selection, scene composition, and viewport lifecycle need dedicated desktop services or presenters before a second renderer is integrated.
 - Cartesian playback includes schematic `CartesianSceneFrame` primitives, while other viewers compose their geometry directly from family-specific playback frames. The project needs a deliberate adapter boundary instead of promoting either approach into a universal realistic-rendering contract.
 - Current WPF viewers commonly rebuild scene models for rendered frames. A realistic renderer should retain a scene hierarchy and update component transforms where practical.
-- Stable semantic part identifiers, visual asset manifests, asset caches, and mesh-to-domain selection mappings do not exist yet. They should be introduced together so raw asset node names never become public domain contracts.
+- Stable semantic part identifiers, hierarchical visual models, component poses, and a version 1 visual-asset manifest now exist. Desktop package discovery validates and caches manifests and resolves local GLB files, while actual GLB scene import and GPU resource caching remain pending. Raw asset node names do not become public domain contracts.
 
 ## Robot Visual Models
 
@@ -106,9 +106,9 @@ Semantic metadata should also describe each inspectable component's teaching nam
 
 glTF 2.0 is the preferred interoperable format, with `.glb` favored for packaged application assets when convenient. RobotStudio must not depend on proprietary model formats.
 
-Visual data belongs in the model asset. RobotStudio-specific semantics may use separate, versioned metadata that maps asset nodes to axes, joints, links, tools, transform rules, and other stable identifiers. The exact manifest schema is intentionally deferred until Milestone 6 evaluates a real proof-of-concept asset so illustrative examples do not become accidental contracts.
+Visual data belongs in the model asset. RobotStudio-specific semantics use a separate, versioned manifest that maps asset node names to stable `RobotPartId` values. Version 1 intentionally contains only `schemaVersion`, `modelId`, `assetFile`, and `nodes`; it does not encode materials, animation, cameras, demonstrations, or renderer objects. Several asset nodes may map to one semantic part, and every selectable visual-model part must have at least one mapping.
 
-Future asset loading must validate versions and required semantic mappings, report failures clearly, and cache reusable models, meshes, textures, and materials.
+The portable visualization layer parses and validates manifests, including schema/model compatibility, safe relative `.glb` paths, unique node names, known semantic parts, and complete selectable-part coverage. The desktop layer resolves package files, reports missing manifests or assets deterministically, and caches validated package metadata. Actual scene import and reusable GPU mesh, texture, and material caches remain part of the next proof-of-concept increment. The complete contract is documented in [Visual Asset Manifest](visual-asset-manifest.md).
 
 ## Rendering Technology Evaluation
 

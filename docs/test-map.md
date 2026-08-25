@@ -599,3 +599,5 @@ Expected current behavior:
 - exposes the Cartesian Robot as the only catalog model with the current mechanical-showcase proof of concept.
 - verifies that the Cartesian showcase uses a practical three-axis desktop-machine hierarchy and models dual Z motors and lead screws as one synchronized logical gantry.
 - verifies that the mechanical showcase offers assembled and drive-system teaching views and ghosts only components that may obscure the drive system.
+- parses and validates version 1 visual-asset manifests, including schema/model compatibility, safe GLB paths, semantic node coverage, unknown parts, and multiple meshes mapped to one robot part;
+- resolves and caches desktop visual-asset packages and reports missing manifests or GLB files with deterministic error codes.
