@@ -601,3 +601,5 @@ Expected current behavior:
 - verifies that the mechanical showcase offers assembled and drive-system teaching views and ghosts only components that may obscure the drive system.
 - parses and validates version 1 visual-asset manifests, including schema/model compatibility, safe GLB paths, semantic node coverage, unknown parts, and multiple meshes mapped to one robot part;
 - resolves and caches desktop visual-asset packages and reports missing manifests or GLB files with deterministic error codes.
+- binds imported scene-node hierarchies to semantic robot parts, inherits mappings through mesh descendants, preserves nested explicit mappings, and rejects missing or ambiguous referenced node names.
+- imports a valid binary glTF 2.0 fixture through the native Assimp pipeline, preserves named mesh nodes, applies semantic bindings, and reports invalid GLB files deterministically.

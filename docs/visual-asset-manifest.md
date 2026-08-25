@@ -57,4 +57,4 @@ Several nodes may map to one semantic part because a meaningful component can co
 
 Version 1 intentionally does not encode materials, textures, pivots, transforms, animations, demonstrations, cameras, lighting, or renderer-specific configuration. These belong in the GLB, existing visualization contracts, or future schema versions only when a concrete asset proves that additional metadata is necessary.
 
-The current package loader does not import GLB scene nodes or allocate GPU resources. That renderer integration, node-existence verification, and mesh/material resource caching remain part of the Cartesian proof of concept.
+The desktop Assimp adapter imports GLB scene nodes and verifies that every referenced node name resolves exactly once. Semantic identity is inherited by descendant meshes until a nested explicit mapping starts another component subtree. The imported scene is not yet connected to the Cartesian viewport, and reusable GPU mesh/material resource caching remains part of the Cartesian proof of concept.

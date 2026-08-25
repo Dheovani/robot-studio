@@ -31,6 +31,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added renderer-neutral visual-model, robot-part hierarchy, component-pose, demonstration, sampling, and transform-resolution contracts in a dedicated visualization project.
 - Added assembled and drive-system teaching views to the Cartesian mechanical showcase, using transparency and technical highlighting to expose rails, belts, lead screws, and motors without rebuilding the scene.
 - Added a versioned visual-asset package contract with safe local GLB paths, semantic node mappings, deterministic validation errors, and desktop package caching.
+- Added an isolated HelixToolkit Assimp GLB importer that maps imported scene hierarchies to semantic robot parts and rejects missing or ambiguous asset nodes.
 
 ### Changed
 

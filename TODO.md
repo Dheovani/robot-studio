@@ -68,7 +68,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Define and test a presentation-only keyframe demonstration controller for fixed mechanical animations without making rendered meshes the source of robot state.
 - [ ] Extract robot-specific schematic scene composition and viewport lifecycle code from `MainWindow.xaml.cs` behind desktop rendering interfaces.
 - [x] Define and test a minimal version 1 asset manifest that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without placing materials, animation, or renderer concerns in the contract.
-- [ ] Complete GLB scene import plus mesh/material resource reuse; package discovery, manifest validation, deterministic file errors, and package caching are implemented.
+- [ ] Connect the implemented Assimp GLB importer and semantic scene-node binder to the Cartesian showcase, then add imported scene and mesh/material resource reuse.
 - [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
 - [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
 - [ ] Add visualization mode selection for schematic, realistic, and realistic with educational overlays.

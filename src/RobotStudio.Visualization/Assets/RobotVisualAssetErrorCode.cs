@@ -11,5 +11,8 @@ public enum RobotVisualAssetErrorCode
     MissingSemanticBinding,
     ManifestNotFound,
     AssetNotFound,
-    ManifestReadFailed
+    ManifestReadFailed,
+    AssetImportFailed,
+    AssetNodeMissing,
+    AssetNodeAmbiguous
 }
