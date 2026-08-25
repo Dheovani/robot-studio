@@ -25,7 +25,7 @@ namespace RobotStudio.Desktop.Showcases;
 public partial class MechanicalShowcaseView : UserControl
 {
     private const float MillimetersPerSceneUnit = 100;
-    private const double InitialAzimuthDegrees = 48;
+    private const double InitialAzimuthDegrees = -48;
     private const double InitialElevationDegrees = 28;
     private const double InitialCameraDistance = 18;
 
@@ -596,6 +596,10 @@ public partial class MechanicalShowcaseView : UserControl
         camera.FieldOfView = reference.FieldOfView;
         camera.NearPlaneDistance = reference.NearPlaneDistance;
         camera.FarPlaneDistance = reference.FarPlaneDistance;
+
+        var keyLightDirection = reference.LookDirection;
+        keyLightDirection.Normalize();
+        CameraKeyLight.Direction = keyLightDirection;
     }
 
     private void ResetCamera()

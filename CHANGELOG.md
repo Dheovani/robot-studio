@@ -47,7 +47,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.
 - Fixed the mechanical showcase header layout and moved playback actions into the same top-toolbar pattern used by simulation workspaces.
 - Fixed mechanical-showcase camera navigation with full-viewport drag orbit, bounded elevation, predictable reset, and removal of the unstable view cube.
-- Fixed the mechanical showcase opening with empty component details by selecting the machine base initially.
+- Fixed the mechanical showcase opening with empty component details by selecting the generic process tool initially.
+- Fixed the Cartesian mechanical showcase front orientation and made its key light follow the orbit camera so inspectable components remain readable from different angles.
 
 ## 1.1.0 - Multi-Robot Teaching Platform Expansion
 

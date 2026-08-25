@@ -62,9 +62,12 @@
                                ShowCoordinateSystem="True"
                                ShowViewCube="False"
                                UseDefaultGestures="False">
-                    <hx:AmbientLight3D Color="#667085" />
-                    <hx:DirectionalLight3D Color="White" Direction="-1,-1,-2" />
-                    <hx:DirectionalLight3D Color="#93C5FD" Direction="1,0,-1" />
+                    <hx:AmbientLight3D Color="#748096" />
+                    <hx:DirectionalLight3D x:Name="CameraKeyLight"
+                                           Color="#FFF4E6"
+                                           Direction="-1,1,-2" />
+                    <hx:DirectionalLight3D Color="#7EA6D8"
+                                           Direction="1,-1,-1" />
                 </hx:Viewport3DX>
             </Border>
 
