@@ -34,6 +34,7 @@ public partial class MechanicalShowcaseView : UserControl
 
     private readonly MechanicalShowcaseDefinition showcase = CartesianMechanicalShowcaseDefinition.Create();
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
+    private readonly Dictionary<MeshGeometryModel3D, RobotPartId?> motionAxisModels = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> normalMaterials = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> transparentMaterials = [];
     private readonly Dictionary<MaterialGeometryNode, MaterialCore?> importedMaterials = [];
@@ -130,7 +131,34 @@ public partial class MechanicalShowcaseView : UserControl
     {
         AddGrid();
         BuildProceduralScene();
+        AddMotionAxisOverlays();
         TryLoadImportedScene();
+    }
+
+    private void AddMotionAxisOverlays()
+    {
+        foreach (var guide in MechanicalTeachingViewCatalog.MotionAxes)
+        {
+            var color = guide.Axis switch
+            {
+                MechanicalMotionAxis.X => new Color4(0.95f, 0.18f, 0.22f, 1f),
+                MechanicalMotionAxis.Y => new Color4(0.1f, 0.8f, 0.36f, 1f),
+                MechanicalMotionAxis.Z => new Color4(0.16f, 0.48f, 1f, 1f),
+                _ => throw new ArgumentOutOfRangeException(nameof(guide))
+            };
+            var builder = new MeshBuilder();
+            builder.AddArrow(guide.Start, guide.End, 0.16f, 3.2f, 24);
+            var model = new MeshGeometryModel3D
+            {
+                Geometry = builder.ToMeshGeometry3D(),
+                Material = AxisMaterial(color),
+                IsHitTestVisible = false,
+                Visibility = Visibility.Collapsed
+            };
+
+            motionAxisModels.Add(model, guide.AttachedPartId);
+            ShowcaseViewport.Items.Add(model);
+        }
     }
 
     private void BuildProceduralScene()
@@ -337,9 +365,18 @@ public partial class MechanicalShowcaseView : UserControl
     private void ApplyTeachingView()
     {
         var useImportedScene = importedScene is not null;
+        var showMotionAxes = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
+        {
+            Mode: MechanicalTeachingViewMode.MotionAxes
+        };
         if (importedScene is not null)
         {
             importedScene.Root.Visible = true;
+        }
+
+        foreach (var model in motionAxisModels.Keys)
+        {
+            model.Visibility = showMotionAxes ? Visibility.Visible : Visibility.Collapsed;
         }
 
         foreach (var (partId, models) in modelsByPart)
@@ -426,6 +463,14 @@ public partial class MechanicalShowcaseView : UserControl
             foreach (var model in models)
             {
                 model.Transform = transform;
+            }
+        }
+
+        foreach (var (model, attachedPartId) in motionAxisModels)
+        {
+            if (attachedPartId is RobotPartId partId)
+            {
+                model.Transform = ToWpfTransform(transforms[partId]);
             }
         }
 
@@ -541,6 +586,16 @@ public partial class MechanicalShowcaseView : UserControl
                 diffuse.Green * 0.25f,
                 diffuse.Blue * 0.25f,
                 diffuse.Alpha)
+        };
+
+    private static PhongMaterial AxisMaterial(Color4 color) =>
+        new()
+        {
+            DiffuseColor = color,
+            AmbientColor = new Color4(color.Red * 0.35f, color.Green * 0.35f, color.Blue * 0.35f, 1f),
+            EmissiveColor = new Color4(color.Red * 0.2f, color.Green * 0.2f, color.Blue * 0.2f, 1f),
+            SpecularColor = new Color4(0.9f, 0.9f, 0.9f, 1f),
+            SpecularShininess = 80
         };
 
     private static PhongMaterialCore CoreMaterial(Color4 diffuse, Color4 specular, float shininess) =>

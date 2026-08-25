@@ -598,8 +598,9 @@ Expected current behavior:
 - keeps HelixToolkit references confined to the Windows desktop project and keeps `RobotStudio.Visualization` package-free and platform-neutral;
 - exposes the Cartesian Robot as the only catalog model with the current mechanical-showcase proof of concept.
 - verifies that the Cartesian showcase uses a practical three-axis desktop-machine hierarchy and models dual Z motors and lead screws as one synchronized logical gantry.
-- verifies that the mechanical showcase offers assembled and drive-system teaching views and ghosts only components that may obscure the drive system.
-- manually verifies that both teaching views retain the packaged GLB, that the drive-system view exposes highlighted mechanisms through semantic transparency, and that selecting a ghosted structure preserves the cutaway.
+- verifies that the mechanical showcase exposes assembled, drive-system, and motion-axis layers, ghosts only components that may obscure the drive system, and defines three non-zero X/Y/Z guides with a semantic gantry attachment for the moving X guide.
+- manually verifies that all view layers retain the packaged GLB, that the drive-system view exposes highlighted mechanisms through semantic transparency, and that selecting a ghosted structure preserves the cutaway.
+- manually verifies that the motion-axis layer composes readable X/Y/Z arrows over the retained GLB and keeps the X guide aligned with the animated Z gantry.
 - validates camera-plane pan direction, empty-viewport handling, fit-to-model margin, and invalid fit inputs without requiring a live renderer.
 - manually verifies full-viewport orbit, middle-button and `Shift` + left-button pan, `Ctrl` + mouse-wheel zoom, and reset to model-derived framing in the mechanical showcase.
 - parses and validates version 1 visual-asset manifests, including schema/model compatibility, safe GLB paths, semantic node coverage, unknown parts, and multiple meshes mapped to one robot part;

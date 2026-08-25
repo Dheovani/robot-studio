@@ -34,6 +34,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an isolated HelixToolkit Assimp GLB importer that maps imported scene hierarchies to semantic robot parts and rejects missing or ambiguous asset nodes.
 - Added the first original packaged Cartesian GLB asset with a technical desktop-machine hierarchy, authored PBR materials, semantic component animation, selection, highlighting, and a deterministic development-time asset builder.
 - Added model-aware camera framing and viewport pan to the Cartesian mechanical showcase, with middle-button or `Shift` + left-button dragging.
+- Added a Cartesian mechanical-showcase motion-axis layer with color-coded X/Y/Z direction guides that remain synchronized with their corresponding moving assemblies.
 
 ### Changed
 

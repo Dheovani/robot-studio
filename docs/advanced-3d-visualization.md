@@ -24,6 +24,8 @@ The exact navigation between simulation and showcase remains a product decision 
 
 The catalog will initially expose two distinct actions for available robots: `Open Simulator` and `Explore Mechanics`. A later usability evaluation may add an internal switch, but the two experiences must remain conceptually distinct and must not crowd the simulation workspace with showcase-only controls.
 
+The Cartesian vertical slice implements the first complete selection path: `Open Simulator` retains the schematic executable workspace, `Explore Mechanics` opens the assembled realistic model, and the showcase `Motion axes` layer composes color-coded X/Y/Z direction guides over that same retained model. The overlay is an independent presentation layer and does not change the GLB hierarchy, component poses, or deterministic simulation state.
+
 ## Visual And Interaction Direction
 
 The target is stylized technical realism rather than photorealism, branded reproduction, or manufacturing-grade CAD. RobotStudio models must be original, generic teaching models with mechanically plausible proportions, recognizable assemblies, appropriately differentiated metal, plastic, rubber, cable, and fastener details, and convincing joint or actuator behavior. Assets must not copy manufacturer branding, trade dress, labels, or proprietary product geometry.

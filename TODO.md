@@ -71,7 +71,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Connect the Assimp GLB importer and semantic scene-node binder to the Cartesian showcase with an original packaged asset, retained semantic transforms, resource reuse, and explicit scene disposal.
 - [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
 - [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
-- [ ] Add visualization mode selection for schematic, realistic, and realistic with educational overlays.
+- [x] Add initial visualization mode selection for the Cartesian vertical slice through separate schematic/showcase catalog actions and an optional realistic motion-axis overlay layer.
 - [x] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
 - [ ] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
 - [ ] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
