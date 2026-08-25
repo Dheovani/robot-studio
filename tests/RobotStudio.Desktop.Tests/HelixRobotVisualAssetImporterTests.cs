@@ -33,7 +33,7 @@ public sealed class HelixRobotVisualAssetImporterTests
                 assetPath,
                 manifest);
 
-            var scene = new HelixRobotVisualAssetImporter().Import(package);
+            using var scene = new HelixRobotVisualAssetImporter().Import(package);
 
             Assert.NotNull(scene.Root);
             Assert.NotEmpty(scene.NodesByPart[new RobotPartId("base")]);

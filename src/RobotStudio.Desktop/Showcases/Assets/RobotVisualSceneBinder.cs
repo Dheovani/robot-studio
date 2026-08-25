@@ -30,7 +30,12 @@ public static class RobotVisualSceneBinder
             root,
             nodesByPart.ToDictionary(
                 pair => pair.Key,
-                pair => (IReadOnlyList<SceneNode>)pair.Value.ToArray()));
+                pair => (IReadOnlyList<SceneNode>)pair.Value.ToArray()),
+            explicitBindings
+                .GroupBy(pair => pair.Value)
+                .ToDictionary(
+                    group => group.Key,
+                    group => (IReadOnlyList<SceneNode>)group.Select(pair => pair.Key).ToArray()));
     }
 
     private static IReadOnlyDictionary<SceneNode, RobotPartId> ResolveExplicitBindings(

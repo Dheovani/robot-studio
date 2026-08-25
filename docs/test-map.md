@@ -603,3 +603,4 @@ Expected current behavior:
 - resolves and caches desktop visual-asset packages and reports missing manifests or GLB files with deterministic error codes.
 - binds imported scene-node hierarchies to semantic robot parts, inherits mappings through mesh descendants, preserves nested explicit mappings, and rejects missing or ambiguous referenced node names.
 - imports a valid binary glTF 2.0 fixture through the native Assimp pipeline, preserves named mesh nodes, applies semantic bindings, and reports invalid GLB files deterministically.
+- imports the packaged Cartesian GLB, covers every selectable semantic component, and verifies reuse of geometry and material resources within the production asset.

@@ -1,4 +1,5 @@
 using System.Diagnostics;
+using System.IO;
 using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,9 +10,13 @@ using System.Windows.Threading;
 using HelixToolkit.Geometry;
 using HelixToolkit.Maths;
 using HelixToolkit.SharpDX;
+using HelixToolkit.SharpDX.Model;
+using HelixToolkit.SharpDX.Model.Scene;
 using HelixToolkit.Wpf.SharpDX;
 using RobotStudio.Desktop.Rendering;
+using RobotStudio.Desktop.Showcases.Assets;
 using RobotStudio.Visualization;
+using RobotStudio.Visualization.Assets;
 using MediaColor = System.Windows.Media.Color;
 using MeshGeometry3D = HelixToolkit.SharpDX.MeshGeometry3D;
 
@@ -30,6 +35,7 @@ public partial class MechanicalShowcaseView : UserControl
     private readonly Dictionary<RobotPartId, List<MeshGeometryModel3D>> modelsByPart = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> normalMaterials = [];
     private readonly Dictionary<MeshGeometryModel3D, PhongMaterial> transparentMaterials = [];
+    private readonly Dictionary<MaterialGeometryNode, MaterialCore?> importedMaterials = [];
     private readonly DefaultEffectsManager effectsManager = new();
     private readonly HelixToolkit.Wpf.SharpDX.PerspectiveCamera camera = new();
     private readonly DispatcherTimer timer = new() { Interval = TimeSpan.FromMilliseconds(16) };
@@ -55,8 +61,17 @@ public partial class MechanicalShowcaseView : UserControl
         diffuse: new Color4(0.18f, 0.72f, 0.9f, 1f),
         specular: new Color4(0.75f, 0.95f, 1f, 1f),
         shininess: 110);
+    private readonly PhongMaterialCore importedSelectionMaterial = new()
+    {
+        DiffuseColor = new Color4(1f, 0.72f, 0.12f, 1f),
+        AmbientColor = new Color4(0.25f, 0.18f, 0.03f, 1f),
+        SpecularColor = new Color4(1f, 0.9f, 0.55f, 1f),
+        SpecularShininess = 90
+    };
 
     private TimeSpan playbackOffset;
+    private ImportedRobotVisualScene? importedScene;
+    private SceneNodeGroupModel3D? importedSceneHost;
     private RobotPartId? selectedPartId;
     private double cameraAzimuthDegrees = InitialAzimuthDegrees;
     private double cameraElevationDegrees = InitialElevationDegrees;
@@ -68,12 +83,13 @@ public partial class MechanicalShowcaseView : UserControl
 
         ShowcaseViewport.EffectsManager = effectsManager;
         ShowcaseViewport.Camera = camera;
+        ShowcaseViewport.MouseDown3D += ShowcaseViewport_MouseDown3D;
         ApplyCamera();
 
         BuildScene();
         TeachingViewComboBox.ItemsSource = MechanicalTeachingViewCatalog.Options;
         TeachingViewComboBox.SelectedIndex = 0;
-        SelectPart(showcase.Model.RootPartId);
+        SelectPart(showcase.Model.Parts.Single(part => part.Kind == RobotPartKind.Tool).Id);
         DemonstrationComboBox.ItemsSource = showcase.Demonstrations;
         DemonstrationComboBox.SelectedIndex = 0;
         timer.Tick += Timer_Tick;
@@ -89,7 +105,12 @@ public partial class MechanicalShowcaseView : UserControl
     private void BuildScene()
     {
         AddGrid();
+        BuildProceduralScene();
+        TryLoadImportedScene();
+    }
 
+    private void BuildProceduralScene()
+    {
         var frame = Material(new Color4(0.28f, 0.32f, 0.38f, 1), new Color4(0.85f, 0.9f, 0.98f, 1), 115);
         var darkMetal = Material(new Color4(0.08f, 0.1f, 0.14f, 1), new Color4(0.5f, 0.56f, 0.65f, 1), 100);
         var steel = Material(new Color4(0.48f, 0.54f, 0.62f, 1), new Color4(0.95f, 0.98f, 1f, 1), 125);
@@ -132,6 +153,38 @@ public partial class MechanicalShowcaseView : UserControl
         AddCylinder("tool", new Vector3(-1.6f, 1.65f, 4.45f), new Vector3(-1.6f, 1.65f, 3.9f), 0.16f, tool);
     }
 
+    private void TryLoadImportedScene()
+    {
+        try
+        {
+            var manifestPath = Path.Combine(
+                AppContext.BaseDirectory,
+                "Assets",
+                "Robots",
+                "CartesianMechanical",
+                "robot.json");
+            var package = new RobotVisualAssetPackageLoader().Load(manifestPath, showcase.Model);
+            importedScene = new HelixRobotVisualAssetImporter().Import(package);
+
+            foreach (var materialNode in importedScene.NodesByPart.Values
+                         .SelectMany(nodes => nodes)
+                         .OfType<MaterialGeometryNode>()
+                         .Distinct())
+            {
+                importedMaterials.Add(materialNode, materialNode.Material);
+            }
+
+            importedSceneHost = new SceneNodeGroupModel3D();
+            importedSceneHost.AddNode(importedScene.Root);
+            ShowcaseViewport.Items.Add(importedSceneHost);
+        }
+        catch (RobotVisualAssetException exception)
+        {
+            Debug.WriteLine($"Mechanical showcase asset fallback: {exception.Message}");
+            importedScene = null;
+        }
+    }
+
     private void AddGrid()
     {
         var geometry = LineBuilder.GenerateGrid(Vector3.UnitZ, -6, 6, -5, 5);
@@ -142,6 +195,17 @@ public partial class MechanicalShowcaseView : UserControl
             Thickness = 0.8,
             IsHitTestVisible = false
         });
+    }
+
+    private void ShowcaseViewport_MouseDown3D(object? sender, RoutedEventArgs eventArgs)
+    {
+        if (eventArgs is Mouse3DEventArgs
+            {
+                HitTestResult.ModelHit: SceneNode { Tag: RobotPartId partId }
+            })
+        {
+            SelectPart(partId);
+        }
     }
 
     private void AddBox(string partId, Vector3 center, Vector3 size, PhongMaterial material)
@@ -205,6 +269,7 @@ public partial class MechanicalShowcaseView : UserControl
             : "Root component";
         PartFunctionText.Text = part.Function;
         PartMovementText.Text = part.Movement;
+        ApplyImportedSelection();
     }
 
     private void TeachingViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -220,10 +285,27 @@ public partial class MechanicalShowcaseView : UserControl
 
     private void ApplyTeachingView()
     {
+        var useImportedScene = importedScene is not null &&
+                               TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
+                               {
+                                   Mode: MechanicalTeachingViewMode.Assembled
+                               };
+        if (importedScene is not null)
+        {
+            importedScene.Root.Visible = useImportedScene;
+        }
+
         foreach (var (partId, models) in modelsByPart)
         {
+            foreach (var model in models)
+            {
+                model.Visibility = useImportedScene ? Visibility.Collapsed : Visibility.Visible;
+            }
+
             ApplyPartAppearance(partId, models);
         }
+
+        ApplyImportedSelection();
     }
 
     private void ApplyPartAppearance(
@@ -300,8 +382,50 @@ public partial class MechanicalShowcaseView : UserControl
             }
         }
 
+        ApplyImportedPoses(poses);
+
         DemonstrationProgressBar.Value = Math.Clamp(time.TotalSeconds / demonstration.Duration.TotalSeconds, 0, 1);
         DemonstrationTimeText.Text = $"{time.TotalSeconds:0.0} / {demonstration.Duration.TotalSeconds:0.0} s";
+    }
+
+    private void ApplyImportedPoses(IReadOnlyList<RobotComponentPose> poses)
+    {
+        if (importedScene is null)
+        {
+            return;
+        }
+
+        var posesByPart = poses.ToDictionary(pose => pose.PartId);
+        foreach (var (partId, rootNodes) in importedScene.RootNodesByPart)
+        {
+            var pose = posesByPart.GetValueOrDefault(partId, RobotComponentPose.Identity(partId));
+            var transform = Matrix4x4.CreateScale(pose.Scale) *
+                            Matrix4x4.CreateFromQuaternion(pose.Rotation) *
+                            Matrix4x4.CreateTranslation(pose.TranslationMillimeters / MillimetersPerSceneUnit);
+            foreach (var rootNode in rootNodes)
+            {
+                rootNode.ModelMatrix = transform;
+            }
+        }
+    }
+
+    private void ApplyImportedSelection()
+    {
+        foreach (var (node, material) in importedMaterials)
+        {
+            node.Material = material;
+        }
+
+        if (importedScene is null || selectedPartId is not RobotPartId partId ||
+            !importedScene.NodesByPart.TryGetValue(partId, out var selectedNodes))
+        {
+            return;
+        }
+
+        foreach (var materialNode in selectedNodes.OfType<MaterialGeometryNode>())
+        {
+            materialNode.Material = importedSelectionMaterial;
+        }
     }
 
     private static MatrixTransform3D ToWpfTransform(Matrix4x4 source)
@@ -492,6 +616,8 @@ public partial class MechanicalShowcaseView : UserControl
     {
         timer.Stop();
         stopwatch.Stop();
+        importedSceneHost?.Clear(detachChildren: true);
+        importedScene?.Dispose();
         effectsManager.Dispose();
     }
 }

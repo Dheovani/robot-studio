@@ -1,10 +1,43 @@
+using HelixToolkit.SharpDX.Model.Scene;
 using RobotStudio.Desktop.Showcases;
+using RobotStudio.Desktop.Showcases.Assets;
 using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Tests;
 
 public sealed class CartesianMechanicalShowcaseDefinitionTests
 {
+    [Fact]
+    public void PackagedAsset_ShouldImportEverySelectableSemanticPart()
+    {
+        var showcase = CartesianMechanicalShowcaseDefinition.Create();
+        var manifestPath = Path.Combine(
+            AppContext.BaseDirectory,
+            "Assets",
+            "Robots",
+            "CartesianMechanical",
+            "robot.json");
+
+        var package = new RobotVisualAssetPackageLoader().Load(manifestPath, showcase.Model);
+        using var scene = new HelixRobotVisualAssetImporter().Import(package);
+
+        Assert.All(
+            showcase.Model.Parts.Where(part => part.IsSelectable),
+            part => Assert.NotEmpty(scene.NodesByPart[part.Id]));
+
+        var geometryNodes = scene.NodesByPart.Values
+            .SelectMany(nodes => nodes)
+            .OfType<MaterialGeometryNode>()
+            .Distinct()
+            .ToArray();
+        Assert.Contains(
+            geometryNodes.GroupBy(node => node.Geometry),
+            group => group.Count() > 1);
+        Assert.Contains(
+            geometryNodes.GroupBy(node => node.Material),
+            group => group.Count() > 1);
+    }
+
     [Fact]
     public void Create_ShouldRepresentARecognizableThreeAxisDesktopMachine()
     {

@@ -24,6 +24,7 @@ public sealed class RobotVisualSceneBinderTests
         Assert.Equal(partId, component.Tag);
         Assert.Equal(partId, mesh.Tag);
         Assert.Equal([component, mesh], scene.NodesByPart[partId]);
+        Assert.Equal([component], scene.RootNodesByPart[partId]);
         Assert.True(mesh.IsHitTestVisible);
     }
 

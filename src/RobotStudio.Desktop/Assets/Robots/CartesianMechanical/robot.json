@@ -1,0 +1,30 @@
+{
+  "schemaVersion": 1,
+  "modelId": "cartesian-intro-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_left-frame-column", "partId": "left-frame-column" },
+    { "nodeName": "RS_right-frame-column", "partId": "right-frame-column" },
+    { "nodeName": "RS_top-frame-beam", "partId": "top-frame-beam" },
+    { "nodeName": "RS_left-y-rail", "partId": "left-y-rail" },
+    { "nodeName": "RS_right-y-rail", "partId": "right-y-rail" },
+    { "nodeName": "RS_y-motor", "partId": "y-motor" },
+    { "nodeName": "RS_y-belt", "partId": "y-belt" },
+    { "nodeName": "RS_y-bed-carriage", "partId": "y-bed-carriage" },
+    { "nodeName": "RS_build-plate", "partId": "build-plate" },
+    { "nodeName": "RS_left-z-guide", "partId": "left-z-guide" },
+    { "nodeName": "RS_right-z-guide", "partId": "right-z-guide" },
+    { "nodeName": "RS_left-z-screw", "partId": "left-z-screw" },
+    { "nodeName": "RS_right-z-screw", "partId": "right-z-screw" },
+    { "nodeName": "RS_left-z-motor", "partId": "left-z-motor" },
+    { "nodeName": "RS_right-z-motor", "partId": "right-z-motor" },
+    { "nodeName": "RS_z-gantry", "partId": "z-gantry" },
+    { "nodeName": "RS_x-rail", "partId": "x-rail" },
+    { "nodeName": "RS_x-motor", "partId": "x-motor" },
+    { "nodeName": "RS_x-belt", "partId": "x-belt" },
+    { "nodeName": "RS_x-tool-carriage", "partId": "x-tool-carriage" },
+    { "nodeName": "RS_tool", "partId": "tool" }
+  ]
+}

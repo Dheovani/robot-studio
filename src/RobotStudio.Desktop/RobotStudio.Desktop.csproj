@@ -19,6 +19,9 @@
 
   <ItemGroup>
     <Resource Include="Assets\RobotStudio.ico" />
+    <Content Include="Assets\Robots\**\*">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
 
   <ItemGroup>

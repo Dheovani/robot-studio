@@ -11,7 +11,7 @@ public sealed class HelixRobotVisualAssetImporter
 
         try
         {
-            var importer = new Importer();
+            using var importer = new Importer();
             var scene = importer.Load(package.AssetPath);
             if (scene?.Root is null)
             {

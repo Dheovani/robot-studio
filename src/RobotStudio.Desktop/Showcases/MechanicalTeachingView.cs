@@ -20,7 +20,7 @@ internal static class MechanicalTeachingViewCatalog
         new(
             MechanicalTeachingViewMode.Assembled,
             "Assembled machine",
-            "Complete assembled machine with its normal materials."),
+            "Packaged technical model with its assembled components and authored materials."),
         new(
             MechanicalTeachingViewMode.DriveSystem,
             "Drive system",
