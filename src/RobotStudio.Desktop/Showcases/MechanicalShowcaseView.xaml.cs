@@ -68,6 +68,26 @@ public partial class MechanicalShowcaseView : UserControl
         SpecularColor = new Color4(1f, 0.9f, 0.55f, 1f),
         SpecularShininess = 90
     };
+    private readonly PhongMaterialCore importedTransparentSelectionMaterial = CoreMaterial(
+        new Color4(1f, 0.72f, 0.12f, 0.32f),
+        new Color4(1f, 0.9f, 0.55f, 0.32f),
+        90);
+    private readonly PhongMaterialCore importedGhostMaterial = CoreMaterial(
+        new Color4(0.38f, 0.45f, 0.56f, 0.14f),
+        new Color4(0.75f, 0.84f, 0.96f, 0.14f),
+        70);
+    private readonly PhongMaterialCore importedDriveMotorMaterial = CoreMaterial(
+        new Color4(0.95f, 0.38f, 0.08f, 1f),
+        new Color4(1f, 0.82f, 0.55f, 1f),
+        95);
+    private readonly PhongMaterialCore importedDriveTransmissionMaterial = CoreMaterial(
+        new Color4(0.95f, 0.72f, 0.08f, 1f),
+        new Color4(1f, 0.92f, 0.55f, 1f),
+        80);
+    private readonly PhongMaterialCore importedDriveRailMaterial = CoreMaterial(
+        new Color4(0.18f, 0.72f, 0.9f, 1f),
+        new Color4(0.75f, 0.95f, 1f, 1f),
+        110);
 
     private TimeSpan playbackOffset;
     private ImportedRobotVisualScene? importedScene;
@@ -269,7 +289,7 @@ public partial class MechanicalShowcaseView : UserControl
             : "Root component";
         PartFunctionText.Text = part.Function;
         PartMovementText.Text = part.Movement;
-        ApplyImportedSelection();
+        ApplyImportedAppearance();
     }
 
     private void TeachingViewComboBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
@@ -285,14 +305,10 @@ public partial class MechanicalShowcaseView : UserControl
 
     private void ApplyTeachingView()
     {
-        var useImportedScene = importedScene is not null &&
-                               TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
-                               {
-                                   Mode: MechanicalTeachingViewMode.Assembled
-                               };
+        var useImportedScene = importedScene is not null;
         if (importedScene is not null)
         {
-            importedScene.Root.Visible = useImportedScene;
+            importedScene.Root.Visible = true;
         }
 
         foreach (var (partId, models) in modelsByPart)
@@ -305,7 +321,7 @@ public partial class MechanicalShowcaseView : UserControl
             ApplyPartAppearance(partId, models);
         }
 
-        ApplyImportedSelection();
+        ApplyImportedAppearance();
     }
 
     private void ApplyPartAppearance(
@@ -409,24 +425,66 @@ public partial class MechanicalShowcaseView : UserControl
         }
     }
 
-    private void ApplyImportedSelection()
+    private void ApplyImportedAppearance()
     {
         foreach (var (node, material) in importedMaterials)
         {
             node.Material = material;
+            node.IsTransparent = false;
         }
 
-        if (importedScene is null || selectedPartId is not RobotPartId partId ||
-            !importedScene.NodesByPart.TryGetValue(partId, out var selectedNodes))
+        if (importedScene is null)
         {
             return;
         }
 
+        var isDriveView = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption
+        {
+            Mode: MechanicalTeachingViewMode.DriveSystem
+        };
+        if (isDriveView)
+        {
+            foreach (var (partId, nodes) in importedScene.NodesByPart)
+            {
+                var part = showcase.Model.GetPart(partId);
+                var isGhosted = MechanicalTeachingViewCatalog.ShouldGhost(part.Kind);
+                foreach (var materialNode in nodes.OfType<MaterialGeometryNode>())
+                {
+                    materialNode.IsTransparent = isGhosted;
+                    materialNode.Material = isGhosted
+                        ? importedGhostMaterial
+                        : ImportedDriveMaterial(part.Kind, materialNode);
+                }
+            }
+        }
+
+        if (selectedPartId is not RobotPartId selectedId ||
+            !importedScene.NodesByPart.TryGetValue(selectedId, out var selectedNodes))
+        {
+            return;
+        }
+
+        var selectedPart = showcase.Model.GetPart(selectedId);
+        var selectedIsGhosted = isDriveView && MechanicalTeachingViewCatalog.ShouldGhost(selectedPart.Kind);
         foreach (var materialNode in selectedNodes.OfType<MaterialGeometryNode>())
         {
-            materialNode.Material = importedSelectionMaterial;
+            materialNode.IsTransparent = selectedIsGhosted;
+            materialNode.Material = selectedIsGhosted
+                ? importedTransparentSelectionMaterial
+                : importedSelectionMaterial;
         }
     }
+
+    private MaterialCore? ImportedDriveMaterial(
+        RobotPartKind kind,
+        MaterialGeometryNode node) =>
+        kind switch
+        {
+            RobotPartKind.Motor => importedDriveMotorMaterial,
+            RobotPartKind.Transmission => importedDriveTransmissionMaterial,
+            RobotPartKind.Rail => importedDriveRailMaterial,
+            _ => importedMaterials[node]
+        };
 
     private static MatrixTransform3D ToWpfTransform(Matrix4x4 source)
     {
@@ -442,6 +500,19 @@ public partial class MechanicalShowcaseView : UserControl
     }
 
     private static PhongMaterial Material(Color4 diffuse, Color4 specular, float shininess) =>
+        new()
+        {
+            DiffuseColor = diffuse,
+            SpecularColor = specular,
+            SpecularShininess = shininess,
+            AmbientColor = new Color4(
+                diffuse.Red * 0.25f,
+                diffuse.Green * 0.25f,
+                diffuse.Blue * 0.25f,
+                diffuse.Alpha)
+        };
+
+    private static PhongMaterialCore CoreMaterial(Color4 diffuse, Color4 specular, float shininess) =>
         new()
         {
             DiffuseColor = diffuse,

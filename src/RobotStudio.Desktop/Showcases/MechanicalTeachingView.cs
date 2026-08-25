@@ -24,7 +24,7 @@ internal static class MechanicalTeachingViewCatalog
         new(
             MechanicalTeachingViewMode.DriveSystem,
             "Drive system",
-            "Structural parts become transparent so rails, belts, lead screws, and motors remain visible.")
+            "The packaged model becomes transparent around its highlighted rails, belts, lead screws, and motors.")
     ];
 
     public static bool ShouldGhost(RobotPartKind kind) =>

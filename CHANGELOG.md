@@ -38,6 +38,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
 - Changed the Cartesian mechanical showcase into a recognizable desktop-machine arrangement with a Y-moving work platform, an X tool carriage, and a synchronized dual-column Z gantry.
+- Changed the Cartesian drive-system teaching view to use the same packaged GLB as the assembled view, with semantic transparency and technical highlighting instead of switching back to procedural geometry.
 - Changed generated G-code to include deterministic `G21` millimeter and `G90` absolute-positioning preambles.
 - Changed Cartesian charts and movement explanations to consume simulation metadata instead of reparsing isolated script lines.
 - Changed Cartesian movement explanations to use exact command boundaries instead of estimating motion from fixed-interval playback frames.

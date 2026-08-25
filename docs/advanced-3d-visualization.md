@@ -91,6 +91,7 @@ Milestone 6 must address these constraints before realistic rendering grows acro
 - Cartesian playback includes schematic `CartesianSceneFrame` primitives, while other viewers compose their geometry directly from family-specific playback frames. The project needs a deliberate adapter boundary instead of promoting either approach into a universal realistic-rendering contract.
 - Current WPF viewers commonly rebuild scene models for rendered frames. A realistic renderer should retain a scene hierarchy and update component transforms where practical.
 - Stable semantic part identifiers, hierarchical visual models, component poses, and a version 1 visual-asset manifest now exist. Desktop package discovery validates and caches manifests, resolves local GLB files, imports HelixToolkit scene hierarchies through Assimp, and binds named nodes to semantic parts. The Cartesian showcase consumes the first original packaged GLB, updates semantic component roots without rebuilding meshes, reuses authored mesh/material definitions, and explicitly disposes the imported scene. Cross-package GPU resource caching remains pending. Raw asset node names do not become public domain contracts.
+- The Cartesian assembled and drive-system teaching views now compose different appearances over one imported hierarchy. Semantic part kinds determine transparency and technical highlighting, while selecting a ghosted component preserves the cutaway instead of making the obstruction opaque again.
 
 ## Robot Visual Models
 

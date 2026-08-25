@@ -89,7 +89,7 @@
                         <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
                                    FontSize="18"
                                    FontWeight="SemiBold"
-                                   Text="Teaching view" />
+                                   Text="View layer" />
                         <ComboBox x:Name="TeachingViewComboBox"
                                   Margin="0,10,0,0"
                                   DisplayMemberPath="Name"
