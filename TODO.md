@@ -77,7 +77,14 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [ ] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
 - [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
 - [ ] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
-- [ ] Deliver original realistic showcases for all currently available models: Cartesian, XY Plotter, Differential Drive, SCARA, Simple Articulated Arm, Delta, Drone, and 6-DOF Industrial Arm.
+- [x] Deliver an original realistic mechanical showcase for Cartesian Robot.
+- [x] Deliver an original realistic mechanical showcase for XY Plotter.
+- [ ] Deliver an original realistic mechanical showcase for Differential Drive Robot.
+- [ ] Deliver an original realistic mechanical showcase for SCARA Robot.
+- [ ] Deliver an original realistic mechanical showcase for Simple Articulated Arm.
+- [ ] Deliver an original realistic mechanical showcase for Delta Robot.
+- [ ] Deliver an original realistic mechanical showcase for Drone.
+- [ ] Deliver an original realistic mechanical showcase for 6-DOF Industrial Arm.
 - [ ] Treat Milestone 6 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 6 scope is complete.
 
 ## 7. Future Robot Family Expansion

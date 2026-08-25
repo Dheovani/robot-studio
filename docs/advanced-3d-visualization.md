@@ -24,7 +24,7 @@ The exact navigation between simulation and showcase remains a product decision 
 
 The catalog will initially expose two distinct actions for available robots: `Open Simulator` and `Explore Mechanics`. A later usability evaluation may add an internal switch, but the two experiences must remain conceptually distinct and must not crowd the simulation workspace with showcase-only controls.
 
-The Cartesian vertical slice implements the first complete selection path: `Open Simulator` retains the schematic executable workspace, `Explore Mechanics` opens the assembled realistic model, and the showcase `Motion axes` layer composes color-coded X/Y/Z direction guides over that same retained model. The overlay is an independent presentation layer and does not change the GLB hierarchy, component poses, or deterministic simulation state.
+The Cartesian and XY Plotter vertical slices implement the first complete selection paths: `Open Simulator` retains each schematic executable workspace, while `Explore Mechanics` opens its assembled realistic model. Their `Motion axes` layers compose only the coordinate guides supported by the mechanism over the same retained model. These overlays are independent presentation layers and do not change the GLB hierarchy, component poses, or deterministic simulation state.
 
 Mechanical showcase navigation is model-driven. A robot card references a stable showcase model id, the desktop showcase catalog resolves that id to a validated presentation, and the main window creates the shared viewport on demand. A presentation packages its renderer-neutral visual model and demonstrations with desktop-owned asset location, title, view layers, motion guides, exploded offsets, initial selection, and semantic fallback primitives. This prevents the shared viewport from selecting the Cartesian model internally and provides a controlled extension point for later robot families.
 
@@ -37,6 +37,8 @@ Visual fidelity may approach a polished industrial product presentation where it
 User freedom in the realistic showcase is intentionally limited. Users may inspect the model, orbit and pan the camera, zoom, restore model-aware framing, select semantic components, choose a curated demonstration, and use the educational viewing aids supplied for that model. Camera interaction remains a desktop presentation concern and does not alter robot state. Users do not edit geometry or author arbitrary realistic animations.
 
 The Cartesian showcase offers both a coordinated practical tour and an individual-axis inspection. The latter moves Y, X, and Z in separate phases and returns each mechanism before the next phase begins, making component inheritance and physical constraints easier to inspect. Demonstration descriptions are shown with the selector, while every sequence remains presentation-only.
+
+The XY Plotter showcase applies the same architecture to a different Cartesian mechanism without introducing a second viewport implementation. Its semantic hierarchy connects the paper bed, dual Y drive, moving bridge, X carriage, pen lift, and pen. A rectangular path demonstrates coordinated planar motion, an axis inspection isolates X and Y, and a staged assembly joins the major mechanisms. It intentionally omits a Z movement guide because the introductory plotter operates on a fixed drawing plane.
 
 Each robot may use the most legible internal-view technique for its mechanism:
 

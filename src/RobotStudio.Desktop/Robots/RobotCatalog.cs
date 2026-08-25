@@ -84,7 +84,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.XYPlotterTwoDimensional,
-                "XY Plotter Viewer")),
+                "XY Plotter Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "xy-plotter-mechanical",
+                "XY Plotter Mechanical Showcase")),
 
         new(
             Id: "differential-drive",

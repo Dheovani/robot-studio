@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "modelId": "xy-plotter-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_paper-bed", "partId": "paper-bed" },
+    { "nodeName": "RS_left-y-rail", "partId": "left-y-rail" },
+    { "nodeName": "RS_right-y-rail", "partId": "right-y-rail" },
+    { "nodeName": "RS_y-motor", "partId": "y-motor" },
+    { "nodeName": "RS_left-y-belt", "partId": "left-y-belt" },
+    { "nodeName": "RS_right-y-belt", "partId": "right-y-belt" },
+    { "nodeName": "RS_y-gantry", "partId": "y-gantry" },
+    { "nodeName": "RS_x-rail", "partId": "x-rail" },
+    { "nodeName": "RS_x-belt", "partId": "x-belt" },
+    { "nodeName": "RS_x-motor", "partId": "x-motor" },
+    { "nodeName": "RS_x-carriage", "partId": "x-carriage" },
+    { "nodeName": "RS_pen-lift", "partId": "pen-lift" },
+    { "nodeName": "RS_pen", "partId": "pen" }
+  ]
+}

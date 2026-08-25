@@ -5,15 +5,16 @@ namespace RobotStudio.Desktop.Tests;
 public sealed class RobotCatalogTests
 {
     [Fact]
-    public void Templates_ShouldExposeMechanicalShowcaseOnlyForCartesianProofOfConcept()
+    public void Templates_ShouldExposeMechanicalShowcasesForCompletedRealisticModels()
     {
         var showcaseTemplates = RobotCatalog.Templates
             .Where(RobotCatalog.CanExploreMechanics)
             .ToArray();
 
-        var cartesian = Assert.Single(showcaseTemplates);
-        Assert.Equal("Cartesian Robot", cartesian.Name);
-        Assert.Equal("cartesian-intro-mechanical", cartesian.MechanicalShowcase?.ModelId);
+        Assert.Equal(["Cartesian Robot", "XY Plotter"], showcaseTemplates.Select(template => template.Name));
+        Assert.Equal(
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical"],
+            showcaseTemplates.Select(template => template.MechanicalShowcase?.ModelId));
     }
 
     [Fact]

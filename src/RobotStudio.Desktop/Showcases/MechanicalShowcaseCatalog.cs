@@ -5,7 +5,8 @@ internal static class MechanicalShowcaseCatalog
     private static readonly IReadOnlyDictionary<string, Func<MechanicalShowcasePresentation>> Factories =
         new Dictionary<string, Func<MechanicalShowcasePresentation>>(StringComparer.Ordinal)
         {
-            ["cartesian-intro-mechanical"] = CartesianMechanicalShowcaseDefinition.CreatePresentation
+            ["cartesian-intro-mechanical"] = CartesianMechanicalShowcaseDefinition.CreatePresentation,
+            ["xy-plotter-mechanical"] = XYPlotterMechanicalShowcaseDefinition.CreatePresentation
         };
 
     public static IReadOnlyList<string> ModelIds { get; } = Factories.Keys.ToArray();

@@ -3,15 +3,23 @@ using System.Text;
 using System.Text.Json;
 using System.Text.Json.Nodes;
 
-if (args.Length != 1)
+if (args.Length is < 1 or > 2)
 {
-    Console.Error.WriteLine("Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- <output.glb>");
+    Console.Error.WriteLine(
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter] <output.glb>");
     return 1;
 }
 
-var outputPath = Path.GetFullPath(args[0]);
+var modelId = args.Length == 1 ? "cartesian" : args[0];
+var outputPath = Path.GetFullPath(args[^1]);
 Directory.CreateDirectory(Path.GetDirectoryName(outputPath)!);
-CartesianAsset.Create().Write(outputPath);
+var asset = modelId switch
+{
+    "cartesian" => CartesianAsset.Create(),
+    "xy-plotter" => XYPlotterAsset.Create(),
+    _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
+};
+asset.Write(outputPath);
 Console.WriteLine($"Created {outputPath}");
 return 0;
 
@@ -19,7 +27,7 @@ internal static class CartesianAsset
 {
     public static GlbBuilder Create()
     {
-        var asset = new GlbBuilder();
+        var asset = new GlbBuilder("Cartesian Mechanical Showcase");
         var charcoal = asset.Material("Charcoal polymer", 0.045f, 0.055f, 0.075f, 0.55f, 0.34f);
         var frame = asset.Material("Anodized aluminum", 0.34f, 0.38f, 0.44f, 0.82f, 0.26f);
         var steel = asset.Material("Machined steel", 0.62f, 0.67f, 0.73f, 0.9f, 0.2f);
@@ -92,8 +100,83 @@ internal static class CartesianAsset
     }
 }
 
+internal static class XYPlotterAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("XY Plotter Mechanical Showcase");
+        var charcoal = asset.Material("Charcoal polymer", 0.045f, 0.055f, 0.075f, 0.5f, 0.36f);
+        var frame = asset.Material("Anodized aluminum", 0.34f, 0.38f, 0.44f, 0.82f, 0.26f);
+        var steel = asset.Material("Machined steel", 0.62f, 0.67f, 0.73f, 0.9f, 0.2f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var paper = asset.Material("Drawing paper", 0.88f, 0.86f, 0.76f, 0.02f, 0.86f);
+        var rubber = asset.Material("Drive belt rubber", 0.018f, 0.022f, 0.028f, 0.05f, 0.9f);
+        var penBody = asset.Material("Plotter pen", 0.82f, 0.12f, 0.08f, 0.16f, 0.42f);
+        var display = asset.Material(
+            "Controller display",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.2f,
+            0.2f,
+            emissive: new(0.02f, 0.28f, 0.5f));
+
+        asset.Part("base");
+        asset.Box("base", new(0, 0, 0.25f), new(10, 8, 0.5f), charcoal);
+        asset.Box("base", new(-4.5f, -3.5f, 0.02f), new(0.65f, 0.65f, 0.22f), rubber);
+        asset.Box("base", new(4.5f, -3.5f, 0.02f), new(0.65f, 0.65f, 0.22f), rubber);
+        asset.Box("base", new(-4.5f, 3.5f, 0.02f), new(0.65f, 0.65f, 0.22f), rubber);
+        asset.Box("base", new(4.5f, 3.5f, 0.02f), new(0.65f, 0.65f, 0.22f), rubber);
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(3.9f, -3.25f, 0.85f), new(1.65f, 1.15f, 1.1f), blue);
+        asset.Box("controller", new(3.9f, -3.84f, 0.9f), new(1.05f, 0.04f, 0.42f), display);
+        asset.Cylinder("controller", new(4.47f, -3.88f, 0.62f), new(4.47f, -4f, 0.62f), 0.13f, penBody);
+
+        asset.Part("paper-bed", "base");
+        asset.Box("paper-bed", new(0, -0.25f, 0.72f), new(7.4f, 5.7f, 0.18f), frame);
+        asset.Box("paper-bed", new(0, -0.25f, 0.84f), new(6.8f, 5.1f, 0.05f), paper);
+        asset.Box("paper-bed", new(-3.25f, -0.25f, 0.91f), new(0.12f, 4.5f, 0.1f), steel);
+        asset.Box("paper-bed", new(3.25f, -0.25f, 0.91f), new(0.12f, 4.5f, 0.1f), steel);
+
+        asset.FramePart("left-y-rail", "base", new(-4.1f, -0.15f, 1.05f), new(0.28f, 6.5f, 0.28f), steel);
+        asset.FramePart("right-y-rail", "base", new(4.1f, -0.15f, 1.05f), new(0.28f, 6.5f, 0.28f), steel);
+        asset.Part("y-motor", "base");
+        asset.Box("y-motor", new(-4.1f, -3.45f, 1.05f), new(0.82f, 0.82f, 0.82f), charcoal);
+        asset.Cylinder("y-motor", new(-4.1f, -3.95f, 1.05f), new(-4.1f, -3.78f, 1.05f), 0.16f, steel);
+        asset.Part("left-y-belt", "base");
+        asset.Box("left-y-belt", new(-3.75f, -0.15f, 1.12f), new(0.1f, 6.3f, 0.1f), rubber);
+        asset.Part("right-y-belt", "base");
+        asset.Box("right-y-belt", new(3.75f, -0.15f, 1.12f), new(0.1f, 6.3f, 0.1f), rubber);
+
+        asset.Part("y-gantry", "base");
+        asset.Box("y-gantry", new(0, -1.5f, 2.15f), new(8.8f, 0.72f, 0.72f), blue);
+        asset.Box("y-gantry", new(-4.05f, -1.5f, 1.55f), new(0.75f, 1.05f, 1.4f), frame);
+        asset.Box("y-gantry", new(4.05f, -1.5f, 1.55f), new(0.75f, 1.05f, 1.4f), frame);
+        asset.FramePart("x-rail", "y-gantry", new(0, -1.86f, 2.15f), new(7.6f, 0.2f, 0.22f), steel);
+        asset.Part("x-belt", "y-gantry");
+        asset.Box("x-belt", new(0, -1.98f, 2.42f), new(7.5f, 0.1f, 0.1f), rubber);
+        asset.Part("x-motor", "y-gantry");
+        asset.Box("x-motor", new(-4.35f, -1.5f, 2.15f), new(0.82f, 0.82f, 0.82f), charcoal);
+        asset.Cylinder("x-motor", new(-4.82f, -1.5f, 2.15f), new(-4.65f, -1.5f, 2.15f), 0.16f, steel);
+
+        asset.Part("x-carriage", "y-gantry");
+        asset.Box("x-carriage", new(-1.8f, -1.9f, 2.05f), new(0.95f, 0.8f, 1.05f), blue);
+        asset.Cylinder("x-carriage", new(-1.8f, -2.34f, 2.05f), new(-1.8f, -2.13f, 2.05f), 0.3f, charcoal);
+        asset.Part("pen-lift", "x-carriage");
+        asset.Box("pen-lift", new(-1.8f, -2.15f, 1.45f), new(0.62f, 0.62f, 0.55f), charcoal);
+        asset.Cylinder("pen-lift", new(-1.8f, -2.15f, 1.7f), new(-1.8f, -2.15f, 1.96f), 0.15f, steel);
+        asset.Part("pen", "pen-lift");
+        asset.Cylinder("pen", new(-1.8f, -2.15f, 1.35f), new(-1.8f, -2.15f, 0.84f), 0.11f, penBody);
+        asset.Cylinder("pen", new(-1.8f, -2.15f, 0.84f), new(-1.8f, -2.15f, 0.72f), 0.055f, charcoal);
+
+        return asset;
+    }
+}
+
 internal sealed class GlbBuilder
 {
+    private readonly string sceneName;
     private readonly List<NodeData> nodes = [];
     private readonly List<JsonObject> materials = [];
     private readonly List<JsonObject> meshes = [];
@@ -103,6 +186,12 @@ internal sealed class GlbBuilder
     private readonly Dictionary<(Shape Shape, int Material), int> meshCache = [];
     private readonly Dictionary<Shape, GeometryAccessors> geometryCache = [];
     private readonly MemoryStream binary = new();
+
+    public GlbBuilder(string sceneName)
+    {
+        ArgumentException.ThrowIfNullOrWhiteSpace(sceneName);
+        this.sceneName = sceneName;
+    }
 
     public int Material(
         string name,
@@ -200,7 +289,7 @@ internal sealed class GlbBuilder
             ["scene"] = 0,
             ["scenes"] = new JsonArray(new JsonObject
             {
-                ["name"] = "Cartesian Mechanical Showcase",
+                ["name"] = sceneName,
                 ["nodes"] = Ints(parts["base"])
             }),
             ["nodes"] = new JsonArray(nodes.Select(node => node.ToJson()).ToArray()),

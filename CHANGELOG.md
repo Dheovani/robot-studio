@@ -38,6 +38,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added a selectable Cartesian axis-by-axis mechanical demonstration with independent Y, X, and Z phases and contextual descriptions for each showcase sequence.
 - Added a controlled exploded-assembly layer with a staged assembly sequence that joins the Cartesian controller, moving bed, Z gantry, X carriage, and tool while preserving semantic hierarchy and selection.
 - Added a data-driven mechanical-showcase catalog that resolves robot cards to validated presentation definitions and creates renderer views on demand.
+- Added an original XY Plotter mechanical showcase with a packaged GLB, semantic paper-bed and X/Y drive hierarchy, component inspection, and a procedural fallback scene.
+- Added XY Plotter rectangular-path, isolated-axis, and staged-assembly demonstrations together with assembled, drive-system, motion-axis, and exploded layers.
 
 ### Changed
 
