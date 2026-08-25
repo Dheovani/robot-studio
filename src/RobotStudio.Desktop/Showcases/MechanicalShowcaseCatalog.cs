@@ -6,7 +6,8 @@ internal static class MechanicalShowcaseCatalog
         new Dictionary<string, Func<MechanicalShowcasePresentation>>(StringComparer.Ordinal)
         {
             ["cartesian-intro-mechanical"] = CartesianMechanicalShowcaseDefinition.CreatePresentation,
-            ["xy-plotter-mechanical"] = XYPlotterMechanicalShowcaseDefinition.CreatePresentation
+            ["xy-plotter-mechanical"] = XYPlotterMechanicalShowcaseDefinition.CreatePresentation,
+            ["differential-drive-mechanical"] = DifferentialDriveMechanicalShowcaseDefinition.CreatePresentation
         };
 
     public static IReadOnlyList<string> ModelIds { get; } = Factories.Keys.ToArray();

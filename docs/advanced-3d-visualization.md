@@ -40,6 +40,8 @@ The Cartesian showcase offers both a coordinated practical tour and an individua
 
 The XY Plotter showcase applies the same architecture to a different Cartesian mechanism without introducing a second viewport implementation. Its semantic hierarchy connects the paper bed, dual Y drive, moving bridge, X carriage, pen lift, and pen. A rectangular path demonstrates coordinated planar motion, an axis inspection isolates X and Y, and a staged assembly joins the major mechanisms. It intentionally omits a Z movement guide because the introductory plotter operates on a fixed drawing plane.
 
+The Differential Drive showcase is the first mobile topology on the shared viewport. It uses the recognizable round, low-profile enclosure of a generic domestic service robot without adding cleaning behavior to the simulator. Its chassis is the moving semantic root, with independent left/right gearmotor, encoder, and wheel subtrees plus a support caster, battery, controller, front sensor, perimeter bumper, and removable shell. A square-route tour combines planar translation and heading, a turning comparison demonstrates opposite in-place rotations, and a body-frame overlay follows the chassis. The drive-system cutaway and exploded assembly expose how power, sensing, and independent wheel actuation produce the motion represented by the schematic simulator.
+
 Each robot may use the most legible internal-view technique for its mechanism:
 
 - selective shell transparency when internal and external relationships remain clear;

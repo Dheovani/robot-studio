@@ -625,6 +625,14 @@ public partial class MechanicalShowcaseView : UserControl
                 new Color4(0.035f, 0.04f, 0.05f, 1),
                 new Color4(0.2f, 0.22f, 0.25f, 1),
                 45),
+            [MechanicalMaterialRole.Power] = Material(
+                new Color4(0.12f, 0.34f, 0.2f, 1),
+                new Color4(0.55f, 0.78f, 0.62f, 1),
+                70),
+            [MechanicalMaterialRole.Sensor] = Material(
+                new Color4(0.04f, 0.48f, 0.7f, 1),
+                new Color4(0.52f, 0.88f, 1f, 1),
+                95),
             [MechanicalMaterialRole.Tool] = Material(
                 new Color4(0.9f, 0.32f, 0.06f, 1),
                 new Color4(1f, 0.8f, 0.5f, 1),

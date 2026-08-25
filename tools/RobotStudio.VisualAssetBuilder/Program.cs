@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive] <output.glb>");
     return 1;
 }
 
@@ -17,6 +17,7 @@ var asset = modelId switch
 {
     "cartesian" => CartesianAsset.Create(),
     "xy-plotter" => XYPlotterAsset.Create(),
+    "differential-drive" => DifferentialDriveAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -174,6 +175,103 @@ internal static class XYPlotterAsset
     }
 }
 
+internal static class DifferentialDriveAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("Differential Drive Mechanical Showcase");
+        var charcoal = asset.Material("Chassis polymer", 0.045f, 0.055f, 0.075f, 0.48f, 0.4f);
+        var frame = asset.Material("Brushed aluminum", 0.32f, 0.37f, 0.44f, 0.82f, 0.28f);
+        var steel = asset.Material("Machined steel", 0.58f, 0.64f, 0.72f, 0.88f, 0.22f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.45f, 0.32f);
+        var shell = asset.Material("Service robot shell", 0.72f, 0.78f, 0.84f, 0.25f, 0.32f);
+        var rubber = asset.Material("Tire rubber", 0.015f, 0.02f, 0.026f, 0.03f, 0.94f);
+        var motor = asset.Material("Motor housing", 0.12f, 0.14f, 0.18f, 0.68f, 0.3f);
+        var circuit = asset.Material("Controller board", 0.035f, 0.34f, 0.18f, 0.16f, 0.62f);
+        var battery = asset.Material("Battery enclosure", 0.12f, 0.3f, 0.18f, 0.22f, 0.55f);
+        var sensor = asset.Material("Sensor housing", 0.03f, 0.48f, 0.68f, 0.28f, 0.3f);
+        var display = asset.Material(
+            "Status indicator",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.18f,
+            0.22f,
+            emissive: new(0.02f, 0.3f, 0.55f));
+
+        asset.Part("base");
+        asset.Disc("base", new(0, 0, 0.72f), new(0, 0, 1.25f), 3.3f, frame);
+        asset.Disc("base", new(0, 0, 1.22f), new(0, 0, 1.34f), 3.14f, blue);
+
+        asset.Part("upper-shell", "base");
+        asset.Disc("upper-shell", new(0, 0, 1.25f), new(0, 0, 2.04f), 3.02f, blue);
+        asset.Disc("upper-shell", new(0, 0, 2.02f), new(0, 0, 2.18f), 2.78f, shell);
+        asset.Cylinder("upper-shell", new(-0.7f, 0, 2.17f), new(-0.7f, 0, 2.28f), 0.18f, display);
+        asset.Disc("upper-shell", new(0, 0, 2.16f), new(0, 0, 2.24f), 2.22f, shell);
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(0.75f, 0, 1.55f), new(1.8f, 1.55f, 0.22f), circuit);
+        asset.Box("controller", new(0.3f, -0.35f, 1.74f), new(0.55f, 0.48f, 0.18f), charcoal);
+        asset.Box("controller", new(0.85f, 0.35f, 1.74f), new(0.7f, 0.36f, 0.18f), charcoal);
+        asset.Box("controller", new(1.45f, 0, 1.75f), new(0.14f, 0.85f, 0.15f), display);
+
+        asset.Part("battery", "base");
+        asset.Box("battery", new(-1.25f, 0, 1.55f), new(1.85f, 2.25f, 0.68f), battery);
+        asset.Box("battery", new(-1.25f, 0, 1.92f), new(1.25f, 1.65f, 0.08f), charcoal);
+        asset.Cylinder("battery", new(-1.85f, -0.78f, 1.95f), new(-1.85f, -0.78f, 2.12f), 0.09f, steel);
+        asset.Cylinder("battery", new(-0.65f, -0.78f, 1.95f), new(-0.65f, -0.78f, 2.12f), 0.09f, steel);
+
+        AddDriveUnit(asset, "left", -1, motor, steel, rubber, sensor, blue);
+        AddDriveUnit(asset, "right", 1, motor, steel, rubber, sensor, blue);
+
+        asset.Part("caster", "base");
+        asset.Cylinder("caster", new(2.15f, 0, 0.88f), new(2.15f, 0, 0.35f), 0.16f, steel);
+        asset.Cylinder("caster", new(2.15f, 0, 0.32f), new(2.15f, 0, 0.05f), 0.46f, rubber);
+        asset.Cylinder("caster", new(2.15f, -0.48f, 0.32f), new(2.15f, 0.48f, 0.32f), 0.12f, steel);
+
+        asset.Part("front-sensor", "upper-shell");
+        asset.Box("front-sensor", new(2.72f, 0, 1.55f), new(0.34f, 1.4f, 0.58f), sensor);
+        asset.Cylinder("front-sensor", new(2.82f, -0.4f, 1.55f), new(2.98f, -0.4f, 1.55f), 0.19f, charcoal);
+        asset.Cylinder("front-sensor", new(2.82f, 0.4f, 1.55f), new(2.98f, 0.4f, 1.55f), 0.19f, charcoal);
+
+        asset.Part("bumper", "base");
+        asset.Disc("bumper", new(0, 0, 0.88f), new(0, 0, 1.28f), 3.46f, charcoal);
+
+        return asset;
+    }
+
+    private static void AddDriveUnit(
+        GlbBuilder asset,
+        string side,
+        float direction,
+        int motorMaterial,
+        int steelMaterial,
+        int rubberMaterial,
+        int sensorMaterial,
+        int accentMaterial)
+    {
+        var motorId = $"{side}-motor";
+        var encoderId = $"{side}-encoder";
+        var wheelId = $"{side}-wheel";
+        var innerY = direction * 1.72f;
+        var outerY = direction * 2.42f;
+
+        asset.Part(motorId, "base");
+        asset.Cylinder(motorId, new(0, innerY - direction * 0.35f, 1.05f), new(0, innerY + direction * 0.35f, 1.05f), 0.5f, motorMaterial);
+        asset.Box(motorId, new(-0.55f, innerY, 1.05f), new(0.8f, 0.72f, 0.7f), accentMaterial);
+        asset.Cylinder(motorId, new(0, direction * 2.05f, 1.05f), new(0, direction * 2.25f, 1.05f), 0.16f, steelMaterial);
+
+        asset.Part(encoderId, motorId);
+        asset.Cylinder(encoderId, new(0, direction * 1.25f, 1.05f), new(0, direction * 1.45f, 1.05f), 0.34f, sensorMaterial);
+        asset.Cylinder(encoderId, new(0, direction * 1.2f, 1.05f), new(0, direction * 1.28f, 1.05f), 0.12f, steelMaterial);
+
+        asset.Part(wheelId, motorId);
+        asset.Cylinder(wheelId, new(0, outerY - direction * 0.36f, 1.05f), new(0, outerY + direction * 0.36f, 1.05f), 1.08f, rubberMaterial);
+        asset.Cylinder(wheelId, new(0, outerY - direction * 0.4f, 1.05f), new(0, outerY + direction * 0.4f, 1.05f), 0.46f, steelMaterial);
+        asset.Cylinder(wheelId, new(0, outerY - direction * 0.43f, 1.05f), new(0, outerY + direction * 0.43f, 1.05f), 0.2f, accentMaterial);
+    }
+}
+
 internal sealed class GlbBuilder
 {
     private readonly string sceneName;
@@ -275,6 +373,9 @@ internal sealed class GlbBuilder
             RotationFromZ(direction),
             material);
     }
+
+    public void Disc(string partId, Vector3 start, Vector3 end, float radius, int material) =>
+        Cylinder(partId, start, end, radius * 2, material);
 
     public void Write(string path)
     {

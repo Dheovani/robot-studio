@@ -597,7 +597,7 @@ Expected current behavior:
 - validates mechanical demonstration timelines, stable component-pose sets, interpolation, clamping, and hierarchical world-transform composition;
 - verifies that the Cartesian showcase exposes coordinated, individual-axis, and staged assembly demonstrations, provides descriptions, returns to neutral between axis phases, and moves only the intended Y, X, or Z assembly during each isolated phase.
 - keeps HelixToolkit references confined to the Windows desktop project and keeps `RobotStudio.Visualization` package-free and platform-neutral;
-- exposes Cartesian Robot and XY Plotter as catalog models with mechanical showcases and resolves both through the shared showcase catalog.
+- exposes Cartesian Robot, XY Plotter, and Differential Drive Robot as catalog models with mechanical showcases and resolves all three through the shared showcase catalog.
 - verifies that the Cartesian showcase uses a practical three-axis desktop-machine hierarchy and models dual Z motors and lead screws as one synchronized logical gantry.
 - verifies that the mechanical showcase exposes assembled, drive-system, motion-axis, and exploded-assembly layers, ghosts only components that may obscure the drive system, defines three non-zero X/Y/Z guides with a semantic gantry attachment for the moving X guide, and assigns unique non-zero exploded offsets.
 - validates that assembled pose composition preserves demonstration poses, exploded composition adds offsets to existing or initially stationary semantic parts without altering unrelated components, and the completed assembly sequence returns every separated part to its authored pose.
@@ -617,3 +617,5 @@ Expected current behavior:
 - imports the packaged Cartesian GLB, covers every selectable semantic component, and verifies reuse of geometry and material resources within the production asset.
 - imports the packaged XY Plotter GLB and verifies that every selectable paper-bed, drive, gantry, carriage, lift, and tool component has a semantic binding.
 - verifies the XY Plotter hierarchy, coordinated rectangular path, isolated X/Y phases, absence of a Z guide, and exact return to authored poses after its assembly sequence.
+- imports the packaged Differential Drive GLB and verifies semantic bindings for its chassis, electronics, sensors, caster, and independent left/right drive units.
+- verifies the Differential Drive hierarchy, closed square route, opposite in-place turns, chassis-attached body-frame guides, and exact return to authored poses after assembly.

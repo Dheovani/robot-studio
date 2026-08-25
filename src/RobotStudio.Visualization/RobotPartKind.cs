@@ -15,6 +15,7 @@ public enum RobotPartKind
     Sensor,
     Controller,
     PowerSource,
+    Wheel,
     Propeller,
     Other
 }

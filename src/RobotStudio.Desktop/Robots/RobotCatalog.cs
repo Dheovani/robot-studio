@@ -108,7 +108,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.DifferentialDriveTwoDimensional,
-                "Differential Drive 2D Viewer")),
+                "Differential Drive 2D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "differential-drive-mechanical",
+                "Differential Drive Mechanical Showcase")),
 
         new(
             Id: "cylindrical-robot-planned",

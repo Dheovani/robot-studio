@@ -40,6 +40,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added a data-driven mechanical-showcase catalog that resolves robot cards to validated presentation definitions and creates renderer views on demand.
 - Added an original XY Plotter mechanical showcase with a packaged GLB, semantic paper-bed and X/Y drive hierarchy, component inspection, and a procedural fallback scene.
 - Added XY Plotter rectangular-path, isolated-axis, and staged-assembly demonstrations together with assembled, drive-system, motion-axis, and exploded layers.
+- Added an original round service-robot Differential Drive showcase with independent drive units, encoders, support caster, controller, battery, range sensor, and a packaged semantic GLB.
+- Added Differential Drive square-route, bidirectional turning, body-frame, drive-system cutaway, and staged-assembly teaching views.
 
 ### Changed
 

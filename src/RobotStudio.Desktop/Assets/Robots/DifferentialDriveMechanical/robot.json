@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "modelId": "differential-drive-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_upper-shell", "partId": "upper-shell" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_battery", "partId": "battery" },
+    { "nodeName": "RS_left-motor", "partId": "left-motor" },
+    { "nodeName": "RS_left-encoder", "partId": "left-encoder" },
+    { "nodeName": "RS_left-wheel", "partId": "left-wheel" },
+    { "nodeName": "RS_right-motor", "partId": "right-motor" },
+    { "nodeName": "RS_right-encoder", "partId": "right-encoder" },
+    { "nodeName": "RS_right-wheel", "partId": "right-wheel" },
+    { "nodeName": "RS_caster", "partId": "caster" },
+    { "nodeName": "RS_front-sensor", "partId": "front-sensor" },
+    { "nodeName": "RS_bumper", "partId": "bumper" }
+  ]
+}

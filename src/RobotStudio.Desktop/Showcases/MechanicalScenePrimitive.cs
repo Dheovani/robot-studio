@@ -12,6 +12,8 @@ internal enum MechanicalMaterialRole
     Platform,
     Motor,
     Transmission,
+    Power,
+    Sensor,
     Tool
 }
 

@@ -79,7 +79,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [ ] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
 - [x] Deliver an original realistic mechanical showcase for Cartesian Robot.
 - [x] Deliver an original realistic mechanical showcase for XY Plotter.
-- [ ] Deliver an original realistic mechanical showcase for Differential Drive Robot.
+- [x] Deliver an original realistic mechanical showcase for Differential Drive Robot.
 - [ ] Deliver an original realistic mechanical showcase for SCARA Robot.
 - [ ] Deliver an original realistic mechanical showcase for Simple Articulated Arm.
 - [ ] Deliver an original realistic mechanical showcase for Delta Robot.

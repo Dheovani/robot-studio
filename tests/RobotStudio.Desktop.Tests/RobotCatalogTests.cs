@@ -11,9 +11,11 @@ public sealed class RobotCatalogTests
             .Where(RobotCatalog.CanExploreMechanics)
             .ToArray();
 
-        Assert.Equal(["Cartesian Robot", "XY Plotter"], showcaseTemplates.Select(template => template.Name));
         Assert.Equal(
-            ["cartesian-intro-mechanical", "xy-plotter-mechanical"],
+            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot"],
+            showcaseTemplates.Select(template => template.Name));
+        Assert.Equal(
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical"],
             showcaseTemplates.Select(template => template.MechanicalShowcase?.ModelId));
     }
 
