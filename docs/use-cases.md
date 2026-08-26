@@ -435,6 +435,24 @@ Expected result:
 - the joint/tool-axis layer identifies the planar work frame and moving Z axis;
 - the assembly sequence joins the mechanism in mechanical order without changing simulation state.
 
+### Explore Simple Articulated Arm Mechanical Relationships
+
+Actor: student or instructor.
+
+Goal: connect serial-arm joint composition to recognizable servo drives, structural links, a wrist, and an end effector.
+
+Current status: implemented in the Simple Articulated Arm mechanical showcase.
+
+Expected result:
+
+- the robot catalog opens the mechanical showcase independently from the schematic simulator;
+- the assembled model presents a compact desktop arm with base yaw, shoulder pitch, elbow pitch, wrist coupling, and parallel gripper;
+- the reach-and-transfer demonstration coordinates all three articulated axes without separating connected components;
+- the individual-joint demonstration isolates base, shoulder, and elbow movement;
+- the drive-system layer exposes selectable servo motors, reductions, the controller, and structural links through transparent covers;
+- the joint-axis layer identifies the vertical base axis and the horizontal shoulder and elbow axes;
+- the assembly sequence joins the mechanism in mechanical order without changing domain or simulation state.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

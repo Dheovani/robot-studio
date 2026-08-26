@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm] <output.glb>");
     return 1;
 }
 
@@ -19,6 +19,7 @@ var asset = modelId switch
     "xy-plotter" => XYPlotterAsset.Create(),
     "differential-drive" => DifferentialDriveAsset.Create(),
     "scara" => ScaraAsset.Create(),
+    "simple-arm" => SimpleArmAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -359,6 +360,106 @@ internal static class ScaraAsset
     }
 }
 
+internal static class SimpleArmAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("Simple Articulated Arm Mechanical Showcase");
+        var dark = asset.Material("Graphite base", 0.035f, 0.045f, 0.06f, 0.58f, 0.3f);
+        var frame = asset.Material("Structural aluminum", 0.38f, 0.43f, 0.5f, 0.8f, 0.24f);
+        var steel = asset.Material("Machined joint steel", 0.62f, 0.67f, 0.73f, 0.9f, 0.18f);
+        var shell = asset.Material("Off-white polymer cover", 0.88f, 0.9f, 0.92f, 0.08f, 0.4f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var motor = asset.Material("Servo housing", 0.1f, 0.13f, 0.18f, 0.68f, 0.28f);
+        var copper = asset.Material("Reduction stage", 0.72f, 0.3f, 0.07f, 0.7f, 0.24f);
+        var tool = asset.Material("Gripper steel", 0.28f, 0.34f, 0.42f, 0.88f, 0.17f);
+        var indicator = asset.Material(
+            "Controller indicator",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.18f,
+            0.22f,
+            emissive: new(0.02f, 0.3f, 0.55f));
+
+        var shoulder = new Vector3(0, 0, 2.2f);
+        var elbow = new Vector3(2.7f, 0, 4.6f);
+        var wrist = new Vector3(5.3f, 0, 3.4f);
+        var upperRotation = Quaternion.CreateFromAxisAngle(
+            Vector3.UnitY,
+            -MathF.Atan2(elbow.Z - shoulder.Z, elbow.X - shoulder.X));
+        var forearmRotation = Quaternion.CreateFromAxisAngle(
+            Vector3.UnitY,
+            -MathF.Atan2(wrist.Z - elbow.Z, wrist.X - elbow.X));
+
+        asset.Part("base");
+        asset.Disc("base", new(0, 0, 0), new(0, 0, 0.32f), 1.5f, dark);
+        asset.Disc("base", new(0, 0, 0.28f), new(0, 0, 0.7f), 1.28f, frame);
+        asset.Box("base", new(-0.95f, 0, 0.18f), new(0.36f, 2.55f, 0.24f), dark);
+        asset.Box("base", new(0.95f, 0, 0.18f), new(0.36f, 2.55f, 0.24f), dark);
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(-0.72f, 0, 0.92f), new(0.8f, 1.25f, 1.08f), blue);
+        asset.Box("controller", new(-1.14f, 0, 0.94f), new(0.06f, 0.62f, 0.4f), indicator);
+
+        asset.Part("base-motor", "base");
+        asset.Disc("base-motor", new(0, 0, 0.42f), new(0, 0, 1.35f), 0.62f, motor);
+        asset.Cylinder("base-motor", new(0, 0, 1.18f), new(0, 0, 1.58f), 0.26f, steel);
+
+        asset.Part("turntable", "base");
+        asset.Disc("turntable", new(0, 0, 0.62f), new(0, 0, 1.42f), 1.06f, shell);
+        asset.Box("turntable", new(0, 0, 1.7f), new(1.45f, 1.62f, 1.08f), shell);
+        asset.Box("turntable", new(0.48f, 0, 1.85f), new(0.55f, 1.82f, 1.45f), shell);
+
+        asset.Part("shoulder-joint", "turntable");
+        asset.Cylinder("shoulder-joint", shoulder + new Vector3(0, -0.78f, 0), shoulder + new Vector3(0, 0.78f, 0), 0.76f, steel);
+        asset.Cylinder("shoulder-joint", shoulder + new Vector3(0, -0.9f, 0), shoulder + new Vector3(0, -0.62f, 0), 0.94f, blue);
+
+        asset.Part("shoulder-motor", "shoulder-joint");
+        asset.Cylinder("shoulder-motor", shoulder + new Vector3(0, -1.2f, 0), shoulder + new Vector3(0, -0.68f, 0), 0.66f, motor);
+        asset.Box("shoulder-motor", shoulder + new Vector3(0, -1.34f, 0), new(0.72f, 0.28f, 0.72f), dark);
+
+        asset.Part("shoulder-transmission", "shoulder-joint");
+        asset.Cylinder("shoulder-transmission", shoulder + new Vector3(0, -0.65f, 0), shoulder + new Vector3(0, 0.05f, 0), 0.48f, copper);
+
+        asset.Part("upper-arm", "shoulder-joint");
+        asset.Box("upper-arm", (shoulder + elbow) / 2, new((elbow - shoulder).Length(), 0.5f, 0.42f), upperRotation, frame);
+
+        asset.Part("upper-arm-cover", "upper-arm");
+        asset.Box("upper-arm-cover", (shoulder + elbow) / 2, new((elbow - shoulder).Length() - 0.25f, 1.08f, 0.9f), upperRotation, shell);
+        asset.Cylinder("upper-arm-cover", shoulder + new Vector3(0, -0.52f, 0), shoulder + new Vector3(0, 0.52f, 0), 0.62f, shell);
+        asset.Cylinder("upper-arm-cover", elbow + new Vector3(0, -0.52f, 0), elbow + new Vector3(0, 0.52f, 0), 0.62f, shell);
+
+        asset.Part("elbow-joint", "upper-arm");
+        asset.Cylinder("elbow-joint", elbow + new Vector3(0, -0.72f, 0), elbow + new Vector3(0, 0.72f, 0), 0.72f, steel);
+        asset.Cylinder("elbow-joint", elbow + new Vector3(0, 0.58f, 0), elbow + new Vector3(0, 0.86f, 0), 0.86f, blue);
+
+        asset.Part("elbow-motor", "elbow-joint");
+        asset.Cylinder("elbow-motor", elbow + new Vector3(0, -1.1f, 0), elbow + new Vector3(0, -0.62f, 0), 0.6f, motor);
+
+        asset.Part("elbow-transmission", "elbow-joint");
+        asset.Cylinder("elbow-transmission", elbow + new Vector3(0, -0.6f, 0), elbow + new Vector3(0, 0.04f, 0), 0.44f, copper);
+
+        asset.Part("forearm", "elbow-joint");
+        asset.Box("forearm", (elbow + wrist) / 2, new((wrist - elbow).Length(), 0.44f, 0.36f), forearmRotation, frame);
+
+        asset.Part("forearm-cover", "forearm");
+        asset.Box("forearm-cover", (elbow + wrist) / 2, new((wrist - elbow).Length() - 0.2f, 0.94f, 0.78f), forearmRotation, shell);
+        asset.Cylinder("forearm-cover", wrist + new Vector3(0, -0.46f, 0), wrist + new Vector3(0, 0.46f, 0), 0.54f, shell);
+
+        asset.Part("wrist", "forearm");
+        asset.Cylinder("wrist", wrist + new Vector3(0, -0.54f, 0), wrist + new Vector3(0, 0.54f, 0), 0.52f, blue);
+        asset.Cylinder("wrist", wrist, new Vector3(5.78f, 0, 3.02f), 0.32f, steel);
+
+        asset.Part("tool", "wrist");
+        asset.Box("tool", new(5.92f, 0, 2.9f), new(0.58f, 0.82f, 0.36f), tool);
+        asset.Box("tool", new(6.18f, -0.3f, 2.58f), new(0.2f, 0.18f, 0.72f), tool);
+        asset.Box("tool", new(6.18f, 0.3f, 2.58f), new(0.2f, 0.18f, 0.72f), tool);
+
+        return asset;
+    }
+}
+
 internal sealed class GlbBuilder
 {
     private readonly string sceneName;
@@ -448,6 +549,14 @@ internal sealed class GlbBuilder
 
     public void Box(string partId, Vector3 center, Vector3 size, int material) =>
         AddPrimitive(partId, Shape.Box, center, size, Quaternion.Identity, material);
+
+    public void Box(
+        string partId,
+        Vector3 center,
+        Vector3 size,
+        Quaternion rotation,
+        int material) =>
+        AddPrimitive(partId, Shape.Box, center, size, rotation, material);
 
     public void Cylinder(string partId, Vector3 start, Vector3 end, float radius, int material)
     {

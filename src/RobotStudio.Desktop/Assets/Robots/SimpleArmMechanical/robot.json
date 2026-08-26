@@ -1,0 +1,23 @@
+{
+  "schemaVersion": 1,
+  "modelId": "simple-arm-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_base-motor", "partId": "base-motor" },
+    { "nodeName": "RS_turntable", "partId": "turntable" },
+    { "nodeName": "RS_shoulder-joint", "partId": "shoulder-joint" },
+    { "nodeName": "RS_shoulder-motor", "partId": "shoulder-motor" },
+    { "nodeName": "RS_shoulder-transmission", "partId": "shoulder-transmission" },
+    { "nodeName": "RS_upper-arm", "partId": "upper-arm" },
+    { "nodeName": "RS_upper-arm-cover", "partId": "upper-arm-cover" },
+    { "nodeName": "RS_elbow-joint", "partId": "elbow-joint" },
+    { "nodeName": "RS_elbow-motor", "partId": "elbow-motor" },
+    { "nodeName": "RS_elbow-transmission", "partId": "elbow-transmission" },
+    { "nodeName": "RS_forearm", "partId": "forearm" },
+    { "nodeName": "RS_forearm-cover", "partId": "forearm-cover" },
+    { "nodeName": "RS_wrist", "partId": "wrist" },
+    { "nodeName": "RS_tool", "partId": "tool" }
+  ]
+}

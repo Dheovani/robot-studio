@@ -199,7 +199,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.SimpleArmThreeDimensional,
-                "Simple Arm 3D Viewer")),
+                "Simple Arm 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "simple-arm-mechanical",
+                "Simple Articulated Arm Mechanical Showcase")),
 
         new(
             Id: "omnidirectional-robot-planned",

@@ -44,6 +44,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added Differential Drive square-route, bidirectional turning, body-frame, drive-system cutaway, and staged-assembly teaching views.
 - Added an original SCARA mechanical showcase with a packaged semantic GLB, shoulder and elbow servo chain, vertical spindle, parallel gripper, selectable components, and a procedural fallback scene.
 - Added SCARA pick-and-place, individual-joint, drive-system, joint/tool-axis, and staged-assembly teaching views with pivot-correct articulated motion.
+- Added an original Simple Articulated Arm mechanical showcase with a packaged semantic GLB, rotating base, shoulder and elbow drive assemblies, serial structural links, wrist, parallel gripper, selectable components, and a procedural fallback scene.
+- Added Simple Articulated Arm reach-and-transfer, individual-joint, drive-system, joint-axis, and staged-assembly teaching views with pivot-correct shoulder and elbow motion.
 
 ### Changed
 

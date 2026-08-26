@@ -18,7 +18,7 @@ public sealed class MechanicalShowcaseCatalogTests
     public void ModelIds_ShouldExposeEveryImplementedMechanicalShowcase()
     {
         Assert.Equal(
-            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical"],
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical", "simple-arm-mechanical"],
             MechanicalShowcaseCatalog.ModelIds);
     }
 

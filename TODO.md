@@ -81,7 +81,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Deliver an original realistic mechanical showcase for XY Plotter.
 - [x] Deliver an original realistic mechanical showcase for Differential Drive Robot.
 - [x] Deliver an original realistic mechanical showcase for SCARA Robot.
-- [ ] Deliver an original realistic mechanical showcase for Simple Articulated Arm.
+- [x] Deliver an original realistic mechanical showcase for Simple Articulated Arm.
 - [ ] Deliver an original realistic mechanical showcase for Delta Robot.
 - [ ] Deliver an original realistic mechanical showcase for Drone.
 - [ ] Deliver an original realistic mechanical showcase for 6-DOF Industrial Arm.
