@@ -635,3 +635,5 @@ Expected current behavior:
 - verifies the XY Plotter hierarchy, coordinated rectangular path, isolated X/Y phases, absence of a Z guide, and exact return to authored poses after its assembly sequence.
 - imports the packaged Differential Drive GLB and verifies semantic bindings for its chassis, electronics, sensors, caster, and independent left/right drive units.
 - verifies the Differential Drive hierarchy, closed square route, opposite in-place turns, chassis-attached body-frame guides, and exact return to authored poses after assembly.
+- verifies Cartesian and XY Plotter schematic composers honor disabled layers, produce equivalent shared Cartesian geometry, and create camera-facing X/Y/Z overlays when requested.
+- verifies Differential Drive 2D scene composition keeps coordinate mapping centered, adds one accumulated path segment per advanced frame, and emits workspace and robot primitives without constructing the WPF window.

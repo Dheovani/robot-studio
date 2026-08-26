@@ -11,6 +11,7 @@ using Microsoft.Win32;
 using RobotStudio.Desktop.Examples;
 using RobotStudio.Desktop.Profiles;
 using RobotStudio.Desktop.Rendering;
+using RobotStudio.Desktop.Rendering.SceneComposers;
 using RobotStudio.Desktop.Robots;
 using RobotStudio.Desktop.Scripting;
 using RobotStudio.Domain;
@@ -174,41 +175,20 @@ public partial class MainWindow
         ApplyCamera();
         var camera = RobotViewport.Camera ??
                      throw new InvalidOperationException("The Cartesian viewport camera was not initialized.");
-        var models = new List<Model3D>();
-
-        if (ShowGridCheckBox.IsChecked == true)
-        {
-            models.Add(CreateGridModel(snapshot.WorkspaceBounds));
-        }
-
-        if (ShowGlobalAxesCheckBox.IsChecked == true)
-        {
-            models.Add(CreateGlobalAxesModel(snapshot.WorkspaceBounds));
-        }
-
-        if (ShowPlannedPathCheckBox.IsChecked == true)
-        {
-            models.Add(CreatePlannedPathModel(snapshot));
-        }
-
-        if (ShowStartEndMarkersCheckBox.IsChecked == true)
-        {
-            models.Add(CreateStartEndMarkersModel(snapshot));
-        }
-
-        foreach (CartesianScenePrimitive primitive in sceneFrame.Primitives.Where(IsPrimitiveVisible))
-        {
-            models.Add(CreateModel(primitive));
-        }
-
-        var overlays = ShowAxisLabelsCheckBox.IsChecked == true && camera is PerspectiveCamera perspectiveCamera
-            ? CreateAxisLabelVisuals(snapshot.WorkspaceBounds, perspectiveCamera).Cast<Visual3D>()
-            : [];
-        cartesianViewportPresenter.Present(new SchematicViewportScene(
-            camera,
-            models,
-            overlays,
-            ambientColor: Color.FromRgb(92, 105, 130)));
+        var options = new CartesianSchematicSceneOptions(
+            ShowGridCheckBox.IsChecked == true,
+            ShowGlobalAxesCheckBox.IsChecked == true,
+            ShowAxisLabelsCheckBox.IsChecked == true,
+            ShowWorkspaceCheckBox.IsChecked == true,
+            ShowRailsCheckBox.IsChecked == true,
+            ShowPlannedPathCheckBox.IsChecked == true,
+            ShowStartEndMarkersCheckBox.IsChecked == true,
+            ShowCarriagesCheckBox.IsChecked == true,
+            ShowToolCheckBox.IsChecked == true);
+        var composedScene = activeViewerKind == RobotViewerKind.XYPlotterTwoDimensional
+            ? XYPlotterSchematicSceneComposer.Compose(snapshot, currentFrameIndex, camera, options)
+            : CartesianSchematicSceneComposer.Compose(snapshot, currentFrameIndex, camera, options);
+        cartesianViewportPresenter.Present(composedScene);
 
         StatusText.Text =
             $"Frame {currentFrameIndex + 1}/{snapshot.SceneFrameCount} | " +

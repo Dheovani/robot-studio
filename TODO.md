@@ -29,18 +29,7 @@ This file tracks future work after the `1.1.0` multi-robot teaching platform rel
 - [x] Add 6-DOF Industrial Arm G-code with `G1 X/Y/Z/A/B/C`, deterministic positive-elbow/wrist-neutral inverse kinematics, continuous full-pose planning and playback, desktop dialect selection, examples, and catalog capability metadata.
 - [x] Keep Differential Drive and Drone G-code unavailable and omit the capability badge because CNC tool-space semantics do not fit their motion models.
 
-## 3. Hardware Integration
-
-- [ ] Define the first serial protocol draft.
-- [ ] Choose the first supported educational controller board.
-- [ ] Choose the first supported motor driver setup.
-- [ ] Implement serial port discovery.
-- [ ] Implement connection open, close, and health checks.
-- [ ] Implement command transmission in dry-run mode before enabling real motion.
-- [ ] Add hardware safety limits before any real execution path.
-- [ ] Add Arduino or ESP32 firmware examples only after the protocol is stable.
-
-## 4. Didactic Tools
+## 3. Didactic Tools
 
 The Milestone 2 mapping gate is complete: every applicable implemented family has an executable mapping, while Differential Drive and Drone are explicitly non-applicable.
 
@@ -51,16 +40,25 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Add glossary entries for technical robotics terms.
 - [x] Add optional line-by-line explanations for supported G-code commands, modal state, coordinates, feed rate, homing, and dwell behavior.
 
-## 5. Testing And Quality
+## 4. Desktop UI And Visual Polish
 
-- [x] Split the oversized WPF `MainWindow` code-behind into cohesive partial files and extract shared non-behavioral window resources.
-- [ ] Extract robot workspaces from `MainWindow.xaml` into dedicated controls and presenters when the next desktop architecture pass begins.
-- [ ] Add code coverage reporting when coverage goals are defined.
-- [ ] Add stricter analyzers when the coding standard becomes more mature.
-- [ ] Add package vulnerability scanning when external dependencies become more relevant.
-- [ ] Add UI smoke tests if the desktop workflow becomes stable enough to automate.
+- [x] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
+- [x] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
+- [x] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
+- [ ] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
+- [ ] Standardize control heights, spacing, padding, corner radii, borders, and focus states across desktop UI components.
+- [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.
+- [ ] Define consistent typography and contrast levels for titles, labels, metadata, descriptions, status text, and secondary information.
+- [ ] Standardize toolbar and panel-header presentation across simulator, catalog, glossary, and mechanics views.
+- [ ] Refine the Robotics Glossary dialog with consistent themed search, filter, close, scrolling, and result-card components.
+- [ ] Refine simulator chrome around the 3D viewport, including toolbar hierarchy, side-panel organization, and playback controls, without changing the renderer itself.
+- [ ] Replace verbose script validation and playback messages with compact contextual status indicators.
+- [x] Highlight the active script line directly in the editor instead of duplicating it in a separate status block.
+- [x] Move low-priority script actions such as load, save, and example loading into a compact toolbar or overflow menu where appropriate.
+- [ ] Introduce shared desktop UI components for buttons, dropdowns, text inputs, icon buttons, badges, panels, toolbars, dialogs, and status indicators.
+- [ ] Centralize desktop design tokens for colors, spacing, typography, borders, radii, and interaction states to keep future views visually consistent.
 
-## 6. Advanced 3D Visualization And Realistic Robot Rendering
+## 5. Advanced 3D Visualization And Realistic Robot Rendering
 
 - [x] Revalidate renderer capabilities, maintenance status, platform support, licenses, and asset tooling; select stable `HelixToolkit.Wpf.SharpDX` 3.1.2 provisionally for the isolated WPF proof of concept.
 - [x] Define the product boundary and initial catalog navigation between `Open Simulator` and `Explore Mechanics`; evaluate an internal switch only after the separate experiences are usable.
@@ -72,8 +70,8 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Move Delta Robot schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
 - [x] Move Drone schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
 - [x] Move 6-DOF Industrial Arm schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
-- [ ] Move Cartesian and XY Plotter schematic geometry and overlays into dedicated scene composers.
-- [ ] Move Differential Drive Robot 2D workspace, path, coordinate mapping, and robot drawing into a dedicated scene composer.
+- [x] Move Cartesian and XY Plotter schematic geometry and overlays into dedicated scene composers.
+- [x] Move Differential Drive Robot 2D workspace, path, coordinate mapping, and robot drawing into a dedicated scene composer.
 - [x] Define and test a minimal version 1 asset manifest that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without placing materials, animation, or renderer concerns in the contract.
 - [x] Connect the Assimp GLB importer and semantic scene-node binder to the Cartesian showcase with an original packaged asset, retained semantic transforms, resource reuse, and explicit scene disposal.
 - [x] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
@@ -92,9 +90,9 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Deliver an original realistic mechanical showcase for Delta Robot.
 - [x] Deliver an original realistic mechanical showcase for Drone.
 - [x] Deliver an original realistic mechanical showcase for 6-DOF Industrial Arm.
-- [ ] Treat Milestone 6 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 6 scope is complete.
+- [ ] Treat Milestone 5 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 5 scope is complete.
 
-## 7. Future Robot Family Expansion
+## 6. Future Robot Family Expansion
 
 - [ ] Implement the Cylindrical Robot as the first mixed revolute/prismatic teaching model.
 - [ ] Implement the Ackermann Steering Robot for car-like steering geometry and non-holonomic motion.
@@ -105,20 +103,22 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [ ] Expand the catalog by mapping new robots for implementation.
 - [ ] Add tests before each new robot family is considered complete.
 
-## 8. Desktop UI And Visual Polish
+## 7. Hardware Integration
 
-- [x] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
-- [x] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
-- [x] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
-- [ ] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
-- [ ] Standardize control heights, spacing, padding, corner radii, borders, and focus states across desktop UI components.
-- [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.
-- [ ] Define consistent typography and contrast levels for titles, labels, metadata, descriptions, status text, and secondary information.
-- [ ] Standardize toolbar and panel-header presentation across simulator, catalog, glossary, and mechanics views.
-- [ ] Refine the Robotics Glossary dialog with consistent themed search, filter, close, scrolling, and result-card components.
-- [ ] Refine simulator chrome around the 3D viewport, including toolbar hierarchy, side-panel organization, and playback controls, without changing the renderer itself.
-- [ ] Replace verbose script validation and playback messages with compact contextual status indicators.
-- [x] Highlight the active script line directly in the editor instead of duplicating it in a separate status block.
-- [x] Move low-priority script actions such as load, save, and example loading into a compact toolbar or overflow menu where appropriate.
-- [ ] Introduce shared desktop UI components for buttons, dropdowns, text inputs, icon buttons, badges, panels, toolbars, dialogs, and status indicators.
-- [ ] Centralize desktop design tokens for colors, spacing, typography, borders, radii, and interaction states to keep future views visually consistent.
+- [ ] Define the first serial protocol draft.
+- [ ] Choose the first supported educational controller board.
+- [ ] Choose the first supported motor driver setup.
+- [ ] Implement serial port discovery.
+- [ ] Implement connection open, close, and health checks.
+- [ ] Implement command transmission in dry-run mode before enabling real motion.
+- [ ] Add hardware safety limits before any real execution path.
+- [ ] Add Arduino or ESP32 firmware examples only after the protocol is stable.
+
+## 8. Testing And Quality
+
+- [x] Split the oversized WPF `MainWindow` code-behind into cohesive partial files and extract shared non-behavioral window resources.
+- [ ] Extract robot workspaces from `MainWindow.xaml` into dedicated controls and presenters when the next desktop architecture pass begins.
+- [ ] Add code coverage reporting when coverage goals are defined.
+- [ ] Add stricter analyzers when the coding standard becomes more mature.
+- [ ] Add package vulnerability scanning when external dependencies become more relevant.
+- [ ] Add UI smoke tests if the desktop workflow becomes stable enough to automate.

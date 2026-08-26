@@ -30,14 +30,6 @@ namespace RobotStudio.Desktop;
 
 public partial class MainWindow : Window
 {
-    private const double GridSpacingMillimeters = 25;
-    private const double GridLineThicknessMillimeters = 1.2;
-    private const double AxisLineThicknessMillimeters = 4;
-    private const double PathPointSizeMillimeters = 5;
-    private const double StartEndMarkerSizeMillimeters = 14;
-    private const double AxisLabelOffsetMillimeters = 24;
-    private const double AxisLabelWidthMillimeters = 22;
-    private const double AxisLabelHeightMillimeters = 16;
     private const double ChartPaddingLeft = 28;
     private const double ChartPaddingTop = 12;
     private const double ChartPaddingRight = 10;
@@ -48,7 +40,6 @@ public partial class MainWindow : Window
     private const double RobotCardMinimumWidth = 280;
     private const double RobotCardPreferredWidth = 360;
     private const int RobotCardMaximumColumns = 6;
-    private const int MaximumPathPointCount = 140;
     private const string ScriptFileDialogFilter = "RobotStudio scripts (*.robot;*.gcode;*.txt)|*.robot;*.gcode;*.txt|All files (*.*)|*.*";
     private const string ScriptFileDefaultExtension = ".robot";
 
@@ -82,6 +73,7 @@ public partial class MainWindow : Window
     private readonly List<FrameworkElement> sessionRecoveryPanels = [];
     private readonly List<Button> playPauseButtons = [];
     private readonly ISchematicViewportPresenter cartesianViewportPresenter;
+    private readonly WpfCanvasScenePresenter differentialDriveCanvasPresenter;
     private readonly ISchematicViewportPresenter scaraViewportPresenter;
     private readonly ISchematicViewportPresenter simpleArmViewportPresenter;
     private readonly ISchematicViewportPresenter deltaViewportPresenter;
@@ -215,6 +207,7 @@ public partial class MainWindow : Window
         InitializeComponent();
 
         cartesianViewportPresenter = new WpfSchematicViewportPresenter(RobotViewport);
+        differentialDriveCanvasPresenter = new WpfCanvasScenePresenter(DifferentialDriveCanvas);
         scaraViewportPresenter = new WpfSchematicViewportPresenter(ScaraViewport);
         simpleArmViewportPresenter = new WpfSchematicViewportPresenter(SimpleArmViewport);
         deltaViewportPresenter = new WpfSchematicViewportPresenter(DeltaViewport);
