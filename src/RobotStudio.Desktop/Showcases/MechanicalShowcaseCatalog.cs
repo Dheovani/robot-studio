@@ -10,7 +10,8 @@ internal static class MechanicalShowcaseCatalog
             ["differential-drive-mechanical"] = DifferentialDriveMechanicalShowcaseDefinition.CreatePresentation,
             ["scara-mechanical"] = ScaraMechanicalShowcaseDefinition.CreatePresentation,
             ["simple-arm-mechanical"] = SimpleArmMechanicalShowcaseDefinition.CreatePresentation,
-            ["delta-mechanical"] = DeltaMechanicalShowcaseDefinition.CreatePresentation
+            ["delta-mechanical"] = DeltaMechanicalShowcaseDefinition.CreatePresentation,
+            ["drone-mechanical"] = DroneMechanicalShowcaseDefinition.CreatePresentation
         };
 
     public static IReadOnlyList<string> ModelIds { get; } = Factories.Keys.ToArray();

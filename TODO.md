@@ -83,7 +83,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Deliver an original realistic mechanical showcase for SCARA Robot.
 - [x] Deliver an original realistic mechanical showcase for Simple Articulated Arm.
 - [x] Deliver an original realistic mechanical showcase for Delta Robot.
-- [ ] Deliver an original realistic mechanical showcase for Drone.
+- [x] Deliver an original realistic mechanical showcase for Drone.
 - [ ] Deliver an original realistic mechanical showcase for 6-DOF Industrial Arm.
 - [ ] Treat Milestone 6 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 6 scope is complete.
 

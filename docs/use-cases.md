@@ -472,6 +472,25 @@ Expected result:
 - the axis layer compares the three actuator directions with the moving platform coordinate frame;
 - the assembly sequence joins the parallel mechanism without changing domain or simulation state.
 
+### Explore Drone Mechanical Relationships
+
+Actor: student or instructor.
+
+Goal: connect quadcopter attitude control to visible propulsion, power, sensing, and flight-control components.
+
+Current status: implemented in the Drone mechanical showcase.
+
+Expected result:
+
+- the robot catalog opens the mechanical showcase independently from the schematic simulator;
+- the assembled model presents a low rounded-rectangle hull, four integrated diagonal arms, four clearly visible two-blade propellers, four brushless motors, enclosed avionics and battery, a camera, and landing gear;
+- the flight-and-attitude demonstration translates and tilts the complete aircraft while every propeller remains attached and rotating;
+- the motor-pair demonstration distinguishes the two counter-rotating diagonal pairs;
+- the avionics-and-power layer exposes selectable battery, flight controller, IMU, and propulsion components through the protective shell;
+- the body-axis layer follows airframe translation and roll, pitch, and yaw orientation;
+- the assembly sequence joins the aircraft systems without changing domain or simulation state;
+- the showcase explains mechanical relationships without claiming aerodynamic or production flight-controller fidelity.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

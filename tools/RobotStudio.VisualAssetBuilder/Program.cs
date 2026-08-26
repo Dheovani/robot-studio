@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm|delta] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm|delta|drone] <output.glb>");
     return 1;
 }
 
@@ -21,6 +21,7 @@ var asset = modelId switch
     "scara" => ScaraAsset.Create(),
     "simple-arm" => SimpleArmAsset.Create(),
     "delta" => DeltaAsset.Create(),
+    "drone" => DroneAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -605,6 +606,172 @@ internal static class DeltaAsset
     private sealed record Station(string Id, Vector2 Radial, Vector2 Tangent);
 }
 
+internal static class DroneAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("Drone Mechanical Showcase");
+        var dark = asset.Material("Carbon composite", 0.025f, 0.035f, 0.05f, 0.3f, 0.52f);
+        var frame = asset.Material("Structural alloy", 0.32f, 0.38f, 0.46f, 0.82f, 0.23f);
+        var shell = asset.Material("Off-white body shell", 0.88f, 0.91f, 0.94f, 0.08f, 0.36f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var motor = asset.Material("Brushless motor", 0.12f, 0.15f, 0.2f, 0.78f, 0.22f);
+        var copper = asset.Material("Motor winding", 0.72f, 0.28f, 0.06f, 0.72f, 0.24f);
+        var propeller = asset.Material("Propeller polymer", 0.32f, 0.38f, 0.46f, 0.12f, 0.3f);
+        var propellerTip = asset.Material("Propeller safety tip", 0.02f, 0.55f, 0.82f, 0.18f, 0.25f);
+        var battery = asset.Material("Battery casing", 0.12f, 0.16f, 0.22f, 0.35f, 0.46f);
+        var electronics = asset.Material("Electronics board", 0.02f, 0.3f, 0.15f, 0.22f, 0.5f);
+        var lens = asset.Material("Camera lens", 0.015f, 0.025f, 0.04f, 0.15f, 0.12f);
+        var navigation = asset.Material(
+            "Navigation light",
+            0.02f,
+            0.65f,
+            0.3f,
+            0.12f,
+            0.2f,
+            emissive: new(0.02f, 0.5f, 0.18f));
+
+        asset.Part("airframe");
+        asset.Box("airframe", new(0, 0, 0), new(2.35f, 1.45f, 0.28f), frame);
+
+        asset.Part("shell", "airframe");
+        AddRoundedBody(asset, "shell", new(0, 0, -0.12f), 3.05f, 2.15f, 0.72f, 0.42f, dark);
+        AddRoundedBody(asset, "shell", new(0, -0.02f, 0.34f), 2.92f, 2.02f, 0.5f, 0.4f, shell);
+        asset.Box("shell", new(0, 0.1f, 0.62f), new(1.7f, 1.08f, 0.08f), blue);
+        asset.Box("shell", new(-1.2f, -0.72f, 0.28f), new(0.12f, 0.38f, 0.22f), frame);
+        asset.Box("shell", new(-1.2f, -0.34f, 0.28f), new(0.12f, 0.22f, 0.22f), frame);
+
+        asset.Part("battery", "airframe");
+        asset.Box("battery", new(0, 0.18f, -0.22f), new(1.65f, 0.9f, 0.42f), battery);
+        asset.Box("battery", new(0, -0.29f, -0.22f), new(0.72f, 0.05f, 0.26f), propellerTip);
+
+        asset.Part("flight-controller", "airframe");
+        asset.Box("flight-controller", new(0, 0, 0.24f), new(0.92f, 0.92f, 0.16f), electronics);
+        asset.Cylinder("flight-controller", new(-0.3f, -0.3f, 0.32f), new(-0.3f, -0.3f, 0.43f), 0.06f, copper);
+        asset.Cylinder("flight-controller", new(0.3f, -0.3f, 0.32f), new(0.3f, -0.3f, 0.43f), 0.06f, copper);
+
+        asset.Part("imu", "flight-controller");
+        asset.Box("imu", new(0, 0, 0.43f), new(0.38f, 0.38f, 0.16f), blue);
+
+        asset.Part("camera", "airframe");
+        asset.Cylinder("camera", new(0, -0.94f, -0.34f), new(0, -0.94f, -0.62f), 0.22f, frame);
+        asset.Box("camera", new(0, -1.05f, -0.68f), new(0.64f, 0.48f, 0.42f), dark);
+        asset.Disc("camera", new(0, -1.34f, -0.68f), new(0, -1.2f, -0.68f), 0.18f, lens);
+
+        asset.Part("landing-gear", "airframe");
+        foreach (var x in new[] { -0.92f, 0.92f })
+        {
+            foreach (var y in new[] { -0.52f, 0.52f })
+            {
+                asset.Cylinder("landing-gear", new(x, y, -0.38f), new(x, y, -0.86f), 0.08f, dark);
+                asset.Box("landing-gear", new(x, y, -0.9f), new(0.5f, 0.2f, 0.1f), dark);
+            }
+        }
+
+        foreach (var rotor in Rotors)
+        {
+            AddRotorAssembly(
+                asset,
+                rotor,
+                dark,
+                frame,
+                motor,
+                copper,
+                propeller,
+                propellerTip,
+                navigation);
+        }
+
+        return asset;
+    }
+
+    private static void AddRoundedBody(
+        GlbBuilder asset,
+        string partId,
+        Vector3 center,
+        float width,
+        float depth,
+        float height,
+        float cornerRadius,
+        int material)
+    {
+        asset.Box(partId, center, new(width - (cornerRadius * 2), depth, height), material);
+        asset.Box(partId, center, new(width, depth - (cornerRadius * 2), height), material);
+        foreach (var x in new[] { -1f, 1f })
+        {
+            foreach (var y in new[] { -1f, 1f })
+            {
+                var corner = center + new Vector3(
+                    x * ((width / 2) - cornerRadius),
+                    y * ((depth / 2) - cornerRadius),
+                    0);
+                asset.Cylinder(
+                    partId,
+                    corner - new Vector3(0, 0, height / 2),
+                    corner + new Vector3(0, 0, height / 2),
+                    cornerRadius,
+                    material);
+            }
+        }
+    }
+
+    private static void AddRotorAssembly(
+        GlbBuilder asset,
+        Rotor rotor,
+        int dark,
+        int frame,
+        int motor,
+        int copper,
+        int propeller,
+        int propellerTip,
+        int navigation)
+    {
+        var center = rotor.Center;
+        var center3 = new Vector3(center, 0.2f);
+        asset.Part(rotor.ArmId, "airframe");
+        asset.Cylinder(rotor.ArmId, new(center.X * 0.34f, center.Y * 0.34f, 0.08f), center3, 0.22f, frame);
+        asset.Box(rotor.ArmId, new Vector3(center * 0.72f, 0.2f), new(0.54f, 0.54f, 0.26f), dark);
+        asset.Box(rotor.ArmId, new Vector3(center * 0.86f, 0.34f), new(0.22f, 0.22f, 0.12f), navigation);
+
+        asset.Part(rotor.MotorId, rotor.ArmId);
+        asset.Disc(rotor.MotorId, new Vector3(center, 0.18f), new Vector3(center, 0.68f), 0.42f, motor);
+        asset.Disc(rotor.MotorId, new Vector3(center, 0.34f), new Vector3(center, 0.54f), 0.28f, copper);
+        asset.Cylinder(rotor.MotorId, new Vector3(center, 0.62f), new Vector3(center, 0.82f), 0.1f, frame);
+
+        asset.Part(rotor.PropellerId, rotor.MotorId);
+        asset.Disc(rotor.PropellerId, new Vector3(center, 0.76f), new Vector3(center, 0.88f), 0.22f, dark);
+        var bladeAngle = rotor.Center.X * rotor.Center.Y > 0 ? MathF.PI / 4 : -MathF.PI / 4;
+        for (var blade = 0; blade < 2; blade++)
+        {
+            var angle = bladeAngle + (blade * MathF.PI);
+            var direction = new Vector2(MathF.Cos(angle), MathF.Sin(angle));
+            var rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, angle);
+            asset.Box(
+                rotor.PropellerId,
+                new Vector3(center + (direction * 0.78f), 0.84f),
+                new(1.45f, 0.34f, 0.09f),
+                rotation,
+                propeller);
+            asset.Box(
+                rotor.PropellerId,
+                new Vector3(center + (direction * 1.35f), 0.85f),
+                new(0.34f, 0.4f, 0.11f),
+                rotation,
+                propellerTip);
+        }
+    }
+
+    private static IReadOnlyList<Rotor> Rotors { get; } =
+    [
+        new("arm-front-left", "motor-front-left", "propeller-front-left", new Vector2(-2.55f, -2.55f)),
+        new("arm-front-right", "motor-front-right", "propeller-front-right", new Vector2(2.55f, -2.55f)),
+        new("arm-rear-left", "motor-rear-left", "propeller-rear-left", new Vector2(-2.55f, 2.55f)),
+        new("arm-rear-right", "motor-rear-right", "propeller-rear-right", new Vector2(2.55f, 2.55f))
+    ];
+
+    private sealed record Rotor(string ArmId, string MotorId, string PropellerId, Vector2 Center);
+}
+
 internal sealed class GlbBuilder
 {
     private readonly string sceneName;
@@ -617,6 +784,7 @@ internal sealed class GlbBuilder
     private readonly Dictionary<(Shape Shape, int Material), int> meshCache = [];
     private readonly Dictionary<Shape, GeometryAccessors> geometryCache = [];
     private readonly MemoryStream binary = new();
+    private int? rootNodeIndex;
 
     public GlbBuilder(string sceneName)
     {
@@ -664,6 +832,14 @@ internal sealed class GlbBuilder
         if (parentId is not null)
         {
             nodes[parts[parentId]].Children.Add(nodeIndex);
+        }
+        else if (rootNodeIndex is null)
+        {
+            rootNodeIndex = nodeIndex;
+        }
+        else
+        {
+            throw new InvalidOperationException("A visual asset may declare only one root part.");
         }
     }
 
@@ -732,7 +908,7 @@ internal sealed class GlbBuilder
             ["scenes"] = new JsonArray(new JsonObject
             {
                 ["name"] = sceneName,
-                ["nodes"] = Ints(parts["base"])
+                ["nodes"] = Ints(rootNodeIndex ?? throw new InvalidOperationException("A visual asset must declare one root part."))
             }),
             ["nodes"] = new JsonArray(nodes.Select(node => node.ToJson()).ToArray()),
             ["meshes"] = new JsonArray(meshes.ToArray()),

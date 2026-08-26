@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "modelId": "drone-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_airframe", "partId": "airframe" },
+    { "nodeName": "RS_shell", "partId": "shell" },
+    { "nodeName": "RS_battery", "partId": "battery" },
+    { "nodeName": "RS_flight-controller", "partId": "flight-controller" },
+    { "nodeName": "RS_imu", "partId": "imu" },
+    { "nodeName": "RS_camera", "partId": "camera" },
+    { "nodeName": "RS_landing-gear", "partId": "landing-gear" },
+    { "nodeName": "RS_arm-front-left", "partId": "arm-front-left" },
+    { "nodeName": "RS_motor-front-left", "partId": "motor-front-left" },
+    { "nodeName": "RS_propeller-front-left", "partId": "propeller-front-left" },
+    { "nodeName": "RS_arm-front-right", "partId": "arm-front-right" },
+    { "nodeName": "RS_motor-front-right", "partId": "motor-front-right" },
+    { "nodeName": "RS_propeller-front-right", "partId": "propeller-front-right" },
+    { "nodeName": "RS_arm-rear-left", "partId": "arm-rear-left" },
+    { "nodeName": "RS_motor-rear-left", "partId": "motor-rear-left" },
+    { "nodeName": "RS_propeller-rear-left", "partId": "propeller-rear-left" },
+    { "nodeName": "RS_arm-rear-right", "partId": "arm-rear-right" },
+    { "nodeName": "RS_motor-rear-right", "partId": "motor-rear-right" },
+    { "nodeName": "RS_propeller-rear-right", "partId": "propeller-rear-right" }
+  ]
+}

@@ -49,9 +49,13 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an original linear Delta Robot mechanical showcase with a packaged semantic GLB, overhead support frame, three servo-driven linear actuators, six constrained links, moving platform, vacuum tool, selectable components, and a procedural fallback scene.
 - Added Delta coupled pick-and-place, individual-actuator, drive-system, actuator/TCP-axis, and staged-assembly teaching views with continuously connected parallel links.
 - Added reusable parallel-link pose composition that keeps a rendered link attached to two independently moving semantic components throughout interpolated mechanical demonstrations.
+- Added an original quadcopter Drone mechanical showcase with a packaged semantic GLB, four visible two-blade propellers, brushless motors, battery, flight controller, IMU, camera, landing gear, selectable components, and a procedural fallback scene.
+- Added Drone flight-and-attitude, counter-rotating motor-pair, avionics-and-power, body-axis, and staged-assembly teaching views with propeller rotation inherited through the moving airframe.
+- Generalized the deterministic visual-asset builder to support any single semantic root instead of requiring every robot asset to use a part named `base`.
 
 ### Changed
 
+- Refined the Drone mechanical model into a recognizable compact quadcopter with a low rounded-rectangle hull, integrated diagonal arms, paired propeller blades, and enclosed central avionics based on a common consumer-drone arrangement.
 - Refined the SCARA mechanical model with a compact pedestal, continuous light-colored link covers, a larger wrist housing, a blue vertical spindle, and a metal parallel gripper based on a recognizable industrial SCARA arrangement.
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.
 - Changed the Cartesian mechanical showcase into a recognizable desktop-machine arrangement with a Y-moving work platform, an X tool carriage, and a synchronized dual-column Z gantry.

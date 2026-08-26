@@ -266,7 +266,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.DroneThreeDimensional,
-                "Drone 3D Viewer")),
+                "Drone 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "drone-mechanical",
+                "Drone Mechanical Showcase")),
 
         new(
             Id: "self-balancing-robot-planned",
