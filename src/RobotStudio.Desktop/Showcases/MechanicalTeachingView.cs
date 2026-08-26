@@ -32,6 +32,13 @@ internal sealed record MechanicalRevoluteJointPivot(
     RobotPartId PartId,
     Vector3 PivotMillimeters);
 
+internal sealed record MechanicalParallelLinkConstraint(
+    RobotPartId LinkPartId,
+    RobotPartId StartPartId,
+    RobotPartId EndPartId,
+    Vector3 AuthoredStartMillimeters,
+    Vector3 AuthoredEndMillimeters);
+
 internal sealed record MechanicalTeachingViewOption(
     MechanicalTeachingViewMode Mode,
     string Name,

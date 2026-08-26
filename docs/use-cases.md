@@ -453,6 +453,25 @@ Expected result:
 - the joint-axis layer identifies the vertical base axis and the horizontal shoulder and elbow axes;
 - the assembly sequence joins the mechanism in mechanical order without changing domain or simulation state.
 
+### Explore Delta Robot Mechanical Relationships
+
+Actor: student or instructor.
+
+Goal: understand how three independently commanded linear actuators constrain one translation-only platform through six parallel links.
+
+Current status: implemented in the Delta Robot mechanical showcase.
+
+Expected result:
+
+- the robot catalog opens the mechanical showcase independently from the schematic simulator;
+- the assembled model presents an overhead frame, three actuator towers arranged at 120 degrees, paired links, a moving platform, and a vacuum tool;
+- the coupled pick-and-place demonstration coordinates all three carriages to lower and translate the platform;
+- the individual-actuator demonstration shows the platform response produced by A, B, or C alone;
+- every link remains connected to its carriage and platform attachment throughout interpolated playback;
+- the drive-system layer exposes selectable motors, linear guides, carriages, and links through the fixed structure;
+- the axis layer compares the three actuator directions with the moving platform coordinate frame;
+- the assembly sequence joins the parallel mechanism without changing domain or simulation state.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

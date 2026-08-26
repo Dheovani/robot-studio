@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm|delta] <output.glb>");
     return 1;
 }
 
@@ -20,6 +20,7 @@ var asset = modelId switch
     "differential-drive" => DifferentialDriveAsset.Create(),
     "scara" => ScaraAsset.Create(),
     "simple-arm" => SimpleArmAsset.Create(),
+    "delta" => DeltaAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -458,6 +459,150 @@ internal static class SimpleArmAsset
 
         return asset;
     }
+}
+
+internal static class DeltaAsset
+{
+    private const float CarriageRadius = 3.15f;
+    private const float PlatformRadius = 0.75f;
+    private const float CarriageZ = 4.65f;
+    private const float PlatformZ = 1.65f;
+
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("Delta Robot Mechanical Showcase");
+        var dark = asset.Material("Graphite support", 0.035f, 0.045f, 0.06f, 0.62f, 0.3f);
+        var frame = asset.Material("Anodized aluminum", 0.38f, 0.43f, 0.5f, 0.82f, 0.22f);
+        var shell = asset.Material("Off-white actuator shell", 0.86f, 0.89f, 0.92f, 0.1f, 0.38f);
+        var steel = asset.Material("Linear guide steel", 0.64f, 0.69f, 0.75f, 0.92f, 0.17f);
+        var carbon = asset.Material("Carbon link", 0.045f, 0.06f, 0.075f, 0.2f, 0.58f);
+        var blue = asset.Material("RobotStudio blue", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var motor = asset.Material("Servo housing", 0.09f, 0.12f, 0.17f, 0.7f, 0.27f);
+        var copper = asset.Material("Lead screw", 0.72f, 0.3f, 0.07f, 0.72f, 0.23f);
+        var tool = asset.Material("Vacuum tool", 0.95f, 0.58f, 0.04f, 0.38f, 0.3f);
+        var indicator = asset.Material(
+            "Controller display",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.18f,
+            0.22f,
+            emissive: new(0.02f, 0.3f, 0.55f));
+
+        asset.Part("base");
+        AddTopBeam(asset, new(0, 3.6f, 6.55f), new(-3.118f, -1.8f, 6.55f), frame);
+        AddTopBeam(asset, new(-3.118f, -1.8f, 6.55f), new(3.118f, -1.8f, 6.55f), frame);
+        AddTopBeam(asset, new(3.118f, -1.8f, 6.55f), new(0, 3.6f, 6.55f), frame);
+        foreach (var station in Stations)
+        {
+            var outer = station.Radial * 4.35f;
+            asset.Box("base", new Vector3(outer, 3.25f), new(0.62f, 0.62f, 6.3f), dark);
+            asset.Box("base", new Vector3(outer, 0.18f), new(1.35f, 1.35f, 0.36f), dark);
+            asset.Disc("base", new Vector3(station.Radial * 3.55f, 6.32f), new Vector3(station.Radial * 3.55f, 6.72f), 0.68f, frame);
+        }
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(0, -2.35f, 5.57f), new(2.25f, 1.15f, 1.42f), blue);
+        asset.Box("controller", new(0, -2.94f, 5.62f), new(1.35f, 0.05f, 0.56f), indicator);
+        asset.Box("controller", new(-0.76f, -1.92f, 6.3f), new(0.18f, 0.34f, 0.48f), steel);
+        asset.Box("controller", new(0.76f, -1.92f, 6.3f), new(0.18f, 0.34f, 0.48f), steel);
+
+        foreach (var station in Stations)
+        {
+            AddActuator(asset, station, shell, steel, copper, motor, blue);
+            AddLink(asset, station, "left", -1, carbon, steel);
+            AddLink(asset, station, "right", 1, carbon, steel);
+        }
+
+        asset.Part("platform", "base");
+        asset.Disc("platform", new(0, 0, 1.48f), new(0, 0, 1.8f), 0.96f, shell);
+        asset.Disc("platform", new(0, 0, 1.56f), new(0, 0, 1.72f), 0.72f, blue);
+        foreach (var station in Stations)
+        {
+            asset.Cylinder(
+                "platform",
+                new Vector3(station.Radial * 0.62f, 1.62f),
+                new Vector3(station.Radial * 0.92f, 1.62f),
+                0.16f,
+                steel);
+        }
+
+        asset.Part("tool", "platform");
+        asset.Disc("tool", new(0, 0, 0.92f), new(0, 0, 1.52f), 0.3f, steel);
+        asset.Disc("tool", new(0, 0, 0.62f), new(0, 0, 0.98f), 0.38f, tool);
+        asset.Disc("tool", new(0, 0, 0.48f), new(0, 0, 0.68f), 0.52f, dark);
+
+        return asset;
+    }
+
+    private static void AddTopBeam(GlbBuilder asset, Vector3 start, Vector3 end, int material)
+    {
+        var delta = end - start;
+        var rotation = Quaternion.CreateFromAxisAngle(Vector3.UnitZ, MathF.Atan2(delta.Y, delta.X));
+        asset.Box("base", (start + end) / 2, new(delta.Length(), 0.58f, 0.46f), rotation, material);
+    }
+
+    private static void AddActuator(
+        GlbBuilder asset,
+        Station station,
+        int shell,
+        int steel,
+        int copper,
+        int motor,
+        int accent)
+    {
+        var actuatorId = $"actuator-{station.Id}";
+        var motorId = $"motor-{station.Id}";
+        var carriageId = $"carriage-{station.Id}";
+        var center = station.Radial * 3.2f;
+
+        asset.Part(actuatorId, "base");
+        asset.Box(actuatorId, new Vector3(center, 4.42f), new(0.9f, 0.72f, 3.55f), shell);
+        asset.Cylinder(actuatorId, new Vector3(center, 2.62f), new Vector3(center, 6.2f), 0.14f, steel);
+        asset.Cylinder(actuatorId, new Vector3(center + (station.Tangent * 0.24f), 2.75f), new Vector3(center + (station.Tangent * 0.24f), 6.05f), 0.075f, copper);
+        asset.Cylinder(actuatorId, new Vector3(center - (station.Tangent * 0.24f), 2.75f), new Vector3(center - (station.Tangent * 0.24f), 6.05f), 0.075f, copper);
+
+        asset.Part(motorId, actuatorId);
+        asset.Box(motorId, new Vector3(center, 6.2f), new(0.86f, 0.86f, 0.76f), motor);
+        asset.Cylinder(motorId, new Vector3(center, 5.82f), new Vector3(center, 6.02f), 0.23f, steel);
+
+        asset.Part(carriageId, actuatorId);
+        asset.Box(carriageId, new Vector3(station.Radial * CarriageRadius, CarriageZ), new(1.02f, 0.84f, 0.62f), accent);
+        asset.Cylinder(
+            carriageId,
+            new Vector3(station.Radial * CarriageRadius - (station.Tangent * 0.38f), CarriageZ),
+            new Vector3(station.Radial * CarriageRadius + (station.Tangent * 0.38f), CarriageZ),
+            0.18f,
+            steel);
+    }
+
+    private static void AddLink(
+        GlbBuilder asset,
+        Station station,
+        string side,
+        float direction,
+        int carbon,
+        int steel)
+    {
+        var partId = $"link-{station.Id}-{side}";
+        var start = new Vector3(station.Radial * CarriageRadius, CarriageZ) +
+                    new Vector3(station.Tangent * (0.22f * direction), 0);
+        var end = new Vector3(station.Radial * PlatformRadius, PlatformZ) +
+                  new Vector3(station.Tangent * (0.18f * direction), 0);
+        asset.Part(partId, "base");
+        asset.Cylinder(partId, start, end, 0.09f, carbon);
+        asset.Disc(partId, start - new Vector3(0, 0, 0.11f), start + new Vector3(0, 0, 0.11f), 0.16f, steel);
+        asset.Disc(partId, end - new Vector3(0, 0, 0.11f), end + new Vector3(0, 0, 0.11f), 0.16f, steel);
+    }
+
+    private static IReadOnlyList<Station> Stations { get; } =
+    [
+        new("a", new Vector2(0, 1), new Vector2(-1, 0)),
+        new("b", new Vector2(-0.8660254f, -0.5f), new Vector2(0.5f, -0.8660254f)),
+        new("c", new Vector2(0.8660254f, -0.5f), new Vector2(0.5f, 0.8660254f))
+    ];
+
+    private sealed record Station(string Id, Vector2 Radial, Vector2 Tangent);
 }
 
 internal sealed class GlbBuilder

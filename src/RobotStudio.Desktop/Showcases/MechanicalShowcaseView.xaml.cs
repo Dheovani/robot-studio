@@ -467,6 +467,14 @@ public partial class MechanicalShowcaseView : UserControl
         var viewMode = TeachingViewComboBox.SelectedItem is MechanicalTeachingViewOption option
             ? option.Mode
             : MechanicalTeachingViewMode.Assembled;
+        if (viewMode != MechanicalTeachingViewMode.ExplodedAssembly)
+        {
+            demonstrationPoses = MechanicalParallelLinkPoseComposer.Compose(
+                showcase.Model,
+                demonstrationPoses,
+                presentation.ParallelLinkConstraints);
+        }
+
         var poses = MechanicalTeachingPoseComposer.Compose(
             showcase.Model,
             demonstrationPoses,

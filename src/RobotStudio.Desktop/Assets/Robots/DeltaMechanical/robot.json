@@ -1,0 +1,26 @@
+{
+  "schemaVersion": 1,
+  "modelId": "delta-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_actuator-a", "partId": "actuator-a" },
+    { "nodeName": "RS_motor-a", "partId": "motor-a" },
+    { "nodeName": "RS_carriage-a", "partId": "carriage-a" },
+    { "nodeName": "RS_link-a-left", "partId": "link-a-left" },
+    { "nodeName": "RS_link-a-right", "partId": "link-a-right" },
+    { "nodeName": "RS_actuator-b", "partId": "actuator-b" },
+    { "nodeName": "RS_motor-b", "partId": "motor-b" },
+    { "nodeName": "RS_carriage-b", "partId": "carriage-b" },
+    { "nodeName": "RS_link-b-left", "partId": "link-b-left" },
+    { "nodeName": "RS_link-b-right", "partId": "link-b-right" },
+    { "nodeName": "RS_actuator-c", "partId": "actuator-c" },
+    { "nodeName": "RS_motor-c", "partId": "motor-c" },
+    { "nodeName": "RS_carriage-c", "partId": "carriage-c" },
+    { "nodeName": "RS_link-c-left", "partId": "link-c-left" },
+    { "nodeName": "RS_link-c-right", "partId": "link-c-right" },
+    { "nodeName": "RS_platform", "partId": "platform" },
+    { "nodeName": "RS_tool", "partId": "tool" }
+  ]
+}

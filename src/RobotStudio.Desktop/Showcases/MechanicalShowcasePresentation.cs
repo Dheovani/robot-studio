@@ -16,7 +16,8 @@ internal sealed class MechanicalShowcasePresentation
         IEnumerable<MechanicalMotionAxisGuide> motionAxes,
         IEnumerable<MechanicalExplodedPartOffset> explodedOffsets,
         IEnumerable<MechanicalScenePrimitive> fallbackPrimitives,
-        IEnumerable<MechanicalRevoluteJointPivot>? revoluteJointPivots = null)
+        IEnumerable<MechanicalRevoluteJointPivot>? revoluteJointPivots = null,
+        IEnumerable<MechanicalParallelLinkConstraint>? parallelLinkConstraints = null)
     {
         ArgumentException.ThrowIfNullOrWhiteSpace(modelId);
         ArgumentException.ThrowIfNullOrWhiteSpace(title);
@@ -121,6 +122,22 @@ internal sealed class MechanicalShowcasePresentation
                 nameof(revoluteJointPivots));
         }
 
+        var parallelLinkArray = parallelLinkConstraints?.ToArray() ?? [];
+        if (parallelLinkArray.Select(link => link.LinkPartId).Distinct().Count() != parallelLinkArray.Length ||
+            parallelLinkArray.Any(link =>
+                !partIds.Contains(link.LinkPartId) ||
+                !partIds.Contains(link.StartPartId) ||
+                !partIds.Contains(link.EndPartId) ||
+                link.StartPartId == link.EndPartId ||
+                !IsFinite(link.AuthoredStartMillimeters) ||
+                !IsFinite(link.AuthoredEndMillimeters) ||
+                Vector3.DistanceSquared(link.AuthoredStartMillimeters, link.AuthoredEndMillimeters) <= 0.000001f))
+        {
+            throw new ArgumentException(
+                "Parallel link constraints must be finite, non-zero, unique by link, and reference known parts.",
+                nameof(parallelLinkConstraints));
+        }
+
         ModelId = modelId;
         Title = title;
         Subtitle = subtitle;
@@ -132,6 +149,7 @@ internal sealed class MechanicalShowcasePresentation
         ExplodedOffsets = Array.AsReadOnly(offsetArray);
         FallbackPrimitives = Array.AsReadOnly(primitiveArray);
         RevoluteJointPivots = Array.AsReadOnly(pivotArray);
+        ParallelLinkConstraints = Array.AsReadOnly(parallelLinkArray);
     }
 
     public string ModelId { get; }
@@ -155,6 +173,8 @@ internal sealed class MechanicalShowcasePresentation
     public IReadOnlyList<MechanicalScenePrimitive> FallbackPrimitives { get; }
 
     public IReadOnlyList<MechanicalRevoluteJointPivot> RevoluteJointPivots { get; }
+
+    public IReadOnlyList<MechanicalParallelLinkConstraint> ParallelLinkConstraints { get; }
 
     private static bool IsFinite(Vector3 value) =>
         float.IsFinite(value.X) && float.IsFinite(value.Y) && float.IsFinite(value.Z);

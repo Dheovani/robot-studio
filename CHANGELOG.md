@@ -46,6 +46,9 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added SCARA pick-and-place, individual-joint, drive-system, joint/tool-axis, and staged-assembly teaching views with pivot-correct articulated motion.
 - Added an original Simple Articulated Arm mechanical showcase with a packaged semantic GLB, rotating base, shoulder and elbow drive assemblies, serial structural links, wrist, parallel gripper, selectable components, and a procedural fallback scene.
 - Added Simple Articulated Arm reach-and-transfer, individual-joint, drive-system, joint-axis, and staged-assembly teaching views with pivot-correct shoulder and elbow motion.
+- Added an original linear Delta Robot mechanical showcase with a packaged semantic GLB, overhead support frame, three servo-driven linear actuators, six constrained links, moving platform, vacuum tool, selectable components, and a procedural fallback scene.
+- Added Delta coupled pick-and-place, individual-actuator, drive-system, actuator/TCP-axis, and staged-assembly teaching views with continuously connected parallel links.
+- Added reusable parallel-link pose composition that keeps a rendered link attached to two independently moving semantic components throughout interpolated mechanical demonstrations.
 
 ### Changed
 
@@ -60,6 +63,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Fixed
 
+- Fixed the Delta mechanical-showcase controller floating outside the support frame by mounting its enclosure beneath the rear crossbeam with visible brackets.
 - Fixed SCARA mechanical links separating between demonstration keyframes by recomputing revolute-joint pivot compensation after rotation interpolation.
 - Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.
 - Fixed the mechanical showcase header layout and moved playback actions into the same top-toolbar pattern used by simulation workspaces.

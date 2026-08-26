@@ -1,3 +1,4 @@
+using System.Numerics;
 using RobotStudio.Desktop.Showcases;
 using RobotStudio.Visualization;
 
@@ -57,11 +58,48 @@ public sealed class MechanicalShowcasePresentationTests
         Assert.Equal("fallbackPrimitives", exception.ParamName);
     }
 
+    [Fact]
+    public void Constructor_WhenParallelLinkReferencesUnknownEndpoint_ShouldRejectPresentation()
+    {
+        var source = DeltaMechanicalShowcaseDefinition.CreatePresentation();
+        var original = source.ParallelLinkConstraints[0];
+        var constraints = source.ParallelLinkConstraints
+            .Select((constraint, index) => index == 0
+                ? constraint with { EndPartId = new RobotPartId("unknown-platform") }
+                : constraint)
+            .ToArray();
+
+        var exception = Assert.Throws<ArgumentException>(() => Create(
+            source,
+            parallelLinkConstraints: constraints));
+
+        Assert.NotEqual(original.EndPartId, constraints[0].EndPartId);
+        Assert.Equal("parallelLinkConstraints", exception.ParamName);
+    }
+
+    [Fact]
+    public void Constructor_WhenParallelLinkHasNoLength_ShouldRejectPresentation()
+    {
+        var source = DeltaMechanicalShowcaseDefinition.CreatePresentation();
+        var constraints = source.ParallelLinkConstraints
+            .Select((constraint, index) => index == 0
+                ? constraint with { AuthoredEndMillimeters = constraint.AuthoredStartMillimeters }
+                : constraint)
+            .ToArray();
+
+        var exception = Assert.Throws<ArgumentException>(() => Create(
+            source,
+            parallelLinkConstraints: constraints));
+
+        Assert.Equal("parallelLinkConstraints", exception.ParamName);
+    }
+
     private static MechanicalShowcasePresentation Create(
         MechanicalShowcasePresentation source,
         string? modelId = null,
         IReadOnlyList<MechanicalTeachingViewOption>? viewOptions = null,
-        IReadOnlyList<MechanicalScenePrimitive>? fallbackPrimitives = null) =>
+        IReadOnlyList<MechanicalScenePrimitive>? fallbackPrimitives = null,
+        IReadOnlyList<MechanicalParallelLinkConstraint>? parallelLinkConstraints = null) =>
         new(
             modelId ?? source.ModelId,
             source.Title,
@@ -72,5 +110,7 @@ public sealed class MechanicalShowcasePresentationTests
             viewOptions ?? source.ViewOptions,
             source.MotionAxes,
             source.ExplodedOffsets,
-            fallbackPrimitives ?? source.FallbackPrimitives);
+            fallbackPrimitives ?? source.FallbackPrimitives,
+            source.RevoluteJointPivots,
+            parallelLinkConstraints ?? source.ParallelLinkConstraints);
 }

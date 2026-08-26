@@ -243,7 +243,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.DeltaThreeDimensional,
-                "Delta 3D Viewer")),
+                "Delta 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "delta-mechanical",
+                "Delta Robot Mechanical Showcase")),
 
         new(
             Id: "drone",
