@@ -19,7 +19,7 @@
             <StackPanel DockPanel.Dock="Right"
                         HorizontalAlignment="Right"
                         Orientation="Horizontal">
-                <Button Style="{DynamicResource ViewerToolbarButtonStyle}"
+                <Button Style="{DynamicResource ViewerNavigationButtonStyle}"
                         Content="{DynamicResource Common.Robots}"
                         ToolTip="Return to the robot catalog."
                         Click="BackButton_Click" />

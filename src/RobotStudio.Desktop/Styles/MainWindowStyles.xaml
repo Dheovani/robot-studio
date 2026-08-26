@@ -14,18 +14,14 @@
 <SolidColorBrush x:Key="SubtleBorderBrush" Color="#1E293B" />
 <SolidColorBrush x:Key="ButtonBackgroundBrush" Color="#2563EB" />
 <SolidColorBrush x:Key="ButtonBorderBrush" Color="#3B82F6" />
-<SolidColorBrush x:Key="ButtonHoverBackgroundBrush" Color="#1D4ED8" />
 <SolidColorBrush x:Key="ButtonHoverBorderBrush" Color="#60A5FA" />
-<SolidColorBrush x:Key="ButtonPressedBackgroundBrush" Color="#1E40AF" />
 <SolidColorBrush x:Key="DisabledTextBrush" Color="#64748B" />
 <Thickness x:Key="PanelSectionSpacing">0,0,0,10</Thickness>
 
-<Style TargetType="Button">
+<Style x:Key="ButtonBaseStyle" TargetType="Button">
     <Setter Property="Height" Value="36" />
     <Setter Property="Padding" Value="14,0" />
     <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
-    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
-    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
     <Setter Property="BorderThickness" Value="1" />
     <Setter Property="FontWeight" Value="SemiBold" />
     <Setter Property="Cursor" Value="Hand" />
@@ -42,11 +38,13 @@
                 </Border>
                 <ControlTemplate.Triggers>
                     <Trigger Property="IsMouseOver" Value="True">
-                        <Setter TargetName="ButtonChrome" Property="Background" Value="{StaticResource ButtonHoverBackgroundBrush}" />
-                        <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource ButtonHoverBorderBrush}" />
+                        <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.88" />
                     </Trigger>
                     <Trigger Property="IsPressed" Value="True">
-                        <Setter TargetName="ButtonChrome" Property="Background" Value="{StaticResource ButtonPressedBackgroundBrush}" />
+                        <Setter TargetName="ButtonChrome" Property="Opacity" Value="0.72" />
+                    </Trigger>
+                    <Trigger Property="IsKeyboardFocused" Value="True">
+                        <Setter TargetName="ButtonChrome" Property="BorderBrush" Value="{StaticResource ButtonHoverBorderBrush}" />
                     </Trigger>
                     <Trigger Property="IsEnabled" Value="False">
                         <Setter Property="Foreground" Value="{StaticResource DisabledTextBrush}" />
@@ -59,11 +57,28 @@
     </Setter>
 </Style>
 
+<Style x:Key="PrimaryButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource ButtonBaseStyle}">
+    <Setter Property="Background" Value="{StaticResource ButtonBackgroundBrush}" />
+    <Setter Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+</Style>
+
+<Style TargetType="Button" BasedOn="{StaticResource PrimaryButtonStyle}" />
+
 <Style x:Key="SecondaryButtonStyle"
        TargetType="Button"
-       BasedOn="{StaticResource {x:Type Button}}">
+       BasedOn="{StaticResource ButtonBaseStyle}">
     <Setter Property="Background" Value="{StaticResource SubtlePanelBackgroundBrush}" />
     <Setter Property="BorderBrush" Value="{StaticResource BorderBrush}" />
+</Style>
+
+<Style x:Key="GhostButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource ButtonBaseStyle}">
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="Foreground" Value="{StaticResource SecondaryTextBrush}" />
 </Style>
 
 <Style x:Key="ViewerHeaderStyle" TargetType="DockPanel">
@@ -86,6 +101,14 @@
 <Style x:Key="ViewerToolbarButtonStyle"
        TargetType="Button"
        BasedOn="{StaticResource SecondaryButtonStyle}">
+    <Setter Property="Width" Value="92" />
+    <Setter Property="Height" Value="34" />
+    <Setter Property="Margin" Value="8,0,0,0" />
+</Style>
+
+<Style x:Key="ViewerNavigationButtonStyle"
+       TargetType="Button"
+       BasedOn="{StaticResource GhostButtonStyle}">
     <Setter Property="Width" Value="92" />
     <Setter Property="Height" Value="34" />
     <Setter Property="Margin" Value="8,0,0,0" />

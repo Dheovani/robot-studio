@@ -45,7 +45,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
 - [x] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
 - [x] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
-- [ ] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
+- [x] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
 - [ ] Standardize control heights, spacing, padding, corner radii, borders, and focus states across desktop UI components.
 - [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.
 - [ ] Define consistent typography and contrast levels for titles, labels, metadata, descriptions, status text, and secondary information.

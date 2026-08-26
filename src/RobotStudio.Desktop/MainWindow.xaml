@@ -159,7 +159,7 @@
                         <Button Width="88"
                                 Height="34"
                                 Margin="8,0,0,0"
-                                Style="{StaticResource SecondaryButtonStyle}"
+                                Style="{StaticResource GhostButtonStyle}"
                                 Content="{DynamicResource Common.Glossary}"
                                 ToolTip="Open the robotics glossary (Ctrl+G)."
                                 Click="OpenGlossaryButton_Click" />
@@ -203,7 +203,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}"
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}"
                             Click="BackToSelectionButton_Click"
                             Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
@@ -306,7 +306,7 @@
                                                 Height="30"
                                                 Margin="0,0,6,0"
                                                 Padding="0"
-                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Style="{StaticResource GhostButtonStyle}"
                                                 AutomationProperties.Name="Load example"
                                                 Content="&#xE82D;"
                                                 FontFamily="Segoe MDL2 Assets"
@@ -317,7 +317,7 @@
                                                 Height="30"
                                                 Margin="0,0,6,0"
                                                 Padding="0"
-                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Style="{StaticResource GhostButtonStyle}"
                                                 AutomationProperties.Name="Load script"
                                                 Content="&#xE8E5;"
                                                 FontFamily="Segoe MDL2 Assets"
@@ -327,7 +327,7 @@
                                         <Button Width="32"
                                                 Height="30"
                                                 Padding="0"
-                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                Style="{StaticResource GhostButtonStyle}"
                                                 AutomationProperties.Name="Save script"
                                                 Content="&#xE74E;"
                                                 FontFamily="Segoe MDL2 Assets"
@@ -1082,7 +1082,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}"
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}"
                             Click="BackToSelectionButton_Click"
                             Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
@@ -1184,7 +1184,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1308,7 +1308,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1432,7 +1432,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1556,7 +1556,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1664,7 +1664,7 @@
                     <TextBlock Text="Industrial arm simulation" Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
