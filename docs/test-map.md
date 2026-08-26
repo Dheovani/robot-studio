@@ -615,6 +615,7 @@ Expected current behavior:
 - manually verifies that reset separates the major assemblies, assembly playback joins them in mechanical order, and semantic hit testing and highlighting remain available throughout the sequence.
 - manually verifies that the demonstration selector shows the individual-axis sequence and its description, resets the timeline on selection, and returns the machine to its initial pose after all three phases.
 - validates camera-plane pan direction, empty-viewport handling, fit-to-model margin, and invalid fit inputs without requiring a live renderer.
+- validates that schematic viewport scene handoffs snapshot their model and overlay collections, preserve camera and lighting settings, and reject null visual elements before the WPF presenter mutates a live viewport.
 - manually verifies full-viewport orbit, middle-button and `Shift` + left-button pan, `Ctrl` + mouse-wheel zoom, and reset to model-derived framing in the mechanical showcase.
 - parses and validates version 1 visual-asset manifests, including schema/model compatibility, safe GLB paths, semantic node coverage, unknown parts, and multiple meshes mapped to one robot part;
 - resolves and caches desktop visual-asset packages and reports missing manifests or GLB files with deterministic error codes.

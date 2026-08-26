@@ -77,6 +77,12 @@ public partial class MainWindow : Window
     private readonly CartesianMovementExplanationBuilder movementExplanationBuilder = new();
     private readonly List<FrameworkElement> sessionRecoveryPanels = [];
     private readonly List<Button> playPauseButtons = [];
+    private readonly ISchematicViewportPresenter cartesianViewportPresenter;
+    private readonly ISchematicViewportPresenter scaraViewportPresenter;
+    private readonly ISchematicViewportPresenter simpleArmViewportPresenter;
+    private readonly ISchematicViewportPresenter deltaViewportPresenter;
+    private readonly ISchematicViewportPresenter droneViewportPresenter;
+    private readonly ISchematicViewportPresenter industrialArmViewportPresenter;
 
     private IRobotScriptDialect CartesianScriptDialect =>
         ScriptDialectComboBox.SelectedItem is RobotScriptDialectDescriptor
@@ -203,6 +209,13 @@ public partial class MainWindow : Window
     public MainWindow()
     {
         InitializeComponent();
+
+        cartesianViewportPresenter = new WpfSchematicViewportPresenter(RobotViewport);
+        scaraViewportPresenter = new WpfSchematicViewportPresenter(ScaraViewport);
+        simpleArmViewportPresenter = new WpfSchematicViewportPresenter(SimpleArmViewport);
+        deltaViewportPresenter = new WpfSchematicViewportPresenter(DeltaViewport);
+        droneViewportPresenter = new WpfSchematicViewportPresenter(DroneViewport);
+        industrialArmViewportPresenter = new WpfSchematicViewportPresenter(IndustrialArmViewport);
 
         playbackTimer = new DispatcherTimer
         {

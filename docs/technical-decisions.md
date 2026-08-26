@@ -253,6 +253,8 @@ Local example metadata belongs in `RobotStudio.Desktop.Examples`. Examples are p
 
 Shared viewer presentation logic belongs in `RobotStudio.Desktop.Viewers`. The WPF window may still own concrete control events and drawing calls, but repeated formatting of playback state, frame counters, command names, footer text, and didactic explanations should be moved into small presenter types that can be tested without launching WPF.
 
+Schematic 3D viewports use `SchematicViewportScene` as the desktop scene handoff and `ISchematicViewportPresenter` as the lifecycle boundary. `MainWindow` chooses the current snapshot, camera, robot models, and optional overlays, while `WpfSchematicViewportPresenter` owns camera replacement, lighting composition, visual-root replacement, and clearing for every schematic WPF viewport. Robot-specific geometry factories remain a separate extraction step; neither this desktop contract nor its WPF implementation changes simulation state or crosses into the renderer-neutral domain projects.
+
 Desktop script validation messages are formatted in `RobotStudio.Desktop.Scripting`. The parser and domain still throw explicit technical exceptions, while the desktop layer translates them into concise student-facing summaries with a probable category, the original detail, and a suggested next action.
 
 The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.

@@ -171,46 +171,44 @@ public partial class MainWindow
 
         var sceneFrame = snapshot.SceneFrames[currentFrameIndex];
 
-        RobotViewport.Children.Clear();
         ApplyCamera();
-
-        var sceneRoot = SceneLightingFactory.CreateDefault(ambientColor: Color.FromRgb(92, 105, 130));
+        var camera = RobotViewport.Camera ??
+                     throw new InvalidOperationException("The Cartesian viewport camera was not initialized.");
+        var models = new List<Model3D>();
 
         if (ShowGridCheckBox.IsChecked == true)
         {
-            sceneRoot.Children.Add(CreateGridModel(snapshot.WorkspaceBounds));
+            models.Add(CreateGridModel(snapshot.WorkspaceBounds));
         }
 
         if (ShowGlobalAxesCheckBox.IsChecked == true)
         {
-            sceneRoot.Children.Add(CreateGlobalAxesModel(snapshot.WorkspaceBounds));
+            models.Add(CreateGlobalAxesModel(snapshot.WorkspaceBounds));
         }
 
         if (ShowPlannedPathCheckBox.IsChecked == true)
         {
-            sceneRoot.Children.Add(CreatePlannedPathModel(snapshot));
+            models.Add(CreatePlannedPathModel(snapshot));
         }
 
         if (ShowStartEndMarkersCheckBox.IsChecked == true)
         {
-            sceneRoot.Children.Add(CreateStartEndMarkersModel(snapshot));
+            models.Add(CreateStartEndMarkersModel(snapshot));
         }
 
         foreach (CartesianScenePrimitive primitive in sceneFrame.Primitives.Where(IsPrimitiveVisible))
         {
-            sceneRoot.Children.Add(CreateModel(primitive));
+            models.Add(CreateModel(primitive));
         }
 
-        RobotViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
-
-        if (ShowAxisLabelsCheckBox.IsChecked == true &&
-            RobotViewport.Camera is PerspectiveCamera camera)
-        {
-            foreach (var label in CreateAxisLabelVisuals(snapshot.WorkspaceBounds, camera))
-            {
-                RobotViewport.Children.Add(label);
-            }
-        }
+        var overlays = ShowAxisLabelsCheckBox.IsChecked == true && camera is PerspectiveCamera perspectiveCamera
+            ? CreateAxisLabelVisuals(snapshot.WorkspaceBounds, perspectiveCamera).Cast<Visual3D>()
+            : [];
+        cartesianViewportPresenter.Present(new SchematicViewportScene(
+            camera,
+            models,
+            overlays,
+            ambientColor: Color.FromRgb(92, 105, 130)));
 
         StatusText.Text =
             $"Frame {currentFrameIndex + 1}/{snapshot.SceneFrameCount} | " +

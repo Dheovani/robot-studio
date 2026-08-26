@@ -245,14 +245,13 @@ public partial class MainWindow
         ScaraTimeline.Value = scaraFrameIndex;
 
         var frame = scaraSnapshot.Frames[scaraFrameIndex];
-        ScaraViewport.Children.Clear();
-        ScaraViewport.Camera = CreateScaraCamera(scaraSnapshot.Profile);
-
-        var sceneRoot = SceneLightingFactory.CreateDefault();
-        sceneRoot.Children.Add(CreateScaraWorkspaceModel(scaraSnapshot.Profile));
-        sceneRoot.Children.Add(CreateScaraPathModel(scaraSnapshot));
-        sceneRoot.Children.Add(CreateScaraRobotModel(scaraSnapshot.Profile, frame));
-        ScaraViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+        scaraViewportPresenter.Present(new SchematicViewportScene(
+            CreateScaraCamera(scaraSnapshot.Profile),
+            [
+                CreateScaraWorkspaceModel(scaraSnapshot.Profile),
+                CreateScaraPathModel(scaraSnapshot),
+                CreateScaraRobotModel(scaraSnapshot.Profile, frame)
+            ]));
 
         var status = RobotFramePresenter.Create(
             frame,
@@ -359,14 +358,13 @@ public partial class MainWindow
         SimpleArmTimeline.Value = simpleArmFrameIndex;
 
         var frame = simpleArmSnapshot.Frames[simpleArmFrameIndex];
-        SimpleArmViewport.Children.Clear();
-        SimpleArmViewport.Camera = CreateSimpleArmCamera(simpleArmSnapshot.Profile);
-
-        var sceneRoot = SceneLightingFactory.CreateDefault();
-        sceneRoot.Children.Add(CreateSimpleArmWorkspaceModel(simpleArmSnapshot.Profile));
-        sceneRoot.Children.Add(CreateSimpleArmPathModel(simpleArmSnapshot));
-        sceneRoot.Children.Add(CreateSimpleArmRobotModel(simpleArmSnapshot.Profile, frame));
-        SimpleArmViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+        simpleArmViewportPresenter.Present(new SchematicViewportScene(
+            CreateSimpleArmCamera(simpleArmSnapshot.Profile),
+            [
+                CreateSimpleArmWorkspaceModel(simpleArmSnapshot.Profile),
+                CreateSimpleArmPathModel(simpleArmSnapshot),
+                CreateSimpleArmRobotModel(simpleArmSnapshot.Profile, frame)
+            ]));
 
         var status = RobotFramePresenter.Create(
             frame,
@@ -488,14 +486,13 @@ public partial class MainWindow
         DeltaTimeline.Value = deltaFrameIndex;
 
         var frame = deltaSnapshot.Frames[deltaFrameIndex];
-        DeltaViewport.Children.Clear();
-        DeltaViewport.Camera = CreateDeltaCamera(deltaSnapshot.Profile);
-
-        var sceneRoot = SceneLightingFactory.CreateDefault();
-        sceneRoot.Children.Add(CreateDeltaWorkspaceModel(deltaSnapshot.Profile));
-        sceneRoot.Children.Add(CreateDeltaPathModel(deltaSnapshot));
-        sceneRoot.Children.Add(CreateDeltaRobotModel(deltaSnapshot.Profile, frame));
-        DeltaViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+        deltaViewportPresenter.Present(new SchematicViewportScene(
+            CreateDeltaCamera(deltaSnapshot.Profile),
+            [
+                CreateDeltaWorkspaceModel(deltaSnapshot.Profile),
+                CreateDeltaPathModel(deltaSnapshot),
+                CreateDeltaRobotModel(deltaSnapshot.Profile, frame)
+            ]));
 
         var status = RobotFramePresenter.Create(
             frame,
@@ -677,14 +674,13 @@ public partial class MainWindow
         DroneTimeline.Value = droneFrameIndex;
 
         var frame = droneSnapshot.Frames[droneFrameIndex];
-        DroneViewport.Children.Clear();
-        DroneViewport.Camera = CreateDroneCamera(droneSnapshot.Profile);
-
-        var sceneRoot = SceneLightingFactory.CreateDefault();
-        sceneRoot.Children.Add(CreateDroneWorkspaceModel(droneSnapshot.Profile));
-        sceneRoot.Children.Add(CreateDronePathModel(droneSnapshot));
-        sceneRoot.Children.Add(CreateDroneModel(frame));
-        DroneViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+        droneViewportPresenter.Present(new SchematicViewportScene(
+            CreateDroneCamera(droneSnapshot.Profile),
+            [
+                CreateDroneWorkspaceModel(droneSnapshot.Profile),
+                CreateDronePathModel(droneSnapshot),
+                CreateDroneModel(frame)
+            ]));
 
         var status = RobotFramePresenter.Create(
             frame,
@@ -855,13 +851,14 @@ public partial class MainWindow
         IndustrialArmTimeline.Value = industrialArmFrameIndex;
         var frame = industrialArmSnapshot.Frames[industrialArmFrameIndex];
 
-        IndustrialArmViewport.Children.Clear();
-        IndustrialArmViewport.Camera = CreateIndustrialArmCamera(industrialArmSnapshot.Profile);
-        var sceneRoot = SceneLightingFactory.CreateDefault(ambientColor: Color.FromRgb(96, 106, 128));
-        sceneRoot.Children.Add(CreateIndustrialArmWorkspaceModel(industrialArmSnapshot.Profile));
-        sceneRoot.Children.Add(CreateIndustrialArmPathModel(industrialArmSnapshot));
-        sceneRoot.Children.Add(CreateIndustrialArmRobotModel(industrialArmSnapshot.Profile, frame));
-        IndustrialArmViewport.Children.Add(new ModelVisual3D { Content = sceneRoot });
+        industrialArmViewportPresenter.Present(new SchematicViewportScene(
+            CreateIndustrialArmCamera(industrialArmSnapshot.Profile),
+            [
+                CreateIndustrialArmWorkspaceModel(industrialArmSnapshot.Profile),
+                CreateIndustrialArmPathModel(industrialArmSnapshot),
+                CreateIndustrialArmRobotModel(industrialArmSnapshot.Profile, frame)
+            ],
+            ambientColor: Color.FromRgb(96, 106, 128)));
 
         var status = RobotFramePresenter.Create(
             frame,

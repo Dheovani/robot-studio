@@ -57,6 +57,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Centralized schematic WPF viewport lifecycle for all six 3D simulators behind a shared scene contract and presenter, including camera, lighting, model-root, and overlay replacement.
 - Refined the Drone mechanical model into a recognizable compact quadcopter with a low rounded-rectangle hull, integrated diagonal arms, paired propeller blades, and enclosed central avionics based on a common consumer-drone arrangement.
 - Refined the SCARA mechanical model with a compact pedestal, continuous light-colored link covers, a larger wrist housing, a blue vertical spindle, and a metal parallel gripper based on a recognizable industrial SCARA arrangement.
 - Defined G-code as TCP tool-space motion rather than direct joint or actuator commands; non-Cartesian families continue using Simple DSL until a compatible path planner and inverse kinematics can preserve that meaning.

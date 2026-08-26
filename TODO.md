@@ -66,7 +66,8 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Define the product boundary and initial catalog navigation between `Open Simulator` and `Explore Mechanics`; evaluate an internal switch only after the separate experiences are usable.
 - [x] Define renderer-neutral component-pose, semantic part identifier, hierarchical robot visual-model, demonstration, sampling, and transform-resolution contracts in `RobotStudio.Visualization` without graphics-library types.
 - [x] Define and test a presentation-only keyframe demonstration controller for fixed mechanical animations without making rendered meshes the source of robot state.
-- [ ] Extract robot-specific schematic scene composition and viewport lifecycle code from `MainWindow.xaml.cs` behind desktop rendering interfaces.
+- [x] Extract schematic WPF viewport lifecycle, camera replacement, lighting, model-root composition, and overlay replacement from `MainWindow` behind a shared desktop presenter contract.
+- [ ] Move robot-specific schematic geometry and path/workspace composition from the `MainWindow` partials into dedicated scene composers.
 - [x] Define and test a minimal version 1 asset manifest that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without placing materials, animation, or renderer concerns in the contract.
 - [x] Connect the Assimp GLB importer and semantic scene-node binder to the Cartesian showcase with an original packaged asset, retained semantic transforms, resource reuse, and explicit scene disposal.
 - [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
