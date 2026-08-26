@@ -523,14 +523,16 @@ Expected current behavior:
 - opens the 6-DOF Industrial Arm viewer from the selection screen;
 - returns from the Cartesian viewer to the selection screen;
 - validates the current DSL script from the Cartesian viewer;
-- groups dense Cartesian viewer controls into collapsible sidebar panels;
+- groups dense Cartesian viewer controls into focused Script, Control, Monitor, and View areas;
+- restores the saved scroll offset when returning to a sidebar area;
+- rejects invalid sidebar scroll offsets before they enter desktop navigation state;
 - shows technical tooltips for dense desktop controls;
 - shows didactic tooltips for workspace, TCP, homing, timeline, requested velocity, and effective velocity concepts;
 - exposes a searchable, categorized robotics glossary with unique and readable technical definitions;
 - remains usable at the current minimum desktop window size;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;
-- shows the current script line during playback;
+- selects and scrolls to the current script line directly in the editor during playback;
 - keeps the script editor height stable as commands are appended;
 - shows script editor line numbers;
 - shows simple command highlighting for `HOME`, `MOVE`, and `WAIT`;
@@ -615,6 +617,8 @@ Expected current behavior:
 - manually verifies that reset separates the major assemblies, assembly playback joins them in mechanical order, and semantic hit testing and highlighting remain available throughout the sequence.
 - manually verifies that the demonstration selector shows the individual-axis sequence and its description, resets the timeline on selection, and returns the machine to its initial pose after all three phases.
 - validates camera-plane pan direction, empty-viewport handling, fit-to-model margin, and invalid fit inputs without requiring a live renderer.
+- validates that the desktop language catalog exposes English and Brazilian Portuguese and maps each option to its packaged WPF resource dictionary.
+- manually verifies runtime language switching, localized catalog reconstruction, localized simulator navigation, and removal of glossary access from simulation headers.
 - validates that schematic viewport scene handoffs snapshot their model and overlay collections, preserve camera and lighting settings, and reject null visual elements before the WPF presenter mutates a live viewport.
 - manually verifies full-viewport orbit, middle-button and `Shift` + left-button pan, `Ctrl` + mouse-wheel zoom, and reset to model-derived framing in the mechanical showcase.
 - parses and validates version 1 visual-asset manifests, including schema/model compatibility, safe GLB paths, semantic node coverage, unknown parts, and multiple meshes mapped to one robot part;

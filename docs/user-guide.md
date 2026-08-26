@@ -59,6 +59,8 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, Drone, and 6-DOF Industrial Arm are available now. Cylindrical, Ackermann Steering, Omnidirectional, Self-Balancing, Stewart Platform, and Mobile Manipulator templates appear as planned learning paths and cannot be opened yet.
 
+Use the language selector in the catalog header to switch the interface between English and Brazilian Portuguese. Robot commands, DSL keywords, G-code words, axis names, and standard robotics abbreviations remain unchanged so scripts and technical notation stay consistent in either language. The robotics glossary is available from the catalog and is intentionally omitted from simulation toolbars.
+
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
 The Cartesian catalog card also opens a separate mechanical showcase through `Explore Mechanics`. In this view, drag with the left mouse button to orbit, drag with the middle mouse button or `Shift` + left mouse button to pan, and use `Ctrl` + mouse wheel to zoom. `Reset` restores the active demonstration and a camera framing calculated from the packaged model. The `View layer` selector switches among the assembled machine, the transparent drive-system inspection layer, a motion-axis layer with red X, green Y, and blue Z direction guides, and an exploded assembly that separates major components without replacing the schematic simulator. Selection and highlighting remain active in every layer. The first three layers offer a coordinated practical tour and an individual-axis inspection. Selecting `Exploded assembly` switches to an assembly sequence: `Reset` shows the separated components and `Play` joins the controller, platform, gantry, carriage, and tool in order. The description beneath the demonstration selector explains the active sequence before playback.
@@ -93,15 +95,17 @@ The 6-DOF Industrial Arm card also provides `Explore Mechanics`. Its industrial 
 
 Every available desktop viewer includes an example selector and a `Load Example` button. The non-Cartesian side panels also explain current movement concepts where that viewer already has a didactic explanation panel.
 
-Simulation workspaces use the same visual hierarchy across robot families: the active robot is identified in the header, the simulation viewport remains the primary surface, state/script/explanation information is grouped in the side panel, and playback navigation remains in the timeline footer. `Play` and `Simulate` are emphasized as primary actions; navigation, validation, file operations, and reset actions use a quieter secondary treatment.
+Simulation workspaces use the same visual hierarchy across robot families: the active robot is identified in the header, the simulation viewport remains the primary surface, state/script/explanation information is grouped in the side panel, and playback navigation remains in the timeline footer. `Simulate` is emphasized as the primary preparation action. Header playback, navigation, file operations, and reset actions use a quieter secondary treatment with the same hover feedback.
 
-Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading a script replaces the editor text and asks the student to validate or simulate before playback. Saving writes the current editor text without changing the simulation.
+The Cartesian and XY Plotter sidebars use a right-edge navigation rail with four focused areas: `Script` contains the editor and command console, `Control` contains manual movement and robot configuration, `Monitor` contains state, charts, timeline markers, and contextual movement explanations, and `View` contains overlays and camera controls. Switching areas preserves each area's scroll position and does not alter simulation state.
+
+Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading or editing a Cartesian-family script triggers automatic validation after a short pause. The compact status reports whether the script is valid and how many frames it would generate, while `Simulate` remains the explicit action that replaces the current playback. Saving writes the current editor text without changing the simulation. Example loading, file loading, and saving are available from the compact editor toolbar.
 
 When validation fails, the desktop app shows a student-facing summary. Syntax errors include the script line number when available, physical limit errors explain that the target is outside the workspace, and command argument errors suggest checking required values such as speed or duration.
 
 Desktop keyboard shortcuts:
 
-- `Ctrl+G`: open or close the searchable robotics glossary from the catalog or any simulation workspace.
+- `Ctrl+G`: open or close the searchable robotics glossary from the catalog.
 - `Ctrl+O`: load a script into the active viewer.
 - `Ctrl+S`: save the active viewer script.
 - `Ctrl+Enter`: validate the active script.
@@ -146,11 +150,12 @@ Current desktop controls:
 - `Robots` inside the Cartesian viewer to return to the selection screen.
 - Simple DSL/G-code dialect selector and script editor inside the Cartesian viewer.
 - script editor gutter with line numbers and command tags for `HOME`, `MOVE`, and `WAIT`.
-- collapsible sidebar panels for script, manual control, command console, robot state, charts, movement explanation, timeline markers, overlays, and camera controls.
+- a right-edge sidebar navigation rail that shows one focused Script, Control, Monitor, or View area at a time.
 - technical tooltips on dense script, manual control, overlay, camera, and timeline controls.
 - didactic tooltips for robotics concepts such as workspace, TCP, homing, timeline, requested velocity, and effective velocity.
-- `Validate` to parse the current script dialect and check Cartesian limits.
+- automatic debounced validation for the current script dialect and Cartesian limits.
 - `Simulate` to regenerate visual playback from the current script.
+- compact script validity and generated-frame status, with the active playback source selected directly in the editor.
 - validation messages summarize syntax errors, physical limit errors, and invalid command arguments with suggested next steps.
 - manual `HOME`, `X+`, `X-`, `Y+`, `Y-`, `Z+`, and `Z-` controls.
 - step size and requested speed fields for manual jog commands.

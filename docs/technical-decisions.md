@@ -257,7 +257,11 @@ Schematic 3D viewports use `SchematicViewportScene` as the desktop scene handoff
 
 Desktop script validation messages are formatted in `RobotStudio.Desktop.Scripting`. The parser and domain still throw explicit technical exceptions, while the desktop layer translates them into concise student-facing summaries with a probable category, the original detail, and a suggested next action.
 
+The Cartesian-family desktop sidebar uses presentation-only navigation state to expose one primary area at a time: Script, Control, Monitor, or View. Existing controls and event handlers remain the owners of their current behavior; navigation only changes visibility and restores per-area scroll offsets. Script edits are validated through a short desktop debounce, but validation does not capture a simulation session or replace playback. `Simulate` remains the explicit state-changing action. This keeps domain, scripting, planning, and simulation behavior independent of the WPF layout.
+
 The desktop start screen uses a didactic robot catalog made of family descriptors, template descriptors, availability status, capabilities, viewer descriptors, and complexity levels. This catalog is product metadata for navigation and learning progression; it does not implement robot simulation behavior.
+
+Desktop localization uses application-level WPF resource dictionaries selected at runtime. English is the default and Brazilian Portuguese is the first additional language. Static controls consume dynamic resources, while code-generated catalog cards resolve the same keys and are rebuilt after a language change. Executable DSL/G-code keywords, axis identifiers, units, and standard robotics abbreviations are intentionally language-neutral so changing the interface cannot change script semantics. Localization remains a desktop presentation concern and does not enter Domain, Motion, Scripting, or Simulation.
 
 Desktop viewers share reusable templates for script actions, playback actions, and contextual fault recovery. Non-Cartesian viewers also share a `ViewerTimeline` control. Recovery actions remain hidden during normal operation and are presented in the script panel only while the retained session is faulted.
 

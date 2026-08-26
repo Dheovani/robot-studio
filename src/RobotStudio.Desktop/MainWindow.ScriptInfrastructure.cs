@@ -212,7 +212,10 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateSnapshot(script, captureSession);
-            message = $"Script is valid. Generated {nextSnapshot.SceneFrameCount} playback frames.";
+            message = string.Format(
+                CultureInfo.CurrentCulture,
+                languageService.GetText("Script.ValidStatus"),
+                nextSnapshot.SceneFrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)

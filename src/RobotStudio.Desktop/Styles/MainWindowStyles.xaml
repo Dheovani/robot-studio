@@ -135,6 +135,63 @@
     <Setter Property="Background" Value="{StaticResource SubtleBorderBrush}" />
 </Style>
 
+<Style x:Key="SidebarRailButtonStyle" TargetType="RadioButton">
+    <Setter Property="Width" Value="44" />
+    <Setter Property="Height" Value="46" />
+    <Setter Property="Foreground" Value="{StaticResource MutedTextBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderBrush" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="3,0,0,0" />
+    <Setter Property="Cursor" Value="Hand" />
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="RadioButton">
+                <Border x:Name="RailChrome"
+                        Background="{TemplateBinding Background}"
+                        BorderBrush="{TemplateBinding BorderBrush}"
+                        BorderThickness="{TemplateBinding BorderThickness}">
+                    <ContentPresenter HorizontalAlignment="Center"
+                                      VerticalAlignment="Center" />
+                </Border>
+                <ControlTemplate.Triggers>
+                    <Trigger Property="IsMouseOver" Value="True">
+                        <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+                        <Setter TargetName="RailChrome" Property="Background" Value="{StaticResource SubtlePanelBackgroundBrush}" />
+                    </Trigger>
+                    <Trigger Property="IsChecked" Value="True">
+                        <Setter Property="Foreground" Value="#93C5FD" />
+                        <Setter TargetName="RailChrome" Property="Background" Value="{StaticResource PanelBackgroundBrush}" />
+                        <Setter TargetName="RailChrome" Property="BorderBrush" Value="{StaticResource ButtonBorderBrush}" />
+                    </Trigger>
+                </ControlTemplate.Triggers>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+
+<Style x:Key="FlatSidebarSectionStyle" TargetType="Expander">
+    <Setter Property="Margin" Value="0,0,0,22" />
+    <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
+    <Setter Property="Background" Value="Transparent" />
+    <Setter Property="BorderThickness" Value="0" />
+    <Setter Property="Padding" Value="0" />
+    <Setter Property="Template">
+        <Setter.Value>
+            <ControlTemplate TargetType="Expander">
+                <StackPanel>
+                    <ContentPresenter ContentSource="Header"
+                                      Margin="0,0,0,10"
+                                      TextElement.FontSize="16"
+                                      TextElement.FontWeight="SemiBold" />
+                    <ContentPresenter ContentSource="Content"
+                                      TextElement.FontSize="13"
+                                      TextElement.FontWeight="Normal" />
+                </StackPanel>
+            </ControlTemplate>
+        </Setter.Value>
+    </Setter>
+</Style>
+
 <Style x:Key="ViewerScriptEditorStyle"
        TargetType="TextBox"
        BasedOn="{StaticResource {x:Type TextBox}}">

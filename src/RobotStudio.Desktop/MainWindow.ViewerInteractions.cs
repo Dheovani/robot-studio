@@ -503,6 +503,31 @@ public partial class MainWindow
     {
         RefreshScriptEditorGutter();
         RefreshGCodeExplanations();
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        scriptValidationTimer.Stop();
+        SetScriptStatus(
+            languageService.GetText("Script.Checking"),
+            Color.FromRgb(148, 163, 184));
+        scriptValidationTimer.Start();
+    }
+
+    private void ScriptValidationTimer_Tick(object? sender, EventArgs e)
+    {
+        scriptValidationTimer.Stop();
+        if (TryCreateSnapshotFromScript(
+            ScriptEditorTextBox.Text,
+            out _,
+            out var message))
+        {
+            SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+            return;
+        }
+
+        SetScriptStatus(message, Color.FromRgb(248, 113, 113));
     }
 
     private void GCodeScriptTextBox_TextChanged(

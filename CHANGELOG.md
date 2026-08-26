@@ -6,6 +6,9 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Added
 
+- Added a compact right-edge navigation rail for the Cartesian and XY Plotter sidebars, separating Script, Control, Monitor, and View workflows while preserving each area's scroll position.
+- Added automatic debounced script validation with compact status feedback and direct active-line selection in the script editor.
+- Added runtime interface localization with English and Brazilian Portuguese resources, a catalog language selector, translated robot metadata, and language-neutral DSL/G-code semantics.
 - Added an introductory G-code dialect that maps `G28`, `G1`, and `G4` to the same homing, Cartesian movement, and wait domain commands used by the Simple DSL.
 - Added a desktop dialect selector for Cartesian and XY Plotter scripts, including G-code-aware examples, manual jogging, direct commands, validation, simulation, editor tags, and automatic dialect selection for `.robot` and `.gcode` files.
 - Added equivalent Simple DSL and G-code Cartesian example files for comparing both command languages.
@@ -57,6 +60,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Standardized simulator and mechanical-showcase headers with neutral playback actions and kept glossary access in the robot catalog instead of every workspace.
 - Centralized schematic WPF viewport lifecycle for all six 3D simulators behind a shared scene contract and presenter, including camera, lighting, model-root, and overlay replacement.
 - Refined the Drone mechanical model into a recognizable compact quadcopter with a low rounded-rectangle hull, integrated diagonal arms, paired propeller blades, and enclosed central avionics based on a common consumer-drone arrangement.
 - Refined the SCARA mechanical model with a compact pedestal, continuous light-colored link covers, a larger wrist housing, a blue vertical spindle, and a metal parallel gripper based on a recognizable industrial SCARA arrangement.

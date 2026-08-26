@@ -27,16 +27,16 @@
                         <Button Grid.Column="0"
                                 Margin="0,0,6,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Validate"
+                                Content="{DynamicResource Common.Validate}"
                                 Click="ValidateActiveScriptButton_Click" />
                         <Button Grid.Column="1"
                                 Margin="6,0,0,0"
-                                Content="Simulate"
+                                Content="{DynamicResource Common.Simulate}"
                                 Click="SimulateActiveScriptButton_Click" />
                     </Grid>
                     <Button Margin="0,0,0,10"
                             Style="{StaticResource SecondaryButtonStyle}"
-                            Content="Load Example"
+                            Content="{DynamicResource Common.LoadExample}"
                             Click="LoadActiveExampleButton_Click" />
                     <Grid Margin="0,0,0,10">
                         <Grid.ColumnDefinitions>
@@ -46,12 +46,12 @@
                         <Button Grid.Column="0"
                                 Margin="0,0,6,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Load Script"
+                                Content="{DynamicResource Common.LoadScript}"
                                 Click="LoadActiveScriptButton_Click" />
                         <Button Grid.Column="1"
                                 Margin="6,0,0,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Save Script"
+                                Content="{DynamicResource Common.SaveScript}"
                                 Click="SaveActiveScriptButton_Click" />
                     </Grid>
                     <ContentControl ContentTemplate="{DynamicResource ViewerRecoveryActionsTemplate}" />
@@ -71,7 +71,7 @@
                         <TextBlock Margin="0,0,0,8"
                                    Foreground="#FCA5A5"
                                    FontWeight="SemiBold"
-                                   Text="Simulation faulted" />
+                                   Text="{DynamicResource Viewer.SimulationFaulted}" />
                         <Grid>
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="*" />
@@ -85,7 +85,7 @@
                             <Button Grid.Column="1"
                                     Margin="6,0,0,0"
                                     Style="{StaticResource SecondaryButtonStyle}"
-                                    Content="Reset Fault"
+                                    Content="{DynamicResource Viewer.ResetFault}"
                                     ToolTip="Acknowledge the fault without changing pose or elapsed time."
                                     Click="SessionResetFaultButton_Click" />
                         </Grid>
@@ -95,26 +95,18 @@
 
             <DataTemplate x:Key="ViewerPlaybackActionsTemplate">
                 <StackPanel Orientation="Horizontal">
-                    <Button Width="34"
-                            Height="34"
-                            Margin="8,0,0,0"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            Content="?"
-                            FontSize="16"
-                            FontWeight="Bold"
-                            ToolTip="Open the robotics glossary (Ctrl+G)."
-                            Click="OpenGlossaryButton_Click" />
                     <Button Width="96"
                             Height="34"
                             Margin="8,0,0,0"
-                            Content="Play"
+                            Style="{StaticResource SecondaryButtonStyle}"
+                            Content="{DynamicResource Common.Play}"
                             Loaded="PlayPauseButton_Loaded"
                             Click="PlayPauseButton_Click" />
                     <Button Width="80"
                             Height="34"
                             Margin="8,0,0,0"
                             Style="{StaticResource SecondaryButtonStyle}"
-                            Content="Reset"
+                            Content="{DynamicResource Common.Reset}"
                             Click="ResetActivePlaybackButton_Click" />
                 </StackPanel>
             </DataTemplate>
@@ -151,29 +143,24 @@
                                    Foreground="{StaticResource SecondaryTextBrush}"
                                    FontSize="14"
                                    TextWrapping="Wrap"
-                                   Text="Choose a robot model to inspect, simulate, and control. Available models open directly; planned models show the future learning path." />
+                                   Text="{DynamicResource Catalog.Introduction}" />
                     </StackPanel>
 
                     <StackPanel Grid.Column="1"
                                 Margin="24,3,0,0"
                                 VerticalAlignment="Top"
                                 Orientation="Horizontal">
-                        <Border Height="34"
-                                Padding="12,0"
-                                Background="{StaticResource SubtlePanelBackgroundBrush}"
-                                BorderBrush="{StaticResource BorderBrush}"
-                                BorderThickness="1"
-                                CornerRadius="4">
-                            <TextBlock VerticalAlignment="Center"
-                                       Foreground="#93C5FD"
-                                       FontWeight="SemiBold"
-                                       Text="Robot Catalog" />
-                        </Border>
+                        <ComboBox x:Name="LanguageComboBox"
+                                  Width="156"
+                                  Height="34"
+                                  VerticalContentAlignment="Center"
+                                  ToolTip="{DynamicResource Catalog.Language.ToolTip}"
+                                  SelectionChanged="LanguageComboBox_SelectionChanged" />
                         <Button Width="88"
                                 Height="34"
                                 Margin="8,0,0,0"
                                 Style="{StaticResource SecondaryButtonStyle}"
-                                Content="Glossary"
+                                Content="{DynamicResource Common.Glossary}"
                                 ToolTip="Open the robotics glossary (Ctrl+G)."
                                 Click="OpenGlossaryButton_Click" />
                     </StackPanel>
@@ -218,7 +205,7 @@
                             HorizontalAlignment="Right">
                     <Button Style="{StaticResource ViewerToolbarButtonStyle}"
                             Click="BackToSelectionButton_Click"
-                            Content="Robots" />
+                            Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -247,22 +234,115 @@
                               Style="{StaticResource ViewerSplitterStyle}" />
 
                 <Border Grid.Column="2"
+                        Padding="0"
                         Style="{StaticResource ViewerSidebarStyle}">
-                    <ScrollViewer VerticalScrollBarVisibility="Auto"
-                                  HorizontalScrollBarVisibility="Disabled">
-                        <StackPanel Margin="0,0,10,0">
-                            <Expander Header="Script"
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="44" />
+                        </Grid.ColumnDefinitions>
+
+                        <Border Grid.Column="1"
+                                Background="{StaticResource AppBackgroundBrush}"
+                                BorderBrush="{StaticResource SubtleBorderBrush}"
+                                BorderThickness="1,0,0,0">
+                            <StackPanel>
+                                <RadioButton x:Name="ScriptSidebarAreaButton"
+                                             GroupName="CartesianSidebarArea"
+                                             IsChecked="True"
+                                             Style="{StaticResource SidebarRailButtonStyle}"
+                                             Tag="Script"
+                                             ToolTip="{DynamicResource Sidebar.Script}"
+                                             AutomationProperties.Name="{DynamicResource Sidebar.Script}"
+                                             Checked="SidebarAreaButton_Checked">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Text="&#xE943;" />
+                                </RadioButton>
+                                <RadioButton x:Name="ControlSidebarAreaButton"
+                                             GroupName="CartesianSidebarArea"
+                                             Style="{StaticResource SidebarRailButtonStyle}"
+                                             Tag="Control"
+                                             ToolTip="{DynamicResource Sidebar.Control}"
+                                             AutomationProperties.Name="{DynamicResource Sidebar.Control}"
+                                             Checked="SidebarAreaButton_Checked">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Text="&#xE713;" />
+                                </RadioButton>
+                                <RadioButton x:Name="MonitorSidebarAreaButton"
+                                             GroupName="CartesianSidebarArea"
+                                             Style="{StaticResource SidebarRailButtonStyle}"
+                                             Tag="Monitor"
+                                             ToolTip="{DynamicResource Sidebar.Monitor}"
+                                             AutomationProperties.Name="{DynamicResource Sidebar.Monitor}"
+                                             Checked="SidebarAreaButton_Checked">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Text="&#xE9D2;" />
+                                </RadioButton>
+                                <RadioButton x:Name="ViewSidebarAreaButton"
+                                             GroupName="CartesianSidebarArea"
+                                             Style="{StaticResource SidebarRailButtonStyle}"
+                                             Tag="View"
+                                             ToolTip="{DynamicResource Sidebar.View}"
+                                             AutomationProperties.Name="{DynamicResource Sidebar.View}"
+                                             Checked="SidebarAreaButton_Checked">
+                                    <TextBlock FontFamily="Segoe MDL2 Assets" FontSize="20" Text="&#xE890;" />
+                                </RadioButton>
+                            </StackPanel>
+                        </Border>
+
+                        <ScrollViewer x:Name="CartesianSidebarScrollViewer"
+                                      Grid.Column="0"
+                                      Padding="12"
+                                      VerticalScrollBarVisibility="Auto"
+                                      HorizontalScrollBarVisibility="Disabled">
+                            <StackPanel>
+                            <Expander x:Name="ScriptSidebarSection"
+                                      Header="{DynamicResource Viewer.Script}"
                                       IsExpanded="True"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
                                       ToolTip="Edit commands in the selected dialect before validating or simulating the robot.">
                                 <StackPanel Margin="0,10,0,0">
-                                    <TextBlock Text="Dialect"
+                                    <StackPanel Margin="0,0,0,10"
+                                                HorizontalAlignment="Right"
+                                                Orientation="Horizontal">
+                                        <Button Width="32"
+                                                Height="30"
+                                                Margin="0,0,6,0"
+                                                Padding="0"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                AutomationProperties.Name="Load example"
+                                                Content="&#xE82D;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="15"
+                                                ToolTip="{DynamicResource Common.LoadExample}"
+                                                Click="LoadCartesianExampleButton_Click" />
+                                        <Button Width="32"
+                                                Height="30"
+                                                Margin="0,0,6,0"
+                                                Padding="0"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                AutomationProperties.Name="Load script"
+                                                Content="&#xE8E5;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="15"
+                                                ToolTip="{DynamicResource Common.LoadScript}"
+                                                Click="LoadCartesianScriptButton_Click" />
+                                        <Button Width="32"
+                                                Height="30"
+                                                Padding="0"
+                                                Style="{StaticResource SecondaryButtonStyle}"
+                                                AutomationProperties.Name="Save script"
+                                                Content="&#xE74E;"
+                                                FontFamily="Segoe MDL2 Assets"
+                                                FontSize="15"
+                                                ToolTip="{DynamicResource Common.SaveScript}"
+                                                Click="SaveCartesianScriptButton_Click" />
+                                    </StackPanel>
+                                    <TextBlock Text="{DynamicResource Viewer.Dialect}"
                                                Foreground="#94A3B8" />
                                     <ComboBox x:Name="ScriptDialectComboBox"
                                               Margin="0,4,0,8"
                                               DisplayMemberPath="Name"
                                               ToolTip="Choose the command language used by the Cartesian script editor."
                                               SelectionChanged="ScriptDialectComboBox_SelectionChanged" />
-                                    <TextBlock Text="Example"
+                                    <TextBlock Text="{DynamicResource Viewer.Example}"
                                                Foreground="#94A3B8" />
                                     <ComboBox x:Name="CartesianExampleComboBox"
                                               Margin="0,4,0,8"
@@ -273,11 +353,6 @@
                                                Foreground="#CBD5E1"
                                                TextWrapping="Wrap"
                                                Text="Select an example to load a starter script." />
-                                    <Button Margin="0,0,0,10"
-                                            Content="Load Example"
-                                            ToolTip="Load the selected example into the script editor and regenerate playback."
-                                            Click="LoadCartesianExampleButton_Click" />
-
                                     <Border Height="190"
                                     Margin="0,10,0,10"
                                     BorderBrush="#334155"
@@ -319,45 +394,15 @@
                                 </Grid>
                             </Border>
 
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Button Grid.Column="0"
-                                        Margin="0,0,6,0"
-                                        Content="Validate"
-                                        ToolTip="Parse the selected script dialect and check Cartesian limits without changing playback."
-                                        Click="ValidateScriptButton_Click" />
-                                <Button Grid.Column="1"
-                                        Margin="6,0,0,0"
-                                        Content="Simulate"
+                            <Button Margin="0,0,0,10"
+                                        Content="{DynamicResource Common.Simulate}"
                                         ToolTip="Generate a deterministic playback snapshot from the current valid script."
                                         Click="SimulateScriptButton_Click" />
-                            </Grid>
-
-                            <Grid Margin="0,0,0,10">
-                                <Grid.ColumnDefinitions>
-                                    <ColumnDefinition Width="*" />
-                                    <ColumnDefinition Width="*" />
-                                </Grid.ColumnDefinitions>
-
-                                <Button Grid.Column="0"
-                                        Margin="0,0,6,0"
-                                        Content="Load Script"
-                                        ToolTip="Load a RobotStudio DSL or G-code script from a local text file."
-                                        Click="LoadCartesianScriptButton_Click" />
-                                <Button Grid.Column="1"
-                                        Margin="6,0,0,0"
-                                        Content="Save Script"
-                                        ToolTip="Save the current DSL or G-code script to a local text file."
-                                        Click="SaveCartesianScriptButton_Click" />
-                            </Grid>
 
                             <TextBlock x:Name="ScriptStatusText"
-                                       Margin="0,0,0,18"
+                                       Margin="0,0,0,12"
                                        Foreground="#94A3B8"
+                                       FontWeight="SemiBold"
                                        TextWrapping="Wrap"
                                        Text="Choose a dialect, edit the script, and validate it before simulation." />
 
@@ -365,17 +410,14 @@
 
                             <ContentControl ContentTemplate="{StaticResource ViewerRecoveryActionsTemplate}" />
 
-                            <TextBlock x:Name="CurrentScriptLineText"
-                                       Margin="0,0,0,18"
-                                       Foreground="#93C5FD"
-                                       TextWrapping="Wrap"
-                                       Text="Current script line: -" />
                                 </StackPanel>
                             </Expander>
 
                             <Expander x:Name="CartesianProfileExpander"
-                                      Header="Robot Configuration"
+                                      Header="{DynamicResource Viewer.RobotConfiguration}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Configure Cartesian axis limits, maximum velocity, and maximum acceleration.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid>
@@ -443,8 +485,11 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Manual Control"
+                            <Expander x:Name="ControlManualSection"
+                                      Header="{DynamicResource Viewer.ManualControl}"
                                       IsExpanded="True"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Jog the simulated Cartesian robot by appending commands in the selected dialect.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
@@ -512,8 +557,10 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Command Console"
+                            <Expander x:Name="ScriptConsoleSection"
+                                      Header="{DynamicResource Viewer.CommandConsole}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
                                       ToolTip="Execute one command in the selected dialect and append valid commands to the script.">
                                 <StackPanel Margin="0,10,0,0">
                                     <Grid Margin="0,10,0,10">
@@ -560,8 +607,11 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Robot State"
+                            <Expander x:Name="MonitorStateSection"
+                                      Header="{DynamicResource Viewer.RobotState}"
                                       IsExpanded="True"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="{x:Static didactics:DidacticTooltipCatalog.RobotState}">
                                 <Grid Margin="0,12,0,20">
                                 <Grid.ColumnDefinitions>
@@ -580,22 +630,22 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="{DynamicResource Viewer.State}" />
                                 <TextBlock x:Name="StateValueText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Position" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Position}" />
                                 <TextBlock x:Name="PositionValueText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Command}" />
                                 <TextBlock x:Name="CommandValueText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Source" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Source}" />
                                 <TextBlock x:Name="SourceValueText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Time}" />
                                 <TextBlock x:Name="TimeValueText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Frames" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Frames}" />
                                 <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
 
                                 <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Profile phase" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
@@ -609,8 +659,11 @@
                             </Grid>
                             </Expander>
 
-                            <Expander Header="Charts"
+                            <Expander x:Name="MonitorChartsSection"
+                                      Header="{DynamicResource Viewer.Charts}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Inspect position, velocity, state, and distance values derived from playback frames.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Text="Position Chart"
@@ -735,8 +788,11 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Movement Explanation"
+                            <Expander x:Name="MonitorExplanationSection"
+                                      Header="{DynamicResource Viewer.MovementExplanation}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Read a didactic explanation of the current command and movement constraints.">
                                 <TextBlock x:Name="MovementExplanationText"
                                        Margin="0,10,0,20"
@@ -747,8 +803,11 @@
                                        Text="Open a robot simulation to inspect command explanations." />
                             </Expander>
 
-                            <Expander Header="Timeline Markers"
+                            <Expander x:Name="MonitorTimelineSection"
+                                      Header="{DynamicResource Viewer.TimelineMarkers}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="{x:Static didactics:DidacticTooltipCatalog.Timeline}">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Margin="0,10,0,4"
@@ -783,10 +842,15 @@
                                 </StackPanel>
                             </Expander>
 
-                            <Expander Header="Overlays"
+                            <Expander x:Name="ViewOverlaysSection"
+                                      Header="{DynamicResource Viewer.Overlays}"
                                       IsExpanded="False"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Show or hide educational 3D overlays without regenerating the simulation.">
-                                <UniformGrid Columns="2" Margin="0,10,0,20">
+                                <UniformGrid Columns="2"
+                                             Margin="0,10,0,20"
+                                             TextElement.FontSize="13">
                                 <CheckBox x:Name="ShowGridCheckBox"
                                           Margin="0,0,8,8"
                                           Foreground="#CBD5E1"
@@ -862,8 +926,11 @@
                             </UniformGrid>
                             </Expander>
 
-                            <Expander Header="Camera"
+                            <Expander x:Name="ViewCameraSection"
+                                      Header="{DynamicResource Viewer.Camera}"
                                       IsExpanded="True"
+                                      Style="{StaticResource FlatSidebarSectionStyle}"
+                                      Visibility="Collapsed"
                                       ToolTip="Control only the desktop camera. This does not change robot simulation data.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Azimuth" />
@@ -933,6 +1000,7 @@
                             </Expander>
                         </StackPanel>
                     </ScrollViewer>
+                    </Grid>
                 </Border>
             </Grid>
 
@@ -1016,7 +1084,7 @@
                             HorizontalAlignment="Right">
                     <Button Style="{StaticResource ViewerToolbarButtonStyle}"
                             Click="BackToSelectionButton_Click"
-                            Content="Robots" />
+                            Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1116,7 +1184,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1240,7 +1308,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1364,7 +1432,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1488,7 +1556,7 @@
                 <StackPanel DockPanel.Dock="Right"
                             Orientation="Horizontal"
                             HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>
@@ -1596,7 +1664,7 @@
                     <TextBlock Text="Industrial arm simulation" Style="{StaticResource ViewerSubtitleStyle}" />
                 </StackPanel>
                 <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="Robots" />
+                    <Button Style="{StaticResource ViewerToolbarButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
                     <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
                 </StackPanel>
             </DockPanel>

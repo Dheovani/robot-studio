@@ -71,6 +71,10 @@ public partial class MainWindow : Window
         new(Color.FromRgb(96, 165, 250));
 
     private readonly DispatcherTimer playbackTimer;
+    private readonly DispatcherTimer scriptValidationTimer = new()
+    {
+        Interval = TimeSpan.FromMilliseconds(350)
+    };
     private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
     private readonly IRobotScriptDialect simpleDslDialect = new RobotScriptParser();
     private readonly IRobotScriptDialect gCodeDialect = new GCodeParser();
@@ -222,6 +226,7 @@ public partial class MainWindow : Window
             Interval = basePlaybackInterval
         };
         playbackTimer.Tick += PlaybackTimer_Tick;
+        scriptValidationTimer.Tick += ScriptValidationTimer_Tick;
 
         Loaded += MainWindow_Loaded;
     }
@@ -230,6 +235,7 @@ public partial class MainWindow : Window
         object sender,
         RoutedEventArgs e)
     {
+        InitializeLanguageSelector();
         ScriptDialectComboBox.ItemsSource = RobotScriptDialects.All
             .Where(dialect => dialect.Status == RobotScriptDialectStatus.Available);
         ScriptDialectComboBox.SelectedItem = RobotScriptDialects.SimpleDsl;
@@ -262,7 +268,8 @@ public partial class MainWindow : Window
     {
         var isControlPressed = Keyboard.Modifiers.HasFlag(ModifierKeys.Control);
 
-        if (isControlPressed && e.Key == Key.G)
+        if (isControlPressed && e.Key == Key.G &&
+            RobotSelectionView.Visibility == Visibility.Visible)
         {
             ToggleGlossary();
             e.Handled = true;

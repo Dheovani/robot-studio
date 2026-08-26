@@ -60,16 +60,15 @@ public partial class MainWindow
     {
         if (sceneFrame.CommandSource is null)
         {
-            CurrentScriptLineText.Text = "Current script line: -";
             ScriptEditorTextBox.Select(0, 0);
+            UpdateContextualMonitorSections();
             return;
         }
 
-        CurrentScriptLineText.Text =
-            $"Current script line: {sceneFrame.CommandSource.LineNumber} | {sceneFrame.CommandSource.Text}";
-
         var selection = GetLineSelection(ScriptEditorTextBox.Text, sceneFrame.CommandSource.LineNumber);
         ScriptEditorTextBox.Select(selection.Start, selection.Length);
+        ScriptEditorTextBox.ScrollToLine(sceneFrame.CommandSource.LineNumber - 1);
+        UpdateContextualMonitorSections();
     }
 
     private CartesianPlaybackSnapshot CreateSnapshot(
@@ -332,7 +331,7 @@ public partial class MainWindow
 
         topContent.Children.Add(new TextBlock
         {
-            Text = template.Name,
+            Text = languageService.GetText($"Catalog.Name.{template.Id}", template.Name),
             Foreground = new SolidColorBrush(Color.FromRgb(249, 250, 251)),
             FontSize = 21,
             FontWeight = FontWeights.SemiBold
@@ -340,7 +339,7 @@ public partial class MainWindow
 
         topContent.Children.Add(new TextBlock
         {
-            Text = template.Family.Name,
+            Text = languageService.GetText($"Family.{template.Family.Id}", template.Family.Name),
             Margin = new Thickness(0, 2, 0, 0),
             Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
             FontSize = 13
@@ -363,7 +362,7 @@ public partial class MainWindow
 
         middleContent.Children.Add(new TextBlock
         {
-            Text = template.Description,
+            Text = languageService.GetText($"Catalog.Description.{template.Id}", template.Description),
             Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
             LineHeight = 18,
             TextWrapping = TextWrapping.Wrap
@@ -371,7 +370,7 @@ public partial class MainWindow
 
         middleContent.Children.Add(new TextBlock
         {
-            Text = "Capabilities",
+            Text = languageService.GetText("Catalog.Capabilities"),
             Margin = new Thickness(0, 16, 0, 8),
             Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
             FontSize = 12,
@@ -400,7 +399,7 @@ public partial class MainWindow
 
             var simulatorButton = new Button
             {
-                Content = "Open Simulator",
+                Content = languageService.GetText("Catalog.OpenSimulator"),
                 Tag = template
             };
             simulatorButton.Click += OpenRobotButton_Click;
@@ -415,7 +414,7 @@ public partial class MainWindow
                 {
                     Margin = new Thickness(5, 0, 0, 0),
                     Style = (Style)FindResource("SecondaryButtonStyle"),
-                    Content = "Explore Mechanics",
+                    Content = languageService.GetText("Catalog.ExploreMechanics"),
                     Tag = template
                 };
                 showcaseButton.Click += ExploreMechanicsButton_Click;
@@ -432,7 +431,7 @@ public partial class MainWindow
             Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
             FontSize = 12,
             FontWeight = FontWeights.SemiBold,
-            Text = "Availability: Planned for a future release"
+            Text = languageService.GetText("Catalog.PlannedAvailability")
         };
 
         return new Border
@@ -480,7 +479,7 @@ public partial class MainWindow
             RobotCardMaximumColumns);
     }
 
-    private static Border CreateStatusBadge(RobotAvailabilityStatus status) =>
+    private Border CreateStatusBadge(RobotAvailabilityStatus status) =>
         new()
         {
             Margin = new Thickness(0, 0, 8, 0),
@@ -492,14 +491,14 @@ public partial class MainWindow
             CornerRadius = new CornerRadius(4),
             Child = new TextBlock
             {
-                Text = status.ToString(),
+                Text = languageService.GetText($"Status.{status}", status.ToString()),
                 Foreground = GetStatusBrush(status),
                 FontSize = 12,
                 FontWeight = FontWeights.SemiBold
             }
         };
 
-    private static Border CreateComplexityBadge(RobotComplexityLevel complexity) =>
+    private Border CreateComplexityBadge(RobotComplexityLevel complexity) =>
         new()
         {
             Margin = new Thickness(0, 0, 8, 0),
@@ -511,14 +510,14 @@ public partial class MainWindow
             CornerRadius = new CornerRadius(4),
             Child = new TextBlock
             {
-                Text = complexity.ToString(),
+                Text = languageService.GetText($"Complexity.{complexity}", complexity.ToString()),
                 Foreground = new SolidColorBrush(Color.FromRgb(191, 219, 254)),
                 FontSize = 12,
                 FontWeight = FontWeights.SemiBold
             }
         };
 
-    private static WrapPanel CreateCapabilityTags(IReadOnlyList<RobotCapability> capabilities)
+    private WrapPanel CreateCapabilityTags(IReadOnlyList<RobotCapability> capabilities)
     {
         var panel = new WrapPanel();
 
@@ -534,7 +533,9 @@ public partial class MainWindow
                 CornerRadius = new CornerRadius(4),
                 Child = new TextBlock
                 {
-                    Text = FormatCapability(capability),
+                    Text = languageService.GetText(
+                        $"Capability.{capability}",
+                        FormatCapability(capability)),
                     Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
                     FontSize = 12
                 }
@@ -726,6 +727,11 @@ public partial class MainWindow
         RefreshScriptEditorGutter();
         RefreshGCodeExplanations();
         UpdateSessionRecoveryControls();
+        if (viewerKind is RobotViewerKind.CartesianThreeDimensional or
+            RobotViewerKind.XYPlotterTwoDimensional)
+        {
+            ResetSidebarNavigation();
+        }
     }
 
     private void RefreshGCodeExplanations()

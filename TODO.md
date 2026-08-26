@@ -98,3 +98,21 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [ ] Implement the Mobile Manipulator as a capstone that coordinates a mobile base and articulated arm.
 - [ ] Expand the catalog by mapping new robots for implementation.
 - [ ] Add tests before each new robot family is considered complete.
+
+## 8. Desktop UI And Visual Polish
+
+- [ ] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
+- [ ] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
+- [ ] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
+- [ ] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
+- [ ] Standardize control heights, spacing, padding, corner radii, borders, and focus states across desktop UI components.
+- [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.
+- [ ] Define consistent typography and contrast levels for titles, labels, metadata, descriptions, status text, and secondary information.
+- [ ] Standardize toolbar and panel-header presentation across simulator, catalog, glossary, and mechanics views.
+- [ ] Refine the Robotics Glossary dialog with consistent themed search, filter, close, scrolling, and result-card components.
+- [ ] Refine simulator chrome around the 3D viewport, including toolbar hierarchy, side-panel organization, and playback controls, without changing the renderer itself.
+- [ ] Replace verbose script validation and playback messages with compact contextual status indicators.
+- [x] Highlight the active script line directly in the editor instead of duplicating it in a separate status block.
+- [x] Move low-priority script actions such as load, save, and example loading into a compact toolbar or overflow menu where appropriate.
+- [ ] Introduce shared desktop UI components for buttons, dropdowns, text inputs, icon buttons, badges, panels, toolbars, dialogs, and status indicators.
+- [ ] Centralize desktop design tokens for colors, spacing, typography, borders, radii, and interaction states to keep future views visually consistent.

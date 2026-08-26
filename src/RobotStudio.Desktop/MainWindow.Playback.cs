@@ -143,7 +143,7 @@ public partial class MainWindow
 
     private void UpdatePlaybackButtonLabels()
     {
-        var label = isPlaying ? "Pause" : "Play";
+        var label = languageService.GetText(isPlaying ? "Common.Pause" : "Common.Play");
         foreach (var button in playPauseButtons)
         {
             button.Content = label;

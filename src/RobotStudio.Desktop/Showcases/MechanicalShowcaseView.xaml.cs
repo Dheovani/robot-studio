@@ -750,7 +750,7 @@ public partial class MechanicalShowcaseView : UserControl
         {
             stopwatch.Restart();
             timer.Start();
-            HeaderPlayButton.Content = "Pause";
+            HeaderPlayButton.Content = LocalizedText("Common.Pause", "Pause");
         }
     }
 
@@ -775,7 +775,7 @@ public partial class MechanicalShowcaseView : UserControl
 
         stopwatch.Reset();
         timer.Stop();
-        HeaderPlayButton.Content = "Play";
+        HeaderPlayButton.Content = LocalizedText("Common.Play", "Play");
     }
 
     private void ResetDemonstration()
@@ -783,9 +783,12 @@ public partial class MechanicalShowcaseView : UserControl
         stopwatch.Reset();
         timer.Stop();
         playbackOffset = TimeSpan.Zero;
-        HeaderPlayButton.Content = "Play";
+        HeaderPlayButton.Content = LocalizedText("Common.Play", "Play");
         ApplyDemonstrationTime(TimeSpan.Zero);
     }
+
+    private string LocalizedText(string key, string fallback) =>
+        TryFindResource(key) as string ?? fallback;
 
     private void ShowcaseViewportHost_MouseDown(object sender, MouseButtonEventArgs e)
     {
