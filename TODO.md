@@ -101,9 +101,9 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 
 ## 8. Desktop UI And Visual Polish
 
-- [ ] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
-- [ ] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
-- [ ] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
+- [x] Replace native desktop select controls with a reusable themed dropdown component that matches the dark RobotStudio visual language.
+- [x] Apply the themed dropdown consistently to dialect, examples, language, glossary topics, playback speed, visualization layers, demonstrations, and future selectors.
+- [x] Replace native light scrollbars with compact themed scrollbars across sidebars, dialogs, catalog views, editors, and other scrollable panels.
 - [ ] Define consistent primary, secondary, and ghost button styles so secondary actions do not visually compete with main workflow actions.
 - [ ] Standardize control heights, spacing, padding, corner radii, borders, and focus states across desktop UI components.
 - [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.

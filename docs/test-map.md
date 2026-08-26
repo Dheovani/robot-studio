@@ -530,6 +530,8 @@ Expected current behavior:
 - shows didactic tooltips for workspace, TCP, homing, timeline, requested velocity, and effective velocity concepts;
 - exposes a searchable, categorized robotics glossary with unique and readable technical definitions;
 - remains usable at the current minimum desktop window size;
+- renders dropdowns with dark closed, popup, hover, focus, selected, and disabled states across desktop views;
+- renders compact themed vertical and horizontal scrollbars with hover and drag feedback;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;
 - selects and scrolls to the current script line directly in the editor during playback;

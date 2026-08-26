@@ -6,6 +6,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Added
 
+- Added reusable dark-theme dropdown and compact scrollbar styles across the catalog, simulators, glossary, editors, and mechanical showcases.
 - Added a compact right-edge navigation rail for the Cartesian and XY Plotter sidebars, separating Script, Control, Monitor, and View workflows while preserving each area's scroll position.
 - Added automatic debounced script validation with compact status feedback and direct active-line selection in the script editor.
 - Added runtime interface localization with English and Brazilian Portuguese resources, a catalog language selector, translated robot metadata, and language-neutral DSL/G-code semantics.
