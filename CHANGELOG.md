@@ -6,6 +6,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Added
 
+- Added a cross-family rendering smoke gate covering assets, semantic selection, teaching modes, demonstrations, and transforms for all eight mechanical showcases.
 - Added dedicated schematic scene composers for every implemented robot simulator, isolating cameras, overlays, workspaces, trajectories, coordinate mapping, and robot geometry from the desktop window.
 - Added an immutable 2D canvas scene contract and WPF presenter for the Differential Drive simulator.
 - Added reusable dark-theme dropdown and compact scrollbar styles across the catalog, simulators, glossary, editors, and mechanical showcases.
