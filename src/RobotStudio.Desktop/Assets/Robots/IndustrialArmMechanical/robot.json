@@ -1,0 +1,28 @@
+{
+  "schemaVersion": 1,
+  "modelId": "industrial-arm-mechanical",
+  "assetFile": "robot.glb",
+  "nodes": [
+    { "nodeName": "RS_base", "partId": "base" },
+    { "nodeName": "RS_controller", "partId": "controller" },
+    { "nodeName": "RS_j1-turntable", "partId": "j1-turntable" },
+    { "nodeName": "RS_j1-motor", "partId": "j1-motor" },
+    { "nodeName": "RS_j2-shoulder", "partId": "j2-shoulder" },
+    { "nodeName": "RS_j2-motor", "partId": "j2-motor" },
+    { "nodeName": "RS_j2-reduction", "partId": "j2-reduction" },
+    { "nodeName": "RS_upper-arm", "partId": "upper-arm" },
+    { "nodeName": "RS_upper-arm-cover", "partId": "upper-arm-cover" },
+    { "nodeName": "RS_upper-service-cable", "partId": "upper-service-cable" },
+    { "nodeName": "RS_j3-elbow", "partId": "j3-elbow" },
+    { "nodeName": "RS_j3-motor", "partId": "j3-motor" },
+    { "nodeName": "RS_forearm", "partId": "forearm" },
+    { "nodeName": "RS_forearm-cover", "partId": "forearm-cover" },
+    { "nodeName": "RS_forearm-service-cable", "partId": "forearm-service-cable" },
+    { "nodeName": "RS_j4-wrist-roll", "partId": "j4-wrist-roll" },
+    { "nodeName": "RS_wrist-roll-housing", "partId": "wrist-roll-housing" },
+    { "nodeName": "RS_j5-wrist-bend", "partId": "j5-wrist-bend" },
+    { "nodeName": "RS_wrist-bend-housing", "partId": "wrist-bend-housing" },
+    { "nodeName": "RS_j6-tool-roll", "partId": "j6-tool-roll" },
+    { "nodeName": "RS_tool", "partId": "tool" }
+  ]
+}

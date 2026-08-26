@@ -6,7 +6,7 @@ using System.Text.Json.Nodes;
 if (args.Length is < 1 or > 2)
 {
     Console.Error.WriteLine(
-        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm|delta|drone] <output.glb>");
+        "Usage: dotnet run --project tools/RobotStudio.VisualAssetBuilder -- [cartesian|xy-plotter|differential-drive|scara|simple-arm|delta|drone|industrial-arm] <output.glb>");
     return 1;
 }
 
@@ -22,6 +22,7 @@ var asset = modelId switch
     "simple-arm" => SimpleArmAsset.Create(),
     "delta" => DeltaAsset.Create(),
     "drone" => DroneAsset.Create(),
+    "industrial-arm" => IndustrialArmAsset.Create(),
     _ => throw new ArgumentException($"Unknown visual asset model '{modelId}'.", nameof(args))
 };
 asset.Write(outputPath);
@@ -604,6 +605,120 @@ internal static class DeltaAsset
     ];
 
     private sealed record Station(string Id, Vector2 Radial, Vector2 Tangent);
+}
+
+internal static class IndustrialArmAsset
+{
+    public static GlbBuilder Create()
+    {
+        var asset = new GlbBuilder("6-DOF Industrial Arm Mechanical Showcase");
+        var dark = asset.Material("Graphite joint housing", 0.035f, 0.045f, 0.06f, 0.48f, 0.38f);
+        var frame = asset.Material("RobotStudio blue structural shell", 0.035f, 0.28f, 0.72f, 0.48f, 0.3f);
+        var shell = asset.Material("Light composite cover", 0.78f, 0.84f, 0.9f, 0.12f, 0.34f);
+        var steel = asset.Material("Machined steel", 0.58f, 0.64f, 0.72f, 0.86f, 0.2f);
+        var motor = asset.Material("Servo motor", 0.1f, 0.13f, 0.18f, 0.7f, 0.28f);
+        var transmission = asset.Material("Reduction stage", 0.9f, 0.38f, 0.04f, 0.62f, 0.25f);
+        var tool = asset.Material("Tooling alloy", 0.52f, 0.58f, 0.66f, 0.9f, 0.18f);
+        var cable = asset.Material("Service cable", 0.015f, 0.02f, 0.028f, 0.05f, 0.88f);
+        var display = asset.Material(
+            "Controller status",
+            0.02f,
+            0.55f,
+            0.82f,
+            0.18f,
+            0.2f,
+            emissive: new(0.02f, 0.3f, 0.5f));
+
+        asset.Part("base");
+        asset.Box("base", new(0, 0, 0.1f), new(3.2f, 2.8f, 0.2f), dark);
+        asset.Cylinder("base", new(0, 0, 0.2f), new(0, 0, 0.68f), 1.32f, dark);
+        foreach (var x in new[] { -1.35f, 1.35f })
+        {
+            foreach (var y in new[] { -1.15f, 1.15f })
+            {
+                asset.Cylinder("base", new(x, y, 0.18f), new(x, y, 0.38f), 0.12f, steel);
+            }
+        }
+
+        asset.Part("controller", "base");
+        asset.Box("controller", new(-1.42f, 0, 0.9f), new(0.72f, 1.5f, 1.2f), dark);
+        asset.Box("controller", new(-1.8f, 0, 0.95f), new(0.04f, 0.82f, 0.46f), display);
+
+        asset.Part("j1-turntable", "base");
+        asset.Cylinder("j1-turntable", new(0, 0, 0.62f), new(0, 0, 1.48f), 1.08f, frame);
+        asset.Cylinder("j1-turntable", new(0, 0, 1.25f), new(0, 0, 1.65f), 0.9f, shell);
+        asset.Box("j1-turntable", new(0, 0, 1.75f), new(1.78f, 1.62f, 1.1f), frame);
+
+        asset.Part("j1-motor", "j1-turntable");
+        asset.Cylinder("j1-motor", new(0, 0, 0.65f), new(0, 0, 1.32f), 0.56f, motor);
+
+        asset.Part("j2-shoulder", "j1-turntable");
+        asset.Cylinder("j2-shoulder", new(0, -0.82f, 2.2f), new(0, 0.82f, 2.2f), 0.82f, dark);
+        asset.Cylinder("j2-shoulder", new(0, -0.68f, 2.2f), new(0, 0.68f, 2.2f), 0.72f, shell);
+
+        asset.Part("j2-motor", "j2-shoulder");
+        asset.Cylinder("j2-motor", new(0, -1.18f, 2.2f), new(0, -0.66f, 2.2f), 0.64f, motor);
+
+        asset.Part("j2-reduction", "j2-shoulder");
+        asset.Cylinder("j2-reduction", new(0, -0.72f, 2.2f), new(0, -0.12f, 2.2f), 0.5f, transmission);
+
+        asset.Part("upper-arm", "j2-shoulder");
+        asset.Cylinder("upper-arm", new(0, 0, 2.2f), new(0.42f, 0, 3.65f), 0.48f, steel);
+        asset.Cylinder("upper-arm", new(0.42f, 0, 3.65f), new(1.4f, 0, 5.2f), 0.48f, steel);
+
+        asset.Part("upper-arm-cover", "upper-arm");
+        asset.Cylinder("upper-arm-cover", new(0.02f, 0, 2.28f), new(0.43f, 0, 3.62f), 0.72f, frame);
+        asset.Cylinder("upper-arm-cover", new(0.43f, 0, 3.62f), new(1.36f, 0, 5.12f), 0.72f, frame);
+        asset.Box("upper-arm-cover", new(0.16f, 0, 3.45f), new(0.26f, 1.5f, 1.45f), frame);
+
+        asset.Part("upper-service-cable", "upper-arm");
+        asset.Cylinder("upper-service-cable", new(-0.55f, 0.62f, 2.35f), new(-0.18f, 0.62f, 3.62f), 0.1f, cable);
+        asset.Cylinder("upper-service-cable", new(-0.18f, 0.62f, 3.62f), new(1.28f, 0.62f, 5.34f), 0.1f, cable);
+
+        asset.Part("j3-elbow", "upper-arm");
+        asset.Cylinder("j3-elbow", new(1.4f, -0.76f, 5.2f), new(1.4f, 0.76f, 5.2f), 0.76f, dark);
+        asset.Cylinder("j3-elbow", new(1.4f, -0.6f, 5.2f), new(1.4f, 0.6f, 5.2f), 0.64f, shell);
+
+        asset.Part("j3-motor", "j3-elbow");
+        asset.Cylinder("j3-motor", new(1.4f, -1.08f, 5.2f), new(1.4f, -0.58f, 5.2f), 0.58f, motor);
+
+        asset.Part("forearm", "j3-elbow");
+        asset.Cylinder("forearm", new(1.4f, 0, 5.2f), new(4f, 0, 5.2f), 0.42f, steel);
+
+        asset.Part("forearm-cover", "forearm");
+        asset.Cylinder("forearm-cover", new(1.48f, 0, 5.2f), new(3.94f, 0, 5.2f), 0.66f, frame);
+        asset.Cylinder("forearm-cover", new(1.72f, 0, 5.2f), new(3.7f, 0, 5.2f), 0.53f, shell);
+
+        asset.Part("forearm-service-cable", "forearm");
+        asset.Cylinder("forearm-service-cable", new(1.28f, 0.62f, 5.34f), new(4.55f, 0.48f, 5.38f), 0.1f, cable);
+
+        asset.Part("j4-wrist-roll", "forearm");
+        asset.Cylinder("j4-wrist-roll", new(3.78f, 0, 5.2f), new(4.28f, 0, 5.2f), 0.56f, dark);
+        asset.Cylinder("j4-wrist-roll", new(3.88f, 0, 5.2f), new(4.18f, 0, 5.2f), 0.46f, transmission);
+
+        asset.Part("wrist-roll-housing", "j4-wrist-roll");
+        asset.Cylinder("wrist-roll-housing", new(4.08f, 0, 5.2f), new(4.65f, 0, 5.2f), 0.48f, frame);
+
+        asset.Part("j5-wrist-bend", "wrist-roll-housing");
+        asset.Cylinder("j5-wrist-bend", new(4.65f, -0.5f, 5.2f), new(4.65f, 0.5f, 5.2f), 0.5f, dark);
+        asset.Cylinder("j5-wrist-bend", new(4.65f, -0.38f, 5.2f), new(4.65f, 0.38f, 5.2f), 0.4f, transmission);
+
+        asset.Part("wrist-bend-housing", "j5-wrist-bend");
+        asset.Cylinder("wrist-bend-housing", new(4.65f, 0, 5.2f), new(5.15f, 0, 5.2f), 0.4f, shell);
+
+        asset.Part("j6-tool-roll", "wrist-bend-housing");
+        asset.Cylinder("j6-tool-roll", new(5.02f, 0, 5.2f), new(5.42f, 0, 5.2f), 0.38f, dark);
+        asset.Cylinder("j6-tool-roll", new(5.12f, 0, 5.2f), new(5.38f, 0, 5.2f), 0.28f, transmission);
+
+        asset.Part("tool", "j6-tool-roll");
+        asset.Box("tool", new(5.58f, 0, 5.2f), new(0.48f, 1.08f, 0.9f), tool);
+        asset.Box("tool", new(5.98f, -0.7f, 5.2f), new(1.05f, 0.2f, 0.3f), tool);
+        asset.Box("tool", new(5.98f, 0.7f, 5.2f), new(1.05f, 0.2f, 0.3f), tool);
+        asset.Box("tool", new(6.42f, -0.58f, 5.2f), new(0.18f, 0.42f, 0.52f), steel);
+        asset.Box("tool", new(6.42f, 0.58f, 5.2f), new(0.18f, 0.42f, 0.52f), steel);
+
+        return asset;
+    }
 }
 
 internal static class DroneAsset

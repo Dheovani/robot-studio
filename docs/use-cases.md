@@ -491,6 +491,24 @@ Expected result:
 - the assembly sequence joins the aircraft systems without changing domain or simulation state;
 - the showcase explains mechanical relationships without claiming aerodynamic or production flight-controller fidelity.
 
+### Explore 6-DOF Industrial Arm Mechanical Relationships
+
+Actor: student or instructor.
+
+Goal: understand how six serial revolute joints divide tool positioning and orientation across an industrial manipulator.
+
+Current status: implemented in the 6-DOF Industrial Arm mechanical showcase.
+
+Expected result:
+
+- the robot catalog opens the mechanical showcase independently from the schematic simulator;
+- the assembled model presents a floor pedestal, rotating base, enclosed shoulder and elbow drives, reinforced upper and forearm links, a three-axis wrist, service routing, and a parallel gripper;
+- the coordinated-pick demonstration moves all six joints without separating connected components;
+- the wrist-orientation demonstration holds the positioning posture while explaining J4 roll, J5 bend, and J6 tool roll;
+- the joint-drive layer exposes selectable motors, reductions, structural links, and wrist stages through transparent covers;
+- the joint-axis layer identifies all six revolute axes and their attached assemblies;
+- the assembly sequence joins the serial mechanism from pedestal to end effector without changing domain or simulation state.
+
 ### Observe A Robot In A 3D View
 
 Actor: student.

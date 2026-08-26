@@ -51,6 +51,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added reusable parallel-link pose composition that keeps a rendered link attached to two independently moving semantic components throughout interpolated mechanical demonstrations.
 - Added an original quadcopter Drone mechanical showcase with a packaged semantic GLB, four visible two-blade propellers, brushless motors, battery, flight controller, IMU, camera, landing gear, selectable components, and a procedural fallback scene.
 - Added Drone flight-and-attitude, counter-rotating motor-pair, avionics-and-power, body-axis, and staged-assembly teaching views with propeller rotation inherited through the moving airframe.
+- Added an original 6-DOF Industrial Arm mechanical showcase with a floor pedestal, enclosed shoulder and elbow drives, load-bearing links, a three-axis wrist, service routing, parallel gripper, selectable components, and a packaged semantic GLB.
+- Added 6-DOF coordinated-pick, wrist-orientation, joint-drive cutaway, six-axis guide, and staged-assembly teaching views with pivot-correct serial motion.
 - Generalized the deterministic visual-asset builder to support any single semantic root instead of requiring every robot asset to use a part named `base`.
 
 ### Changed

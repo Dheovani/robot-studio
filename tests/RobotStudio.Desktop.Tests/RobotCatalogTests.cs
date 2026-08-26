@@ -12,10 +12,10 @@ public sealed class RobotCatalogTests
             .ToArray();
 
         Assert.Equal(
-            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot", "SCARA Robot", "Simple Articulated Arm", "Delta Robot", "Drone"],
+            ["Cartesian Robot", "XY Plotter", "Differential Drive Robot", "SCARA Robot", "Simple Articulated Arm", "Delta Robot", "Drone", "6-DOF Industrial Arm"],
             showcaseTemplates.Select(template => template.Name));
         Assert.Equal(
-            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical", "simple-arm-mechanical", "delta-mechanical", "drone-mechanical"],
+            ["cartesian-intro-mechanical", "xy-plotter-mechanical", "differential-drive-mechanical", "scara-mechanical", "simple-arm-mechanical", "delta-mechanical", "drone-mechanical", "industrial-arm-mechanical"],
             showcaseTemplates.Select(template => template.MechanicalShowcase?.ModelId));
     }
 
@@ -220,5 +220,6 @@ public sealed class RobotCatalogTests
         Assert.Equal(RobotAvailabilityStatus.Available, template.Status);
         Assert.Equal(RobotViewerKind.IndustrialArmThreeDimensional, template.Viewer.Kind);
         Assert.True(RobotCatalog.CanOpen(template));
+        Assert.True(RobotCatalog.CanExploreMechanics(template));
     }
 }

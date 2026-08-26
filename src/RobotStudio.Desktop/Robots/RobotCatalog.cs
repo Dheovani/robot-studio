@@ -309,7 +309,10 @@ public static class RobotCatalog
             ],
             Viewer: new RobotViewerDescriptor(
                 RobotViewerKind.IndustrialArmThreeDimensional,
-                "6-DOF Industrial Arm 3D Viewer")),
+                "6-DOF Industrial Arm 3D Viewer"),
+            MechanicalShowcase: new MechanicalShowcaseDescriptor(
+                "industrial-arm-mechanical",
+                "6-DOF Industrial Arm Mechanical Showcase")),
 
         new(
             Id: "stewart-platform-planned",
