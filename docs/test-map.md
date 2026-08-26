@@ -532,6 +532,9 @@ Expected current behavior:
 - remains usable at the current minimum desktop window size;
 - renders dropdowns with dark closed, popup, hover, focus, selected, and disabled states across desktop views;
 - renders compact themed vertical and horizontal scrollbars with hover and drag feedback;
+- composes SCARA, Simple Articulated Arm, Delta, Drone, and 6-DOF schematic scenes without constructing `MainWindow`;
+- preserves workspace, accumulated path, and current robot as three deterministic scene layers;
+- grows the SCARA path layer as playback advances and rejects invalid scene frame indexes;
 - regenerates playback from the current DSL script;
 - reports script parser or validation errors without closing the app;
 - selects and scrolls to the current script line directly in the editor during playback;

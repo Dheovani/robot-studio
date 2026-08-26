@@ -67,10 +67,16 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Define renderer-neutral component-pose, semantic part identifier, hierarchical robot visual-model, demonstration, sampling, and transform-resolution contracts in `RobotStudio.Visualization` without graphics-library types.
 - [x] Define and test a presentation-only keyframe demonstration controller for fixed mechanical animations without making rendered meshes the source of robot state.
 - [x] Extract schematic WPF viewport lifecycle, camera replacement, lighting, model-root composition, and overlay replacement from `MainWindow` behind a shared desktop presenter contract.
-- [ ] Move robot-specific schematic geometry and path/workspace composition from the `MainWindow` partials into dedicated scene composers.
+- [x] Move SCARA schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
+- [x] Move Simple Articulated Arm schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
+- [x] Move Delta Robot schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
+- [x] Move Drone schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
+- [x] Move 6-DOF Industrial Arm schematic camera, workspace, path, and robot geometry into a dedicated scene composer.
+- [ ] Move Cartesian and XY Plotter schematic geometry and overlays into dedicated scene composers.
+- [ ] Move Differential Drive Robot 2D workspace, path, coordinate mapping, and robot drawing into a dedicated scene composer.
 - [x] Define and test a minimal version 1 asset manifest that maps glTF 2.0/GLB nodes to RobotStudio semantic parts without placing materials, animation, or renderer concerns in the contract.
 - [x] Connect the Assimp GLB importer and semantic scene-node binder to the Cartesian showcase with an original packaged asset, retained semantic transforms, resource reuse, and explicit scene disposal.
-- [ ] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
+- [x] Implement a realistic renderer proof of concept for one existing robot while preserving the current schematic/didactic renderer.
 - [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
 - [x] Add initial visualization mode selection for the Cartesian vertical slice through separate schematic/showcase catalog actions and an optional realistic motion-axis overlay layer.
 - [x] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
