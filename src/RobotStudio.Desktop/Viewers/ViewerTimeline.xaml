@@ -2,8 +2,8 @@
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
     <Border Padding="10,8"
-            Background="#0B1220"
-            BorderBrush="#1E293B"
+            Background="{StaticResource HeaderBackgroundBrush}"
+            BorderBrush="{StaticResource SubtleBorderBrush}"
             BorderThickness="1"
             CornerRadius="4">
     <Grid>
@@ -39,7 +39,7 @@
                    Grid.Column="2"
                    Margin="16,0,0,0"
                    VerticalAlignment="Center"
-                   Foreground="#E5E7EB"
+                   Foreground="{StaticResource SecondaryTextBrush}"
                    FontFamily="Consolas"
                    FontSize="12"
                    TextAlignment="Right" />

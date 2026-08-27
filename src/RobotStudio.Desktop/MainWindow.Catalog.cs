@@ -274,18 +274,18 @@ public partial class MainWindow
             MinWidth = RobotCardMinimumWidth,
             MinHeight = 392,
             Margin = new Thickness(0, 0, RobotCardGap, RobotCardGap),
-            Padding = new Thickness(20),
+            Padding = ThemeResource<Thickness>("CardPadding"),
             HorizontalAlignment = HorizontalAlignment.Stretch,
             VerticalAlignment = VerticalAlignment.Stretch,
             FocusVisualStyle = null,
             Focusable = canOpen,
             Cursor = canOpen ? Cursors.Hand : Cursors.Arrow,
             BorderBrush = canOpen
-                ? RobotCardAvailableBorderBrush
-                : RobotCardPlannedBorderBrush,
+                ? ThemeResource<Brush>("RobotCardAvailableBorderBrush")
+                : ThemeResource<Brush>("RobotCardPlannedBorderBrush"),
             BorderThickness = new Thickness(1),
-            Background = RobotCardBackgroundBrush,
-            CornerRadius = new CornerRadius(8)
+            Background = ThemeResource<Brush>("RobotCardBackgroundBrush"),
+            CornerRadius = ThemeResource<CornerRadius>("CardCornerRadius")
         };
 
         if (canOpen)
@@ -332,17 +332,14 @@ public partial class MainWindow
         topContent.Children.Add(new TextBlock
         {
             Text = languageService.GetText($"Catalog.Name.{template.Id}", template.Name),
-            Foreground = new SolidColorBrush(Color.FromRgb(249, 250, 251)),
-            FontSize = 21,
-            FontWeight = FontWeights.SemiBold
+            Style = ThemeResource<Style>("CatalogCardTitleTextStyle")
         });
 
         topContent.Children.Add(new TextBlock
         {
             Text = languageService.GetText($"Family.{template.Family.Id}", template.Family.Name),
             Margin = new Thickness(0, 2, 0, 0),
-            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
-            FontSize = 13
+            Style = ThemeResource<Style>("MetadataTextStyle")
         });
 
         var metadataTags = new WrapPanel
@@ -363,18 +360,15 @@ public partial class MainWindow
         middleContent.Children.Add(new TextBlock
         {
             Text = languageService.GetText($"Catalog.Description.{template.Id}", template.Description),
-            Foreground = new SolidColorBrush(Color.FromRgb(203, 213, 225)),
+            Style = ThemeResource<Style>("BodyTextStyle"),
             LineHeight = 18,
-            TextWrapping = TextWrapping.Wrap
         });
 
         middleContent.Children.Add(new TextBlock
         {
             Text = languageService.GetText("Catalog.Capabilities"),
             Margin = new Thickness(0, 16, 0, 8),
-            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
-            FontSize = 12,
-            FontWeight = FontWeights.SemiBold
+            Style = ThemeResource<Style>("FieldLabelTextStyle")
         });
 
         middleContent.Children.Add(CreateCapabilityTags(template.Capabilities));
@@ -392,7 +386,7 @@ public partial class MainWindow
         {
             var actions = new Grid
             {
-                Height = 36,
+                Height = ThemeResource<double>("StandardControlHeight"),
                 Margin = new Thickness(0, 12, 0, 0)
             };
             actions.ColumnDefinitions.Add(new ColumnDefinition());
@@ -428,8 +422,7 @@ public partial class MainWindow
         var status = new TextBlock
         {
             VerticalAlignment = VerticalAlignment.Center,
-            Foreground = new SolidColorBrush(Color.FromRgb(148, 163, 184)),
-            FontSize = 12,
+            Style = ThemeResource<Style>("MetadataTextStyle"),
             FontWeight = FontWeights.SemiBold,
             Text = languageService.GetText("Catalog.PlannedAvailability")
         };
@@ -438,28 +431,28 @@ public partial class MainWindow
         {
             Margin = new Thickness(0, 12, 0, 0),
             Padding = new Thickness(0, 12, 0, 0),
-            BorderBrush = RobotCardPlannedBorderBrush,
+            BorderBrush = ThemeResource<Brush>("RobotCardPlannedBorderBrush"),
             BorderThickness = new Thickness(0, 1, 0, 0),
             Child = status
         };
     }
 
-    private static void ApplyRobotCardVisualState(
+    private void ApplyRobotCardVisualState(
         Border card,
         RobotTemplate template,
         bool isHighlighted)
     {
         var canOpen = RobotCatalog.CanOpen(template);
         card.Background = isHighlighted
-            ? RobotCardHighlightBackgroundBrush
-            : RobotCardBackgroundBrush;
+            ? ThemeResource<Brush>("RobotCardHighlightBackgroundBrush")
+            : ThemeResource<Brush>("RobotCardBackgroundBrush");
         card.BorderBrush = canOpen
             ? isHighlighted
-                ? RobotCardAvailableHighlightBorderBrush
-                : RobotCardAvailableBorderBrush
+                ? ThemeResource<Brush>("RobotCardAvailableHighlightBorderBrush")
+                : ThemeResource<Brush>("RobotCardAvailableBorderBrush")
             : isHighlighted
-                ? RobotCardPlannedHighlightBorderBrush
-                : RobotCardPlannedBorderBrush;
+                ? ThemeResource<Brush>("RobotCardPlannedHighlightBorderBrush")
+                : ThemeResource<Brush>("RobotCardPlannedBorderBrush");
         card.BorderThickness = isHighlighted
             ? new Thickness(1.5)
             : new Thickness(1);
@@ -483,18 +476,14 @@ public partial class MainWindow
         new()
         {
             Margin = new Thickness(0, 0, 8, 0),
-            Padding = new Thickness(8, 3, 8, 3),
-            HorizontalAlignment = HorizontalAlignment.Left,
+            Style = ThemeResource<Style>("BadgeBorderStyle"),
             Background = GetStatusBackgroundBrush(status),
             BorderBrush = GetStatusBorderBrush(status),
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(4),
             Child = new TextBlock
             {
                 Text = languageService.GetText($"Status.{status}", status.ToString()),
                 Foreground = GetStatusBrush(status),
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold
+                Style = ThemeResource<Style>("BadgeTextStyle")
             }
         };
 
@@ -502,18 +491,14 @@ public partial class MainWindow
         new()
         {
             Margin = new Thickness(0, 0, 8, 0),
-            Padding = new Thickness(8, 3, 8, 3),
-            HorizontalAlignment = HorizontalAlignment.Left,
-            Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
-            BorderBrush = new SolidColorBrush(Color.FromRgb(71, 85, 105)),
-            BorderThickness = new Thickness(1),
-            CornerRadius = new CornerRadius(4),
+            Style = ThemeResource<Style>("BadgeBorderStyle"),
+            Background = ThemeResource<Brush>("TagBackgroundBrush"),
+            BorderBrush = ThemeResource<Brush>("TagBorderBrush"),
             Child = new TextBlock
             {
                 Text = languageService.GetText($"Complexity.{complexity}", complexity.ToString()),
-                Foreground = new SolidColorBrush(Color.FromRgb(191, 219, 254)),
-                FontSize = 12,
-                FontWeight = FontWeights.SemiBold
+                Foreground = ThemeResource<Brush>("AccentTextBrush"),
+                Style = ThemeResource<Style>("BadgeTextStyle")
             }
         };
 
@@ -526,24 +511,21 @@ public partial class MainWindow
             panel.Children.Add(new Border
             {
                 Margin = new Thickness(0, 0, 6, 6),
-                Padding = new Thickness(8, 4, 8, 4),
-                Background = new SolidColorBrush(Color.FromRgb(30, 41, 59)),
-                BorderBrush = new SolidColorBrush(Color.FromRgb(51, 65, 85)),
-                BorderThickness = new Thickness(1),
-                CornerRadius = new CornerRadius(4),
+                Style = ThemeResource<Style>("CapabilityBadgeBorderStyle"),
                 Child = new TextBlock
                 {
                     Text = languageService.GetText(
                         $"Capability.{capability}",
                         FormatCapability(capability)),
-                    Foreground = new SolidColorBrush(Color.FromRgb(226, 232, 240)),
-                    FontSize = 12
+                    Style = ThemeResource<Style>("CapabilityBadgeTextStyle")
                 }
             });
         }
 
         return panel;
     }
+
+    private T ThemeResource<T>(string key) => (T)FindResource(key);
 
     private void OpenRobot(RobotTemplate template)
     {

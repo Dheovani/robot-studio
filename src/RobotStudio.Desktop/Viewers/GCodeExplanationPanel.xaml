@@ -4,7 +4,7 @@
              Visibility="Collapsed">
     <StackPanel Margin="0,2,0,10">
         <CheckBox x:Name="ExplanationToggle"
-                  Foreground="#BFDBFE"
+                  Foreground="{StaticResource InformationHeadingBrush}"
                   Content="Explain G-code lines"
                   ToolTip="Show or hide a line-by-line explanation without modifying the script."
                   Checked="ExplanationToggle_Changed"
@@ -13,8 +13,8 @@
         <Border x:Name="ExplanationContent"
                 Margin="0,8,0,0"
                 Padding="10"
-                Background="#0B1220"
-                BorderBrush="#334155"
+                Background="{StaticResource HeaderBackgroundBrush}"
+                BorderBrush="{StaticResource BorderBrush}"
                 BorderThickness="1"
                 CornerRadius="4"
                 Visibility="Collapsed">
@@ -28,16 +28,16 @@
                                 <ColumnDefinition Width="*" />
                             </Grid.ColumnDefinitions>
                             <TextBlock Grid.Column="0"
-                                       Foreground="#64748B"
+                                       Foreground="{StaticResource DisabledTextBrush}"
                                        FontFamily="Consolas"
                                        Text="{Binding LineNumber, StringFormat=\#{0}}" />
                             <TextBlock Grid.Column="1"
-                                       Foreground="#7DD3FC"
+                                       Foreground="{StaticResource InfoTextBrush}"
                                        FontFamily="Consolas"
                                        FontWeight="SemiBold"
                                        Text="{Binding Command}" />
                             <TextBlock Grid.Column="2"
-                                       Foreground="#CBD5E1"
+                                       Foreground="{StaticResource SecondaryTextBrush}"
                                        Text="{Binding Explanation}"
                                        TextWrapping="Wrap" />
                         </Grid>

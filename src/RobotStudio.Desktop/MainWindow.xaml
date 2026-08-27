@@ -14,9 +14,6 @@
         PreviewMouseWheel="MainWindow_PreviewMouseWheel">
     <Window.Resources>
         <ResourceDictionary>
-            <ResourceDictionary.MergedDictionaries>
-                <ResourceDictionary Source="Styles/MainWindowStyles.xaml" />
-            </ResourceDictionary.MergedDictionaries>
             <DataTemplate x:Key="ViewerScriptActionsTemplate">
                 <StackPanel>
                     <Grid Margin="0,0,0,10">
@@ -61,15 +58,15 @@
             <DataTemplate x:Key="ViewerRecoveryActionsTemplate">
                 <Border Margin="0,2,0,10"
                         Padding="10"
-                        Background="#261F2937"
-                        BorderBrush="#7F1D1D"
+                        Background="{StaticResource ErrorSurfaceBrush}"
+                        BorderBrush="{StaticResource ErrorBorderBrush}"
                         BorderThickness="1"
                         CornerRadius="4"
                         Visibility="Collapsed"
                         Loaded="SessionRecoveryPanel_Loaded">
                     <StackPanel>
                         <TextBlock Margin="0,0,0,8"
-                                   Foreground="#FCA5A5"
+                                   Foreground="{StaticResource ErrorTextBrush}"
                                    FontWeight="SemiBold"
                                    Text="{DynamicResource Viewer.SimulationFaulted}" />
                         <Grid>
@@ -134,15 +131,12 @@
                     <StackPanel Grid.Column="0"
                                 HorizontalAlignment="Left">
                         <TextBlock Text="RobotStudio"
-                                   Foreground="{StaticResource PrimaryTextBrush}"
-                                   FontSize="30"
-                                   FontWeight="SemiBold" />
+                                   Style="{StaticResource CatalogPageTitleTextStyle}" />
                         <TextBlock MaxWidth="780"
                                    Margin="0,8,0,0"
                                    HorizontalAlignment="Left"
-                                   Foreground="{StaticResource SecondaryTextBrush}"
+                                   Style="{StaticResource BodyTextStyle}"
                                    FontSize="14"
-                                   TextWrapping="Wrap"
                                    Text="{DynamicResource Catalog.Introduction}" />
                     </StackPanel>
 
@@ -152,12 +146,10 @@
                                 Orientation="Horizontal">
                         <ComboBox x:Name="LanguageComboBox"
                                   Width="156"
-                                  Height="34"
                                   VerticalContentAlignment="Center"
                                   ToolTip="{DynamicResource Catalog.Language.ToolTip}"
                                   SelectionChanged="LanguageComboBox_SelectionChanged" />
                         <Button Width="88"
-                                Height="34"
                                 Margin="8,0,0,0"
                                 Style="{StaticResource GhostButtonStyle}"
                                 Content="{DynamicResource Common.Glossary}"
@@ -336,28 +328,28 @@
                                                 Click="SaveCartesianScriptButton_Click" />
                                     </StackPanel>
                                     <TextBlock Text="{DynamicResource Viewer.Dialect}"
-                                               Foreground="#94A3B8" />
+                                               Foreground="{StaticResource MutedTextBrush}" />
                                     <ComboBox x:Name="ScriptDialectComboBox"
                                               Margin="0,4,0,8"
                                               DisplayMemberPath="Name"
                                               ToolTip="Choose the command language used by the Cartesian script editor."
                                               SelectionChanged="ScriptDialectComboBox_SelectionChanged" />
                                     <TextBlock Text="{DynamicResource Viewer.Example}"
-                                               Foreground="#94A3B8" />
+                                               Foreground="{StaticResource MutedTextBrush}" />
                                     <ComboBox x:Name="CartesianExampleComboBox"
                                               Margin="0,4,0,8"
                                               ToolTip="Choose a local teaching example for the active Cartesian-family viewer."
                                               SelectionChanged="CartesianExampleComboBox_SelectionChanged" />
                                     <TextBlock x:Name="CartesianExampleDescriptionText"
                                                Margin="0,0,0,10"
-                                               Foreground="#CBD5E1"
+                                               Foreground="{StaticResource SecondaryTextBrush}"
                                                TextWrapping="Wrap"
                                                Text="Select an example to load a starter script." />
                                     <Border Height="190"
                                     Margin="0,10,0,10"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Grid>
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition Width="82" />
@@ -367,7 +359,7 @@
                                     <ScrollViewer x:Name="ScriptEditorGutterScrollViewer"
                                                   Grid.Column="0"
                                                   Padding="0,10,0,10"
-                                                  Background="#0B1220"
+                                                  Background="{StaticResource HeaderBackgroundBrush}"
                                                   HorizontalScrollBarVisibility="Disabled"
                                                   VerticalScrollBarVisibility="Hidden"
                                                   IsHitTestVisible="False">
@@ -384,10 +376,10 @@
                                              TextWrapping="NoWrap"
                                              VerticalScrollBarVisibility="Auto"
                                              HorizontalScrollBarVisibility="Auto"
-                                             Foreground="#E5E7EB"
-                                             Background="#111827"
+                                             Foreground="{StaticResource SecondaryTextBrush}"
+                                             Background="{StaticResource InputBackgroundBrush}"
                                              BorderThickness="0"
-                                             CaretBrush="#E5E7EB"
+                                             CaretBrush="{StaticResource SecondaryTextBrush}"
                                              ToolTip="Script editor for the selected Simple DSL or introductory G-code dialect."
                                              ScrollViewer.ScrollChanged="ScriptEditorTextBox_ScrollChanged"
                                              TextChanged="ScriptEditorTextBox_TextChanged" />
@@ -401,7 +393,7 @@
 
                             <TextBlock x:Name="ScriptStatusText"
                                        Margin="0,0,0,12"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        FontWeight="SemiBold"
                                        TextWrapping="Wrap"
                                        Text="Choose a dialect, edit the script, and validate it before simulation." />
@@ -435,24 +427,24 @@
                                             <RowDefinition Height="Auto" />
                                         </Grid.RowDefinitions>
 
-                                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3,0,3,4" Text="Min" Foreground="#94A3B8" HorizontalAlignment="Center" />
-                                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="3,0,3,4" Text="Max" Foreground="#94A3B8" HorizontalAlignment="Center" />
-                                        <TextBlock Grid.Row="0" Grid.Column="3" Margin="3,0,3,4" Text="Vel" Foreground="#94A3B8" HorizontalAlignment="Center" ToolTip="Maximum velocity in millimeters per second." />
-                                        <TextBlock Grid.Row="0" Grid.Column="4" Margin="3,0,3,4" Text="Accel" Foreground="#94A3B8" HorizontalAlignment="Center" ToolTip="Maximum acceleration in millimeters per second squared." />
+                                        <TextBlock Grid.Row="0" Grid.Column="1" Margin="3,0,3,4" Text="Min" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" />
+                                        <TextBlock Grid.Row="0" Grid.Column="2" Margin="3,0,3,4" Text="Max" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" />
+                                        <TextBlock Grid.Row="0" Grid.Column="3" Margin="3,0,3,4" Text="Vel" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" ToolTip="Maximum velocity in millimeters per second." />
+                                        <TextBlock Grid.Row="0" Grid.Column="4" Margin="3,0,3,4" Text="Accel" Foreground="{StaticResource MutedTextBrush}" HorizontalAlignment="Center" ToolTip="Maximum acceleration in millimeters per second squared." />
 
-                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" Foreground="#F87171" />
+                                        <TextBlock Grid.Row="1" Grid.Column="0" Text="X" VerticalAlignment="Center" Foreground="{StaticResource AxisXBrush}" />
                                         <TextBox x:Name="ProfileXMinimumTextBox" Grid.Row="1" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis minimum position in millimeters." />
                                         <TextBox x:Name="ProfileXMaximumTextBox" Grid.Row="1" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum position in millimeters." />
                                         <TextBox x:Name="ProfileXVelocityTextBox" Grid.Row="1" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum velocity in millimeters per second." />
                                         <TextBox x:Name="ProfileXAccelerationTextBox" Grid.Row="1" Grid.Column="4" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="X-axis maximum acceleration in millimeters per second squared." />
 
-                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" VerticalAlignment="Center" Foreground="#4ADE80" />
+                                        <TextBlock Grid.Row="2" Grid.Column="0" Text="Y" VerticalAlignment="Center" Foreground="{StaticResource AxisYBrush}" />
                                         <TextBox x:Name="ProfileYMinimumTextBox" Grid.Row="2" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis minimum position in millimeters." />
                                         <TextBox x:Name="ProfileYMaximumTextBox" Grid.Row="2" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum position in millimeters." />
                                         <TextBox x:Name="ProfileYVelocityTextBox" Grid.Row="2" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum velocity in millimeters per second." />
                                         <TextBox x:Name="ProfileYAccelerationTextBox" Grid.Row="2" Grid.Column="4" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Y-axis maximum acceleration in millimeters per second squared." />
 
-                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Z" VerticalAlignment="Center" Foreground="#60A5FA" />
+                                        <TextBlock Grid.Row="3" Grid.Column="0" Text="Z" VerticalAlignment="Center" Foreground="{StaticResource AxisZBrush}" />
                                         <TextBox x:Name="ProfileZMinimumTextBox" Grid.Row="3" Grid.Column="1" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis minimum position in millimeters." />
                                         <TextBox x:Name="ProfileZMaximumTextBox" Grid.Row="3" Grid.Column="2" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis maximum position in millimeters." />
                                         <TextBox x:Name="ProfileZVelocityTextBox" Grid.Row="3" Grid.Column="3" Margin="3" Padding="5,3" TextAlignment="Right" ToolTip="Z-axis maximum velocity in millimeters per second." />
@@ -479,7 +471,7 @@
 
                                     <TextBlock x:Name="CartesianProfileStatusText"
                                                Margin="0,10,0,8"
-                                               Foreground="#94A3B8"
+                                               Foreground="{StaticResource MutedTextBrush}"
                                                TextWrapping="Wrap"
                                                Text="Default Cartesian profile." />
                                 </StackPanel>
@@ -504,7 +496,7 @@
 
                                 <TextBlock Grid.Row="0"
                                            Grid.Column="0"
-                                           Foreground="#94A3B8"
+                                           Foreground="{StaticResource MutedTextBrush}"
                                            Text="Step mm" />
                                 <TextBox x:Name="ManualStepTextBox"
                                          Grid.Row="1"
@@ -514,14 +506,14 @@
                                          Padding="8,4"
                                          Text="10"
                                          ToolTip="Distance applied by each jog command, in millimeters."
-                                         Foreground="#E5E7EB"
-                                         Background="#111827"
-                                         BorderBrush="#334155"
-                                         CaretBrush="#E5E7EB" />
+                                         Foreground="{StaticResource SecondaryTextBrush}"
+                                         Background="{StaticResource InputBackgroundBrush}"
+                                         BorderBrush="{StaticResource BorderBrush}"
+                                         CaretBrush="{StaticResource SecondaryTextBrush}" />
 
                                 <TextBlock Grid.Row="0"
                                            Grid.Column="1"
-                                           Foreground="#94A3B8"
+                                           Foreground="{StaticResource MutedTextBrush}"
                                            Text="Speed mm/s" />
                                 <TextBox x:Name="ManualSpeedTextBox"
                                          Grid.Row="1"
@@ -531,10 +523,10 @@
                                          Padding="8,4"
                                          Text="80"
                                          ToolTip="{x:Static didactics:DidacticTooltipCatalog.RequestedVelocity}"
-                                         Foreground="#E5E7EB"
-                                         Background="#111827"
-                                         BorderBrush="#334155"
-                                         CaretBrush="#E5E7EB" />
+                                         Foreground="{StaticResource SecondaryTextBrush}"
+                                         Background="{StaticResource InputBackgroundBrush}"
+                                         BorderBrush="{StaticResource BorderBrush}"
+                                         CaretBrush="{StaticResource SecondaryTextBrush}" />
                             </Grid>
 
                             <UniformGrid Columns="3" Margin="0,0,0,8">
@@ -551,7 +543,7 @@
 
                             <TextBlock x:Name="ManualControlStatusText"
                                        Margin="0,0,0,18"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        TextWrapping="Wrap"
                                        Text="Manual actions append commands in the selected dialect and resimulate the robot." />
                                 </StackPanel>
@@ -577,10 +569,10 @@
                                          FontFamily="Consolas"
                                          Text="MOVE X=100 Y=50 Z=20 SPEED=80"
                                          ToolTip="Type one command in the selected dialect. Press Enter or Execute to validate and append it."
-                                         Foreground="#E5E7EB"
-                                         Background="#111827"
-                                         BorderBrush="#334155"
-                                         CaretBrush="#E5E7EB"
+                                         Foreground="{StaticResource SecondaryTextBrush}"
+                                         Background="{StaticResource InputBackgroundBrush}"
+                                         BorderBrush="{StaticResource BorderBrush}"
+                                         CaretBrush="{StaticResource SecondaryTextBrush}"
                                          KeyDown="CommandConsoleTextBox_KeyDown" />
                                 <Button Grid.Column="1"
                                         Content="Execute"
@@ -593,15 +585,15 @@
                                      Margin="0,0,0,10"
                                      FontFamily="Consolas"
                                      FontSize="12"
-                                     Foreground="#CBD5E1"
-                                     Background="#111827"
-                                     BorderBrush="#334155"
+                                     Foreground="{StaticResource SecondaryTextBrush}"
+                                     Background="{StaticResource InputBackgroundBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                                      ScrollViewer.HorizontalScrollBarVisibility="Auto" />
 
                             <TextBlock x:Name="CommandConsoleStatusText"
                                        Margin="0,0,0,18"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        TextWrapping="Wrap"
                                        Text="Execute one command in the selected dialect at a time." />
                                 </StackPanel>
@@ -630,32 +622,32 @@
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
 
-                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="{DynamicResource Viewer.State}" />
-                                <TextBlock x:Name="StateValueText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="0" Grid.Column="0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.State}" />
+                                <TextBlock x:Name="StateValueText" Grid.Row="0" Grid.Column="1" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Position}" />
-                                <TextBlock x:Name="PositionValueText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.Position}" />
+                                <TextBlock x:Name="PositionValueText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Command}" />
-                                <TextBlock x:Name="CommandValueText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.Command}" />
+                                <TextBlock x:Name="CommandValueText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Source}" />
-                                <TextBlock x:Name="SourceValueText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.Source}" />
+                                <TextBlock x:Name="SourceValueText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Time}" />
-                                <TextBlock x:Name="TimeValueText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.Time}" />
+                                <TextBlock x:Name="TimeValueText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="{DynamicResource Viewer.Frames}" />
-                                <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="5" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="{DynamicResource Viewer.Frames}" />
+                                <TextBlock x:Name="FramesValueText" Grid.Row="5" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" />
 
-                                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Profile phase" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
-                                <TextBlock x:Name="ProfilePhaseValueText" Grid.Row="6" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
+                                <TextBlock Grid.Row="6" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="Profile phase" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
+                                <TextBlock x:Name="ProfilePhaseValueText" Grid.Row="6" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.MotionProfile}" />
 
-                                <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Velocity" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
-                                <TextBlock x:Name="VelocityValueText" Grid.Row="7" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+                                <TextBlock Grid.Row="7" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="Velocity" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+                                <TextBlock x:Name="VelocityValueText" Grid.Row="7" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
 
-                                <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Acceleration" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
-                                <TextBlock x:Name="AccelerationValueText" Grid.Row="8" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
+                                <TextBlock Grid.Row="8" Grid.Column="0" Margin="0,8,0,0" Foreground="{StaticResource MutedTextBrush}" Text="Acceleration" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
+                                <TextBlock x:Name="AccelerationValueText" Grid.Row="8" Grid.Column="1" Margin="0,8,0,0" Foreground="{StaticResource SecondaryTextBrush}" TextAlignment="Right" ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
                             </Grid>
                             </Expander>
 
@@ -667,120 +659,120 @@
                                       ToolTip="Inspect position, velocity, state, and distance values derived from playback frames.">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Text="Position Chart"
-                                               Foreground="#F9FAFB"
+                                               Foreground="{StaticResource PrimaryTextBrush}"
                                                FontSize="14"
                                                FontWeight="SemiBold" />
 
                                     <Border Height="156"
                                     Margin="0,10,0,8"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="PositionChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="PositionChartCanvas_SizeChanged" />
                             </Border>
 
                             <UniformGrid Columns="3" Margin="0,0,0,20">
-                                <TextBlock Foreground="#F87171" Text="X axis" />
-                                <TextBlock Foreground="#22C55E" Text="Y axis" />
-                                <TextBlock Foreground="#60A5FA" Text="Z axis" />
+                                <TextBlock Foreground="{StaticResource AxisXBrush}" Text="X axis" />
+                                <TextBlock Foreground="{StaticResource AxisYBrush}" Text="Y axis" />
+                                <TextBlock Foreground="{StaticResource AxisZBrush}" Text="Z axis" />
                             </UniformGrid>
 
                                     <TextBlock Text="Velocity Chart"
-                                       Foreground="#F9FAFB"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        FontSize="14"
                                        FontWeight="SemiBold" />
 
                             <Border Height="128"
                                     Margin="0,10,0,8"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="VelocityChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="VelocityChartCanvas_SizeChanged" />
                             </Border>
 
                             <TextBlock Margin="0,0,0,20"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        Text="Exact effective velocity in mm/s from the planned motion profile."
                                        ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}"
                                        TextWrapping="Wrap" />
 
                                     <TextBlock Text="Requested vs Effective"
-                                       Foreground="#F9FAFB"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        FontSize="14"
                                        ToolTip="{x:Static didactics:DidacticTooltipCatalog.RequestedVelocity}"
                                        FontWeight="SemiBold" />
 
                             <Border Height="128"
                                     Margin="0,10,0,8"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="VelocityComparisonChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="VelocityComparisonChartCanvas_SizeChanged" />
                             </Border>
 
                             <UniformGrid Columns="2" Margin="0,0,0,20">
-                                <TextBlock Foreground="#38BDF8" Text="Requested" ToolTip="{x:Static didactics:DidacticTooltipCatalog.RequestedVelocity}" />
-                                <TextBlock Foreground="#FACC15" Text="Effective" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
+                                <TextBlock Foreground="{StaticResource RequestedSeriesBrush}" Text="Requested" ToolTip="{x:Static didactics:DidacticTooltipCatalog.RequestedVelocity}" />
+                                <TextBlock Foreground="{StaticResource EffectiveSeriesBrush}" Text="Effective" ToolTip="{x:Static didactics:DidacticTooltipCatalog.EffectiveVelocity}" />
                             </UniformGrid>
 
                                     <TextBlock Text="Acceleration Chart"
-                                       Foreground="#F9FAFB"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        FontSize="14"
                                        FontWeight="SemiBold"
                                        ToolTip="{x:Static didactics:DidacticTooltipCatalog.Acceleration}" />
 
                             <Border Height="128"
                                     Margin="0,10,0,8"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="AccelerationChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="AccelerationChartCanvas_SizeChanged" />
                             </Border>
 
                             <UniformGrid Columns="2" Margin="0,0,0,20">
-                                <TextBlock Foreground="#22C55E" Text="Acceleration" />
-                                <TextBlock Foreground="#F87171" Text="Deceleration" />
+                                <TextBlock Foreground="{StaticResource PositiveSeriesBrush}" Text="Acceleration" />
+                                <TextBlock Foreground="{StaticResource NegativeSeriesBrush}" Text="Deceleration" />
                             </UniformGrid>
 
                                     <TextBlock Text="Distance Chart"
-                                       Foreground="#F9FAFB"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        FontSize="14"
                                        FontWeight="SemiBold" />
 
                             <Border Height="128"
                                     Margin="0,10,0,8"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="DistanceChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="DistanceChartCanvas_SizeChanged" />
                             </Border>
 
                             <TextBlock Margin="0,0,0,20"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        Text="Accumulated TCP distance in millimeters."
                                        ToolTip="{x:Static didactics:DidacticTooltipCatalog.ToolCenterPoint}"
                                        TextWrapping="Wrap" />
 
                                     <TextBlock Text="State Chart"
-                                       Foreground="#F9FAFB"
+                                       Foreground="{StaticResource PrimaryTextBrush}"
                                        FontSize="14"
                                        FontWeight="SemiBold" />
 
                             <Border Height="168"
                                     Margin="0,10,0,20"
-                                    BorderBrush="#334155"
+                                    BorderBrush="{StaticResource BorderBrush}"
                                     BorderThickness="1"
-                                    Background="#111827">
+                                    Background="{StaticResource InputBackgroundBrush}">
                                 <Canvas x:Name="StateChartCanvas"
                                         ClipToBounds="True"
                                         SizeChanged="StateChartCanvas_SizeChanged" />
@@ -797,8 +789,8 @@
                                 <TextBlock x:Name="MovementExplanationText"
                                        Margin="0,10,0,20"
                                        Padding="10"
-                                       Foreground="#CBD5E1"
-                                       Background="#111827"
+                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Background="{StaticResource InputBackgroundBrush}"
                                        TextWrapping="Wrap"
                                        Text="Open a robot simulation to inspect command explanations." />
                             </Expander>
@@ -811,31 +803,31 @@
                                       ToolTip="{x:Static didactics:DidacticTooltipCatalog.Timeline}">
                                 <StackPanel Margin="0,10,0,0">
                                     <TextBlock Margin="0,10,0,4"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        Text="Commands" />
                             <ListBox x:Name="CommandMarkersListBox"
                                      Height="96"
                                      Margin="0,0,0,10"
                                      FontFamily="Consolas"
                                      FontSize="12"
-                                     Foreground="#CBD5E1"
-                                     Background="#111827"
-                                     BorderBrush="#334155"
+                                     Foreground="{StaticResource SecondaryTextBrush}"
+                                     Background="{StaticResource InputBackgroundBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
                                      SelectionChanged="TimelineMarkerListBox_SelectionChanged"
                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
 
                             <TextBlock Margin="0,0,0,4"
-                                       Foreground="#94A3B8"
+                                       Foreground="{StaticResource MutedTextBrush}"
                                        Text="States" />
                             <ListBox x:Name="StateMarkersListBox"
                                      Height="96"
                                      Margin="0,0,0,20"
                                      FontFamily="Consolas"
                                      FontSize="12"
-                                     Foreground="#CBD5E1"
-                                     Background="#111827"
-                                     BorderBrush="#334155"
+                                     Foreground="{StaticResource SecondaryTextBrush}"
+                                     Background="{StaticResource InputBackgroundBrush}"
+                                     BorderBrush="{StaticResource BorderBrush}"
                                      SelectionChanged="TimelineMarkerListBox_SelectionChanged"
                                      ScrollViewer.VerticalScrollBarVisibility="Auto"
                                      ScrollViewer.HorizontalScrollBarVisibility="Disabled" />
@@ -853,7 +845,7 @@
                                              TextElement.FontSize="13">
                                 <CheckBox x:Name="ShowGridCheckBox"
                                           Margin="0,0,8,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show the workspace reference grid."
                                           Checked="OverlayCheckBox_Changed"
@@ -861,7 +853,7 @@
                                           Content="Grid" />
                                 <CheckBox x:Name="ShowGlobalAxesCheckBox"
                                           Margin="0,0,0,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show the global X, Y, and Z coordinate axes."
                                           Checked="OverlayCheckBox_Changed"
@@ -869,7 +861,7 @@
                                           Content="Global axes" />
                                 <CheckBox x:Name="ShowAxisLabelsCheckBox"
                                           Margin="0,0,8,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show labels near the global X, Y, and Z axes."
                                           Checked="OverlayCheckBox_Changed"
@@ -877,7 +869,7 @@
                                           Content="X/Y/Z labels" />
                                 <CheckBox x:Name="ShowWorkspaceCheckBox"
                                           Margin="0,0,0,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="{x:Static didactics:DidacticTooltipCatalog.Workspace}"
                                           Checked="OverlayCheckBox_Changed"
@@ -885,7 +877,7 @@
                                           Content="Workspace" />
                                 <CheckBox x:Name="ShowRailsCheckBox"
                                           Margin="0,0,0,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show fixed Cartesian rails."
                                           Checked="OverlayCheckBox_Changed"
@@ -893,7 +885,7 @@
                                           Content="Rails" />
                                 <CheckBox x:Name="ShowPlannedPathCheckBox"
                                           Margin="0,0,8,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="{x:Static didactics:DidacticTooltipCatalog.PlannedPath}"
                                           Checked="OverlayCheckBox_Changed"
@@ -901,7 +893,7 @@
                                           Content="Path" />
                                 <CheckBox x:Name="ShowStartEndMarkersCheckBox"
                                           Margin="0,0,0,8"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show markers for the first and final TCP positions."
                                           Checked="OverlayCheckBox_Changed"
@@ -909,7 +901,7 @@
                                           Content="Start / end" />
                                 <CheckBox x:Name="ShowCarriagesCheckBox"
                                           Margin="0,0,8,0"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="Show moving carriage components."
                                           Checked="OverlayCheckBox_Changed"
@@ -917,7 +909,7 @@
                                           Content="Carriages" />
                                 <CheckBox x:Name="ShowToolCheckBox"
                                           Margin="0,0,0,0"
-                                          Foreground="#CBD5E1"
+                                          Foreground="{StaticResource SecondaryTextBrush}"
                                           IsChecked="True"
                                           ToolTip="{x:Static didactics:DidacticTooltipCatalog.ToolCenterPoint}"
                                           Checked="OverlayCheckBox_Changed"
@@ -933,21 +925,21 @@
                                       Visibility="Collapsed"
                                       ToolTip="Control only the desktop camera. This does not change robot simulation data.">
                                 <StackPanel Margin="0,10,0,0">
-                                    <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Azimuth" />
+                                    <TextBlock Margin="0,12,0,4" Foreground="{StaticResource MutedTextBrush}" Text="Azimuth" />
                                     <Slider x:Name="AzimuthSlider"
                                             Minimum="-180"
                                             Maximum="180"
                                             ToolTip="Rotate the camera horizontally around the robot."
                                             ValueChanged="CameraSlider_ValueChanged" />
 
-                                    <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Elevation" />
+                                    <TextBlock Margin="0,12,0,4" Foreground="{StaticResource MutedTextBrush}" Text="Elevation" />
                                     <Slider x:Name="ElevationSlider"
                                             Minimum="10"
                                             Maximum="80"
                                             ToolTip="Raise or lower the camera angle around the robot."
                                             ValueChanged="CameraSlider_ValueChanged" />
 
-                                    <TextBlock Margin="0,12,0,4" Foreground="#94A3B8" Text="Zoom" />
+                                    <TextBlock Margin="0,12,0,4" Foreground="{StaticResource MutedTextBrush}" Text="Zoom" />
                                     <Slider x:Name="ZoomSlider"
                                             Minimum="0.6"
                                             Maximum="2.4"
@@ -1056,7 +1048,7 @@
                            Grid.Column="2"
                            Margin="16,0,0,0"
                            VerticalAlignment="Center"
-                           Foreground="#E5E7EB"
+                           Foreground="{StaticResource SecondaryTextBrush}"
                            FontFamily="Consolas"
                            FontSize="12"
                            TextAlignment="Right" />
@@ -1113,7 +1105,7 @@
                         <TextBlock Text="Robot State"
                                    Style="{StaticResource ViewerSectionHeadingStyle}" />
 
-                        <Grid Margin="0,18,0,18">
+                        <Grid Style="{StaticResource ViewerStateGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110" />
                                 <ColumnDefinition Width="*" />
@@ -1126,24 +1118,23 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="DifferentialDriveStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Pose" />
-                            <TextBlock x:Name="DifferentialDrivePoseText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="DifferentialDriveCommandText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="DifferentialDriveTimeText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Frames" />
-                            <TextBlock x:Name="DifferentialDriveFramesText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                            <TextBlock x:Name="DifferentialDriveStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Pose" />
+                            <TextBlock x:Name="DifferentialDrivePoseText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                            <TextBlock x:Name="DifferentialDriveCommandText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                            <TextBlock x:Name="DifferentialDriveTimeText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Frames" />
+                            <TextBlock x:Name="DifferentialDriveFramesText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                         </Grid>
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script"
                                    Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
-                                   Margin="0,10,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                         <ComboBox x:Name="DifferentialDriveExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DifferentialDriveScriptTextBox"
@@ -1219,7 +1210,7 @@
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
-                        <Grid Margin="0,18,0,18">
+                        <Grid Style="{StaticResource ViewerStateGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110" />
                                 <ColumnDefinition Width="*" />
@@ -1232,23 +1223,22 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="ScaraStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Joints" />
-                            <TextBlock x:Name="ScaraJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Tool" />
-                            <TextBlock x:Name="ScaraToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="ScaraCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="ScaraTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                            <TextBlock x:Name="ScaraStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Joints" />
+                            <TextBlock x:Name="ScaraJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Tool" />
+                            <TextBlock x:Name="ScaraToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                            <TextBlock x:Name="ScaraCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                            <TextBlock x:Name="ScaraTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                         </Grid>
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Dialect"
-                                   Margin="0,10,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                         <ComboBox x:Name="ScaraScriptDialectComboBox"
                                   Margin="0,0,0,8"
                                   DisplayMemberPath="Name"
@@ -1256,7 +1246,7 @@
                                   SelectionChanged="ScaraScriptDialectComboBox_SelectionChanged" />
                         <TextBlock Text="Example"
                                    Margin="0,0,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerStateLabelStyle}" />
                         <ComboBox x:Name="ScaraExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="ScaraScriptTextBox"
@@ -1343,7 +1333,7 @@
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
-                        <Grid Margin="0,18,0,18">
+                        <Grid Style="{StaticResource ViewerStateGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110" />
                                 <ColumnDefinition Width="*" />
@@ -1356,23 +1346,22 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="SimpleArmStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Joints" />
-                            <TextBlock x:Name="SimpleArmJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Tool" />
-                            <TextBlock x:Name="SimpleArmToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="SimpleArmCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="SimpleArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                            <TextBlock x:Name="SimpleArmStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Joints" />
+                            <TextBlock x:Name="SimpleArmJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Tool" />
+                            <TextBlock x:Name="SimpleArmToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                            <TextBlock x:Name="SimpleArmCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                            <TextBlock x:Name="SimpleArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                         </Grid>
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Dialect"
-                                   Margin="0,10,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                         <ComboBox x:Name="SimpleArmScriptDialectComboBox"
                                   Margin="0,0,0,8"
                                   DisplayMemberPath="Name"
@@ -1380,7 +1369,7 @@
                                   SelectionChanged="SimpleArmScriptDialectComboBox_SelectionChanged" />
                         <TextBlock Text="Example"
                                    Margin="0,0,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerStateLabelStyle}" />
                         <ComboBox x:Name="SimpleArmExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="SimpleArmScriptTextBox"
@@ -1467,7 +1456,7 @@
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
-                        <Grid Margin="0,18,0,18">
+                        <Grid Style="{StaticResource ViewerStateGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110" />
                                 <ColumnDefinition Width="*" />
@@ -1480,23 +1469,22 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="DeltaStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Actuators" />
-                            <TextBlock x:Name="DeltaActuatorsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Tool" />
-                            <TextBlock x:Name="DeltaToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="DeltaCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="DeltaTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                            <TextBlock x:Name="DeltaStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Actuators" />
+                            <TextBlock x:Name="DeltaActuatorsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Tool" />
+                            <TextBlock x:Name="DeltaToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                            <TextBlock x:Name="DeltaCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                            <TextBlock x:Name="DeltaTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                         </Grid>
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Dialect"
-                                   Margin="0,10,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                         <ComboBox x:Name="DeltaScriptDialectComboBox"
                                   Margin="0,0,0,8"
                                   DisplayMemberPath="Name"
@@ -1504,7 +1492,7 @@
                                   SelectionChanged="DeltaScriptDialectComboBox_SelectionChanged" />
                         <TextBlock Text="Example"
                                    Margin="0,0,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerStateLabelStyle}" />
                         <ComboBox x:Name="DeltaExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DeltaScriptTextBox"
@@ -1591,7 +1579,7 @@
                     <StackPanel Margin="0,0,10,0">
                         <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
 
-                        <Grid Margin="0,18,0,18">
+                        <Grid Style="{StaticResource ViewerStateGridStyle}">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="110" />
                                 <ColumnDefinition Width="*" />
@@ -1604,23 +1592,22 @@
                                 <RowDefinition Height="Auto" />
                             </Grid.RowDefinitions>
 
-                            <TextBlock Grid.Row="0" Grid.Column="0" Foreground="#94A3B8" Text="State" />
-                            <TextBlock x:Name="DroneStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Pose" />
-                            <TextBlock x:Name="DronePoseText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Attitude" />
-                            <TextBlock x:Name="DroneYawText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                            <TextBlock x:Name="DroneCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
-                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                            <TextBlock x:Name="DroneTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                            <TextBlock Grid.Row="0" Grid.Column="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                            <TextBlock x:Name="DroneStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="1" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Pose" />
+                            <TextBlock x:Name="DronePoseText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="2" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Attitude" />
+                            <TextBlock x:Name="DroneYawText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="3" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                            <TextBlock x:Name="DroneCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                            <TextBlock Grid.Row="4" Grid.Column="0" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                            <TextBlock x:Name="DroneTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                         </Grid>
 
                         <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                         <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
                         <TextBlock Text="Example"
-                                   Margin="0,10,0,4"
-                                   Foreground="#94A3B8" />
+                                   Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                         <ComboBox x:Name="DroneExampleComboBox"
                                   Margin="0,0,0,8" />
                         <TextBox x:Name="DroneScriptTextBox"
@@ -1697,7 +1684,7 @@
                     <ScrollViewer VerticalScrollBarVisibility="Auto" HorizontalScrollBarVisibility="Disabled">
                         <StackPanel Margin="0,0,10,0">
                             <TextBlock Text="Robot State" Style="{StaticResource ViewerSectionHeadingStyle}" />
-                            <Grid Margin="0,18,0,18">
+                            <Grid Style="{StaticResource ViewerStateGridStyle}">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition Width="92" />
                                     <ColumnDefinition Width="*" />
@@ -1709,27 +1696,27 @@
                                     <RowDefinition Height="Auto" />
                                     <RowDefinition Height="Auto" />
                                 </Grid.RowDefinitions>
-                                <TextBlock Grid.Row="0" Foreground="#94A3B8" Text="State" />
-                                <TextBlock x:Name="IndustrialArmStateText" Grid.Row="0" Grid.Column="1" Foreground="#E5E7EB" TextAlignment="Right" />
-                                <TextBlock Grid.Row="1" Margin="0,8,0,0" Foreground="#94A3B8" Text="Joints" />
-                                <TextBlock x:Name="IndustrialArmJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                                <TextBlock Grid.Row="2" Margin="0,8,0,0" Foreground="#94A3B8" Text="TCP" />
-                                <TextBlock x:Name="IndustrialArmToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                                <TextBlock Grid.Row="3" Margin="0,8,0,0" Foreground="#94A3B8" Text="Command" />
-                                <TextBlock x:Name="IndustrialArmCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" TextWrapping="Wrap" />
-                                <TextBlock Grid.Row="4" Margin="0,8,0,0" Foreground="#94A3B8" Text="Time" />
-                                <TextBlock x:Name="IndustrialArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Foreground="#E5E7EB" TextAlignment="Right" />
+                                <TextBlock Grid.Row="0" Style="{StaticResource ViewerStateLabelStyle}" Text="State" />
+                                <TextBlock x:Name="IndustrialArmStateText" Grid.Row="0" Grid.Column="1" Style="{StaticResource ViewerStateValueStyle}" />
+                                <TextBlock Grid.Row="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Joints" />
+                                <TextBlock x:Name="IndustrialArmJointsText" Grid.Row="1" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                                <TextBlock Grid.Row="2" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="TCP" />
+                                <TextBlock x:Name="IndustrialArmToolText" Grid.Row="2" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                                <TextBlock Grid.Row="3" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Command" />
+                                <TextBlock x:Name="IndustrialArmCommandText" Grid.Row="3" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
+                                <TextBlock Grid.Row="4" Margin="0,8,0,0" Style="{StaticResource ViewerStateLabelStyle}" Text="Time" />
+                                <TextBlock x:Name="IndustrialArmTimeText" Grid.Row="4" Grid.Column="1" Margin="0,8,0,0" Style="{StaticResource ViewerStateValueStyle}" />
                             </Grid>
 
                             <Border Style="{StaticResource ViewerSectionDividerStyle}" />
                             <TextBlock Text="Script" Style="{StaticResource ViewerSectionHeadingStyle}" />
-                            <TextBlock Text="Dialect" Margin="0,10,0,4" Foreground="#94A3B8" />
+                            <TextBlock Text="Dialect" Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                             <ComboBox x:Name="IndustrialArmScriptDialectComboBox"
                                       Margin="0,0,0,8"
                                       DisplayMemberPath="Name"
                                       ToolTip="Choose joint-space Simple DSL or X/Y/Z/A/B/C tool-pose G-code for the 6-DOF Industrial Arm."
                                       SelectionChanged="IndustrialArmScriptDialectComboBox_SelectionChanged" />
-                            <TextBlock Text="Example" Margin="0,10,0,4" Foreground="#94A3B8" />
+                            <TextBlock Text="Example" Style="{StaticResource ViewerScriptFieldLabelStyle}" />
                             <ComboBox x:Name="IndustrialArmExampleComboBox" Margin="0,0,0,8" />
                             <TextBox x:Name="IndustrialArmScriptTextBox"
                                      Style="{StaticResource ViewerScriptEditorStyle}"
@@ -1757,18 +1744,18 @@
 
         <Grid x:Name="GlossaryOverlay"
               Panel.ZIndex="100"
-              Background="#D90B1220"
+              Background="{StaticResource ModalOverlayBrush}"
               Visibility="Collapsed">
             <Border Width="820"
                     MaxWidth="820"
                     Margin="40"
-                    Padding="20"
+                    Padding="{StaticResource CardPadding}"
                     HorizontalAlignment="Center"
                     VerticalAlignment="Stretch"
                     Background="{StaticResource PanelBackgroundBrush}"
                     BorderBrush="{StaticResource BorderBrush}"
                     BorderThickness="1"
-                    CornerRadius="6">
+                    CornerRadius="{StaticResource CardCornerRadius}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -1779,19 +1766,15 @@
 
                     <DockPanel Grid.Row="0" LastChildFill="True">
                         <Button DockPanel.Dock="Right"
-                                Width="34"
-                                Height="34"
-                                Style="{StaticResource SecondaryButtonStyle}"
-                                Content="X"
+                                Style="{StaticResource IconButtonStyle}"
+                                Content="&#xE711;"
                                 ToolTip="Close glossary."
                                 Click="CloseGlossaryButton_Click" />
                         <StackPanel>
-                            <TextBlock Foreground="{StaticResource PrimaryTextBrush}"
-                                       FontSize="24"
-                                       FontWeight="SemiBold"
+                            <TextBlock Style="{StaticResource DialogTitleTextStyle}"
                                        Text="Robotics Glossary" />
                             <TextBlock Margin="0,4,0,0"
-                                       Foreground="{StaticResource SecondaryTextBrush}"
+                                       Style="{StaticResource BodyTextStyle}"
                                        Text="Search the technical concepts used throughout RobotStudio." />
                         </StackPanel>
                     </DockPanel>
@@ -1802,13 +1785,13 @@
                             <ColumnDefinition Width="180" />
                         </Grid.ColumnDefinitions>
                         <StackPanel Grid.Column="0" Margin="0,0,10,0">
-                            <TextBlock Foreground="{StaticResource MutedTextBrush}" Text="Search" />
+                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="Search" />
                             <TextBox x:Name="GlossarySearchTextBox"
                                      Margin="0,4,0,0"
                                      TextChanged="GlossaryFilter_Changed" />
                         </StackPanel>
                         <StackPanel Grid.Column="1">
-                            <TextBlock Foreground="{StaticResource MutedTextBrush}" Text="Topic" />
+                            <TextBlock Style="{StaticResource FieldLabelTextStyle}" Text="Topic" />
                             <ComboBox x:Name="GlossaryCategoryComboBox"
                                       Margin="0,4,0,0"
                                       SelectionChanged="GlossaryFilter_Changed" />
@@ -1818,7 +1801,7 @@
                     <TextBlock x:Name="GlossaryResultCountText"
                                Grid.Row="2"
                                Margin="0,0,0,10"
-                               Foreground="{StaticResource MutedTextBrush}" />
+                               Style="{StaticResource MetadataTextStyle}" />
 
                     <ListBox x:Name="GlossaryEntriesListBox"
                              Grid.Row="3"

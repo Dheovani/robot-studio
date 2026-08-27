@@ -17,6 +17,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added dedicated schematic scene composers for every implemented robot simulator, isolating cameras, overlays, workspaces, trajectories, coordinate mapping, and robot geometry from the desktop window.
 - Added an immutable 2D canvas scene contract and WPF presenter for the Differential Drive simulator.
 - Added reusable dark-theme dropdown and compact scrollbar styles across the catalog, simulators, glossary, editors, and mechanical showcases.
+- Added centralized desktop design tokens and semantic typography styles, with the mechanical showcase as the first fully migrated view.
+- Migrated the robot catalog and robotics glossary to shared card, badge, typography, input, focus, and dialog styling.
 - Added a compact right-edge navigation rail for the Cartesian and XY Plotter sidebars, separating Script, Control, Monitor, and View workflows while preserving each area's scroll position.
 - Added automatic debounced script validation with compact status feedback and direct active-line selection in the script editor.
 - Added runtime interface localization with English and Brazilian Portuguese resources, a catalog language selector, translated robot metadata, and language-neutral DSL/G-code semantics.
@@ -71,6 +73,8 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Standardized state readouts, script field labels, spacing, and secondary text across all non-Cartesian simulation workspaces through shared semantic desktop styles.
+- Centralized desktop colors, renderer colors, data-series colors, typography, spacing, control geometry, and interaction states in one design-token dictionary across every WPF view and shared control.
 - Standardized simulator and mechanical-showcase headers with neutral playback actions and kept glossary access in the robot catalog instead of every workspace.
 - Centralized schematic WPF viewport lifecycle for all six 3D simulators behind a shared scene contract and presenter, including camera, lighting, model-root, and overlay replacement.
 - Refined the Drone mechanical model into a recognizable compact quadcopter with a low rounded-rectangle hull, integrated diagonal arms, paired propeller blades, and enclosed central avionics based on a common consumer-drone arrangement.

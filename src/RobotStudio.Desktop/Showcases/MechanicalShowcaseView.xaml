@@ -44,7 +44,7 @@
                     Grid.Column="0"
                     ClipToBounds="True"
                     Cursor="Hand"
-                    Background="#0B1220"
+                    Background="{StaticResource HeaderBackgroundBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
                     CornerRadius="4"
@@ -53,7 +53,7 @@
                     MouseMove="ShowcaseViewportHost_MouseMove"
                     MouseWheel="ShowcaseViewportHost_MouseWheel">
                 <hx:Viewport3DX x:Name="ShowcaseViewport"
-                               BackgroundColor="#0B1220"
+                               BackgroundColor="{StaticResource ViewportBackgroundColor}"
                                EnableMouseButtonHitTest="True"
                                EnableSwapChainRendering="False"
                                FXAALevel="Low"
@@ -62,21 +62,21 @@
                                ShowCoordinateSystem="True"
                                ShowViewCube="False"
                                UseDefaultGestures="False">
-                    <hx:AmbientLight3D Color="#748096" />
+                    <hx:AmbientLight3D Color="{StaticResource AmbientLightColor}" />
                     <hx:DirectionalLight3D x:Name="CameraKeyLight"
-                                           Color="#FFF4E6"
+                                           Color="{StaticResource KeyLightColor}"
                                            Direction="-1,1,-2" />
-                    <hx:DirectionalLight3D Color="#7EA6D8"
+                    <hx:DirectionalLight3D Color="{StaticResource FillLightColor}"
                                            Direction="1,-1,-1" />
                 </hx:Viewport3DX>
             </Border>
 
             <Border Grid.Column="2"
-                    Padding="16"
+                    Padding="{DynamicResource PanelPadding}"
                     Background="{DynamicResource PanelBackgroundBrush}"
                     BorderBrush="{DynamicResource BorderBrush}"
                     BorderThickness="1"
-                    CornerRadius="4">
+                    CornerRadius="{DynamicResource PanelCornerRadius}">
                 <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto" />
@@ -86,9 +86,7 @@
                     </Grid.RowDefinitions>
 
                     <StackPanel Grid.Row="0">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
+                        <TextBlock Style="{DynamicResource SectionTitleTextStyle}"
                                    Text="{DynamicResource Showcase.ViewLayer}" />
                         <ComboBox x:Name="TeachingViewComboBox"
                                   Margin="0,10,0,0"
@@ -96,18 +94,15 @@
                                   SelectionChanged="TeachingViewComboBox_SelectionChanged" />
                     </StackPanel>
 
-                    <StackPanel Grid.Row="1" Margin="0,18,0,0">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
+                    <StackPanel Grid.Row="1" Margin="{DynamicResource SectionSpacing}">
+                        <TextBlock Style="{DynamicResource SectionTitleTextStyle}"
                                    Text="{DynamicResource Showcase.Demonstration}" />
                         <ComboBox x:Name="DemonstrationComboBox"
                                   Margin="0,10,0,10"
                                   DisplayMemberPath="Name"
                                   SelectionChanged="DemonstrationComboBox_SelectionChanged" />
                         <TextBlock x:Name="DemonstrationDescriptionText"
-                                   Foreground="{DynamicResource MutedTextBrush}"
-                                   TextWrapping="Wrap" />
+                                   Style="{DynamicResource MetadataTextStyle}" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="2" Margin="0,2,0,18">
@@ -117,51 +112,43 @@
                                      Maximum="1" />
                         <TextBlock x:Name="DemonstrationTimeText"
                                    Margin="0,6,0,0"
-                                   Foreground="{DynamicResource MutedTextBrush}"
+                                   Style="{DynamicResource MetadataTextStyle}"
                                    Text="0 / 0 s" />
                     </StackPanel>
 
                     <StackPanel Grid.Row="3">
-                        <TextBlock Foreground="{DynamicResource PrimaryTextBrush}"
-                                   FontSize="18"
-                                   FontWeight="SemiBold"
+                        <TextBlock Style="{DynamicResource SectionTitleTextStyle}"
                                    Text="{DynamicResource Showcase.SelectedComponent}" />
                         <TextBlock x:Name="PartNameText"
                                    Margin="0,12,0,0"
-                                   Foreground="#93C5FD"
+                                   Foreground="{DynamicResource AccentTextBrush}"
                                    FontSize="16"
                                    FontWeight="SemiBold"
                                    Text="{DynamicResource Showcase.SelectComponent}" />
                         <TextBlock x:Name="PartKindText"
                                    Margin="0,3,0,0"
-                                   Foreground="{DynamicResource MutedTextBrush}" />
+                                   Style="{DynamicResource MetadataTextStyle}" />
                         <TextBlock x:Name="PartRelationshipText"
                                    Margin="0,3,0,0"
-                                   Foreground="{DynamicResource MutedTextBrush}"
-                                   TextWrapping="Wrap" />
+                                   Style="{DynamicResource MetadataTextStyle}" />
                         <TextBlock Margin="0,16,0,4"
-                                   Foreground="{DynamicResource MutedTextBrush}"
-                                   FontWeight="SemiBold"
+                                   Style="{DynamicResource FieldLabelTextStyle}"
                                    Text="{DynamicResource Showcase.Function}" />
                         <TextBlock x:Name="PartFunctionText"
-                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                   TextWrapping="Wrap" />
+                                   Style="{DynamicResource BodyTextStyle}" />
                         <TextBlock Margin="0,16,0,4"
-                                   Foreground="{DynamicResource MutedTextBrush}"
-                                   FontWeight="SemiBold"
+                                   Style="{DynamicResource FieldLabelTextStyle}"
                                    Text="{DynamicResource Showcase.Movement}" />
                         <TextBlock x:Name="PartMovementText"
-                                   Foreground="{DynamicResource SecondaryTextBrush}"
-                                   TextWrapping="Wrap" />
+                                   Style="{DynamicResource BodyTextStyle}" />
                         <Border Margin="0,20,0,0"
                                 Padding="10"
-                                Background="#182235"
+                                Background="{StaticResource MechanicalInfoSurfaceBrush}"
                                 BorderBrush="{DynamicResource BorderBrush}"
                                 BorderThickness="1"
-                                CornerRadius="4">
+                                CornerRadius="{DynamicResource PanelCornerRadius}">
                             <TextBlock x:Name="TeachingViewDescriptionText"
-                                       Foreground="{DynamicResource MutedTextBrush}"
-                                       TextWrapping="Wrap"
+                                       Style="{DynamicResource MetadataTextStyle}"
                                        Text="{DynamicResource Showcase.CompleteMachine}" />
                         </Border>
                     </StackPanel>

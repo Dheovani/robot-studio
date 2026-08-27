@@ -643,3 +643,4 @@ Expected current behavior:
 - runs a manual Release performance diagnostic across every registered GLB showcase, measuring one-time pipeline warm-up, per-model import and scene preparation, live composition cadence, transform updates, and semantic Helix hit testing;
 - verifies the visualization acceptance budget at its exact boundaries and reports every exceeded model-loading, frame, transform, and hit-test limit.
 - verifies during the cross-family diagnostic that every mechanical viewport completes explicit scene and renderer teardown after profiling.
+- verifies the desktop theme declares its required semantic design tokens, loads them before reusable control templates, does not reintroduce legacy button-color keys, keeps all six non-Cartesian simulator workspaces free of duplicated legacy neutral colors, and rejects hexadecimal colors declared by any desktop XAML outside the design-token dictionary.

@@ -50,13 +50,13 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [ ] Reduce excessive bordered containers and use spacing, background levels, and typography to establish visual hierarchy.
 - [ ] Define consistent typography and contrast levels for titles, labels, metadata, descriptions, status text, and secondary information.
 - [ ] Standardize toolbar and panel-header presentation across simulator, catalog, glossary, and mechanics views.
-- [ ] Refine the Robotics Glossary dialog with consistent themed search, filter, close, scrolling, and result-card components.
+- [x] Refine the Robotics Glossary dialog with consistent themed search, filter, close, scrolling, and result-card components.
 - [ ] Refine simulator chrome around the 3D viewport, including toolbar hierarchy, side-panel organization, and playback controls, without changing the renderer itself.
 - [ ] Replace verbose script validation and playback messages with compact contextual status indicators.
 - [x] Highlight the active script line directly in the editor instead of duplicating it in a separate status block.
 - [x] Move low-priority script actions such as load, save, and example loading into a compact toolbar or overflow menu where appropriate.
 - [ ] Introduce shared desktop UI components for buttons, dropdowns, text inputs, icon buttons, badges, panels, toolbars, dialogs, and status indicators.
-- [ ] Centralize desktop design tokens for colors, spacing, typography, borders, radii, and interaction states to keep future views visually consistent.
+- [x] Centralize desktop design tokens for colors, spacing, typography, borders, radii, and interaction states to keep future views visually consistent.
 
 ## 5. Advanced 3D Visualization And Realistic Robot Rendering
 
