@@ -22,7 +22,23 @@ internal sealed record MechanicalMotionAxisGuide(
     MechanicalMotionAxis Axis,
     Vector3 Start,
     Vector3 End,
-    RobotPartId? AttachedPartId = null);
+    RobotPartId? AttachedPartId = null)
+{
+    public RobotOverlayLine ToOverlay() =>
+        new(
+            RobotOverlayKind.CoordinateAxis,
+            Start,
+            End,
+            Thickness: 0.16f,
+            Axis switch
+            {
+                MechanicalMotionAxis.X => RobotOverlayAxis.X,
+                MechanicalMotionAxis.Y => RobotOverlayAxis.Y,
+                MechanicalMotionAxis.Z => RobotOverlayAxis.Z,
+                _ => throw new ArgumentOutOfRangeException(nameof(Axis))
+            },
+            AttachedPartId);
+}
 
 internal sealed record MechanicalExplodedPartOffset(
     RobotPartId PartId,

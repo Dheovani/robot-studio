@@ -142,26 +142,11 @@ public partial class MechanicalShowcaseView : UserControl
 
     private void AddMotionAxisOverlays()
     {
-        foreach (var guide in presentation.MotionAxes)
+        foreach (var line in presentation.EducationalOverlays.Primitives.OfType<RobotOverlayLine>())
         {
-            var color = guide.Axis switch
-            {
-                MechanicalMotionAxis.X => new Color4(0.95f, 0.18f, 0.22f, 1f),
-                MechanicalMotionAxis.Y => new Color4(0.1f, 0.8f, 0.36f, 1f),
-                MechanicalMotionAxis.Z => new Color4(0.16f, 0.48f, 1f, 1f),
-                _ => throw new ArgumentOutOfRangeException(nameof(guide))
-            };
-            var builder = new MeshBuilder();
-            builder.AddArrow(guide.Start, guide.End, 0.16f, 3.2f, 24);
-            var model = new MeshGeometryModel3D
-            {
-                Geometry = builder.ToMeshGeometry3D(),
-                Material = AxisMaterial(color),
-                IsHitTestVisible = false,
-                Visibility = Visibility.Collapsed
-            };
+            var model = HelixRobotOverlayAdapter.CreateAxisArrow(line);
 
-            motionAxisModels.Add(model, guide.AttachedPartId);
+            motionAxisModels.Add(model, line.AttachedPartId);
             ShowcaseViewport.Items.Add(model);
         }
     }

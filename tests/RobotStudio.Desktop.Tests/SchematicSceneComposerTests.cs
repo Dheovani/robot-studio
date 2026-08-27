@@ -51,6 +51,19 @@ public sealed class SchematicSceneComposerTests
     }
 
     [Fact]
+    public void CartesianOverlayCompose_ShouldDescribeAllCurrentEducationalLayersWithoutWpfObjects()
+    {
+        var scene = CartesianOverlaySceneComposer.Compose(CreateCartesianSnapshot());
+
+        Assert.Contains(scene.Primitives, primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.CoordinateGrid);
+        Assert.Equal(3, scene.Primitives.Count(primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.CoordinateAxis));
+        Assert.Equal(3, scene.Primitives.Count(primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.AxisLabel));
+        Assert.Single(scene.Primitives, primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.WorkspaceBoundary);
+        Assert.Single(scene.Primitives, primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.Trajectory);
+        Assert.Equal(6, scene.Primitives.Count(primitive => primitive.Kind == RobotStudio.Visualization.RobotOverlayKind.PhysicalLimit));
+    }
+
+    [Fact]
     public void DifferentialDriveCompose_WhenFrameAdvances_ShouldAddOnePathSegment()
     {
         var snapshot = CreateDifferentialDriveSnapshot();

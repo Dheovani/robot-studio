@@ -146,6 +146,7 @@ internal sealed class MechanicalShowcasePresentation
         InitiallySelectedPartId = initiallySelectedPartId;
         ViewOptions = Array.AsReadOnly(optionArray);
         MotionAxes = Array.AsReadOnly(axisArray);
+        EducationalOverlays = new RobotOverlayScene(axisArray.Select(axis => axis.ToOverlay()));
         ExplodedOffsets = Array.AsReadOnly(offsetArray);
         FallbackPrimitives = Array.AsReadOnly(primitiveArray);
         RevoluteJointPivots = Array.AsReadOnly(pivotArray);
@@ -167,6 +168,8 @@ internal sealed class MechanicalShowcasePresentation
     public IReadOnlyList<MechanicalTeachingViewOption> ViewOptions { get; }
 
     public IReadOnlyList<MechanicalMotionAxisGuide> MotionAxes { get; }
+
+    public RobotOverlayScene EducationalOverlays { get; }
 
     public IReadOnlyList<MechanicalExplodedPartOffset> ExplodedOffsets { get; }
 

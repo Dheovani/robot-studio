@@ -94,6 +94,22 @@ public sealed class MechanicalShowcasePresentationTests
         Assert.Equal("parallelLinkConstraints", exception.ParamName);
     }
 
+    [Fact]
+    public void Constructor_ShouldComposeMotionAxesAsRendererIndependentOverlays()
+    {
+        var presentation = CartesianMechanicalShowcaseDefinition.CreatePresentation();
+
+        var overlays = presentation.EducationalOverlays.Primitives
+            .OfType<RobotOverlayLine>()
+            .ToArray();
+
+        Assert.Equal(presentation.MotionAxes.Count, overlays.Length);
+        Assert.All(overlays, overlay => Assert.Equal(RobotOverlayKind.CoordinateAxis, overlay.Kind));
+        Assert.Equal(
+            [RobotOverlayAxis.X, RobotOverlayAxis.Y, RobotOverlayAxis.Z],
+            overlays.Select(overlay => overlay.Axis));
+    }
+
     private static MechanicalShowcasePresentation Create(
         MechanicalShowcasePresentation source,
         string? modelId = null,
