@@ -78,11 +78,11 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Add the first mechanical component inspector with names, kinds, functions, motion descriptions, semantic selection, and highlighting for the Cartesian proof-of-concept scene.
 - [x] Add initial visualization mode selection for the Cartesian vertical slice through separate schematic/showcase catalog actions and an optional realistic motion-axis overlay layer.
 - [x] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
-- [ ] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
+- [x] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
   - [x] Define renderer-independent overlay primitives and semantic kinds in `RobotStudio.Visualization`, including a reserved collision-bounds kind.
   - [x] Move Cartesian and XY Plotter grid, coordinate axes, labels, workspace, trajectory, start/end positions, and physical-limit anchors into a renderer-independent overlay composer.
   - [x] Route mechanical-showcase motion-axis guides through the shared overlay scene before Helix conversion.
-  - [ ] Migrate workspace, path, coordinate, label, and limit overlays for the remaining schematic robot families to the shared contract.
+  - [x] Migrate workspace, path, coordinate, label, and limit overlays for the remaining schematic robot families to the shared contract.
 - [x] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
 - [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
 - [x] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.

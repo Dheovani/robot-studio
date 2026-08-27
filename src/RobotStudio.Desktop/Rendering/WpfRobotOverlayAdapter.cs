@@ -13,6 +13,44 @@ internal static class WpfRobotOverlayAdapter
     private const double AxisLabelWidth = 22;
     private const double AxisLabelHeight = 16;
 
+    public static Model3DGroup CreateModelGroup(
+        RobotOverlayScene scene,
+        Color? workspaceBoundaryColor,
+        params RobotOverlayKind[] visibleKinds)
+    {
+        ArgumentNullException.ThrowIfNull(scene);
+        var visible = visibleKinds.ToHashSet();
+        var group = new Model3DGroup();
+        foreach (var primitive in scene.Primitives.Where(primitive => visible.Contains(primitive.Kind)))
+        {
+            switch (primitive)
+            {
+                case RobotOverlayLine line:
+                    group.Children.Add(CreateLine(line));
+                    break;
+                case RobotOverlayPolyline polyline:
+                    group.Children.Add(CreatePolyline(
+                        polyline,
+                        polyline.Kind == RobotOverlayKind.WorkspaceBoundary
+                            ? workspaceBoundaryColor
+                            : null));
+                    break;
+                case RobotOverlayPoint point:
+                    group.Children.Add(CreatePoint(point));
+                    break;
+                case RobotOverlayBox box:
+                    group.Children.Add(CreateBox(
+                        box,
+                        box.Kind == RobotOverlayKind.WorkspaceBoundary
+                            ? workspaceBoundaryColor
+                            : null));
+                    break;
+            }
+        }
+
+        return group;
+    }
+
     public static Model3D CreateLine(RobotOverlayLine line)
         => MeshModelFactory.CreateOrientedBox(
             ToPoint(line.Start),
@@ -20,10 +58,12 @@ internal static class WpfRobotOverlayAdapter
             line.Thickness,
             GetColor(line));
 
-    public static Model3DGroup CreatePolyline(RobotOverlayPolyline polyline)
+    public static Model3DGroup CreatePolyline(
+        RobotOverlayPolyline polyline,
+        Color? colorOverride = null)
     {
         var group = new Model3DGroup();
-        var color = GetColor(polyline);
+        var color = colorOverride ?? GetColor(polyline);
         for (var index = 1; index < polyline.Points.Count; index++)
         {
             var start = polyline.Points[index - 1];
@@ -47,11 +87,13 @@ internal static class WpfRobotOverlayAdapter
             new VisualVector3(point.Size, point.Size, point.Size),
             GetColor(point));
 
-    public static Model3DGroup CreateBox(RobotOverlayBox box)
+    public static Model3DGroup CreateBox(
+        RobotOverlayBox box,
+        Color? colorOverride = null)
     {
         var group = new Model3DGroup();
         var half = box.Size / 2;
-        var color = GetColor(box);
+        var color = colorOverride ?? GetColor(box);
 
         foreach (var y in new[] { -half.Y, half.Y })
         {
@@ -178,6 +220,7 @@ internal static class WpfRobotOverlayAdapter
         return primitive.Kind switch
         {
             RobotOverlayKind.CoordinateGrid => Color.FromArgb(90, 71, 85, 105),
+            RobotOverlayKind.CoordinateOrigin => Color.FromRgb(148, 163, 184),
             RobotOverlayKind.WorkspaceBoundary => Color.FromArgb(120, 148, 163, 184),
             RobotOverlayKind.Trajectory => Color.FromArgb(190, 250, 204, 21),
             RobotOverlayKind.StartPosition => Color.FromRgb(74, 222, 128),

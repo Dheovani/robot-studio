@@ -1,7 +1,9 @@
+using System.Numerics;
 using System.Windows;
 using System.Windows.Media;
 using RobotStudio.Domain.Mobile;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Rendering.SceneComposers;
 
@@ -32,9 +34,23 @@ internal static class DifferentialDriveSchematicSceneComposer
         }
 
         var mapping = CreateMapping(snapshot.Profile, viewportSize, zoomMultiplier);
+        var overlays = SchematicEducationalOverlayComposer.ComposeRectangularPlanar(
+            new Vector2(
+                (float)snapshot.Profile.MinimumXMillimeters,
+                (float)snapshot.Profile.MinimumYMillimeters),
+            new Vector2(
+                (float)snapshot.Profile.MaximumXMillimeters,
+                (float)snapshot.Profile.MaximumYMillimeters),
+            floorZ: 0,
+            gridSpacing: 50,
+            gridThickness: 1,
+            boundaryThickness: 2,
+            snapshot.Frames.Take(frameIndex + 1).Select(frame =>
+                new Vector3((float)frame.Pose.X, (float)frame.Pose.Y, 0)),
+            trajectoryThickness: 3);
         var primitives = new List<CanvasPrimitive2D>();
-        AddWorkspace(primitives, snapshot.Profile, mapping);
-        AddPath(primitives, snapshot, frameIndex, mapping);
+        AddWorkspace(primitives, snapshot.Profile, overlays, mapping);
+        AddPath(primitives, overlays, mapping);
         AddRobot(primitives, snapshot.Frames[frameIndex].Pose, mapping);
         return new CanvasScene2D(primitives);
     }
@@ -42,6 +58,7 @@ internal static class DifferentialDriveSchematicSceneComposer
     private static void AddWorkspace(
         ICollection<CanvasPrimitive2D> primitives,
         DifferentialDriveProfile profile,
+        RobotOverlayScene overlays,
         CoordinateMapping mapping)
     {
         var topLeft = mapping.Map(profile.MinimumXMillimeters, profile.MaximumYMillimeters);
@@ -52,20 +69,13 @@ internal static class DifferentialDriveSchematicSceneComposer
             Color.FromRgb(71, 85, 105),
             StrokeThickness: 2));
 
-        for (var x = profile.MinimumXMillimeters; x <= profile.MaximumXMillimeters; x += 50)
+        foreach (var line in overlays.Primitives
+                     .OfType<RobotOverlayLine>()
+                     .Where(line => line.Kind == RobotOverlayKind.CoordinateGrid))
         {
             primitives.Add(new CanvasLine2D(
-                mapping.Map(x, profile.MinimumYMillimeters),
-                mapping.Map(x, profile.MaximumYMillimeters),
-                Color.FromRgb(30, 41, 59),
-                Thickness: 1));
-        }
-
-        for (var y = profile.MinimumYMillimeters; y <= profile.MaximumYMillimeters; y += 50)
-        {
-            primitives.Add(new CanvasLine2D(
-                mapping.Map(profile.MinimumXMillimeters, y),
-                mapping.Map(profile.MaximumXMillimeters, y),
+                mapping.Map(line.Start.X, line.Start.Y),
+                mapping.Map(line.End.X, line.End.Y),
                 Color.FromRgb(30, 41, 59),
                 Thickness: 1));
         }
@@ -73,19 +83,26 @@ internal static class DifferentialDriveSchematicSceneComposer
 
     private static void AddPath(
         ICollection<CanvasPrimitive2D> primitives,
-        DifferentialDrivePlaybackSnapshot snapshot,
-        int frameIndex,
+        RobotOverlayScene overlays,
         CoordinateMapping mapping)
     {
-        for (var index = 1; index <= frameIndex; index++)
+        var trajectory = overlays.Primitives
+            .OfType<RobotOverlayPolyline>()
+            .SingleOrDefault(polyline => polyline.Kind == RobotOverlayKind.Trajectory);
+        if (trajectory is null)
         {
-            var previous = snapshot.Frames[index - 1].Pose;
-            var current = snapshot.Frames[index].Pose;
+            return;
+        }
+
+        for (var index = 1; index < trajectory.Points.Count; index++)
+        {
+            var previous = trajectory.Points[index - 1];
+            var current = trajectory.Points[index];
             primitives.Add(new CanvasLine2D(
                 mapping.Map(previous.X, previous.Y),
                 mapping.Map(current.X, current.Y),
                 Color.FromRgb(45, 212, 191),
-                Thickness: 3));
+                Thickness: trajectory.Thickness));
         }
     }
 

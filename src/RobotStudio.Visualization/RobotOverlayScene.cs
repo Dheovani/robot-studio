@@ -6,6 +6,7 @@ public enum RobotOverlayKind
 {
     CoordinateGrid,
     CoordinateAxis,
+    CoordinateOrigin,
     WorkspaceBoundary,
     Trajectory,
     StartPosition,

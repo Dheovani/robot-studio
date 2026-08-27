@@ -1,7 +1,9 @@
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Rendering.SceneComposers;
 
@@ -20,6 +22,14 @@ internal static class SimpleArmSchematicSceneComposer
         var reach = snapshot.Profile.FirstLinkLengthMillimeters +
                     snapshot.Profile.SecondLinkLengthMillimeters +
                     snapshot.Profile.ThirdLinkLengthMillimeters;
+        var overlays = SchematicEducationalOverlayComposer.ComposePlanar(
+            (float)reach,
+            gridSpacing: 50,
+            floorZ: -8,
+            gridThickness: 1.8f,
+            boundaryThickness: 3,
+            GetTrajectory(snapshot, frameIndex),
+            trajectoryThickness: 5);
 
         return new SchematicViewportScene(
             OrbitCameraFactory.Create(new OrbitCameraSettings(
@@ -31,42 +41,29 @@ internal static class SimpleArmSchematicSceneComposer
                 NearPlaneDistance: 1,
                 FarPlaneDistance: reach * 8)),
             [
-                CreateWorkspace(reach),
-                CreatePath(snapshot, frameIndex),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    Color.FromArgb(170, 34, 197, 94),
+                    RobotOverlayKind.CoordinateGrid,
+                    RobotOverlayKind.WorkspaceBoundary,
+                    RobotOverlayKind.CoordinateOrigin),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    workspaceBoundaryColor: null,
+                    RobotOverlayKind.Trajectory),
                 CreateRobot(snapshot.Profile, snapshot.Frames[frameIndex])
             ]);
     }
 
-    private static Model3DGroup CreateWorkspace(double reach) =>
-        MeshModelFactory.CreatePlanarWorkspace(
-            reach,
-            gridSpacing: 50,
-            floorZ: -8,
-            gridThickness: 1.8,
-            ringThickness: 3,
-            Color.FromArgb(95, 51, 65, 85),
-            Color.FromArgb(170, 34, 197, 94),
-            Color.FromRgb(148, 163, 184));
-
-    private static Model3DGroup CreatePath(
+    private static IEnumerable<Vector3> GetTrajectory(
         SimpleArmPlaybackSnapshot snapshot,
         int frameIndex)
     {
-        var group = new Model3DGroup();
-        var pathColor = Color.FromArgb(210, 45, 212, 191);
-
-        for (var index = 1; index <= frameIndex; index++)
+        for (var index = 0; index <= frameIndex; index++)
         {
-            var previous = snapshot.Frames[index - 1].ToolPose;
-            var current = snapshot.Frames[index].ToolPose;
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                new Point3D(previous.X, previous.Y, 22),
-                new Point3D(current.X, current.Y, 22),
-                thickness: 5,
-                pathColor));
+            var pose = snapshot.Frames[index].ToolPose;
+            yield return new Vector3((float)pose.X, (float)pose.Y, 22);
         }
-
-        return group;
     }
 
     private static Model3DGroup CreateRobot(

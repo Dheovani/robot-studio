@@ -1,7 +1,9 @@
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using RobotStudio.Domain.Parallel;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Rendering.SceneComposers;
 
@@ -18,6 +20,14 @@ internal static class DeltaSchematicSceneComposer
         ValidateFrameIndex(frameIndex, snapshot.FrameCount);
 
         var reach = snapshot.Profile.BaseRadiusMillimeters * 1.2;
+        var overlays = SchematicEducationalOverlayComposer.ComposePlanar(
+            (float)reach,
+            gridSpacing: 50,
+            floorZ: -115,
+            gridThickness: 1.8f,
+            boundaryThickness: 3,
+            snapshot.Frames.Take(frameIndex + 1).Select(frame => ToVector(frame.ToolPose)),
+            trajectoryThickness: 4);
         return new SchematicViewportScene(
             OrbitCameraFactory.Create(new OrbitCameraSettings(
                 Target: new Point3D(0, 0, -15),
@@ -28,37 +38,18 @@ internal static class DeltaSchematicSceneComposer
                 NearPlaneDistance: 1,
                 FarPlaneDistance: reach * 10)),
             [
-                MeshModelFactory.CreatePlanarWorkspace(
-                    reach,
-                    gridSpacing: 50,
-                    floorZ: -115,
-                    gridThickness: 1.8,
-                    ringThickness: 3,
-                    Color.FromArgb(95, 51, 65, 85),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
                     Color.FromArgb(170, 34, 197, 94),
-                    Color.FromRgb(148, 163, 184)),
-                CreatePath(snapshot, frameIndex),
+                    RobotOverlayKind.CoordinateGrid,
+                    RobotOverlayKind.WorkspaceBoundary,
+                    RobotOverlayKind.CoordinateOrigin),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    null,
+                    RobotOverlayKind.Trajectory),
                 CreateRobot(snapshot.Profile, snapshot.Frames[frameIndex])
             ]);
-    }
-
-    private static Model3DGroup CreatePath(
-        DeltaPlaybackSnapshot snapshot,
-        int frameIndex)
-    {
-        var group = new Model3DGroup();
-        var pathColor = Color.FromArgb(220, 45, 212, 191);
-
-        for (var index = 1; index <= frameIndex; index++)
-        {
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                ToPoint3D(snapshot.Frames[index - 1].ToolPose),
-                ToPoint3D(snapshot.Frames[index].ToolPose),
-                thickness: 4,
-                pathColor));
-        }
-
-        return group;
     }
 
     private static Model3DGroup CreateRobot(
@@ -170,6 +161,9 @@ internal static class DeltaSchematicSceneComposer
 
     private static Point3D ToPoint3D(DeltaToolPose pose) =>
         new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
+
+    private static Vector3 ToVector(DeltaToolPose pose) =>
+        new((float)pose.XMillimeters, (float)pose.YMillimeters, (float)pose.ZMillimeters);
 
     private static void ValidateFrameIndex(int frameIndex, int frameCount)
     {

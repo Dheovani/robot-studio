@@ -1,7 +1,9 @@
+using System.Numerics;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Rendering.SceneComposers;
 
@@ -19,6 +21,14 @@ internal static class ScaraSchematicSceneComposer
 
         var reach = snapshot.Profile.FirstLinkLengthMillimeters +
                     snapshot.Profile.SecondLinkLengthMillimeters;
+        var overlays = SchematicEducationalOverlayComposer.ComposePlanar(
+            (float)reach,
+            gridSpacing: 50,
+            floorZ: -8,
+            gridThickness: 1.8f,
+            boundaryThickness: 3,
+            GetTrajectory(snapshot, frameIndex),
+            trajectoryThickness: 5);
 
         return new SchematicViewportScene(
             OrbitCameraFactory.Create(new OrbitCameraSettings(
@@ -30,42 +40,29 @@ internal static class ScaraSchematicSceneComposer
                 NearPlaneDistance: 1,
                 FarPlaneDistance: reach * 9)),
             [
-                CreateWorkspace(reach),
-                CreatePath(snapshot, frameIndex),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    Color.FromArgb(170, 59, 130, 246),
+                    RobotOverlayKind.CoordinateGrid,
+                    RobotOverlayKind.WorkspaceBoundary,
+                    RobotOverlayKind.CoordinateOrigin),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    workspaceBoundaryColor: null,
+                    RobotOverlayKind.Trajectory),
                 CreateRobot(snapshot.Profile, snapshot.Frames[frameIndex])
             ]);
     }
 
-    private static Model3DGroup CreateWorkspace(double reach) =>
-        MeshModelFactory.CreatePlanarWorkspace(
-            reach,
-            gridSpacing: 50,
-            floorZ: -8,
-            gridThickness: 1.8,
-            ringThickness: 3,
-            Color.FromArgb(95, 51, 65, 85),
-            Color.FromArgb(170, 59, 130, 246),
-            Color.FromRgb(148, 163, 184));
-
-    private static Model3DGroup CreatePath(
+    private static IEnumerable<Vector3> GetTrajectory(
         ScaraPlaybackSnapshot snapshot,
         int frameIndex)
     {
-        var group = new Model3DGroup();
-        var pathColor = Color.FromArgb(210, 45, 212, 191);
-
-        for (var index = 1; index <= frameIndex; index++)
+        for (var index = 0; index <= frameIndex; index++)
         {
-            var previous = snapshot.Frames[index - 1].ToolPose;
-            var current = snapshot.Frames[index].ToolPose;
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                new Point3D(previous.X, previous.Y, 26),
-                new Point3D(current.X, current.Y, 26),
-                thickness: 5,
-                pathColor));
+            var pose = snapshot.Frames[index].ToolPose;
+            yield return new Vector3((float)pose.X, (float)pose.Y, 26);
         }
-
-        return group;
     }
 
     private static Model3DGroup CreateRobot(

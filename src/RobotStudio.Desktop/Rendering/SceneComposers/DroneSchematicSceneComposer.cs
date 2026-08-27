@@ -2,6 +2,8 @@ using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using RobotStudio.Domain.Aerial;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
+using Vector3 = System.Numerics.Vector3;
 
 namespace RobotStudio.Desktop.Rendering.SceneComposers;
 
@@ -22,6 +24,20 @@ internal static class DroneSchematicSceneComposer
         var depth = profile.MaximumYMillimeters - profile.MinimumYMillimeters;
         var height = profile.MaximumZMillimeters - profile.MinimumZMillimeters;
         var diagonal = Math.Sqrt((width * width) + (depth * depth) + (height * height));
+        var overlays = SchematicEducationalOverlayComposer.ComposeBox(
+            new Vector3(
+                (float)profile.MinimumXMillimeters,
+                (float)profile.MinimumYMillimeters,
+                (float)profile.MinimumZMillimeters),
+            new Vector3(
+                (float)profile.MaximumXMillimeters,
+                (float)profile.MaximumYMillimeters,
+                (float)profile.MaximumZMillimeters),
+            gridSpacing: 50,
+            gridThickness: 1.8f,
+            boundaryThickness: 4,
+            snapshot.Frames.Take(frameIndex + 1).Select(frame => ToVector(frame.Pose)),
+            trajectoryThickness: 4);
 
         return new SchematicViewportScene(
             OrbitCameraFactory.Create(new OrbitCameraSettings(
@@ -33,90 +49,17 @@ internal static class DroneSchematicSceneComposer
                 NearPlaneDistance: 1,
                 FarPlaneDistance: diagonal * 8)),
             [
-                CreateWorkspace(profile),
-                CreatePath(snapshot, frameIndex),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    Color.FromArgb(170, 96, 165, 250),
+                    RobotOverlayKind.CoordinateGrid,
+                    RobotOverlayKind.WorkspaceBoundary),
+                WpfRobotOverlayAdapter.CreateModelGroup(
+                    overlays,
+                    null,
+                    RobotOverlayKind.Trajectory),
                 CreateRobot(snapshot.Frames[frameIndex])
             ]);
-    }
-
-    private static Model3DGroup CreateWorkspace(DroneProfile profile)
-    {
-        var group = new Model3DGroup();
-        var min = new Point3D(
-            profile.MinimumXMillimeters,
-            profile.MinimumYMillimeters,
-            profile.MinimumZMillimeters);
-        var max = new Point3D(
-            profile.MaximumXMillimeters,
-            profile.MaximumYMillimeters,
-            profile.MaximumZMillimeters);
-        var gridColor = Color.FromArgb(95, 51, 65, 85);
-        var edgeColor = Color.FromArgb(170, 96, 165, 250);
-
-        for (var x = profile.MinimumXMillimeters; x <= profile.MaximumXMillimeters; x += 50)
-        {
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                new Point3D(x, min.Y, min.Z),
-                new Point3D(x, max.Y, min.Z),
-                thickness: 1.8,
-                gridColor));
-        }
-
-        for (var y = profile.MinimumYMillimeters; y <= profile.MaximumYMillimeters; y += 50)
-        {
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                new Point3D(min.X, y, min.Z),
-                new Point3D(max.X, y, min.Z),
-                thickness: 1.8,
-                gridColor));
-        }
-
-        var corners = new[]
-        {
-            new Point3D(min.X, min.Y, min.Z),
-            new Point3D(max.X, min.Y, min.Z),
-            new Point3D(max.X, max.Y, min.Z),
-            new Point3D(min.X, max.Y, min.Z),
-            new Point3D(min.X, min.Y, max.Z),
-            new Point3D(max.X, min.Y, max.Z),
-            new Point3D(max.X, max.Y, max.Z),
-            new Point3D(min.X, max.Y, max.Z)
-        };
-
-        foreach (var (start, end) in new[]
-        {
-            (0, 1), (1, 2), (2, 3), (3, 0),
-            (4, 5), (5, 6), (6, 7), (7, 4),
-            (0, 4), (1, 5), (2, 6), (3, 7)
-        })
-        {
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                corners[start],
-                corners[end],
-                thickness: 4,
-                edgeColor));
-        }
-
-        return group;
-    }
-
-    private static Model3DGroup CreatePath(
-        DronePlaybackSnapshot snapshot,
-        int frameIndex)
-    {
-        var group = new Model3DGroup();
-        var pathColor = Color.FromArgb(220, 45, 212, 191);
-
-        for (var index = 1; index <= frameIndex; index++)
-        {
-            group.Children.Add(MeshModelFactory.CreateOrientedBox(
-                ToPoint3D(snapshot.Frames[index - 1].Pose),
-                ToPoint3D(snapshot.Frames[index].Pose),
-                thickness: 4,
-                pathColor));
-        }
-
-        return group;
     }
 
     private static Model3DGroup CreateRobot(DronePlaybackFrame frame)
@@ -168,6 +111,9 @@ internal static class DroneSchematicSceneComposer
 
     private static Point3D ToPoint3D(DronePose pose) =>
         new(pose.XMillimeters, pose.YMillimeters, pose.ZMillimeters);
+
+    private static Vector3 ToVector(DronePose pose) =>
+        new((float)pose.XMillimeters, (float)pose.YMillimeters, (float)pose.ZMillimeters);
 
     private static void ValidateFrameIndex(int frameIndex, int frameCount)
     {

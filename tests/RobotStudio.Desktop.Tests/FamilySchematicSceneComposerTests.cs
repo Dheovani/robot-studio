@@ -1,3 +1,4 @@
+using System.Numerics;
 using System.Windows.Media.Media3D;
 using RobotStudio.Desktop.Rendering;
 using RobotStudio.Desktop.Rendering.SceneComposers;
@@ -7,6 +8,7 @@ using RobotStudio.Domain.Aerial;
 using RobotStudio.Domain.Articulated;
 using RobotStudio.Domain.Parallel;
 using RobotStudio.Simulation;
+using RobotStudio.Visualization;
 
 namespace RobotStudio.Desktop.Tests;
 
@@ -123,11 +125,80 @@ public sealed class FamilySchematicSceneComposerTests
             ScaraSchematicSceneComposer.Compose(snapshot, 1, 35, 28, 1));
     }
 
+    [Fact]
+    public void PlanarOverlayCompose_ShouldExposeWorkspaceCoordinatesLabelsLimitsAndTrajectory()
+    {
+        var scene = SchematicEducationalOverlayComposer.ComposePlanar(
+            reach: 200,
+            gridSpacing: 50,
+            floorZ: -8,
+            gridThickness: 1.8f,
+            boundaryThickness: 3,
+            [Vector3.Zero, new Vector3(50, 40, 20)],
+            trajectoryThickness: 5);
+
+        AssertEducationalLayers(scene, expectedAxisCount: 2, expectedLimitCount: 4);
+        Assert.IsType<RobotOverlayPolyline>(Assert.Single(
+            scene.Primitives,
+            primitive => primitive.Kind == RobotOverlayKind.WorkspaceBoundary));
+    }
+
+    [Fact]
+    public void BoxOverlayCompose_ShouldExposeVolumetricWorkspaceAndThreeAxisCoordinates()
+    {
+        var scene = SchematicEducationalOverlayComposer.ComposeBox(
+            Vector3.Zero,
+            new Vector3(500, 350, 240),
+            gridSpacing: 50,
+            gridThickness: 1.8f,
+            boundaryThickness: 4,
+            [Vector3.Zero, new Vector3(100, 80, 60)],
+            trajectoryThickness: 4);
+
+        AssertEducationalLayers(scene, expectedAxisCount: 3, expectedLimitCount: 6);
+        Assert.IsType<RobotOverlayBox>(Assert.Single(
+            scene.Primitives,
+            primitive => primitive.Kind == RobotOverlayKind.WorkspaceBoundary));
+    }
+
+    [Fact]
+    public void RectangularPlanarOverlayCompose_ShouldExposeMobileWorkspaceSemantics()
+    {
+        var scene = SchematicEducationalOverlayComposer.ComposeRectangularPlanar(
+            Vector2.Zero,
+            new Vector2(500, 350),
+            floorZ: 0,
+            gridSpacing: 50,
+            gridThickness: 1,
+            boundaryThickness: 2,
+            [Vector3.Zero, new Vector3(100, 80, 0)],
+            trajectoryThickness: 3);
+
+        AssertEducationalLayers(scene, expectedAxisCount: 2, expectedLimitCount: 4);
+        var boundary = Assert.IsType<RobotOverlayPolyline>(Assert.Single(
+            scene.Primitives,
+            primitive => primitive.Kind == RobotOverlayKind.WorkspaceBoundary));
+        Assert.Equal(boundary.Points[0], boundary.Points[^1]);
+    }
+
     private static void AssertSceneStructure(SchematicViewportScene scene)
     {
         Assert.IsType<PerspectiveCamera>(scene.Camera);
         Assert.Equal(3, scene.Models.Count);
         Assert.All(scene.Models, model => Assert.IsType<Model3DGroup>(model));
+    }
+
+    private static void AssertEducationalLayers(
+        RobotOverlayScene scene,
+        int expectedAxisCount,
+        int expectedLimitCount)
+    {
+        Assert.Contains(scene.Primitives, primitive => primitive.Kind == RobotOverlayKind.CoordinateGrid);
+        Assert.Single(scene.Primitives, primitive => primitive.Kind == RobotOverlayKind.CoordinateOrigin);
+        Assert.Equal(expectedAxisCount, scene.Primitives.Count(primitive => primitive.Kind == RobotOverlayKind.CoordinateAxis));
+        Assert.Equal(expectedAxisCount, scene.Primitives.Count(primitive => primitive.Kind == RobotOverlayKind.AxisLabel));
+        Assert.Equal(expectedLimitCount, scene.Primitives.Count(primitive => primitive.Kind == RobotOverlayKind.PhysicalLimit));
+        Assert.Single(scene.Primitives, primitive => primitive.Kind == RobotOverlayKind.Trajectory);
     }
 
     private static ScaraRobotProfile CreateScaraProfile() =>
