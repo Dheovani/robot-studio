@@ -1,0 +1,17 @@
+<UserControl x:Class="RobotStudio.Desktop.Viewers.ViewerHeader"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             x:Name="Root">
+    <DockPanel Style="{DynamicResource ViewerHeaderStyle}">
+        <ContentPresenter DockPanel.Dock="Right"
+                          HorizontalAlignment="Right"
+                          VerticalAlignment="Center"
+                          Content="{Binding Actions, ElementName=Root}" />
+        <StackPanel>
+            <TextBlock Style="{DynamicResource ViewerTitleStyle}"
+                       Text="{Binding Title, ElementName=Root}" />
+            <TextBlock Style="{DynamicResource ViewerSubtitleStyle}"
+                       Text="{Binding Subtitle, ElementName=Root}" />
+        </StackPanel>
+    </DockPanel>
+</UserControl>

@@ -758,7 +758,7 @@ public partial class MainWindow
         profile = CreateCartesianProfile();
         xyPlotterProfile = null;
         initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 20);
-        ViewerSubtitleText.Text = "Cartesian robot simulation";
+        CartesianViewerHeader.Subtitle = "Cartesian robot simulation";
         ConfigureExampleSelector(
             CartesianExampleComboBox,
             RobotViewerKind.CartesianThreeDimensional);
@@ -776,7 +776,7 @@ public partial class MainWindow
         xyPlotterProfile = CreateXYPlotterProfile();
         profile = xyPlotterProfile.ToCartesianProfile();
         initialPosition = new CartesianPosition(X: 40, Y: 30, Z: 0);
-        ViewerSubtitleText.Text = "XY plotter simulation";
+        CartesianViewerHeader.Subtitle = "XY plotter simulation";
         ConfigureExampleSelector(
             CartesianExampleComboBox,
             RobotViewerKind.XYPlotterTwoDimensional);

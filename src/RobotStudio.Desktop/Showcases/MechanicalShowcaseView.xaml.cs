@@ -24,6 +24,21 @@ namespace RobotStudio.Desktop.Showcases;
 
 public partial class MechanicalShowcaseView : UserControl, IDisposable
 {
+    private Button HeaderPlayButton
+    {
+        get
+        {
+            if (ShowcaseHeader.Actions is StackPanel actions &&
+                actions.Children.Count > 1 &&
+                actions.Children[1] is Button playButton)
+            {
+                return playButton;
+            }
+
+            throw new InvalidOperationException("The mechanical header play action is unavailable.");
+        }
+    }
+
     private const float MillimetersPerSceneUnit = 100;
     private const double InitialAzimuthDegrees = -48;
     private const double InitialElevationDegrees = 28;
@@ -112,8 +127,8 @@ public partial class MechanicalShowcaseView : UserControl, IDisposable
 
         InitializeComponent();
 
-        ShowcaseTitleText.Text = presentation.Title;
-        ShowcaseSubtitleText.Text = presentation.Subtitle;
+        ShowcaseHeader.Title = presentation.Title;
+        ShowcaseHeader.Subtitle = presentation.Subtitle;
         ShowcaseViewport.EffectsManager = effectsManager;
         ShowcaseViewport.Camera = camera;
         ShowcaseViewport.MouseDown3D += ShowcaseViewport_MouseDown3D;

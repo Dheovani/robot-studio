@@ -171,24 +171,19 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Cartesian Robot"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock x:Name="ViewerSubtitleText"
-                               Text="Cartesian robot simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}"
-                            Click="BackToSelectionButton_Click"
-                            Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader x:Name="CartesianViewerHeader"
+                                  Grid.Row="0"
+                                  Title="Cartesian Robot"
+                                  Subtitle="Cartesian robot simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}"
+                                Click="BackToSelectionButton_Click"
+                                Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1048,23 +1043,18 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Differential Drive Robot"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="Differential drive robot simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}"
-                            Click="BackToSelectionButton_Click"
-                            Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="Differential Drive Robot"
+                                  Subtitle="Differential drive robot simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}"
+                                Click="BackToSelectionButton_Click"
+                                Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1150,21 +1140,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="SCARA Robot"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="SCARA robot simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="SCARA Robot"
+                                  Subtitle="SCARA robot simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1273,21 +1258,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Simple Articulated Arm"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="Simple articulated arm simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="Simple Articulated Arm"
+                                  Subtitle="Simple articulated arm simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1396,21 +1376,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Delta Robot"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="Delta robot simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="Delta Robot"
+                                  Subtitle="Delta robot simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1519,21 +1494,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="Drone"
-                               Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="Drone simulation"
-                               Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-
-                <StackPanel DockPanel.Dock="Right"
-                            Orientation="Horizontal"
-                            HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="Drone"
+                                  Subtitle="Drone simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>
@@ -1632,16 +1602,16 @@
                 <RowDefinition Height="Auto" />
             </Grid.RowDefinitions>
 
-            <DockPanel Grid.Row="0" Style="{StaticResource ViewerHeaderStyle}">
-                <StackPanel DockPanel.Dock="Left">
-                    <TextBlock Text="6-DOF Industrial Arm" Style="{StaticResource ViewerTitleStyle}" />
-                    <TextBlock Text="Industrial arm simulation" Style="{StaticResource ViewerSubtitleStyle}" />
-                </StackPanel>
-                <StackPanel DockPanel.Dock="Right" Orientation="Horizontal" HorizontalAlignment="Right">
-                    <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
-                    <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
-                </StackPanel>
-            </DockPanel>
+            <viewers:ViewerHeader Grid.Row="0"
+                                  Title="6-DOF Industrial Arm"
+                                  Subtitle="Industrial arm simulation">
+                <viewers:ViewerHeader.Actions>
+                    <StackPanel Orientation="Horizontal">
+                        <Button Style="{StaticResource ViewerNavigationButtonStyle}" Click="BackToSelectionButton_Click" Content="{DynamicResource Common.Robots}" />
+                        <ContentControl ContentTemplate="{StaticResource ViewerPlaybackActionsTemplate}" />
+                    </StackPanel>
+                </viewers:ViewerHeader.Actions>
+            </viewers:ViewerHeader>
 
             <Grid Grid.Row="1" Margin="16,0,16,12">
                 <Grid.ColumnDefinitions>

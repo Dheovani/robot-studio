@@ -73,6 +73,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Replaced eight duplicated simulator and mechanical-showcase header layouts with one reusable WPF header component while preserving screen-specific navigation and playback actions.
 - Removed the redundant manual `Validate` action from simulator sidebars; editing validates automatically, while `Simulate`, `F5`, or `Ctrl+Enter` explicitly replaces playback.
 - Standardized state readouts, script field labels, spacing, and secondary text across all non-Cartesian simulation workspaces through shared semantic desktop styles.
 - Centralized desktop colors, renderer colors, data-series colors, typography, spacing, control geometry, and interaction states in one design-token dictionary across every WPF view and shared control.

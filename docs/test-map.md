@@ -426,6 +426,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian profile input parses invariant decimal values.
 - [x] Cartesian profile input rejects blank, malformed, NaN, and infinite values with a field-specific error.
 - [x] Cartesian profile creation reuses domain validation for inconsistent axis limits.
+- [x] Every simulator workspace and the mechanical showcase use the shared viewer header while preserving caller-owned actions.
 
 ## Architecture Tests
 
@@ -645,3 +646,4 @@ Expected current behavior:
 - verifies during the cross-family diagnostic that every mechanical viewport completes explicit scene and renderer teardown after profiling.
 - verifies the desktop theme declares its required semantic design tokens, loads them before reusable control templates, does not reintroduce legacy button-color keys, keeps all six non-Cartesian simulator workspaces free of duplicated legacy neutral colors, and rejects hexadecimal colors declared by any desktop XAML outside the design-token dictionary.
 - verifies that every simulator script editor schedules the shared automatic-validation handler, every status uses the compact shared presentation, and the shared script actions expose simulation without a redundant manual validation button.
+- verifies that all seven simulator workspaces and the mechanical showcase use the shared viewer-header component, provide their own action region, and leave title, subtitle, alignment, and typography composition inside that component.
