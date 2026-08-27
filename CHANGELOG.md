@@ -9,6 +9,9 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added a time-based desktop render timeline that keeps WPF presentation cadence independent from deterministic simulation sampling and playback duration.
 - Added renderer-independent educational overlay scenes and migrated Cartesian/XY overlays plus mechanical motion-axis guides to WPF and Helix adapters.
 - Added shared circular, rectangular, and volumetric overlay composition for every available schematic robot family, including Canvas projection for Differential Drive.
+- Added a repeatable cross-family visualization diagnostics tool and a documented development-workstation performance baseline.
+- Added explicit teaching-hardware performance budgets and pass/fail reporting to visualization diagnostics.
+- Added deterministic mechanical-viewport teardown for imported scenes, rendering resources, timers, and event handlers.
 - Added consistent primary, secondary, and ghost desktop button roles with distinct navigation, playback, and command hierarchy.
 - Added a cross-family rendering smoke gate covering assets, semantic selection, teaching modes, demonstrations, and transforms for all eight mechanical showcases.
 - Added dedicated schematic scene composers for every implemented robot simulator, isolating cameras, overlays, workspaces, trajectories, coordinate mapping, and robot geometry from the desktop window.

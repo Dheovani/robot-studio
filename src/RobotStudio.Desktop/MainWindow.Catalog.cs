@@ -634,6 +634,7 @@ public partial class MainWindow
         if (activeMechanicalShowcaseView is not null)
         {
             activeMechanicalShowcaseView.BackRequested -= MechanicalShowcase_BackRequested;
+            activeMechanicalShowcaseView.Dispose();
             activeMechanicalShowcaseView = null;
         }
 

@@ -640,3 +640,6 @@ Expected current behavior:
 - verifies Differential Drive 2D scene composition keeps coordinate mapping centered, adds one accumulated path segment per advanced frame, and emits workspace and robot primitives without constructing the WPF window.
 - verifies the render timeline selects exact and surrounding deterministic samples, exposes interpolation progress, chooses the nearest frame, clamps non-looping playback, wraps looping playback by simulated time, and rejects empty or unordered timelines.
 - validates renderer-independent overlay geometry and dependency boundaries; Cartesian, circular-planar, rectangular-planar, and volumetric educational-layer composition; and mechanical motion-axis conversion before WPF, Canvas, or Helix objects exist.
+- runs a manual Release performance diagnostic across every registered GLB showcase, measuring one-time pipeline warm-up, per-model import and scene preparation, live composition cadence, transform updates, and semantic Helix hit testing;
+- verifies the visualization acceptance budget at its exact boundaries and reports every exceeded model-loading, frame, transform, and hit-test limit.
+- verifies during the cross-family diagnostic that every mechanical viewport completes explicit scene and renderer teardown after profiling.

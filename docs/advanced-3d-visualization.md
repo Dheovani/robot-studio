@@ -153,6 +153,8 @@ Milestone 6 must evaluate:
 
 The renderer should update component transforms for each frame instead of rebuilding complete robot scenes when the selected technology supports that approach.
 
+The repeatable Windows diagnostics tool at `tools/RobotStudio.VisualizationDiagnostics` profiles all registered showcases in Release configuration. It separates one-time Assimp/runtime warm-up from per-model manifest loading and GLB import, forces scene graph preparation, observes live WPF composition while applying demonstration transforms, runs HelixToolkit hit tests, and confirms deterministic renderer teardown for each viewport. It returns a failing exit code when resource disposal fails or the 30 FPS teaching-hardware profile and loading, scene, transform, or hit-test budgets are exceeded. The current development-workstation measurements are recorded in [Visualization Performance Baseline](performance-baseline.md). That report is useful for regression comparison but does not replace the remaining run on intended lower-spec teaching hardware.
+
 ## Educational Requirements
 
 The realistic renderer must continue to teach coordinate systems, axes, joints, workspace, trajectories, end-effector position, robot topology, and the physical effect of commands. Selection and overlays must provide technical context, not merely decoration.
