@@ -20,7 +20,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added centralized desktop design tokens and semantic typography styles, with the mechanical showcase as the first fully migrated view.
 - Migrated the robot catalog and robotics glossary to shared card, badge, typography, input, focus, and dialog styling.
 - Added a compact right-edge navigation rail for the Cartesian and XY Plotter sidebars, separating Script, Control, Monitor, and View workflows while preserving each area's scroll position.
-- Added automatic debounced script validation with compact status feedback and direct active-line selection in the script editor.
+- Added automatic debounced script validation with compact status feedback across every simulator and direct active-line selection in the Cartesian-family script editor.
 - Added runtime interface localization with English and Brazilian Portuguese resources, a catalog language selector, translated robot metadata, and language-neutral DSL/G-code semantics.
 - Added an introductory G-code dialect that maps `G28`, `G1`, and `G4` to the same homing, Cartesian movement, and wait domain commands used by the Simple DSL.
 - Added a desktop dialect selector for Cartesian and XY Plotter scripts, including G-code-aware examples, manual jogging, direct commands, validation, simulation, editor tags, and automatic dialect selection for `.robot` and `.gcode` files.
@@ -73,6 +73,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Removed the redundant manual `Validate` action from simulator sidebars; editing validates automatically, while `Simulate`, `F5`, or `Ctrl+Enter` explicitly replaces playback.
 - Standardized state readouts, script field labels, spacing, and secondary text across all non-Cartesian simulation workspaces through shared semantic desktop styles.
 - Centralized desktop colors, renderer colors, data-series colors, typography, spacing, control geometry, and interaction states in one design-token dictionary across every WPF view and shared control.
 - Standardized simulator and mechanical-showcase headers with neutral playback actions and kept glossary access in the robot catalog instead of every workspace.
@@ -89,6 +90,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Fixed
 
+- Fixed the desktop closing during initial layout after theme centralization by loading shared styles at application scope and resolving template-trigger brushes dynamically.
 - Fixed the Delta mechanical-showcase controller floating outside the support frame by mounting its enclosure beneath the rear crossbeam with visible brackets.
 - Fixed SCARA mechanical links separating between demonstration keyframes by recomputing revolute-joint pivot compensation after rotation interpolation.
 - Fixed Cartesian Robot and XY Plotter playback becoming inactive after switching between Simple DSL and G-code.

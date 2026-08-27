@@ -61,7 +61,7 @@ RobotStudio treats G-code coordinates as TCP tool-space coordinates, never as al
 - Open the Drone viewer for simplified 3D position plus coordinated roll, pitch, and yaw attitude simulation.
 - Load local teaching examples from every available desktop viewer.
 - Load and save `.robot`, `.gcode`, or `.txt` scripts in the desktop app.
-- Use keyboard shortcuts for active viewer playback, frame stepping, validation, simulation, script files, zoom, and 3D camera controls.
+- Use keyboard shortcuts for active viewer playback, frame stepping, simulation, script files, zoom, and 3D camera controls; script validation runs automatically while editing.
 - Read clearer validation summaries when scripts contain syntax errors, invalid arguments, or physical limit violations.
 - Rotate, zoom, and reset the camera.
 - Use manual jog buttons and a direct command console.

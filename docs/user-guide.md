@@ -101,7 +101,7 @@ Dropdowns and scrollbars use the RobotStudio dark theme consistently in the cata
 
 The Cartesian and XY Plotter sidebars use a right-edge navigation rail with four focused areas: `Script` contains the editor and command console, `Control` contains manual movement and robot configuration, `Monitor` contains state, charts, timeline markers, and contextual movement explanations, and `View` contains overlays and camera controls. Switching areas preserves each area's scroll position and does not alter simulation state.
 
-Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading or editing a Cartesian-family script triggers automatic validation after a short pause. The compact status reports whether the script is valid and how many frames it would generate, while `Simulate` remains the explicit action that replaces the current playback. Saving writes the current editor text without changing the simulation. Example loading, file loading, and saving are available from the compact editor toolbar.
+Script editors in the desktop app can load and save local `.robot` or `.txt` files. Loading or editing a script in any simulator triggers automatic validation after a short pause. The compact status reports whether the script is valid and how many frames it would generate, while `Simulate` remains the explicit action that replaces the current playback. Saving writes the current editor text without changing the simulation. Example loading, file loading, and saving are available from the compact editor toolbar.
 
 When validation fails, the desktop app shows a student-facing summary. Syntax errors include the script line number when available, physical limit errors explain that the target is outside the workspace, and command argument errors suggest checking required values such as speed or duration.
 
@@ -187,7 +187,7 @@ Current desktop controls:
 - local example selector and `Load Example` controls for every available desktop viewer.
 - Cartesian robot configuration for axis minimum, maximum, maximum velocity, and maximum acceleration.
 - `Load Script` and `Save Script` controls for desktop script editors.
-- keyboard shortcuts for active viewer script loading, saving, validation, simulation, playback, frame stepping, zoom, and camera reset.
+- keyboard shortcuts for active viewer script loading, saving, simulation, playback, frame stepping, zoom, and camera reset; validation runs automatically while editing.
 - movement explanation text for SCARA and Simple Articulated Arm joint-space commands.
 
 ### Cartesian Robot Configuration

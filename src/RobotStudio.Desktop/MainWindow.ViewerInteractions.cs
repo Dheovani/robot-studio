@@ -497,19 +497,25 @@ public partial class MainWindow
         SizeChangedEventArgs e) =>
         UpdateRobotCardColumns(e.NewSize.Width);
 
-    private void ScriptEditorTextBox_TextChanged(
+    private void ScriptTextBox_TextChanged(
         object sender,
         TextChangedEventArgs e)
     {
-        RefreshScriptEditorGutter();
-        RefreshGCodeExplanations();
+        if (ReferenceEquals(sender, ScriptEditorTextBox))
+        {
+            RefreshScriptEditorGutter();
+        }
+
         if (!IsLoaded)
         {
             return;
         }
 
+        RefreshGCodeExplanations();
+        pendingScriptValidationKind = GetScriptViewerKind(sender);
         scriptValidationTimer.Stop();
         SetScriptStatus(
+            pendingScriptValidationKind.Value,
             languageService.GetText("Script.Checking"),
             Color.FromRgb(148, 163, 184));
         scriptValidationTimer.Start();
@@ -518,22 +524,87 @@ public partial class MainWindow
     private void ScriptValidationTimer_Tick(object? sender, EventArgs e)
     {
         scriptValidationTimer.Stop();
-        if (TryCreateSnapshotFromScript(
-            ScriptEditorTextBox.Text,
-            out _,
-            out var message))
+        var viewerKind = pendingScriptValidationKind ?? activeViewerKind;
+        pendingScriptValidationKind = null;
+
+        if (TryValidateScript(viewerKind, out var message))
         {
-            SetScriptStatus(message, Color.FromRgb(74, 222, 128));
+            SetScriptStatus(viewerKind, message, Color.FromRgb(74, 222, 128));
             return;
         }
 
-        SetScriptStatus(message, Color.FromRgb(248, 113, 113));
+        SetScriptStatus(viewerKind, message, Color.FromRgb(248, 113, 113));
     }
 
-    private void GCodeScriptTextBox_TextChanged(
-        object sender,
-        TextChangedEventArgs e) =>
-        RefreshGCodeExplanations();
+    private RobotViewerKind GetScriptViewerKind(object sender)
+    {
+        if (ReferenceEquals(sender, DifferentialDriveScriptTextBox))
+        {
+            return RobotViewerKind.DifferentialDriveTwoDimensional;
+        }
+
+        if (ReferenceEquals(sender, ScaraScriptTextBox))
+        {
+            return RobotViewerKind.ScaraThreeDimensional;
+        }
+
+        if (ReferenceEquals(sender, SimpleArmScriptTextBox))
+        {
+            return RobotViewerKind.SimpleArmThreeDimensional;
+        }
+
+        if (ReferenceEquals(sender, DeltaScriptTextBox))
+        {
+            return RobotViewerKind.DeltaThreeDimensional;
+        }
+
+        if (ReferenceEquals(sender, DroneScriptTextBox))
+        {
+            return RobotViewerKind.DroneThreeDimensional;
+        }
+
+        if (ReferenceEquals(sender, IndustrialArmScriptTextBox))
+        {
+            return RobotViewerKind.IndustrialArmThreeDimensional;
+        }
+
+        return activeViewerKind is RobotViewerKind.XYPlotterTwoDimensional
+            ? RobotViewerKind.XYPlotterTwoDimensional
+            : RobotViewerKind.CartesianThreeDimensional;
+    }
+
+    private bool TryValidateScript(
+        RobotViewerKind viewerKind,
+        out string message)
+    {
+        switch (viewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                return TryCreateDifferentialDriveSnapshotFromScript(
+                    DifferentialDriveScriptTextBox.Text,
+                    out _,
+                    out message);
+            case RobotViewerKind.ScaraThreeDimensional:
+                return TryCreateScaraSnapshotFromScript(ScaraScriptTextBox.Text, out _, out message);
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                return TryCreateSimpleArmSnapshotFromScript(SimpleArmScriptTextBox.Text, out _, out message);
+            case RobotViewerKind.DeltaThreeDimensional:
+                return TryCreateDeltaSnapshotFromScript(DeltaScriptTextBox.Text, out _, out message);
+            case RobotViewerKind.DroneThreeDimensional:
+                return TryCreateDroneSnapshotFromScript(DroneScriptTextBox.Text, out _, out message);
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                return TryCreateIndustrialArmSnapshotFromScript(
+                    IndustrialArmScriptTextBox.Text,
+                    out _,
+                    out message);
+            case RobotViewerKind.CartesianThreeDimensional:
+            case RobotViewerKind.XYPlotterTwoDimensional:
+                return TryCreateSnapshotFromScript(ScriptEditorTextBox.Text, out _, out message);
+            default:
+                message = "The active robot viewer does not support script validation.";
+                return false;
+        }
+    }
 
     private void ScriptEditorTextBox_ScrollChanged(
         object sender,

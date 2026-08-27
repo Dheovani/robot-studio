@@ -95,40 +95,6 @@ public partial class MainWindow
         }
     }
 
-    private void ValidateActiveScript()
-    {
-        switch (activeViewerKind)
-        {
-            case RobotViewerKind.DifferentialDriveTwoDimensional:
-                ValidateDifferentialDriveScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            case RobotViewerKind.ScaraThreeDimensional:
-                ValidateScaraScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            case RobotViewerKind.SimpleArmThreeDimensional:
-                ValidateSimpleArmScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            case RobotViewerKind.DeltaThreeDimensional:
-                ValidateDeltaScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            case RobotViewerKind.DroneThreeDimensional:
-                ValidateDroneScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            case RobotViewerKind.IndustrialArmThreeDimensional:
-                ValidateIndustrialArmScriptButton_Click(this, new RoutedEventArgs());
-                break;
-
-            default:
-                ValidateScriptButton_Click(this, new RoutedEventArgs());
-                break;
-        }
-    }
-
     private void SimulateActiveScript()
     {
         switch (activeViewerKind)
@@ -162,11 +128,6 @@ public partial class MainWindow
                 break;
         }
     }
-
-    private void ValidateActiveScriptButton_Click(
-        object sender,
-        RoutedEventArgs e) =>
-        ValidateActiveScript();
 
     private void SimulateActiveScriptButton_Click(
         object sender,
@@ -573,9 +534,15 @@ public partial class MainWindow
             succeeded ? Color.FromRgb(74, 222, 128) : Color.FromRgb(248, 113, 113));
     }
 
-    private void SetActiveScriptStatus(string message, Color color)
+    private void SetActiveScriptStatus(string message, Color color) =>
+        SetScriptStatus(activeViewerKind, message, color);
+
+    private void SetScriptStatus(
+        RobotViewerKind viewerKind,
+        string message,
+        Color color)
     {
-        switch (activeViewerKind)
+        switch (viewerKind)
         {
             case RobotViewerKind.DifferentialDriveTwoDimensional:
                 SetDifferentialDriveScriptStatus(message, color);

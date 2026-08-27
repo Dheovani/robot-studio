@@ -27,22 +27,6 @@ namespace RobotStudio.Desktop;
 
 public partial class MainWindow
 {
-    private void ValidateDifferentialDriveScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateDifferentialDriveSnapshotFromScript(
-            DifferentialDriveScriptTextBox.Text,
-            out _,
-            out var message))
-        {
-            SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetDifferentialDriveScriptStatus(message, Color.FromRgb(248, 113, 113));
-    }
-
     private void SimulateDifferentialDriveScriptButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -69,19 +53,6 @@ public partial class MainWindow
         DifferentialDriveTimeline.TickFrequency = 1;
         RenderDifferentialDriveFrame(index: 0);
         SetDifferentialDriveScriptStatus(message, Color.FromRgb(74, 222, 128));
-    }
-
-    private void ValidateScaraScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateScaraSnapshotFromScript(ScaraScriptTextBox.Text, out _, out var message))
-        {
-            SetScaraScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetScaraScriptStatus(message, Color.FromRgb(248, 113, 113));
     }
 
     private void SimulateScaraScriptButton_Click(
@@ -142,19 +113,6 @@ public partial class MainWindow
         SetDifferentialDriveScriptStatus("Loaded the selected mobile robot example.", Color.FromRgb(74, 222, 128));
     }
 
-    private void ValidateSimpleArmScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateSimpleArmSnapshotFromScript(SimpleArmScriptTextBox.Text, out _, out var message))
-        {
-            SetSimpleArmScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetSimpleArmScriptStatus(message, Color.FromRgb(248, 113, 113));
-    }
-
     private void SimulateSimpleArmScriptButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -194,19 +152,6 @@ public partial class MainWindow
         SimpleArmTimeline.TickFrequency = 1;
         RenderSimpleArmFrame(index: 0);
         SetSimpleArmScriptStatus("Loaded the selected articulated arm example.", Color.FromRgb(74, 222, 128));
-    }
-
-    private void ValidateDeltaScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateDeltaSnapshotFromScript(DeltaScriptTextBox.Text, out _, out var message))
-        {
-            SetDeltaScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetDeltaScriptStatus(message, Color.FromRgb(248, 113, 113));
     }
 
     private void SimulateDeltaScriptButton_Click(
@@ -250,19 +195,6 @@ public partial class MainWindow
         SetDeltaScriptStatus("Loaded the selected Delta example.", Color.FromRgb(74, 222, 128));
     }
 
-    private void ValidateDroneScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateDroneSnapshotFromScript(DroneScriptTextBox.Text, out _, out var message))
-        {
-            SetDroneScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetDroneScriptStatus(message, Color.FromRgb(248, 113, 113));
-    }
-
     private void SimulateDroneScriptButton_Click(
         object sender,
         RoutedEventArgs e)
@@ -304,19 +236,6 @@ public partial class MainWindow
         DroneTimeline.TickFrequency = 1;
         RenderDroneFrame(index: 0);
         SetDroneScriptStatus("Loaded the selected Drone example.", Color.FromRgb(74, 222, 128));
-    }
-
-    private void ValidateIndustrialArmScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateIndustrialArmSnapshotFromScript(IndustrialArmScriptTextBox.Text, out _, out var message))
-        {
-            SetIndustrialArmScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetIndustrialArmScriptStatus(message, Color.FromRgb(248, 113, 113));
     }
 
     private void SimulateIndustrialArmScriptButton_Click(

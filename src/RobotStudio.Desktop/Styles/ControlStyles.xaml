@@ -14,7 +14,7 @@
     </Style>
 
     <Style x:Key="ScrollBarThumbStyle" TargetType="Thumb">
-        <Setter Property="Background" Value="{StaticResource ScrollbarThumbBrush}" />
+        <Setter Property="Background" Value="{DynamicResource ScrollbarThumbBrush}" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
@@ -24,10 +24,10 @@
                             CornerRadius="{DynamicResource SmallCornerRadius}" />
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource DisabledTextBrush}" />
+                            <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsDragging" Value="True">
-                            <Setter TargetName="ThumbChrome" Property="Background" Value="{StaticResource FocusBorderBrush}" />
+                            <Setter TargetName="ThumbChrome" Property="Background" Value="{DynamicResource FocusBorderBrush}" />
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -74,7 +74,7 @@
     <Style TargetType="ScrollBar">
         <Setter Property="Width" Value="10" />
         <Setter Property="Height" Value="Auto" />
-        <Setter Property="Background" Value="{StaticResource DropdownBackgroundBrush}" />
+        <Setter Property="Background" Value="{DynamicResource DropdownBackgroundBrush}" />
         <Setter Property="Template" Value="{StaticResource VerticalScrollBarTemplate}" />
         <Style.Triggers>
             <Trigger Property="Orientation" Value="Horizontal">
@@ -109,8 +109,8 @@
                             <Setter Property="Foreground" Value="{DynamicResource PrimaryTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsSelected" Value="True">
-                            <Setter TargetName="ItemChrome" Property="Background" Value="{StaticResource SelectedItemBackgroundBrush}" />
-                            <Setter Property="Foreground" Value="{StaticResource SelectedItemTextBrush}" />
+                            <Setter TargetName="ItemChrome" Property="Background" Value="{DynamicResource SelectedItemBackgroundBrush}" />
+                            <Setter Property="Foreground" Value="{DynamicResource SelectedItemTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsEnabled" Value="False">
                             <Setter Property="Foreground" Value="{DynamicResource DisabledTextBrush}" />
@@ -193,7 +193,7 @@
                     </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
-                            <Setter TargetName="ComboChrome" Property="BorderBrush" Value="{StaticResource DisabledTextBrush}" />
+                            <Setter TargetName="ComboChrome" Property="BorderBrush" Value="{DynamicResource DisabledTextBrush}" />
                         </Trigger>
                         <Trigger Property="IsKeyboardFocusWithin" Value="True">
                             <Setter TargetName="ComboChrome" Property="BorderBrush" Value="{DynamicResource AccentBorderBrush}" />

@@ -310,6 +310,13 @@
     <Setter Property="Margin" Value="0,10,0,4" />
 </Style>
 
+<Style x:Key="ViewerScriptStatusStyle"
+       TargetType="TextBlock"
+       BasedOn="{StaticResource ViewerHelpTextStyle}">
+    <Setter Property="Margin" Value="0,0,0,12" />
+    <Setter Property="FontWeight" Value="SemiBold" />
+</Style>
+
 <Style x:Key="CatalogPageTitleTextStyle" TargetType="TextBlock">
     <Setter Property="Foreground" Value="{StaticResource PrimaryTextBrush}" />
     <Setter Property="FontSize" Value="{StaticResource DisplayTitleFontSize}" />

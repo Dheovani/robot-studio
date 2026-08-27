@@ -121,6 +121,7 @@ public partial class MainWindow : Window
     private DeltaSimulationContext? deltaSessionContext;
     private DroneSimulationContext? droneSessionContext;
     private IndustrialArmSimulationContext? industrialArmSessionContext;
+    private RobotViewerKind? pendingScriptValidationKind;
     private int currentFrameIndex;
     private int differentialDriveFrameIndex;
     private int scaraFrameIndex;
@@ -287,7 +288,7 @@ public partial class MainWindow : Window
 
         if (isControlPressed && e.Key == Key.Enter)
         {
-            ValidateActiveScript();
+            SimulateActiveScript();
             e.Handled = true;
             return;
         }

@@ -212,10 +212,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateSnapshot(script, captureSession);
-            message = string.Format(
-                CultureInfo.CurrentCulture,
-                languageService.GetText("Script.ValidStatus"),
-                nextSnapshot.SceneFrameCount);
+            message = FormatValidScriptStatus(nextSnapshot.SceneFrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -235,7 +232,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateDifferentialDriveSnapshot(script, captureSession);
-            message = $"Mobile script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -255,7 +252,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateScaraSnapshot(script, captureSession);
-            message = $"SCARA script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -275,7 +272,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateSimpleArmSnapshot(script, captureSession);
-            message = $"Simple arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -295,7 +292,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateDeltaSnapshot(script, captureSession);
-            message = $"Delta script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -315,7 +312,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateDroneSnapshot(script, captureSession);
-            message = $"Drone script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -335,7 +332,7 @@ public partial class MainWindow
         try
         {
             nextSnapshot = CreateIndustrialArmSnapshot(script, captureSession);
-            message = $"Industrial arm script is valid. Generated {nextSnapshot.FrameCount} playback frames.";
+            message = FormatValidScriptStatus(nextSnapshot.FrameCount);
             return true;
         }
         catch (Exception exception) when (exception is FormatException or InvalidOperationException or ArgumentException)
@@ -371,13 +368,18 @@ public partial class MainWindow
             beforeLoad?.Invoke(dialog.FileName);
             target.Text = File.ReadAllText(dialog.FileName, Encoding.UTF8);
             resetSnapshot();
-            setStatus("Script loaded. Validate or simulate it before playback.", Color.FromRgb(74, 222, 128));
+            setStatus("Script loaded. Automatic validation is running.", Color.FromRgb(74, 222, 128));
         }
         catch (Exception exception) when (exception is IOException or UnauthorizedAccessException)
         {
             setStatus($"Could not load script: {exception.Message}", Color.FromRgb(248, 113, 113));
         }
     }
+
+    private string FormatValidScriptStatus(int frameCount) => string.Format(
+        CultureInfo.CurrentCulture,
+        languageService.GetText("Script.ValidStatus"),
+        frameCount);
 
     private void SelectCartesianDialectForFile(string fileName)
     {

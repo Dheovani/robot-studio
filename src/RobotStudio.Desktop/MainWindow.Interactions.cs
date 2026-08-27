@@ -298,19 +298,6 @@ public partial class MainWindow
         RobotSelectionView.Visibility = Visibility.Visible;
     }
 
-    private void ValidateScriptButton_Click(
-        object sender,
-        RoutedEventArgs e)
-    {
-        if (TryCreateSnapshotFromScript(ScriptEditorTextBox.Text, out _, out var message))
-        {
-            SetScriptStatus(message, Color.FromRgb(74, 222, 128));
-            return;
-        }
-
-        SetScriptStatus(message, Color.FromRgb(248, 113, 113));
-    }
-
     private void SimulateScriptButton_Click(
         object sender,
         RoutedEventArgs e)

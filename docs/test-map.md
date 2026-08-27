@@ -578,7 +578,7 @@ Expected current behavior:
 - loads selected local Drone examples from the Drone viewer;
 - loads local `.robot` or `.txt` script files into desktop script editors;
 - saves desktop script editor contents to local `.robot` or `.txt` files;
-- asks the student to validate or simulate after loading a script file;
+- validates loaded script files automatically without replacing the current playback;
 - supports keyboard shortcuts for loading, saving, validating, simulating, playback, frame stepping, zoom, and camera reset;
 - avoids consuming playback/frame/camera shortcuts while focus is inside script editors or example selectors;
 - zooms active 2D and 3D viewers with `Ctrl+mouse wheel`;
@@ -644,3 +644,4 @@ Expected current behavior:
 - verifies the visualization acceptance budget at its exact boundaries and reports every exceeded model-loading, frame, transform, and hit-test limit.
 - verifies during the cross-family diagnostic that every mechanical viewport completes explicit scene and renderer teardown after profiling.
 - verifies the desktop theme declares its required semantic design tokens, loads them before reusable control templates, does not reintroduce legacy button-color keys, keeps all six non-Cartesian simulator workspaces free of duplicated legacy neutral colors, and rejects hexadecimal colors declared by any desktop XAML outside the design-token dictionary.
+- verifies that every simulator script editor schedules the shared automatic-validation handler, every status uses the compact shared presentation, and the shared script actions expose simulation without a redundant manual validation button.
