@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -66,7 +67,8 @@ public partial class MainWindow : Window
     {
         Interval = TimeSpan.FromMilliseconds(350)
     };
-    private readonly TimeSpan basePlaybackInterval = TimeSpan.FromMilliseconds(120);
+    private readonly TimeSpan renderInterval = TimeSpan.FromMilliseconds(16);
+    private readonly Stopwatch playbackStopwatch = new();
     private readonly IRobotScriptDialect simpleDslDialect = new RobotScriptParser();
     private readonly IRobotScriptDialect gCodeDialect = new GCodeParser();
     private readonly CartesianMovementExplanationBuilder movementExplanationBuilder = new();
@@ -145,6 +147,8 @@ public partial class MainWindow : Window
     private int droneFrameIndex;
     private int industrialArmFrameIndex;
     private bool isPlaying;
+    private TimeSpan playbackStartPosition;
+    private PlaybackRenderTimeline? playbackRenderTimeline;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
     private double elevationDegrees = 35;
@@ -216,7 +220,7 @@ public partial class MainWindow : Window
 
         playbackTimer = new DispatcherTimer
         {
-            Interval = basePlaybackInterval
+            Interval = renderInterval
         };
         playbackTimer.Tick += PlaybackTimer_Tick;
         scriptValidationTimer.Tick += ScriptValidationTimer_Tick;
@@ -418,11 +422,15 @@ public partial class MainWindow : Window
 
         if (isPlaying)
         {
+            playbackRenderTimeline = CreateActiveRenderTimeline();
+            playbackStartPosition = GetActiveFrameTime();
+            playbackStopwatch.Restart();
             playbackTimer.Start();
         }
         else
         {
             playbackTimer.Stop();
+            playbackStopwatch.Reset();
         }
     }
 
@@ -462,9 +470,7 @@ public partial class MainWindow : Window
             return;
         }
 
-        playbackTimer.Stop();
-        isPlaying = false;
-        UpdatePlaybackButtonLabels();
+        StopPlayback();
         RenderFrame(index: 0);
     }
 

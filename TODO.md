@@ -79,7 +79,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Add initial visualization mode selection for the Cartesian vertical slice through separate schematic/showcase catalog actions and an optional realistic motion-axis overlay layer.
 - [x] Add semantic component selection, highlighting, and educational inspection backed by RobotStudio part identifiers rather than raw mesh identifiers.
 - [ ] Compose axes, workspace, trajectory, coordinate systems, labels, limits, and future collision bounds independently of the selected robot renderer.
-- [ ] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
+- [x] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
 - [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
 - [x] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
 - [x] Deliver an original realistic mechanical showcase for Cartesian Robot.

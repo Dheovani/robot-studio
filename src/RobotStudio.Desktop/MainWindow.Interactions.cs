@@ -44,120 +44,110 @@ public partial class MainWindow
         object? sender,
         EventArgs e)
     {
-        if (activeViewerKind == RobotViewerKind.DifferentialDriveTwoDimensional)
-        {
-            if (differentialDriveSnapshot is null)
-            {
-                return;
-            }
-
-            var nextDifferentialDriveFrame = differentialDriveFrameIndex + 1;
-            if (nextDifferentialDriveFrame >= differentialDriveSnapshot.FrameCount)
-            {
-                nextDifferentialDriveFrame = 0;
-            }
-
-            RenderDifferentialDriveFrame(nextDifferentialDriveFrame);
-            return;
-        }
-
-        if (activeViewerKind == RobotViewerKind.ScaraThreeDimensional)
-        {
-            if (scaraSnapshot is null)
-            {
-                return;
-            }
-
-            var nextScaraFrame = scaraFrameIndex + 1;
-            if (nextScaraFrame >= scaraSnapshot.FrameCount)
-            {
-                nextScaraFrame = 0;
-            }
-
-            RenderScaraFrame(nextScaraFrame);
-            return;
-        }
-
-        if (activeViewerKind == RobotViewerKind.SimpleArmThreeDimensional)
-        {
-            if (simpleArmSnapshot is null)
-            {
-                return;
-            }
-
-            var nextSimpleArmFrame = simpleArmFrameIndex + 1;
-            if (nextSimpleArmFrame >= simpleArmSnapshot.FrameCount)
-            {
-                nextSimpleArmFrame = 0;
-            }
-
-            RenderSimpleArmFrame(nextSimpleArmFrame);
-            return;
-        }
-
-        if (activeViewerKind == RobotViewerKind.DeltaThreeDimensional)
-        {
-            if (deltaSnapshot is null)
-            {
-                return;
-            }
-
-            var nextDeltaFrame = deltaFrameIndex + 1;
-            if (nextDeltaFrame >= deltaSnapshot.FrameCount)
-            {
-                nextDeltaFrame = 0;
-            }
-
-            RenderDeltaFrame(nextDeltaFrame);
-            return;
-        }
-
-        if (activeViewerKind == RobotViewerKind.DroneThreeDimensional)
-        {
-            if (droneSnapshot is null)
-            {
-                return;
-            }
-
-            var nextDroneFrame = droneFrameIndex + 1;
-            if (nextDroneFrame >= droneSnapshot.FrameCount)
-            {
-                nextDroneFrame = 0;
-            }
-
-            RenderDroneFrame(nextDroneFrame);
-            return;
-        }
-
-        if (activeViewerKind == RobotViewerKind.IndustrialArmThreeDimensional)
-        {
-            if (industrialArmSnapshot is null)
-            {
-                return;
-            }
-
-            var nextIndustrialArmFrame = industrialArmFrameIndex + 1;
-            if (nextIndustrialArmFrame >= industrialArmSnapshot.FrameCount)
-            {
-                nextIndustrialArmFrame = 0;
-            }
-
-            RenderIndustrialArmFrame(nextIndustrialArmFrame);
-            return;
-        }
-
-        if (snapshot is null)
+        if (playbackRenderTimeline is null)
         {
             return;
         }
 
-        var nextFrame = currentFrameIndex + 1;
-        if (nextFrame >= snapshot.SceneFrameCount)
-        {
-            nextFrame = 0;
-        }
+        var elapsed = TimeSpan.FromSeconds(
+            playbackStopwatch.Elapsed.TotalSeconds * GetSelectedPlaybackSpeed());
+        var selection = playbackRenderTimeline.Select(playbackStartPosition + elapsed, loop: true);
+        RenderActivePlaybackFrame(selection.NearestFrameIndex);
+    }
 
-        RenderFrame(nextFrame);
+    private PlaybackRenderTimeline CreateActiveRenderTimeline() =>
+        activeViewerKind switch
+        {
+            RobotViewerKind.DifferentialDriveTwoDimensional when differentialDriveSnapshot is not null =>
+                new PlaybackRenderTimeline(differentialDriveSnapshot.Frames.Select(frame => frame.Time)),
+            RobotViewerKind.ScaraThreeDimensional when scaraSnapshot is not null =>
+                new PlaybackRenderTimeline(scaraSnapshot.Frames.Select(frame => frame.Time)),
+            RobotViewerKind.SimpleArmThreeDimensional when simpleArmSnapshot is not null =>
+                new PlaybackRenderTimeline(simpleArmSnapshot.Frames.Select(frame => frame.Time)),
+            RobotViewerKind.DeltaThreeDimensional when deltaSnapshot is not null =>
+                new PlaybackRenderTimeline(deltaSnapshot.Frames.Select(frame => frame.Time)),
+            RobotViewerKind.DroneThreeDimensional when droneSnapshot is not null =>
+                new PlaybackRenderTimeline(droneSnapshot.Frames.Select(frame => frame.Time)),
+            RobotViewerKind.IndustrialArmThreeDimensional when industrialArmSnapshot is not null =>
+                new PlaybackRenderTimeline(industrialArmSnapshot.Frames.Select(frame => frame.Time)),
+            _ when snapshot is not null =>
+                new PlaybackRenderTimeline(snapshot.SceneFrames.Select(frame => frame.Time)),
+            _ => throw new InvalidOperationException("The active viewer has no playback snapshot.")
+        };
+
+    private TimeSpan GetActiveFrameTime() =>
+        activeViewerKind switch
+        {
+            RobotViewerKind.DifferentialDriveTwoDimensional when differentialDriveSnapshot is not null =>
+                differentialDriveSnapshot.Frames[differentialDriveFrameIndex].Time,
+            RobotViewerKind.ScaraThreeDimensional when scaraSnapshot is not null =>
+                scaraSnapshot.Frames[scaraFrameIndex].Time,
+            RobotViewerKind.SimpleArmThreeDimensional when simpleArmSnapshot is not null =>
+                simpleArmSnapshot.Frames[simpleArmFrameIndex].Time,
+            RobotViewerKind.DeltaThreeDimensional when deltaSnapshot is not null =>
+                deltaSnapshot.Frames[deltaFrameIndex].Time,
+            RobotViewerKind.DroneThreeDimensional when droneSnapshot is not null =>
+                droneSnapshot.Frames[droneFrameIndex].Time,
+            RobotViewerKind.IndustrialArmThreeDimensional when industrialArmSnapshot is not null =>
+                industrialArmSnapshot.Frames[industrialArmFrameIndex].Time,
+            _ when snapshot is not null => snapshot.SceneFrames[currentFrameIndex].Time,
+            _ => TimeSpan.Zero
+        };
+
+    private void RenderActivePlaybackFrame(int frameIndex)
+    {
+        switch (activeViewerKind)
+        {
+            case RobotViewerKind.DifferentialDriveTwoDimensional:
+                if (frameIndex != differentialDriveFrameIndex)
+                {
+                    RenderDifferentialDriveFrame(frameIndex);
+                }
+
+                break;
+            case RobotViewerKind.ScaraThreeDimensional:
+                if (frameIndex != scaraFrameIndex)
+                {
+                    RenderScaraFrame(frameIndex);
+                }
+
+                break;
+            case RobotViewerKind.SimpleArmThreeDimensional:
+                if (frameIndex != simpleArmFrameIndex)
+                {
+                    RenderSimpleArmFrame(frameIndex);
+                }
+
+                break;
+            case RobotViewerKind.DeltaThreeDimensional:
+                if (frameIndex != deltaFrameIndex)
+                {
+                    RenderDeltaFrame(frameIndex);
+                }
+
+                break;
+            case RobotViewerKind.DroneThreeDimensional:
+                if (frameIndex != droneFrameIndex)
+                {
+                    RenderDroneFrame(frameIndex);
+                }
+
+                break;
+            case RobotViewerKind.IndustrialArmThreeDimensional:
+                if (frameIndex != industrialArmFrameIndex)
+                {
+                    RenderIndustrialArmFrame(frameIndex);
+                }
+
+                break;
+            default:
+                if (frameIndex != currentFrameIndex)
+                {
+                    RenderFrame(frameIndex);
+                }
+
+                break;
+        }
     }
 
     private void RenderFrame(int index)

@@ -137,6 +137,8 @@ public partial class MainWindow
     private void StopPlayback()
     {
         playbackTimer.Stop();
+        playbackStopwatch.Reset();
+        playbackRenderTimeline = null;
         isPlaying = false;
         UpdatePlaybackButtonLabels();
     }
@@ -152,8 +154,7 @@ public partial class MainWindow
 
     private void ApplyPlaybackSpeed()
     {
-        var speed = GetSelectedPlaybackSpeed();
-        playbackTimer.Interval = TimeSpan.FromMilliseconds(basePlaybackInterval.TotalMilliseconds / speed);
+        playbackTimer.Interval = renderInterval;
     }
 
     private void Jog(AxisId axis, int direction)

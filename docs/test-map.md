@@ -638,3 +638,4 @@ Expected current behavior:
 - runs a cross-family mechanical-showcase release smoke gate that loads and imports all eight registered GLB packages, resolves the initial semantic selection, samples every teaching view, and resolves complete world-transform hierarchies.
 - verifies Cartesian and XY Plotter schematic composers honor disabled layers, produce equivalent shared Cartesian geometry, and create camera-facing X/Y/Z overlays when requested.
 - verifies Differential Drive 2D scene composition keeps coordinate mapping centered, adds one accumulated path segment per advanced frame, and emits workspace and robot primitives without constructing the WPF window.
+- verifies the render timeline selects exact and surrounding deterministic samples, exposes interpolation progress, chooses the nearest frame, clamps non-looping playback, wraps looping playback by simulated time, and rejects empty or unordered timelines.
