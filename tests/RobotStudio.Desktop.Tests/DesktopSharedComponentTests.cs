@@ -53,6 +53,69 @@ public sealed class DesktopSharedComponentTests
         Assert.Single(component.Descendants(Presentation + "ContentPresenter"));
     }
 
+    [Fact]
+    public void SimulationTimelines_ShouldUseSharedTimelineSliderStyle()
+    {
+        var mainWindow = XDocument.Load(DesktopPath("MainWindow.xaml"));
+        var sharedTimeline = XDocument.Load(DesktopPath("Viewers", "ViewerTimeline.xaml"));
+
+        var cartesianSlider = mainWindow
+            .Descendants(Presentation + "Slider")
+            .Single(element => AttributeValue(element, "Name") == "TimelineSlider");
+        var sharedSlider = sharedTimeline
+            .Descendants(Presentation + "Slider")
+            .Single(element => AttributeValue(element, "Name") == "FrameSlider");
+
+        Assert.Equal(
+            "{DynamicResource TimelineSliderStyle}",
+            (string?)cartesianSlider.Attribute("Style"));
+        Assert.Equal(
+            "{DynamicResource TimelineSliderStyle}",
+            (string?)sharedSlider.Attribute("Style"));
+    }
+
+    [Fact]
+    public void TimelineSliderStyle_ShouldProvideProgressTrackAndDraggableThumb()
+    {
+        var styles = XDocument.Load(DesktopPath("Styles", "MainWindowStyles.xaml"));
+        var timelineStyle = styles
+            .Descendants(Presentation + "Style")
+            .Single(element => AttributeValue(element, "Key") == "TimelineSliderStyle");
+
+        Assert.Single(timelineStyle.Descendants(Presentation + "Track"));
+        Assert.Single(timelineStyle.Descendants(Presentation + "Thumb"));
+        Assert.Equal(2, timelineStyle.Descendants(Presentation + "RepeatButton").Count());
+    }
+
+    [Fact]
+    public void SimulationTimelines_ShouldExposeSharedPlaybackStateBadge()
+    {
+        var mainWindow = XDocument.Load(DesktopPath("MainWindow.xaml"));
+        var sharedTimeline = XDocument.Load(DesktopPath("Viewers", "ViewerTimeline.xaml"));
+
+        Assert.Contains(
+            mainWindow.Descendants(),
+            element =>
+                element.Name.LocalName == "PlaybackStateBadge" &&
+                AttributeValue(element, "Name") == "CartesianTimelineStateBadge");
+        Assert.Single(
+            sharedTimeline.Descendants(),
+            element => element.Name.LocalName == "PlaybackStateBadge");
+    }
+
+    [Fact]
+    public void PlaybackStateBadge_ShouldExplainStationaryPlaybackStates()
+    {
+        var source = File.ReadAllText(DesktopPath("Viewers", "PlaybackStateBadge.xaml.cs"));
+
+        Assert.Contains("Waiting · pose held", source, StringComparison.Ordinal);
+        Assert.Contains("WAIT command keeps the robot pose fixed", source, StringComparison.Ordinal);
+        Assert.Contains("Completed · final pose", source, StringComparison.Ordinal);
+    }
+
+    private static string? AttributeValue(XElement element, string localName) =>
+        element.Attributes().SingleOrDefault(attribute => attribute.Name.LocalName == localName)?.Value;
+
     private static string DesktopPath(params string[] segments) => segments.Aggregate(
         Path.Combine(FindRepositoryRoot(), "src", "RobotStudio.Desktop"),
         Path.Combine);

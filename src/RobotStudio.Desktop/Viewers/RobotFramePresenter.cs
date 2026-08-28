@@ -18,7 +18,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"Differential-drive odometry estimates motion from wheel travel. " +
                 $"Left wheel: {FormatNumber(frame.Odometry.LeftWheelTravelMillimeters)} mm " +
@@ -40,7 +40,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as joint-space motion. " +
                 "The shoulder and elbow angles define the current planar arm shape, " +
@@ -61,7 +61,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as joint-space motion. " +
                 "The base angle rotates the arm on the floor plane, while shoulder and elbow angles compose the links. " +
@@ -82,7 +82,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as coupled actuator-space motion. " +
                 "The A, B, and C actuator heights move together through a parallel mechanism. " +
@@ -102,7 +102,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as coordinated 3D flight motion. " +
                 "The drone pose combines X/Y/Z position with roll, pitch, and yaw attitude. " +
@@ -125,7 +125,7 @@ public static class RobotFramePresenter
             Command: frame.CommandName ?? "simulation",
             Time: FormatTime(frame.Time, totalDuration),
             Frames: $"{frameNumber} / {frameCount}",
-            Footer: FormatFooter(frameNumber, frameCount, frame.Time, frame.State),
+            Footer: FormatFooter(frameNumber, frameCount, frame.Time),
             MovementExplanation:
                 $"{frame.CommandName ?? "simulation"} is represented as coordinated six-joint motion. " +
                 "J1 rotates the base, J2/J3 position the main links, and J4/J5/J6 orient the wrist and tool. " +
@@ -157,9 +157,8 @@ public static class RobotFramePresenter
     private static string FormatFooter(
         int frameNumber,
         int frameCount,
-        TimeSpan frameTime,
-        object state) =>
-        $"Frame {frameNumber}/{frameCount} | t={FormatNumber(frameTime.TotalSeconds)}s | {state}";
+        TimeSpan frameTime) =>
+        $"Frame {frameNumber}/{frameCount} | t={FormatNumber(frameTime.TotalSeconds)}s";
 
     private static int NormalizeFrameNumber(
         int zeroBasedFrameIndex,

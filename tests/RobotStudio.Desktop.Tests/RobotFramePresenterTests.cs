@@ -34,7 +34,7 @@ public sealed class RobotFramePresenterTests
         Assert.Equal("DifferentialDriveMoveCommand", status.Command);
         Assert.Equal("0.75 / 2 s", status.Time);
         Assert.Equal("2 / 4", status.Frames);
-        Assert.Equal("Frame 2/4 | t=0.75s | Moving", status.Footer);
+        Assert.Equal("Frame 2/4 | t=0.75s", status.Footer);
         Assert.Contains("Left wheel: 100 mm", status.MovementExplanation);
         Assert.Contains("Right wheel: 140 mm", status.MovementExplanation);
     }

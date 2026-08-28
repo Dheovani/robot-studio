@@ -987,7 +987,7 @@
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
                     <ColumnDefinition Width="*" />
-                    <ColumnDefinition Width="260" />
+                    <ColumnDefinition Width="Auto" />
                 </Grid.ColumnDefinitions>
 
                 <StackPanel Grid.Column="0"
@@ -1021,17 +1021,24 @@
                         Margin="12,0,0,0"
                         Minimum="0"
                         IsSnapToTickEnabled="True"
+                        Style="{DynamicResource TimelineSliderStyle}"
                         ToolTip="{x:Static didactics:DidacticTooltipCatalog.Timeline}"
                         ValueChanged="TimelineSlider_ValueChanged" />
 
-                <TextBlock x:Name="StatusText"
-                           Grid.Column="2"
-                           Margin="16,0,0,0"
-                           VerticalAlignment="Center"
-                           Foreground="{StaticResource SecondaryTextBrush}"
-                           FontFamily="Consolas"
-                           FontSize="12"
-                           TextAlignment="Right" />
+                <StackPanel Grid.Column="2"
+                            Margin="16,0,0,0"
+                            HorizontalAlignment="Right"
+                            VerticalAlignment="Center"
+                            Orientation="Horizontal">
+                    <viewers:PlaybackStateBadge x:Name="CartesianTimelineStateBadge"
+                                                Margin="0,0,12,0" />
+                    <TextBlock x:Name="StatusText"
+                               VerticalAlignment="Center"
+                               Foreground="{StaticResource SecondaryTextBrush}"
+                               FontFamily="Consolas"
+                               FontSize="12"
+                               TextAlignment="Right" />
+                </StackPanel>
             </Grid>
             </Border>
         </Grid>

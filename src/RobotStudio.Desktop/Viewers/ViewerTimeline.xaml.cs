@@ -1,5 +1,6 @@
 using System.Windows;
 using System.Windows.Controls;
+using RobotStudio.Domain;
 
 namespace RobotStudio.Desktop.Viewers;
 
@@ -38,6 +39,12 @@ public partial class ViewerTimeline : UserControl
     {
         get => StatusTextBlock.Text;
         set => StatusTextBlock.Text = value;
+    }
+
+    public RobotState State
+    {
+        get => StateBadge.State;
+        set => StateBadge.State = value;
     }
 
     private void PreviousButton_Click(object sender, RoutedEventArgs e) =>

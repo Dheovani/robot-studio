@@ -35,6 +35,7 @@ public partial class MainWindow
         DifferentialDriveCommandText.Text = status.Command;
         DifferentialDriveTimeText.Text = status.Time;
         DifferentialDriveFramesText.Text = status.Frames;
+        DifferentialDriveTimeline.State = frame.State;
         DifferentialDriveTimeline.Status = status.Footer;
     }
 
@@ -60,6 +61,7 @@ public partial class MainWindow
         ScaraToolText.Text = RobotFramePresenter.FormatScaraToolPose(frame);
         ScaraCommandText.Text = status.Command;
         ScaraTimeText.Text = status.Time;
+        ScaraTimeline.State = frame.State;
         ScaraTimeline.Status = status.Footer;
         ScaraMovementExplanationText.Text = status.MovementExplanation;
     }
@@ -86,6 +88,7 @@ public partial class MainWindow
         SimpleArmToolText.Text = RobotFramePresenter.FormatSimpleArmToolPose(frame);
         SimpleArmCommandText.Text = status.Command;
         SimpleArmTimeText.Text = status.Time;
+        SimpleArmTimeline.State = frame.State;
         SimpleArmTimeline.Status = status.Footer;
         SimpleArmMovementExplanationText.Text = status.MovementExplanation;
     }
@@ -112,6 +115,7 @@ public partial class MainWindow
         DeltaToolText.Text = RobotFramePresenter.FormatDeltaToolPose(frame);
         DeltaCommandText.Text = status.Command;
         DeltaTimeText.Text = status.Time;
+        DeltaTimeline.State = frame.State;
         DeltaTimeline.Status = status.Footer;
         DeltaMovementExplanationText.Text = status.MovementExplanation;
     }
@@ -138,6 +142,7 @@ public partial class MainWindow
         DroneYawText.Text = RobotFramePresenter.FormatDroneAttitude(frame);
         DroneCommandText.Text = status.Command;
         DroneTimeText.Text = status.Time;
+        DroneTimeline.State = frame.State;
         DroneTimeline.Status = status.Footer;
         DroneMovementExplanationText.Text = status.MovementExplanation;
     }
@@ -164,6 +169,7 @@ public partial class MainWindow
         IndustrialArmToolText.Text = RobotFramePresenter.FormatIndustrialArmToolPose(frame);
         IndustrialArmCommandText.Text = status.Command;
         IndustrialArmTimeText.Text = status.Time;
+        IndustrialArmTimeline.State = frame.State;
         IndustrialArmTimeline.Status = status.Footer;
         IndustrialArmMovementExplanationText.Text = status.MovementExplanation;
     }

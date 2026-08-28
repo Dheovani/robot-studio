@@ -427,6 +427,8 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Cartesian profile input rejects blank, malformed, NaN, and infinite values with a field-specific error.
 - [x] Cartesian profile creation reuses domain validation for inconsistent axis limits.
 - [x] Every simulator workspace and the mechanical showcase use the shared viewer header while preserving caller-owned actions.
+- [x] Cartesian and shared simulator timelines use the common frame-slider style with a progress track and draggable thumb.
+- [x] Every simulator timeline exposes the shared playback-state badge and explicitly explains stationary waiting and completed frames.
 
 ## Architecture Tests
 

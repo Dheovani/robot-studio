@@ -73,6 +73,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Restyled every simulation frame controller with a shared progress track, larger draggable thumb, and consistent focus, hover, and disabled states.
 - Replaced eight duplicated simulator and mechanical-showcase header layouts with one reusable WPF header component while preserving screen-specific navigation and playback actions.
 - Removed the redundant manual `Validate` action from simulator sidebars; editing validates automatically, while `Simulate`, `F5`, or `Ctrl+Enter` explicitly replaces playback.
 - Standardized state readouts, script field labels, spacing, and secondary text across all non-Cartesian simulation workspaces through shared semantic desktop styles.
@@ -91,6 +92,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Fixed
 
+- Clarified stationary playback frames with state badges that distinguish active motion from intentional `WAIT`, idle, completed, and faulted poses across every simulator timeline.
 - Fixed the desktop closing during initial layout after theme centralization by loading shared styles at application scope and resolving template-trigger brushes dynamically.
 - Fixed the Delta mechanical-showcase controller floating outside the support frame by mounting its enclosure beneath the rear crossbeam with visible brackets.
 - Fixed SCARA mechanical links separating between demonstration keyframes by recomputing revolute-joint pivot compensation after rotation interpolation.

@@ -180,9 +180,10 @@ public partial class MainWindow
             : CartesianSchematicSceneComposer.Compose(snapshot, currentFrameIndex, camera, options);
         cartesianViewportPresenter.Present(composedScene);
 
+        CartesianTimelineStateBadge.State = sceneFrame.State;
         StatusText.Text =
             $"Frame {currentFrameIndex + 1}/{snapshot.SceneFrameCount} | " +
-            $"t={sceneFrame.Time.TotalSeconds:0.###}s | {sceneFrame.State}";
+            $"t={sceneFrame.Time.TotalSeconds:0.###}s";
         UpdateStatePanel(sceneFrame);
         UpdateScriptLineIndicator(sceneFrame);
         UpdateMovementExplanation(sceneFrame);

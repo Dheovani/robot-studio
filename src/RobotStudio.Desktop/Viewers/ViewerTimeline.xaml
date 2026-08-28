@@ -1,6 +1,7 @@
 <UserControl x:Class="RobotStudio.Desktop.Viewers.ViewerTimeline"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:viewers="clr-namespace:RobotStudio.Desktop.Viewers">
     <Border Padding="10,8"
             Background="{StaticResource HeaderBackgroundBrush}"
             BorderBrush="{StaticResource SubtleBorderBrush}"
@@ -33,16 +34,23 @@
                 Margin="12,0,0,0"
                 Minimum="0"
                 IsSnapToTickEnabled="True"
+                Style="{DynamicResource TimelineSliderStyle}"
                 ValueChanged="FrameSlider_ValueChanged" />
 
-        <TextBlock x:Name="StatusTextBlock"
-                   Grid.Column="2"
-                   Margin="16,0,0,0"
-                   VerticalAlignment="Center"
-                   Foreground="{StaticResource SecondaryTextBrush}"
-                   FontFamily="Consolas"
-                   FontSize="12"
-                   TextAlignment="Right" />
+        <StackPanel Grid.Column="2"
+                    Margin="16,0,0,0"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Center"
+                    Orientation="Horizontal">
+            <viewers:PlaybackStateBadge x:Name="StateBadge"
+                                        Margin="0,0,12,0" />
+            <TextBlock x:Name="StatusTextBlock"
+                       VerticalAlignment="Center"
+                       Foreground="{StaticResource SecondaryTextBrush}"
+                       FontFamily="Consolas"
+                       FontSize="12"
+                       TextAlignment="Right" />
+        </StackPanel>
     </Grid>
     </Border>
 </UserControl>
