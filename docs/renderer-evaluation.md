@@ -2,7 +2,7 @@
 
 ## Status
 
-This evaluation was revalidated at the start of Milestone 6. The pinned candidate is now integrated only in `RobotStudio.Desktop` for the Cartesian proof of concept; it does not become the permanent renderer before every proof-of-concept acceptance criterion passes.
+This evaluation was revalidated at the start of Milestone 5. The pinned candidate is now integrated only in `RobotStudio.Desktop` for the Cartesian proof of concept; it does not become the permanent renderer before every proof-of-concept acceptance criterion passes.
 
 ## Decision
 
@@ -72,7 +72,7 @@ Blender is an acceptable authoring tool because it is free and open source, and 
 
 The Khronos glTF Validator is Apache-2.0 licensed and validates GLB structure, references, buffers, accessors, animations, images, and supported extensions. RobotStudio-specific validation remains necessary for semantic component identifiers, required nodes, pivots, supported materials, and demonstration bindings.
 
-Models, textures, manifests, and demonstrations must be bundled for offline use. External downloads at application runtime are not part of the Milestone 6 design.
+Models, textures, manifests, and demonstrations must be bundled for offline use. External downloads at application runtime are not part of the Milestone 5 design.
 
 ## Proof-Of-Concept Scope
 

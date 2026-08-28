@@ -93,6 +93,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Fixed
 
+- Fixed playback-speed selection being visible only in Cartesian-family simulators and prevented timeline jumps when changing speed during playback.
 - Clarified stationary playback frames with state badges that distinguish active motion from intentional `WAIT`, idle, completed, and faulted poses across every simulator timeline.
 - Fixed the desktop closing during initial layout after theme centralization by loading shared styles at application scope and resolving template-trigger brushes dynamically.
 - Fixed the Delta mechanical-showcase controller floating outside the support frame by mounting its enclosure beneath the rear crossbeam with visible brackets.

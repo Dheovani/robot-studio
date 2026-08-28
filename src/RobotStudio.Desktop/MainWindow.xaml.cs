@@ -51,6 +51,7 @@ public partial class MainWindow : Window
     };
     private readonly TimeSpan renderInterval = TimeSpan.FromMilliseconds(16);
     private readonly Stopwatch playbackStopwatch = new();
+    private readonly PlaybackClock playbackClock = new();
     private readonly IRobotScriptDialect simpleDslDialect = new RobotScriptParser();
     private readonly IRobotScriptDialect gCodeDialect = new GCodeParser();
     private readonly CartesianMovementExplanationBuilder movementExplanationBuilder = new();
@@ -130,7 +131,6 @@ public partial class MainWindow : Window
     private int droneFrameIndex;
     private int industrialArmFrameIndex;
     private bool isPlaying;
-    private TimeSpan playbackStartPosition;
     private PlaybackRenderTimeline? playbackRenderTimeline;
     private double baseCameraDistanceMillimeters;
     private double azimuthDegrees = -45;
@@ -406,7 +406,7 @@ public partial class MainWindow : Window
         if (isPlaying)
         {
             playbackRenderTimeline = CreateActiveRenderTimeline();
-            playbackStartPosition = GetActiveFrameTime();
+            playbackClock.Start(GetActiveFrameTime(), GetSelectedPlaybackSpeed());
             playbackStopwatch.Restart();
             playbackTimer.Start();
         }
@@ -414,6 +414,7 @@ public partial class MainWindow : Window
         {
             playbackTimer.Stop();
             playbackStopwatch.Reset();
+            playbackClock.Reset();
         }
     }
 

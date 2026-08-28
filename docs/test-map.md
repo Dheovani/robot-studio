@@ -429,7 +429,25 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every simulator workspace and the mechanical showcase use the shared viewer header while preserving caller-owned actions.
 - [x] Cartesian and shared simulator timelines use the common frame-slider style with a progress track and draggable thumb.
 - [x] Every simulator timeline exposes the shared playback-state badge and explicitly explains stationary waiting and completed frames.
+- [x] Every simulator timeline exposes 0.5x, 1x, 2x, and 4x playback speeds, and the incremental playback clock applies a new speed only to subsequently elapsed time.
 - [x] Shared simulator chrome uses header/timeline bands, single-axis sidebar dividers, visible resize grips, and compact frame-navigation actions.
+
+### Manual Desktop Release Smoke Verification
+
+The Windows desktop release candidate completed a cross-family smoke pass on 2026-08-27. The pass opened both workspaces for every available robot, loaded and simulated the default examples, exercised playback and timeline scrubbing, changed all four mechanical layers, ran the first and last curated demonstrations, verified the default semantic component selection, and exercised viewport orbit and camera reset.
+
+| Robot | Simulator dialects | Playback and scrub | Mechanical showcase | Orbit and reset |
+| --- | --- | --- | --- | --- |
+| Cartesian Robot | Simple DSL, G-code | Passed | Passed | Passed |
+| XY Plotter | Simple DSL, G-code | Passed | Passed | Passed |
+| Differential Drive Robot | Simple DSL | Passed | Passed | Passed |
+| SCARA Robot | Simple DSL, G-code | Passed | Passed | Passed |
+| Simple Articulated Arm | Simple DSL, G-code | Passed | Passed | Passed |
+| Delta Robot | Simple DSL, G-code | Passed | Passed | Passed |
+| Drone | Simple DSL | Passed | Passed | Passed |
+| 6-DOF Industrial Arm | Simple DSL, G-code | Passed | Passed | Passed |
+
+Differential Drive Robot and Drone intentionally expose only Simple DSL because their current command models do not have an approved G-code mapping. This smoke pass verifies behavior and interaction stability; visual review and the lower-spec teaching-hardware performance baseline remain separate acceptance activities.
 
 ## Architecture Tests
 

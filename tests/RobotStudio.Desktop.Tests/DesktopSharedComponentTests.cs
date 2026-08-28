@@ -104,6 +104,26 @@ public sealed class DesktopSharedComponentTests
     }
 
     [Fact]
+    public void EverySimulationTimeline_ShouldExposePlaybackSpeedSelection()
+    {
+        var mainWindow = XDocument.Load(DesktopPath("MainWindow.xaml"));
+        var sharedTimeline = XDocument.Load(DesktopPath("Viewers", "ViewerTimeline.xaml"));
+        var sharedSpeedSelector = sharedTimeline
+            .Descendants(Presentation + "ComboBox")
+            .Single(element => AttributeValue(element, "Name") == "PlaybackSpeedComboBox");
+        var sharedTimelines = mainWindow
+            .Descendants()
+            .Where(element => element.Name.LocalName == "ViewerTimeline")
+            .ToArray();
+
+        Assert.Equal(4, sharedSpeedSelector.Elements(Presentation + "ComboBoxItem").Count());
+        Assert.Equal(6, sharedTimelines.Length);
+        Assert.All(sharedTimelines, timeline => Assert.Equal(
+            "ViewerPlaybackSpeed_SelectionChanged",
+            AttributeValue(timeline, "PlaybackSpeedChanged")));
+    }
+
+    [Fact]
     public void PlaybackStateBadge_ShouldExplainStationaryPlaybackStates()
     {
         var source = File.ReadAllText(DesktopPath("Viewers", "PlaybackStateBadge.xaml.cs"));

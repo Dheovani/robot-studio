@@ -49,9 +49,8 @@ public partial class MainWindow
             return;
         }
 
-        var elapsed = TimeSpan.FromSeconds(
-            playbackStopwatch.Elapsed.TotalSeconds * GetSelectedPlaybackSpeed());
-        var selection = playbackRenderTimeline.Select(playbackStartPosition + elapsed, loop: true);
+        var playbackPosition = playbackClock.Advance(playbackStopwatch.Elapsed);
+        var selection = playbackRenderTimeline.Select(playbackPosition, loop: true);
         RenderActivePlaybackFrame(selection.NearestFrameIndex);
     }
 
@@ -388,7 +387,19 @@ public partial class MainWindow
             return;
         }
 
-        ApplyPlaybackSpeed();
+        ApplySelectedPlaybackSpeed();
+    }
+
+    private void ViewerPlaybackSpeed_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e)
+    {
+        if (!IsLoaded)
+        {
+            return;
+        }
+
+        ApplySelectedPlaybackSpeed();
     }
 
     private void TimelineMarkerListBox_SelectionChanged(

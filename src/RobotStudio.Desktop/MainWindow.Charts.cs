@@ -908,7 +908,18 @@ public partial class MainWindow
         }
     }
 
-    private double GetSelectedPlaybackSpeed()
+    private double GetSelectedPlaybackSpeed() => activeViewerKind switch
+    {
+        RobotViewerKind.DifferentialDriveTwoDimensional => DifferentialDriveTimeline.PlaybackSpeed,
+        RobotViewerKind.ScaraThreeDimensional => ScaraTimeline.PlaybackSpeed,
+        RobotViewerKind.SimpleArmThreeDimensional => SimpleArmTimeline.PlaybackSpeed,
+        RobotViewerKind.DeltaThreeDimensional => DeltaTimeline.PlaybackSpeed,
+        RobotViewerKind.DroneThreeDimensional => DroneTimeline.PlaybackSpeed,
+        RobotViewerKind.IndustrialArmThreeDimensional => IndustrialArmTimeline.PlaybackSpeed,
+        _ => GetCartesianPlaybackSpeed()
+    };
+
+    private double GetCartesianPlaybackSpeed()
     {
         if (PlaybackSpeedComboBox.SelectedItem is ComboBoxItem { Tag: string tag } &&
             double.TryParse(tag, NumberStyles.Float, CultureInfo.InvariantCulture, out var speed) &&

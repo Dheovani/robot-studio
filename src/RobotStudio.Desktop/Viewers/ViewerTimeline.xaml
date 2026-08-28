@@ -35,6 +35,16 @@
                     ToolTip="Move one playback frame forward."
                     AutomationProperties.Name="Next frame"
                     Click="NextButton_Click" />
+            <ComboBox x:Name="PlaybackSpeedComboBox"
+                      Width="88"
+                      ToolTip="Change the playback speed without changing simulated time."
+                      AutomationProperties.Name="Playback speed"
+                      SelectionChanged="PlaybackSpeedComboBox_SelectionChanged">
+                <ComboBoxItem Content="0.5x" Tag="0.5" />
+                <ComboBoxItem Content="1x" Tag="1" IsSelected="True" />
+                <ComboBoxItem Content="2x" Tag="2" />
+                <ComboBoxItem Content="4x" Tag="4" />
+            </ComboBox>
         </StackPanel>
 
         <Slider x:Name="FrameSlider"

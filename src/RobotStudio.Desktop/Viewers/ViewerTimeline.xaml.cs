@@ -1,3 +1,4 @@
+using System.Globalization;
 using System.Windows;
 using System.Windows.Controls;
 using RobotStudio.Domain;
@@ -16,6 +17,8 @@ public partial class ViewerTimeline : UserControl
     public event RoutedEventHandler? NextRequested;
 
     public event RoutedPropertyChangedEventHandler<double>? ValueChanged;
+
+    public event SelectionChangedEventHandler? PlaybackSpeedChanged;
 
     public double Maximum
     {
@@ -47,6 +50,25 @@ public partial class ViewerTimeline : UserControl
         set => StateBadge.State = value;
     }
 
+    public double PlaybackSpeed
+    {
+        get
+        {
+            if (PlaybackSpeedComboBox.SelectedItem is ComboBoxItem { Tag: string tag } &&
+                double.TryParse(
+                    tag,
+                    NumberStyles.Float,
+                    CultureInfo.InvariantCulture,
+                    out var speed) &&
+                speed > 0)
+            {
+                return speed;
+            }
+
+            return 1;
+        }
+    }
+
     private void PreviousButton_Click(object sender, RoutedEventArgs e) =>
         PreviousRequested?.Invoke(this, e);
 
@@ -57,4 +79,9 @@ public partial class ViewerTimeline : UserControl
         object sender,
         RoutedPropertyChangedEventArgs<double> e) =>
         ValueChanged?.Invoke(this, e);
+
+    private void PlaybackSpeedComboBox_SelectionChanged(
+        object sender,
+        SelectionChangedEventArgs e) =>
+        PlaybackSpeedChanged?.Invoke(this, e);
 }

@@ -126,7 +126,6 @@ public partial class MainWindow
             snapshot.Viewport.CameraPosition);
         TimelineSlider.Maximum = snapshot.SceneFrameCount - 1;
         TimelineSlider.TickFrequency = 1;
-        ApplyPlaybackSpeed();
         UpdateTimelineMarkers();
         SetCameraControls(
             azimuth: azimuthDegrees,
@@ -138,6 +137,7 @@ public partial class MainWindow
     {
         playbackTimer.Stop();
         playbackStopwatch.Reset();
+        playbackClock.Reset();
         playbackRenderTimeline = null;
         isPlaying = false;
         UpdatePlaybackButtonLabels();
@@ -152,9 +152,16 @@ public partial class MainWindow
         }
     }
 
-    private void ApplyPlaybackSpeed()
+    private void ApplySelectedPlaybackSpeed()
     {
-        playbackTimer.Interval = renderInterval;
+        if (!isPlaying)
+        {
+            return;
+        }
+
+        playbackClock.ChangeSpeed(
+            GetSelectedPlaybackSpeed(),
+            playbackStopwatch.Elapsed);
     }
 
     private void Jog(AxisId axis, int direction)
