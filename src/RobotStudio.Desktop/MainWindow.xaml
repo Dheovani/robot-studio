@@ -978,11 +978,7 @@
 
             <Border Grid.Row="2"
                     Margin="16,0,16,16"
-                    Padding="10,8"
-                    Background="{StaticResource HeaderBackgroundBrush}"
-                    BorderBrush="{StaticResource SubtleBorderBrush}"
-                    BorderThickness="1"
-                    CornerRadius="4">
+                    Style="{DynamicResource ViewerTimelineSurfaceStyle}">
             <Grid>
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="Auto" />
@@ -993,17 +989,27 @@
                 <StackPanel Grid.Column="0"
                             Orientation="Horizontal"
                             VerticalAlignment="Center">
-                    <Button Width="48"
+                    <Button Width="34"
+                            Height="34"
                             Margin="0,0,8,0"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            Content="Prev"
+                            Padding="0"
+                            Style="{StaticResource GhostButtonStyle}"
+                            Content="&#xE76B;"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="14"
                             ToolTip="Move one playback frame backward."
+                            AutomationProperties.Name="Previous frame"
                             Click="PreviousFrameButton_Click" />
-                    <Button Width="48"
+                    <Button Width="34"
+                            Height="34"
                             Margin="0,0,12,0"
-                            Style="{StaticResource SecondaryButtonStyle}"
-                            Content="Next"
+                            Padding="0"
+                            Style="{StaticResource GhostButtonStyle}"
+                            Content="&#xE76C;"
+                            FontFamily="Segoe MDL2 Assets"
+                            FontSize="14"
                             ToolTip="Move one playback frame forward."
+                            AutomationProperties.Name="Next frame"
                             Click="NextFrameButton_Click" />
                     <ComboBox x:Name="PlaybackSpeedComboBox"
                               Width="88"

@@ -73,6 +73,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 
 ### Changed
 
+- Simplified simulator chrome into header and timeline bands, single-divider sidebars, subtler viewport framing, discoverable resize grips, and compact icon-based frame navigation.
 - Restyled every simulation frame controller with a shared progress track, larger draggable thumb, and consistent focus, hover, and disabled states.
 - Replaced eight duplicated simulator and mechanical-showcase header layouts with one reusable WPF header component while preserving screen-specific navigation and playback actions.
 - Removed the redundant manual `Validate` action from simulator sidebars; editing validates automatically, while `Simulate`, `F5`, or `Ctrl+Enter` explicitly replaces playback.

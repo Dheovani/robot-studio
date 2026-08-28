@@ -113,6 +113,56 @@ public sealed class DesktopSharedComponentTests
         Assert.Contains("Completed · final pose", source, StringComparison.Ordinal);
     }
 
+    [Fact]
+    public void ViewerChrome_ShouldUseBandsAndSingleAxisDividers()
+    {
+        var styles = XDocument.Load(DesktopPath("Styles", "MainWindowStyles.xaml"));
+        var headerSurface = FindStyle(styles, "ViewerHeaderSurfaceStyle");
+        var sidebar = FindStyle(styles, "ViewerSidebarStyle");
+        var timelineSurface = FindStyle(styles, "ViewerTimelineSurfaceStyle");
+
+        AssertStyleSetter(headerSurface, "BorderThickness", "0,0,0,1");
+        AssertStyleSetter(sidebar, "BorderThickness", "1,0,0,0");
+        AssertStyleSetter(sidebar, "CornerRadius", "0");
+        AssertStyleSetter(timelineSurface, "BorderThickness", "0,1,0,0");
+        AssertStyleSetter(timelineSurface, "CornerRadius", "0");
+    }
+
+    [Fact]
+    public void ViewerChrome_ShouldExposeResizeGripAndCompactFrameActions()
+    {
+        var styles = XDocument.Load(DesktopPath("Styles", "MainWindowStyles.xaml"));
+        var splitter = FindStyle(styles, "ViewerSplitterStyle");
+        var sharedTimeline = XDocument.Load(DesktopPath("Viewers", "ViewerTimeline.xaml"));
+        var frameButtons = sharedTimeline.Descendants(Presentation + "Button").ToArray();
+
+        Assert.Contains(
+            splitter.Descendants(Presentation + "Border"),
+            element => AttributeValue(element, "Name") == "ResizeGrip");
+        Assert.Equal(2, frameButtons.Length);
+        Assert.All(frameButtons, button =>
+        {
+            Assert.Equal("34", AttributeValue(button, "Width"));
+            Assert.Equal("{DynamicResource GhostButtonStyle}", AttributeValue(button, "Style"));
+        });
+    }
+
+    private static XElement FindStyle(XDocument styles, string key) => styles
+        .Descendants(Presentation + "Style")
+        .Single(element => AttributeValue(element, "Key") == key);
+
+    private static void AssertStyleSetter(
+        XElement style,
+        string property,
+        string expectedValue)
+    {
+        var setter = style
+            .Elements(Presentation + "Setter")
+            .Single(element => AttributeValue(element, "Property") == property);
+
+        Assert.Equal(expectedValue, AttributeValue(setter, "Value"));
+    }
+
     private static string? AttributeValue(XElement element, string localName) =>
         element.Attributes().SingleOrDefault(attribute => attribute.Name.LocalName == localName)?.Value;
 

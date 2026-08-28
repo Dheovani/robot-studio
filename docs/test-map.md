@@ -429,6 +429,7 @@ This document maps expected automated tests to project behavior. It should be up
 - [x] Every simulator workspace and the mechanical showcase use the shared viewer header while preserving caller-owned actions.
 - [x] Cartesian and shared simulator timelines use the common frame-slider style with a progress track and draggable thumb.
 - [x] Every simulator timeline exposes the shared playback-state badge and explicitly explains stationary waiting and completed frames.
+- [x] Shared simulator chrome uses header/timeline bands, single-axis sidebar dividers, visible resize grips, and compact frame-navigation actions.
 
 ## Architecture Tests
 
