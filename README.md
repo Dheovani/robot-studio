@@ -150,51 +150,37 @@ Supported CLI release runtime:
 
 - `win-x64`
 
-## Preview
+## Application Tour
 
-![RobotStudio desktop preview](docs/assets/screenshots/robot-studio.gif)
+### Robot Catalog
 
-## Screenshots
+Choose an available simulator or explore its mechanical construction. Planned models remain visible as future learning paths.
 
-### Robot Selection
+![RobotStudio robot catalog](docs/assets/screenshots/robot-catalog.png)
 
-![RobotStudio robot selection screen](docs/assets/screenshots/robot-studio.png)
+### Schematic Simulation
 
-### Cartesian 3D Viewer
+Write or load a script, generate deterministic playback, and inspect the robot's movement in its didactic workspace.
 
-![RobotStudio Cartesian 3D viewer](docs/assets/screenshots/cartesian-manipulator.png)
+![RobotStudio Cartesian simulator and script workspace](docs/assets/screenshots/cartesian-simulator.png)
 
-### Script And Manual Control
+### State And Motion Monitoring
 
-![RobotStudio script editor](docs/assets/screenshots/script-area.png)
+Follow the current frame, robot state, position, velocity, acceleration, and motion charts while scrubbing or playing the timeline.
 
-![RobotStudio manual control panel](docs/assets/screenshots/manual-control-area.png)
+![RobotStudio simulation monitor](docs/assets/screenshots/simulation-monitor.png)
 
-![RobotStudio command console](docs/assets/screenshots/command-console-area.png)
+### Mechanical Exploration
 
-### Simulation State And Explanations
+Use the separate mechanical showcase to inspect meaningful components, their relationships, and curated demonstrations without replacing the schematic simulator.
 
-![RobotStudio robot state panel](docs/assets/screenshots/robot-state-area.png)
+![RobotStudio Cartesian mechanical showcase](docs/assets/screenshots/mechanical-showcase.png)
 
-![RobotStudio movement explanation panel](docs/assets/screenshots/movement-explanation-area.png)
+### Robotics Glossary
 
-![RobotStudio timeline markers panel](docs/assets/screenshots/timeline-markers-area.png)
+Search the built-in glossary by term or topic without leaving the application.
 
-### Charts And Overlays
-
-![RobotStudio position chart](docs/assets/screenshots/position-chart.png)
-
-![RobotStudio velocity chart](docs/assets/screenshots/velocity-chart.png)
-
-![RobotStudio requested versus effective velocity chart](docs/assets/screenshots/req-eff-chart.png)
-
-![RobotStudio distance chart](docs/assets/screenshots/distance-chart.png)
-
-![RobotStudio state chart](docs/assets/screenshots/state-chart.png)
-
-![RobotStudio overlays panel](docs/assets/screenshots/overlays-area.png)
-
-![RobotStudio camera controls](docs/assets/screenshots/camera-area.png)
+![RobotStudio robotics glossary](docs/assets/screenshots/robotics-glossary.png)
 
 ## Run The CLI
 

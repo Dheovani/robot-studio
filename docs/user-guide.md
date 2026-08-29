@@ -59,11 +59,27 @@ dotnet run --project src/RobotStudio.Desktop
 
 The desktop app opens a WPF window with a robot selection screen. The Cartesian robot, XY plotter, differential drive robot, SCARA robot, Simple Articulated Arm, Delta Robot, Drone, and 6-DOF Industrial Arm are available now. Cylindrical, Ackermann Steering, Omnidirectional, Self-Balancing, Stewart Platform, and Mobile Manipulator templates appear as planned learning paths and cannot be opened yet.
 
+![RobotStudio robot catalog](assets/screenshots/robot-catalog.png)
+
 Use the language selector in the catalog header to switch the interface between English and Brazilian Portuguese. Robot commands, DSL keywords, G-code words, axis names, and standard robotics abbreviations remain unchanged so scripts and technical notation stay consistent in either language. The robotics glossary is available from the catalog and is intentionally omitted from simulation toolbars.
+
+![RobotStudio searchable robotics glossary](assets/screenshots/robotics-glossary.png)
 
 Opening the Cartesian robot renders the built-in Cartesian simulation in a 3D viewport and provides playback, camera controls, and a local example selector.
 
+![Cartesian schematic simulation and script area](assets/screenshots/cartesian-simulator.png)
+
+Select `Monitor` on the right navigation rail to inspect the current state, command, position, motion phase, velocity, acceleration, and charts. The timeline remains available while switching sidebar areas, so playback can be paused or scrubbed without losing monitoring context.
+
+![Cartesian state and motion monitor](assets/screenshots/simulation-monitor.png)
+
 The Cartesian catalog card also opens a separate mechanical showcase through `Explore Mechanics`. In this view, drag with the left mouse button to orbit, drag with the middle mouse button or `Shift` + left mouse button to pan, and use `Ctrl` + mouse wheel to zoom. `Reset` restores the active demonstration and a camera framing calculated from the packaged model. The `View layer` selector switches among the assembled machine, the transparent drive-system inspection layer, a motion-axis layer with red X, green Y, and blue Z direction guides, and an exploded assembly that separates major components without replacing the schematic simulator. Selection and highlighting remain active in every layer. The first three layers offer a coordinated practical tour and an individual-axis inspection. Selecting `Exploded assembly` switches to an assembly sequence: `Reset` shows the separated components and `Play` joins the controller, platform, gantry, carriage, and tool in order. The description beneath the demonstration selector explains the active sequence before playback.
+
+![Cartesian assembled mechanical showcase](assets/screenshots/mechanical-showcase.png)
+
+The `Drive system` layer makes the external structure transparent while preserving selection of belts, lead screws, rails, and motors.
+
+![Cartesian transparent drive-system layer](assets/screenshots/drive-system-layer.png)
 
 Opening the XY plotter renders a beginner two-axis drawing model on a fixed `Z=0` drawing plane. It uses X/Y movement while reusing the same script validation, playback, timeline, chart, overlay controls, and local example selector.
 
@@ -143,10 +159,10 @@ For official releases, push a version tag such as `v1.1.0`. GitHub Actions deriv
 
 Current desktop controls:
 
-- searchable robotics glossary with topic filters, available from the catalog and every simulation workspace.
+- searchable robotics glossary with topic filters, available from the robot catalog.
 - robot cards showing name, family, compact status and complexity tags, description, and capability tags.
 - robot selection cards arrange responsively across one to six columns according to available width and a comfortable target card size.
-- available robot selection cards can be opened from the card body, the `Open Robot` button, or the keyboard and show hover and focus feedback.
+- available robot selection cards can be opened from the card body, the `Open Simulator` button, or the keyboard and show hover and focus feedback.
 - non-interactive planned-release labels on future robot entries ordered by didactic complexity.
 - contextual `HOME` and `Reset Fault` actions inside the script panel. They remain hidden until the retained simulation context becomes faulted.
 - `Robots` inside the Cartesian viewer to return to the selection screen.
