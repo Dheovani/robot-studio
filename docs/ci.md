@@ -16,7 +16,7 @@ The workflow file is:
 
 ### Release Metadata
 
-For manual release runs and version tags, this job resolves one validated semantic version for every packaging job. Tags such as `v1.1.0` become artifact version `1.1.0`; manual runs use the required `version` workflow input.
+For manual release runs and version tags, this job resolves one validated semantic version for every packaging job. Tags such as `v1.2.0` become artifact version `1.2.0`; manual runs use the required `version` workflow input.
 
 ### Windows Desktop Build And Test
 
@@ -45,7 +45,7 @@ Line endings are normalized through `.gitattributes` so Windows runners and loca
 
 ### Windows Installer
 
-This job runs only for manual workflow dispatches and version tags such as `v1.1.0`.
+This job runs only for manual workflow dispatches and version tags such as `v1.2.0`.
 
 It runs:
 
@@ -71,7 +71,7 @@ Supported optional signing configuration:
 
 ### Windows CLI Release Artifact
 
-This job runs only for manual workflow dispatches and version tags such as `v1.1.0`.
+This job runs only for manual workflow dispatches and version tags such as `v1.2.0`.
 
 It builds a self-contained CLI ZIP archive for:
 
@@ -81,7 +81,7 @@ The archive is uploaded with a matching `.sha256` checksum file.
 
 ### GitHub Release
 
-This job runs only for version tags such as `v1.1.0`.
+This job runs only for version tags such as `v1.2.0`.
 
 It waits for the Windows installer and Windows CLI artifact jobs, downloads the workflow artifacts, keeps only public release assets, and creates the GitHub Release for the tag.
 

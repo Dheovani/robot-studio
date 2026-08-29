@@ -2,7 +2,7 @@
 
 RobotStudio is a didactic robotics and C#/.NET learning platform.
 
-Version `1.1.0` expands RobotStudio into a multi-robot teaching platform. Eight robot models can be scripted, validated, simulated, inspected through deterministic playback, and visualized in dedicated desktop workspaces.
+Version `1.2.0` adds introductory G-code, bilingual desktop resources, focused didactic tools, refined simulation workspaces, and realistic mechanical showcases for all eight available robot models.
 
 The project is intentionally educational. It is designed to help students understand both robotics concepts and software architecture: domain modeling, motion planning, deterministic simulation, scripting, UI boundaries, tests, and future hardware integration.
 
@@ -71,7 +71,7 @@ RobotStudio treats G-code coordinates as TCP tool-space coordinates, never as al
 
 ## Current Release
 
-Current stable version: `1.1.0`.
+Current stable version: `1.2.0`.
 
 This release provides a stable educational progression from Cartesian motion to mobile, articulated, parallel, and aerial robotics without requiring real hardware.
 
@@ -120,7 +120,7 @@ From the repository root:
 dotnet run --project src/RobotStudio.Desktop
 ```
 
-The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, `Drone`, and `6-DOF Industrial Arm` are available in version `1.1.0`.
+The desktop app starts with a robot selection screen. `Cartesian Robot`, `XY Plotter`, `Differential Drive Robot`, `SCARA Robot`, `Simple Articulated Arm`, `Delta Robot`, `Drone`, and `6-DOF Industrial Arm` are available in version `1.2.0`.
 
 The Cartesian movement explanation panel identifies triangular and trapezoidal profiles, velocity and acceleration limits, phase durations, and the active playback phase using exact simulation metadata.
 
@@ -143,7 +143,7 @@ dotnet test RobotStudio.slnx
 Build a Windows CLI release artifact:
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.1.0 -Runtime win-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-cli-artifact.ps1 -Version 1.2.0 -Runtime win-x64
 ```
 
 Supported CLI release runtime:
@@ -230,25 +230,25 @@ dotnet format RobotStudio.slnx --verify-no-changes
 
 ## Build The Windows Installer
 
-RobotStudio `1.1.0` is distributed as a Windows installer for the WPF desktop app.
+RobotStudio `1.2.0` is distributed as a Windows installer for the WPF desktop app.
 
 ```bash
-powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.1.0 -Runtime win-x64
+powershell -ExecutionPolicy Bypass -File scripts/release/build-windows-installer.ps1 -Version 1.2.0 -Runtime win-x64
 ```
 
 The installer is generated at:
 
 ```txt
-artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe
+artifacts/release/RobotStudio-1.2.0-win-x64-setup.exe
 ```
 
 The release script also generates:
 
 ```txt
-artifacts/release/RobotStudio-1.1.0-win-x64-setup.exe.sha256
+artifacts/release/RobotStudio-1.2.0-win-x64-setup.exe.sha256
 ```
 
-When a version tag such as `v1.1.0` is pushed to GitHub, CI derives the artifact version from the tag, builds the Windows installer and Windows CLI ZIP archive, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
+When a version tag such as `v1.2.0` is pushed to GitHub, CI derives the artifact version from the tag, builds the Windows installer and Windows CLI ZIP archive, and publishes a GitHub Release with all `.exe`, `.zip`, and `.sha256` assets attached.
 
 ## Project Structure
 

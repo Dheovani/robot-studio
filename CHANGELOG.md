@@ -2,7 +2,7 @@
 
 All notable user-facing changes to RobotStudio are documented in this file.
 
-## Unreleased
+## 1.2.0 - Didactic Tools And Mechanical Visualization
 
 ### Added
 
@@ -11,6 +11,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added shared circular, rectangular, and volumetric overlay composition for every available schematic robot family, including Canvas projection for Differential Drive.
 - Added a repeatable cross-family visualization diagnostics tool and a documented development-workstation performance baseline.
 - Added explicit teaching-hardware performance budgets and pass/fail reporting to visualization diagnostics.
+- Validated all eight mechanical showcases on lower-spec teaching hardware with integrated Intel graphics and 4 GB RAM without requiring asset simplification or rendering-budget changes.
 - Added deterministic mechanical-viewport teardown for imported scenes, rendering resources, timers, and event handlers.
 - Added consistent primary, secondary, and ghost desktop button roles with distinct navigation, playback, and command hierarchy.
 - Added a cross-family rendering smoke gate covering assets, semantic selection, teaching modes, demonstrations, and transforms for all eight mechanical showcases.
@@ -33,7 +34,7 @@ All notable user-facing changes to RobotStudio are documented in this file.
 - Added an in-memory Cartesian robot configuration panel for editing axis limits, maximum velocity, and maximum acceleration with immediate playback and workspace regeneration.
 - Added Cartesian playback snapshot format 4 with exact per-command motion summaries, including profile shape, phase durations, peak velocity, acceleration, and involved axes.
 - Added acceleration-aware Cartesian movement explanations for triangular and trapezoidal profiles, limiting axes, phase timing, and the current motion phase.
-- Added a searchable in-app robotics glossary with 48 terms, topic filters, related concepts, catalog and workspace access, and a `Ctrl+G` shortcut.
+- Added a searchable in-app robotics glossary with 48 terms, topic filters, related concepts, catalog access, and a `Ctrl+G` shortcut.
 - Added an optional line-by-line G-code guide that follows script edits and explains modal state, robot-specific tool coordinates, feed rate, homing, and dwell commands.
 - Added a semantic G-code program model and robot command mapping boundary so syntax, modal state, and robot-specific command generation evolve independently.
 - Added an explicit G-code compatibility catalog: Cartesian Robot and XY Plotter mappings are available, articulated and parallel mappings require future tool-path kinematics, and mobile/aerial mappings are intentionally not applicable.
