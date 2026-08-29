@@ -13,7 +13,8 @@ This folder keeps the project decisions and learning-oriented documentation clos
 - [Advanced 3D Visualization](advanced-3d-visualization.md): Milestone 5 rendering modes, mechanical showcase scope, technology constraints, asset direction, and architectural boundaries.
 - [Renderer Evaluation](renderer-evaluation.md): Milestone 5 renderer choice, risks, asset pipeline, and proof-of-concept acceptance criteria.
 - [Visual Asset Manifest](visual-asset-manifest.md): version 1 GLB package metadata, semantic node mapping, validation, and ownership boundaries.
-- [Visualization Performance Baseline](performance-baseline.md): repeatable GLB loading, live rendering, transform-update, and semantic hit-testing measurements.
+- [Visualization Performance Baseline](performance-baseline.md): development-workstation GLB loading, live rendering, transform-update, and semantic hit-testing measurements.
+- [Teaching Hardware Performance Baseline](performance-baseline-lower-spec.md): accepted lower-spec measurements on integrated Intel graphics and 4 GB RAM.
 - [Changelog](../CHANGELOG.md): user-facing release history and included capabilities.
 
 ## Maintenance Rules

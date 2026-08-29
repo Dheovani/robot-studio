@@ -84,12 +84,12 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
   - [x] Route mechanical-showcase motion-axis guides through the shared overlay scene before Helix conversion.
   - [x] Migrate workspace, path, coordinate, label, and limit overlays for the remaining schematic robot families to the shared contract.
 - [x] Separate deterministic simulation ticks from rendering frames and define interpolation, transform-update, and scene-update policies.
-- [ ] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
+- [x] Measure model loading, rendering, transform updates, and hit-testing performance on representative teaching hardware.
   - [x] Add a repeatable Release diagnostics tool that profiles all eight GLB showcases in live Helix viewports.
   - [x] Record a development-workstation baseline for import, scene preparation, frame cadence, transform updates, and semantic hit testing.
   - [x] Define a tested minimum acceptance budget and make the diagnostics command fail when a robot exceeds it.
   - [x] Make mechanical viewport teardown explicit and verify scene and renderer resource disposal for every profiled robot.
-  - [ ] Repeat the baseline on the intended lower-spec teaching hardware and document any required asset or rendering budget changes.
+  - [x] Repeat the baseline on the intended lower-spec teaching hardware and document any required asset or rendering budget changes.
 - [x] Add architecture, asset-contract, mode-switching, selection-mapping, and rendering smoke tests before expanding realistic assets to additional robot families.
 - [x] Deliver an original realistic mechanical showcase for Cartesian Robot.
 - [x] Deliver an original realistic mechanical showcase for XY Plotter.
@@ -99,7 +99,7 @@ The Milestone 2 mapping gate is complete: every applicable implemented family ha
 - [x] Deliver an original realistic mechanical showcase for Delta Robot.
 - [x] Deliver an original realistic mechanical showcase for Drone.
 - [x] Deliver an original realistic mechanical showcase for 6-DOF Industrial Arm.
-- [ ] Treat Milestone 5 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 5 scope is complete.
+- [x] Treat Milestone 5 completion as capability-based rather than deadline-based; do not release until the selected Milestone 2 through 5 scope is complete.
 
 ## 6. Future Robot Family Expansion
 
